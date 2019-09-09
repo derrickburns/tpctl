@@ -226,4 +226,4 @@ local tidepool(config, namespace) = {
   }
 };
 
-function(config) tidepool(config, namespace)
+function(config, namespace) tidepool(config, namespace)
