@@ -1,8 +1,8 @@
-local namespace(config) = {
+local namespace(config, namespace) = {
   apiVersion: "v1",
   kind: "Namespace",
   metadata: {
-    name: config.environment.name,
+    name: namespace,
     labels: {
       istio-injection: disabled
       global.linkerd.io/inject: enabled
@@ -10,4 +10,4 @@ local namespace(config) = {
     }
 };
 
-function(config) namespace(config)
+function(config, namespace) namespace(config, namespace)
