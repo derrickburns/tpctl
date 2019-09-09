@@ -1,0 +1,12 @@
+apiVersion: helm.fluxcd.io/v1
+kind: HelmRelease
+metadata:
+  name: flux-helm-repositories
+  namespace: flux
+spec:
+  releaseName: flux-helm-repositories
+  chart:
+    git: git@github.com:tidepool-org/development
+    path: charts/flux-repositories
+    ref: k8s
+  values: {}

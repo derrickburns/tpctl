@@ -1,0 +1,27 @@
+---
+apiVersion: helm.fluxcd.io/v1
+kind: HelmRelease
+metadata:
+  name: datadog-agent
+  namespace: datadog
+  annotations:
+    flux.weave.works/automated: "false"
+spec:
+  releaseName: datadog
+  chart:
+    repository: https://kubernetes-charts.storage.googleapis.com/
+    name: datadog
+    version: 1.31.11
+  values:
+    kubeStateMetrics:
+      enabled: false
+    datadog:
+      apiKeyExistingSecret: datadog
+      appKeyExistingSecret: datadog
+      tokenKeyExistingSecret: datadog
+      cluster.name: {{ .ClusterName }}
+      logLevel: info
+    clusterAgent:
+      enabled: true
+      metricsProvider:
+        enabled: false

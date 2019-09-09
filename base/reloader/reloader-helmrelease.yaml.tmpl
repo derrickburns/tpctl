@@ -1,0 +1,15 @@
+---
+apiVersion: helm.fluxcd.io/v1
+kind: HelmRelease
+metadata:
+  name: reloader
+  namespace: reloader
+  annotations:
+    flux.weave.works/automated: "false"
+spec:
+  releaseName: reloader
+  chart:
+    git: git@github.com:stakater/Reloader
+    path: deployments/kubernetes/chart/reloader
+    ref: master
+  values: {}
