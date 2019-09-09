@@ -1,4 +1,4 @@
-local namespace(config, namespace) = {
+local gen_namespace(config, namespace) = {
   apiVersion: "v1",
   kind: "Namespace",
   metadata: {
@@ -11,4 +11,4 @@ local namespace(config, namespace) = {
   }
 };
 
-function(config, namespace) namespace(config, namespace)
+function(config, namespace) gen_namespace(config, namespace)
