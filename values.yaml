@@ -4,16 +4,6 @@ email: derrick@tidepool.org                   # cluster admin email address
 aws:
   accountNumber: 118346523422
 
-repo:
-  local: ~/go/src/github.com/tidepool-org/ # where to create the config repo
-  remote: git@github.com:tidepool-org/
-  name: cluster-test
-  branch: "master"                            # branch to monitor
-
-github:
-  user: derrickburns                          # your GitHub user name
-  token: ""                                   # a GitHub token that allows repo read/write access  
-
 kubeconfig: ""                                # place to put KUBECONFIG, default: ~/.kube/kubeconfig
 configFile: ""                                # place to put cluster config, default $CLUSTER_DIR/config.yaml
 
