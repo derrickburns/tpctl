@@ -4,9 +4,9 @@ local namespace(config, namespace) = {
   metadata: {
     name: namespace,
     labels: {
-      istio-injection: disabled
-      global.linkerd.io/inject: enabled
-      discovery.solo.io/function_discovery: enabled
+      "istio-injection": "disabled",
+      "global.linkerd.io/inject": "enabled",
+      "discovery.solo.io/function_discovery": "enabled"
     }
   }
 };
