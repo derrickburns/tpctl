@@ -5,7 +5,7 @@ local defaultHost(env) = (
 );
 
 local tidepool(config, namespace) = {
-  local env = config.environments[namespace]
+  local env = config.environments[namespace],
   local tag = "glob:%s-*" % env.gitops.branch,
 
   apiVersion: "helm.fluxcd.io/v1",
