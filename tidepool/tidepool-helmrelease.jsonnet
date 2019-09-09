@@ -180,7 +180,7 @@ local tidepool(config, namespace) = {
         enabled: false
       },
       nosqlclient: {
-        enabled: env.nosqclient.enabled
+        enabled: env.nosqlclient.enabled
       },
       notification: {
         deployment: {
