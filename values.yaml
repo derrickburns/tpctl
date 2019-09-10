@@ -11,7 +11,6 @@ aws:
   - haroldbernard-cli
 
 kubeconfig: ""                                # place to put KUBECONFIG, default: ~/.kube/kubeconfig
-configFile: ""                                # place to put cluster config, default $CLUSTER_DIR/config.yaml
 
 cluster:
   metadata:
