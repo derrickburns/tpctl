@@ -4,7 +4,7 @@ email: derrick@tidepool.org                   # cluster admin email address
 aws:
   accountNumber: 118346523422
   iamUsers:
-  - derrickrburns-cli
+  - derrickburns-cli
   - lennartgoedhard-cli
   - benderr-cli
   - jamesraby-cli
