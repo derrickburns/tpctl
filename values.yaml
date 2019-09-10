@@ -3,13 +3,18 @@ email: derrick@tidepool.org                   # cluster admin email address
 
 aws:
   accountNumber: 118346523422
+  iamUsers:
+  - derrickrburns-cli
+  - lennartgoedhard-cli
+  - benderr-cli
+  - jamesraby-cli
 
 kubeconfig: ""                                # place to put KUBECONFIG, default: ~/.kube/kubeconfig
 configFile: ""                                # place to put cluster config, default $CLUSTER_DIR/config.yaml
 
 cluster:
   metadata:
-    name: test2
+    name: test1
     region: us-west-2
   vpc:
     cidr: "10.47.0.0/16"                      # CIDR of AWS VPC
