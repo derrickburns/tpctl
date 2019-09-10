@@ -34,9 +34,9 @@ environments:
       enabled: true
     gitops:
       branch: develop
-    buckets:
-      data: tidepool-test-qa2-data
-      asset: tidepool-test-qa2-asset
+    buckets: {}
+      #data: tidepool-test-qa2-data
+      #asset: tidepool-test-qa2-asset
     gateway:
       default:
         protocol: http
