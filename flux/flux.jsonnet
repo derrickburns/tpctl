@@ -34,7 +34,6 @@
            ],
            containers: [
              container {
-               image: "docker.io/fluxcd/flux:1.14.2",
                volumeMounts+: [
                  {
                    name: 'repositories-yaml',
