@@ -1,0 +1,22 @@
+---
+apiVersion: helm.fluxcd.io/v1
+kind: HelmRelease
+metadata:
+  name: cluster-autoscaler
+  namespace: kube-system
+  annotations:
+    flux.weave.works/automated: "false"
+spec:
+  releaseName: cluster-autoscaler
+  chart:
+    repository: https://kubernetes-charts.storage.googleapis.com/
+    name: cluster-autoscaler
+    version: 3.2.0
+  values:
+    autoDiscovery:
+      clusterName: {{ .ClusterName }}
+    awsRegion: {{ .Region }}
+    rbac:
+      create: true
+    nameOverride: cluster-autoscaler
+    cloudProvider: aws
