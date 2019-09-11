@@ -7,7 +7,11 @@
       template+: {
         spec+: {
            containers: [ container {
-              args+: ['--sync-interval=1m', '--git-poll-interval=1m', '--connect=ws://fluxcloud']
+              args+: [
+	        '--sync-interval=1m',
+                '--git-poll-interval=1m',
+                //'--connect=ws://fluxcloud'
+               ]
            } ] }
         },
       },
