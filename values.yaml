@@ -20,10 +20,15 @@ cluster:
     cidr: "10.47.0.0/16"                      # CIDR of AWS VPC
   nodeGroups: 
   - instanceType: "m4.large"                  # AWS instance type for workers 
-    desiredCapacity: 3                        # initial capacity of auto scaling group of workers
+    desiredCapacity: 4                        # initial capacity of auto scaling group of workers
     minSize: 1                                # minimum size of auto scaling group of workers
     maxSize: 10                               # maximum size of auto scaling group of workers
     name: ng
+    iam:
+      withAddonPolicies:
+        autoScaler: true
+        certManager: true
+        externalDNS: true
 
 environments:
   qa2:
