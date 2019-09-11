@@ -305,7 +305,7 @@ local exampleConfig = {
     },
     nodeGroups: [
       {
-        desiredCapacity: 3,
+        desiredCapacity: 4,
         instanceType: "m5.large",
         maxSize: 5,
         minSize: 1,
