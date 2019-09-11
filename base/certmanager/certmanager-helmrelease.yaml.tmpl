@@ -2,15 +2,15 @@
 apiVersion: helm.fluxcd.io/v1
 kind: HelmRelease
 metadata:
-  name: cert-manager
-  namespace: cert-manager
+  name: certmanager
+  namespace: certmanager
   annotations:
     flux.weave.works/automated: "false"
 spec:
-  releaseName: cert-manager
+  releaseName: certmanager
   chart:
     repository: https://charts.jetstack.io
-    name: cert-manager
+    name: certmanager
     version: v0.8.1
   values:
     serviceAccount:
