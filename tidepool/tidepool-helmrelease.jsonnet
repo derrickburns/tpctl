@@ -133,7 +133,7 @@ local tidepool(config, namespace) = {
           secretName: "tls-secret"
         },
         deployment: {
-          name: "gatewayProxyV2",
+          name: "gateway-proxy-v2",
           namespace: "gloo-system"
         },
         gateway: {
