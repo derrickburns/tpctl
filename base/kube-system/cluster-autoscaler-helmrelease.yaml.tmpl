@@ -18,5 +18,6 @@ spec:
     awsRegion: {{ .Region }}
     rbac:
       create: true
+      serviceAccountName: cluster-autoscaler
     nameOverride: cluster-autoscaler
     cloudProvider: aws
