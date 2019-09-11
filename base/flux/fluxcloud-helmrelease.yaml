@@ -5,7 +5,7 @@ metadata:
   name: fluxcloud
   namespace: flux
   annotations:
-    flux.weave.works/automated: "false"
+    fluxcd.io/automated: "false"
 spec:
   releaseName: fluxcloud
   chart:
