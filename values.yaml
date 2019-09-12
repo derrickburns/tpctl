@@ -30,12 +30,32 @@ cluster:
         certManager: true
         externalDNS: true
 
-services:
+pkgs:
+  amazon-cloudwatch:
+    enabled: true
+  external-dns:
+    enabled: true
+  gloo:
+    enabled: true
+  prometheus-operator:
+    enabled: true
+  certmanager:
+    enabled: true
+  cluster-autoscaler:
+    enabled: true
+  external-secrets:
+    enabled: true
+  reloader:
+    enabled: true
   datadog:
     enabled: false
-  sumologic:
-    enabled: false
+  flux:
+    enabled: true
   fluxcloud:
+    enabled: true
+  metrics-server:
+    enabled: true
+  sumologic:
     enabled: false
 
 environments:
