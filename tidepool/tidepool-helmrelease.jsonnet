@@ -177,7 +177,7 @@ local tidepool(config, namespace) = {
         }
       },
       mongodb: {
-        enabled: false
+        enabled: env.mongodb.enabled
       },
       nosqlclient: {
         enabled: env.nosqlclient.enabled

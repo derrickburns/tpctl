@@ -30,11 +30,21 @@ cluster:
         certManager: true
         externalDNS: true
 
+services:
+  datadog:
+    enabled: false
+  sumologic:
+    enabled: false
+  fluxcloud:
+    enabled: false
+
 environments:
   qa2:
     hpa:
       enabled: true
     nosqlclient:
+      enabled: true
+    mongodb:
       enabled: true
     gitops:
       branch: develop
