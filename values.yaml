@@ -54,7 +54,7 @@ pkgs:
   flux:
     enabled: true
   fluxcloud:
-    enabled: true
+    enabled: false
   metrics-server:
     enabled: true
   sumologic:
