@@ -37,6 +37,8 @@ pkgs:
     enabled: true
   gloo:
     enabled: true
+  gloo-crds:
+    enabled: true
   prometheus-operator:
     enabled: true
   certmanager:
