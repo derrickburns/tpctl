@@ -12,4 +12,8 @@ spec:
     git: git@github.com:stakater/Reloader
     path: deployments/kubernetes/chart/reloader
     ref: master
-  values: {}
+  values: 
+    reloader:
+      serviceAccount:
+        create: false
+	name: reloader
