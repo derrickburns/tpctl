@@ -1,169 +1,16 @@
-  // Generate eksctl ClusterConfig file with IAM policies and service accounts 
-  
-  local get(x, path, sep='.') = (
-    local foldFunc(x, key) = if std.isObject(x) && std.objectHasAll(x, key) then x[key] else null;
-    std.foldl(foldFunc, std.split(path, sep), x)
-  );
+// Generate eksctl ClusterConfig file with IAM policies and service accounts 
 
-  local getElse(x, path, default) = (
-    local found = get(x,path);
-    if found == null then default else found
-  );
+local get(x, path, sep='.') = (
+  local foldFunc(x, key) = if std.isObject(x) && std.objectHasAll(x, key) then x[key] else null;
+  std.foldl(foldFunc, std.split(path, sep), x)
+);
 
-  local values(obj) = [obj[field] for field in std.objectFields(obj)];
-  
-  local defaultClusterConfig = {
-    apiVersion: "eksctl.io/v1alpha5",
-    kind: "ClusterConfig",
+local getElse(x, path, default) = (
+  local found = get(x,path);
+  if found == null then default else found
+);
 
-    metadata+: {
-      region: "us-west-2",
-      version: "1.14"
-    },
-
-    iam+: {
-      serviceAccounts+: [
-        {
-          attachPolicy: {
-            Statement: [
-              {
-                Action: [
-                  "autoscaling:DescribeAutoScalingGroups",
-                  "autoscaling:DescribeAutoScalingInstances",
-                  "autoscaling:DescribeLaunchConfigurations",
-                  "autoscaling:DescribeTags",
-                  "autoscaling:SetDesiredCapacity",
-                  "autoscaling:TerminateInstanceInAutoScalingGroup"
-                ],
-                Effect: "Allow",
-                Resource: "*"
-              }
-            ],
-            Version: "2012-10-17"
-          },
-          metadata: {
-            labels: {
-              "aws-usage": "cluster-ops"
-            },
-            name: "cluster-autoscaler",
-            namespace: "kube-system"
-          }
-        },
-        {
-          attachPolicy: {
-            Statement: [
-              {
-                Action: [
-                  "route53:ChangeResourceRecordSets"
-                ],
-                Effect: "Allow",
-                Resource: "arn:aws:route53:::hostedzone/*"
-              },
-              {
-                Action: [
-                  "route53:GetChange",
-                  "route53:ListHostedZones",
-                  "route53:ListResourceRecordSets",
-                  "route53:ListHostedZonesByName"
-                ],
-                Effect: "Allow",
-                Resource: "*"
-              }
-            ],
-            Version: "2012-10-17"
-          },
-          metadata: {
-            labels: {
-              "aws-usage": "certificate-management"
-            },
-            name: "certmanager",
-            namespace: "certmanager"
-          }
-        },
-        {
-          attachPolicy: {
-            Statement: [
-              {
-                Action: [
-                  "logs:CreateLogGroup",
-                  "logs:CreateLogStream",
-                  "logs:PutLogEvents",
-                  "logs:DescribeLogStreams"
-                ],
-                Effect: "Allow",
-                Resource: "arn:aws:logs:*:*:*"
-              }
-            ],
-            Version: "2012-10-17"
-          },
-          metadata: {
-            labels: {
-              "aws-usage": "cloudwatch-logging"
-            },
-            name: "cloudwatch",
-            namespace: "amazon-cloudwatch"
-          }
-        },
-        {
-          attachPolicy: {
-            Statement: [
-              {
-                Action: [
-                  "route53:ChangeResourceRecordSets"
-                ],
-                Effect: "Allow",
-                Resource: "arn:aws:route53:::hostedzone/*"
-              },
-              {
-                Action: [
-                  "route53:GetChange",
-                  "route53:ListHostedZones",
-                  "route53:ListResourceRecordSets",
-                  "route53:ListHostedZonesByName"
-                ],
-                Effect: "Allow",
-                Resource: "*"
-              }
-            ],
-            Version: "2012-10-17"
-          },
-          metadata: {
-            labels: {
-              "aws-usage": "DNS-alias-creation"
-            },
-            name: "external-dns",
-            namespace: "external-dns"
-          }
-        }
-      ],
-      withOIDC: true
-    }
-};
-
-local dataBucket(config, namespace) = "tidepool-%s-%s-data" % [ config.cluster.metadata.name, namespace ];
-local assetBucket(config, namespace) = "tidepool-%s-%s-asset" % [ config.cluster.metadata.name, namespace ];
-
-local withBucketWritingPolicy(config, env, bucket) = {
-    attachPolicy+: {
-      Statement+: [
-        {
-          Effect: "Allow",
-          Action: "s3:ListBucket",
-          Resource: "arn:aws:s3:::%s/*" % bucket
-        },
-        {
-          Effect: "Allow",
-          Action: [
-            "s3:GetObject",
-            "s3:PutObject",
-            "s3:DeleteObject"
-          ],
-          Resource: "arn:aws:s3:::%s/*" % bucket
-        }
-      ],
-      Version: "2012-10-17"
-    }
-  };
+local values(obj) = [obj[field] for field in std.objectFields(obj)];
 
 local metadata(serviceAccountName, namespace) ={
   metadata: {
@@ -174,6 +21,123 @@ local metadata(serviceAccountName, namespace) ={
     namespace: namespace
   }
 };
+
+local clusterAutoscalerRole =  metadata("cluster-autoscaler", "kube-system") + {
+  attachPolicy: {
+    Statement: [
+      {
+        Action: [
+          "autoscaling:DescribeAutoScalingGroups",
+          "autoscaling:DescribeAutoScalingInstances",
+          "autoscaling:DescribeLaunchConfigurations",
+          "autoscaling:DescribeTags",
+          "autoscaling:SetDesiredCapacity",
+          "autoscaling:TerminateInstanceInAutoScalingGroup"
+        ],
+        Effect: "Allow",
+        Resource: "*"
+      }
+    ],
+    Version: "2012-10-17"
+  }
+};
+
+local certManagerRole = metadata("certmanager", "certmanager") + {
+  attachPolicy: {
+    Statement: [
+      {
+        Action: [
+          "route53:ChangeResourceRecordSets"
+        ],
+        Effect: "Allow",
+        Resource: "arn:aws:route53:::hostedzone/*"
+      },
+      {
+        Action: [
+          "route53:GetChange",
+          "route53:ListHostedZones",
+          "route53:ListResourceRecordSets",
+          "route53:ListHostedZonesByName"
+        ],
+        Effect: "Allow",
+        Resource: "*"
+      }
+    ],
+    Version: "2012-10-17"
+  }
+};
+
+local cloudWatchRole = metadata("cloudwatch-agent", "amazon-cloudwatch") + {
+  attachPolicyARNs: [
+    "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy",
+    "arn:aws:iam::aws:policy/AmazonEC2ReadOnlyAccess"
+  ]
+};
+
+local fluentdRole =  metadata("fluentd", "amazon-cloudwatch") + {
+  attachPolicyARNs: [
+    "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy",
+    "arn:aws:iam::aws:policy/AmazonEC2ReadOnlyAccess"
+  ]
+};
+
+local externalDNSRole = {
+  attachPolicy: {
+    Statement: [
+      {
+        Action: [
+          "route53:ChangeResourceRecordSets"
+        ],
+        Effect: "Allow",
+        Resource: "arn:aws:route53:::hostedzone/*"
+      },
+      {
+        Action: [
+          "route53:GetChange",
+          "route53:ListHostedZones",
+          "route53:ListResourceRecordSets",
+          "route53:ListHostedZonesByName"
+        ],
+        Effect: "Allow",
+        Resource: "*"
+      }
+    ],
+    Version: "2012-10-17"
+  },
+  metadata: {
+    labels: {
+      "aws-usage": "DNS-alias-creation"
+    },
+    name: "external-dns",
+    namespace: "external-dns"
+  }
+};
+
+local dataBucket(config, namespace) = "tidepool-%s-%s-data" % [ config.cluster.metadata.name, namespace ];
+local assetBucket(config, namespace) = "tidepool-%s-%s-asset" % [ config.cluster.metadata.name, namespace ];
+
+local withBucketWritingPolicy(config, env, bucket) = {
+  attachPolicy+: {
+    Statement+: [
+      {
+        Effect: "Allow",
+        Action: "s3:ListBucket",
+        Resource: "arn:aws:s3:::%s/*" % bucket
+      },
+      {
+        Effect: "Allow",
+        Action: [
+          "s3:GetObject",
+          "s3:PutObject",
+          "s3:DeleteObject"
+        ],
+        Resource: "arn:aws:s3:::%s/*" % bucket
+      }
+    ],
+    Version: "2012-10-17"
+  }
+};
+
 
 local withBucketReadingPolicy(config, env, bucket) = {
   attachPolicy+: {
@@ -208,33 +172,32 @@ local withSESPolicy() = {
   }     
 };
 
-
 local secretsManagerServiceAccount(config) = {
-    local this = self,
-    iam+: {
-      serviceAccounts+: [
-        {
-          attachPolicy: {
-            Statement: [
-              {
-                Effect: "Allow",
-                Action: "secretsmanager:GetSecretValue",
-                Resource: "arn:aws:secretsmanager:%s:%s:secret:%s/*" % [ this.metadata.region, config.aws.accountNumber, this.metadata.name ]
-              }
-            ],
-            Version: "2012-10-17"
+  local this = self,
+  iam+: {
+    serviceAccounts+: [
+      {
+        attachPolicy: {
+          Statement: [
+            {
+              Effect: "Allow",
+              Action: "secretsmanager:GetSecretValue",
+              Resource: "arn:aws:secretsmanager:%s:%s:secret:%s/*" % [ this.metadata.region, config.aws.accountNumber, this.metadata.name ]
+            }
+          ],
+          Version: "2012-10-17"
+        },
+        metadata: {
+          labels: {
+            "aws-usage": "secrets-management"
           },
-          metadata: {
-            labels: {
-              "aws-usage": "secrets-management"
-            },
-            name: "external-secrets",
-            namespace: "external-secrets"
-          }
+          name: "external-secrets",
+          namespace: "external-secrets"
         }
-      ]
-    }
-  };
+      }
+    ]
+  }
+};
 
 local policyAndAccount(accountName, namespace, policy) = {
   iam+: {
@@ -325,6 +288,26 @@ local tidepoolServiceAccounts(config) = (
   local mapper(key,value) = envServiceAccounts(config, value, key);
   std.foldl( function(acc, x) acc + x, values(std.mapWithKey(mapper, config.environments)), {} )
 );
+
+
+local defaultClusterConfig = {
+  apiVersion: "eksctl.io/v1alpha5",
+  kind: "ClusterConfig",
+  metadata+: {
+    region: "us-west-2",
+    version: "1.14"
+  },
+  iam+: {
+    serviceAccounts+: [
+      clusterAutoscalerRole,
+      certManagerRole,
+      cloudWatchRole,
+      externalDNSRole,
+      fluentdRole
+    ],
+    withOIDC: true
+  }
+};
 
 local all(config) =
   defaultClusterConfig + 
