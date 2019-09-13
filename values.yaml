@@ -10,7 +10,7 @@ aws:
   - jamesraby-cli
   - haroldbernard-cli
 
-kubeconfig: ""                                # place to put KUBECONFIG, default: ~/.kube/kubeconfig
+kubeconfig: "~/.kube/config"                 # place to put KUBECONFIG
 
 cluster:
   metadata:
