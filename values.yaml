@@ -10,7 +10,7 @@ aws:
   - jamesraby-cli
   - haroldbernard-cli
 
-kubeconfig: "~/.kube/config"                 # place to put KUBECONFIG
+Kubeconfig: "$HOME/.kube/config"                 # place to put KUBECONFIG
 
 cluster:
   metadata:
@@ -62,6 +62,7 @@ pkgs:
 
 environments:
   qa2:
+    secretsSource: stg
     hpa:
       enabled: true
     nosqlclient:
