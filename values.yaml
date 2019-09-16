@@ -62,25 +62,29 @@ pkgs:
 
 environments:
   qa2:
-    secretsSource: stg
-    hpa:
-      enabled: true
-    nosqlclient:
-      enabled: true
     mongodb:
       enabled: true
-    gitops:
-      branch: develop
-    buckets: {}
-      #data: tidepool-test-qa2-data
-      #asset: tidepool-test-qa2-asset
-    gateway:
-      default:
-        protocol: http
-      http:
+    tidepool:
+      source: stg
+      enabled: true
+      hpa:
         enabled: true
-        dnsNames:
-        - localhost
-      https:
-        enabled: false
-        dnsNames: []
+      nosqlclient:
+        enabled: true
+      mongodb:
+        enabled: true
+      gitops:
+        branch: develop
+      buckets: {}
+        #data: tidepool-test-qa2-data
+        #asset: tidepool-test-qa2-asset
+      gateway:
+        default:
+          protocol: http
+        http:
+          enabled: true
+          dnsNames:
+          - localhost
+        https:
+          enabled: false
+            dnsNames: []
