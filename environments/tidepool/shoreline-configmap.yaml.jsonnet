@@ -1,4 +1,4 @@
-local configmap(config, env) = {
+local configmap(config, namespace) = {
   "apiVersion": "v1",
   "data": {
     "ClinicDemoUserId": ""
@@ -6,8 +6,8 @@ local configmap(config, env) = {
   "kind": "ConfigMap",
   "metadata": {
     "name": "shoreline",
-    "namespace":  env
+    "namespace":  namespace
   }
 };
 
-function(config, env) configmap(config,env)
+function(config, namespace) configmap(config,namespace)
