@@ -92,4 +92,4 @@ environments:
           - localhost
         https:
           enabled: false
-            dnsNames: []
+          dnsNames: []
