@@ -1,7 +1,7 @@
 local mongoSecret(namespace) = {
   apiVersion: "v1",
   data: {
-    Scheme: std.base64( "mongodb ),
+    Scheme: std.base64( "mongodb" ),
     Addresses: std.base64( "mongodb" ),
     Username: "",
     Password: "",
