@@ -5,6 +5,9 @@ data:
   # Please ensure you keep it well-formed if you modify it.
   cwagentconfig.json: |
     {
+      "agent": {
+         "region": "{{ .Region }}"
+      },
       "logs": {
         "metrics_collected": {
           "kubernetes": {
