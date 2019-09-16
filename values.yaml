@@ -60,10 +60,17 @@ pkgs:
     enabled: true
   fluxcloud:
     enabled: false
+    username: "derrickburns"
+    secret: slack
+    #channel: foo
   metrics-server:
     enabled: true
   sumologic:
     enabled: false
+  thanos:
+    enabled: true
+    bucket: thanos
+    secret: thanos-objstore-config
 
 environments:
   qa2:

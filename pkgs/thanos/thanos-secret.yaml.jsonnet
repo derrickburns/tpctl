@@ -1,9 +1,9 @@
 local secret(config) = {
-  apiVersion: "v1",
-  kind: "Secret",
+  apiVersion: 'v1',
+  kind: 'Secret',
   metadata: {
     name: config.pkgs.thanos.secret,
-    namespace: "monitoring",
+    namespace: 'monitoring',
   },
   data: {
     'thanos.yaml': std.manifestYamlDoc({
@@ -22,11 +22,11 @@ local secret(config) = {
           insecure_skip_verify: false,
         },
         trace: {
-          enable: false, // XXX
+          enable: false,  // XXX
         },
       },
     }),
-  }
+  },
 };
 
 function(config) secret(config)

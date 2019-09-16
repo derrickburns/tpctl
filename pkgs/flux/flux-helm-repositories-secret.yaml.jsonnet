@@ -36,7 +36,7 @@ local info = {
       cache: 'supergloo-index.yaml',
       certFile: '',
       keyFile: '',
-      name: "supergloo",
+      name: 'supergloo',
       password: '',
       url: 'http://storage.googleapis.com/supergloo-helm',
       username: '',
