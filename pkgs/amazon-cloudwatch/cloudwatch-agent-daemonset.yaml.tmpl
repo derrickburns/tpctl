@@ -30,6 +30,8 @@ spec:
               memory: 200Mi
           # Please don't change below envs
           env:
+            - name: CLUSTER_NAME
+              value: {{ .ClusterName }}
             - name: HOST_IP
               valueFrom:
                 fieldRef:
