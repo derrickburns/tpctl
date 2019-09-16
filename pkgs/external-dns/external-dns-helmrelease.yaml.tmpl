@@ -11,20 +11,18 @@ spec:
   chart:
     repository: https://kubernetes-charts.storage.googleapis.com/
     name: external-dns
-    version: 1.7.9
+    version: 2.6.1
   values:
-    domainfilter: "tidepool.org"
-    image:
-      name: registry.opensource.zalan.do/teapot/external-dns
-      pullSecrets: {}
-    tag: latest
-    ownerId: external-dns 
     rbac:
       create: true
       serviceAccountName: external-dns
     logLevel: info
     provider: aws
-    awszonetype: public 
     aws:
+      zoneType: public 
       region: {{ .Region }}
     txtOwnerId: {{ .ClusterName }}
+    logLevel: debug
+    metrics:
+      enabled: true
+
