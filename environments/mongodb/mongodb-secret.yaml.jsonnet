@@ -6,7 +6,7 @@ local mongoSecret(namespace) = {
     Username: "",
     Password: "",
     Database: "",
-    Tls: std.base( "false" ),
+    Tls: std.base64( "false" ),
     OptParams: "",
   },
   kind: "Secret",
