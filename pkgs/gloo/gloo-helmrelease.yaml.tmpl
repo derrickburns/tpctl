@@ -7,6 +7,14 @@ metadata:
   annotations:
     fluxcd.io/automated: "false"
 spec:
+  rollback:
+    # If set, will perform rollbacks for this release.
+    enable: true
+    # If set, will force resource update through delete/recreate if
+    # needed.
+    force: true
+    # Prevent hooks from running during rollback.
+    disableHooks: true
   releaseName: gloo
   chart:
     repository: https://storage.googleapis.com/solo-public-helm/
