@@ -72,7 +72,7 @@ pkgs:
     enabled: false
   thanos:
     enabled: true
-    bucket: thanos
+    bucket: tidepool-thanos
     secret: thanos-objstore-config
 
 environments:
