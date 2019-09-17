@@ -134,8 +134,7 @@ local tidepool(config, namespace) = {
       },
       ingress: {
         certificate: {
-          issuer: "letsencrypt-staging",
-          secretName: "tls-secret"
+	  secretName: env.certificate.secret
         },
         deployment: {
           name: "gateway-proxy-v2",
