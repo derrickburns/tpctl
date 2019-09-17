@@ -22,7 +22,6 @@ local dnsNames(config) = (
     local tp = [ e[env].tidepool for env in envs if isTrue(e[env], "tidepool.enabled") ];
     local httpNames = [ x.gateway.http.dnsNames for x in tp if isTrue(x, 'gateway.http.enabled') ];
     local httpsNames = [ x.gateway.https.dnsNames for x in tp if isTrue(x, 'gateway.https.enabled') ];
-    assert false : std.manifestJson( tp );
     std.join(",", std.filter(function(x) x != "localhost", std.flattenArrays(httpNames + httpsNames)))
   )
 );
