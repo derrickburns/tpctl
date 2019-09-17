@@ -101,5 +101,5 @@ environments:
           dnsNames:
           - localhost
         https:
-          enabled: false
+          enabled: true
           dnsNames: [qa2.tidepool.org]
