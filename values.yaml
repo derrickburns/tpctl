@@ -18,7 +18,7 @@ cluster:
     region: us-west-2
   cloudWatch:
     clusterLogging:
-      enableTypes: ["audit", "authenticator"]
+      enableTypes: ["authenticator", "api", "controllerManager", "scheduler"]
   vpc:
     cidr: "10.47.0.0/16"                      # CIDR of AWS VPC
   nodeGroups: 
