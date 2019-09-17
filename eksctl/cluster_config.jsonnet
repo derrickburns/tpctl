@@ -235,7 +235,7 @@ local annotatedNodegroup(config, ng, clusterName) =
   ng + {
       iam+: {
         attachPolicyARNs+: [
-          "arn:aws:iam::%s:policy/eksctl-%s-external-secrets-managed-policy" % [config.aws.accountNumber, config.cluster.name]
+          "arn:aws:iam::%s:policy/eksctl-%s-external-secrets-managed-policy" % [config.aws.accountNumber, config.cluster.metadata.name]
 	]
       },
       tags+: {
