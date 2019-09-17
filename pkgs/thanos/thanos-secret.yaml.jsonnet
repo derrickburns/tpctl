@@ -8,7 +8,7 @@ local secret(config) = {
   data: {
     'thanos.yaml': std.base64(std.manifestYamlDoc({
       type: 'S3',
-      config:: {
+      config: {
         bucket: config.pkgs.thanos.bucket,
         endpoint: 's3.%s.amazonaws.com' % config.cluster.metadata.region,
         region: config.cluster.metadata.region,
