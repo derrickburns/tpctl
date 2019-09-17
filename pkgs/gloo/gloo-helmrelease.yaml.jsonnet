@@ -22,7 +22,7 @@ local dnsNames(config) = (
     local tp = [ e[env].tidepool for env in envs if isTrue(e[env], "tidepool.enabled") ];
     local httpNames = [ x.gateway.http.dnsNames for x in tp if get(x, 'gateway.http.dnsNames') != null ];
     local httpsNames = [ x.gateway.https.dnsNames for x in tp if get(x, 'gateway.https.dnsNames') != null ];
-    std.join(",", std.filter(function(x) x != "localhost", httpNames + httpsNames))
+    std.join(",", std.filter(function(x) x != "localhost", std.flattenArrays(httpNames + httpsNames)))
   )
 );
 
