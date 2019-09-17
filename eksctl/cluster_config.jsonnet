@@ -318,6 +318,7 @@ local all(config) =
   defaultClusterConfig + 
   {
     metadata+: config.cluster.metadata,
+    cloudWatch+: config.cluster.cloudWatch,
     vpc+: getElse( config, 'cluster.vpc', {}),
     nodeGroups+: config.cluster.nodeGroups,
     iam+: getElse( config, 'cluster.iam', {})
