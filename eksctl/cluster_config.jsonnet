@@ -231,8 +231,13 @@ local hydrophoneServiceAccount(config, env, namespace) = (
   )
 );
 
-local annotatedNodegroup(ng, clusterName) =
+local annotatedNodegroup(config, ng, clusterName) =
   ng + {
+      iam+: {
+        attachPolicyARNs+: [
+          "arn:aws:iam::%s:policy/eksctl-%s-external-secrets-managed-policy" % ( config.aws.accountNumber, config.cluster.name)
+	])
+      },
       tags+: {
         "k8s.io/cluster-autoscaler/enabled": "true",
         ["k8s.io/cluster-autoscaler/" + clusterName]: "true"
@@ -241,7 +246,7 @@ local annotatedNodegroup(ng, clusterName) =
 
 local withAnnotatedNodeGroups(config) = {
   local nodeGroups = config.cluster.nodeGroups,
-  nodeGroups: [ annotatedNodegroup(ng,  config.cluster.metadata.name) for ng in nodeGroups ]
+  nodeGroups: [ annotatedNodegroup(config, ng,  config.cluster.metadata.name) for ng in nodeGroups ]
 };
 
 local exampleConfig = {
