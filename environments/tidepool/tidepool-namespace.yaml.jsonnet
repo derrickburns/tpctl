@@ -3,7 +3,7 @@ local gen_namespace(config, namespace) = {
   kind: "Namespace",
   metadata: {
     name: namespace,
-    labels: {
+    annotations: {
       "istio-injection": "disabled",
       "linkerd.io/inject": "enabled",
       "discovery.solo.io/function_discovery": "enabled"
