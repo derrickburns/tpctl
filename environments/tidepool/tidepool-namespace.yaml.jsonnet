@@ -5,7 +5,7 @@ local gen_namespace(config, namespace) = {
     name: namespace,
     labels: {
       "istio-injection": "disabled",
-      "global.linkerd.io/inject": "enabled",
+      "linkerd.io/inject": "enabled",
       "discovery.solo.io/function_discovery": "enabled"
     }
   }
