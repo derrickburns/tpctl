@@ -32,7 +32,6 @@ cluster:
       - arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy
       - arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy
       - arn:aws:iam::aws:policy/ElasticLoadBalancingFullAccess
-      - arn:aws:iam::118346523422:policy/eksctl-test1-read-secrets
       withAddonPolicies:
         autoScaler: true
         certManager: true
