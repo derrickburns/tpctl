@@ -6,7 +6,7 @@ local secret(config) = {
     namespace: 'monitoring',
   },
   data: {
-    'thanos.yaml': std.manifestYamlDoc({
+    'thanos.yaml': std.base64(std.manifestYamlDoc({
       type: 'S3',
       conf: {
         bucket: config.pkgs.thanos.bucket,
@@ -25,7 +25,7 @@ local secret(config) = {
           enable: false,  // XXX
         },
       },
-    }),
+    })),
   },
 };
 
