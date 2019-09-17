@@ -38,9 +38,9 @@ local tidepool(config, namespace) = {
   },
   spec: {
     rollback: {
-      enable: "true",
-      force: "true",
-      disableHooks: "true",
+      enable: true,
+      force: true,
+      disableHooks: true,
     },
     chart: {
       git: "git@github.com:tidepool-org/development",
