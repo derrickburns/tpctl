@@ -102,4 +102,4 @@ environments:
           - localhost
         https:
           enabled: false
-          dnsNames: []
+          dnsNames: [qa2.tidepool.org]
