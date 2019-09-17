@@ -93,6 +93,10 @@ environments:
       buckets: {}
         #data: tidepool-test-qa2-data
         #asset: tidepool-test-qa2-asset
+      certificate:
+        enabled: true
+        secret: tls
+        issuer: letsencrypt-staging
       gateway:
         default:
           protocol: http
