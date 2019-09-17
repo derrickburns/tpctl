@@ -236,7 +236,7 @@ local annotatedNodegroup(config, ng, clusterName) =
       iam+: {
         attachPolicyARNs+: [
           "arn:aws:iam::%s:policy/eksctl-%s-external-secrets-managed-policy" % ( config.aws.accountNumber, config.cluster.name)
-	])
+	]
       },
       tags+: {
         "k8s.io/cluster-autoscaler/enabled": "true",
