@@ -85,7 +85,7 @@ local daemonset(config) = {
               },
               {
                 mountPath: "/sys",
-                name": "sys",
+                name: "sys",
                 readOnly: true
               },
               {
