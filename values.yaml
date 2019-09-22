@@ -10,7 +10,7 @@ aws:
   - jamesraby-cli
   - haroldbernard-cli
 
-kubeconfig: "$HOME/.kube/config.yaml"                 # place to put KUBECONFIG
+kubeconfig: "$HOME/.kube/config"             # place to put KUBECONFIG
 
 cluster:
   metadata:
@@ -103,5 +103,5 @@ environments:
           dnsNames:
           - localhost
         https:
-          enabled: true
+          enabled: false
           dnsNames: [qa2.tidepool.org]
