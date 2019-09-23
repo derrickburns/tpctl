@@ -4,6 +4,19 @@ local defaultHost(env) = (
   else env.gateway.https.dnsNames[0]
 );
 
+local get(x, path, sep='.') = (
+  local foldFunc(x, key) = if std.isObject(x) && std.objectHasAll(x, key) then x[key] else null;
+  std.foldl(foldFunc, std.split(path, sep), x)
+);
+
+local getElse(x, path, default) = (
+  local found = get(x,path);
+  if found == null then default else found
+);
+
+local dataBucket(config, namespace) = "tidepool-%s-%s-data" % [ config.cluster.metadata.name, namespace ];
+local assetBucket(config, namespace) = "tidepool-%s-%s-asset" % [ config.cluster.metadata.name, namespace ];
+
 local tidepool(config, namespace) = {
   local env = config.environments[namespace].tidepool,
   local tag = "glob:%s-*" % env.gitops.branch,
@@ -64,7 +77,7 @@ local tidepool(config, namespace) = {
           env: {
             store: {
               "s3": {
-                "bucket": "tidepool-%s-%s-data" % [ config.cluster.metadata.name, namespace ]
+		"bucket": getElse(config.environments[namespace].tidepool, 'buckets.data', dataBucket(config, namespace))
               }
             },
             type: "s3"
@@ -111,7 +124,7 @@ local tidepool(config, namespace) = {
           env: {
             store: {
               s3: {
-                "bucket": "tidepool-%s-%s-asset" % [ config.cluster.metadata.name, namespace ]
+		"bucket": getElse(config.environments[namespace].tidepool, 'buckets.asset', assetBucket(config, namespace))
               }
             },
             type: "s3"
@@ -124,7 +137,7 @@ local tidepool(config, namespace) = {
           env: {
             store: {
               s3: {
-                bucket: "tidepool-%s-%s-data" % [ config.cluster.metadata.name, namespace ]
+		"bucket": getElse(config.environments[namespace].tidepool, 'buckets.data', dataBucket(config, namespace))
               }
             },
             type: "s3"
@@ -162,7 +175,7 @@ local tidepool(config, namespace) = {
           env: {
             store: {
               s3: {
-                "bucket": "tidepool-%s-%s-data" % [ config.cluster.metadata.name, namespace ]
+		"bucket": getElse(config.environments[namespace].tidepool, 'buckets.data', dataBucket(config, namespace))
               }
             },
             type: "s3"
