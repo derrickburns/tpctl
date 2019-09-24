@@ -26,7 +26,7 @@ local helmrelease(config) = {
         apiKeyExistingSecret: "datadog",
         appKeyExistingSecret: "datadog",
         "cluster.name": config.cluster.metadata.name,
-        logLevel: "info",
+        logLevel: config.logLevel,
         tokenKeyExistingSecret: "datadog"
       },
       kubeStateMetrics: {

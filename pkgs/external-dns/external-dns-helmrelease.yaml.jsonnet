@@ -20,7 +20,7 @@ local helmrelease(config) = {
         region: config.cluster.metadata.region,
         zoneType: "public"
       },
-      logLevel: "debug",
+      logLevel: config.logLevel,
       metrics: {
         enabled: true
       },
