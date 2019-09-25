@@ -5,7 +5,7 @@ aws:
   accountNumber: 118346523422                # AWS account number
   iamUsers:                                  # AWS IAM users who will be grants system:master privileges to the cluster
   - derrickburns-cli
-  - lennartgoedhard-cli
+  - lennartgoedhart-cli
   - benderr-cli
   - jamesraby-cli
   - haroldbernard-cli
