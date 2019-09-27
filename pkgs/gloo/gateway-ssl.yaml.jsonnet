@@ -44,6 +44,6 @@ local sslGateway(config) = {
     "ssl": true,
     "useProxyProto": false
   }
-}:
+};
 
 function(config) sslGateway(config)
