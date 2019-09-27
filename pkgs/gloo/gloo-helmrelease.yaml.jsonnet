@@ -31,7 +31,7 @@ local helmrelease(config) = {
   kind: 'HelmRelease',
   metadata: {
     name: 'gloo',
-    namespace: 'gloo-system',
+    namespace: config.pkgs.gloo.namespace,
     annotations: {
       'fluxcd.io/automated': 'false',
     },

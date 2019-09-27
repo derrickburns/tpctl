@@ -48,6 +48,7 @@ pkgs:
     enabled: true
   gloo:                                      # Gloo provides the API Gateway 
     enabled: true
+    namespace: gloo-system                   # namespace to host gateway
   gloo-crds:                                 # Gloo CRDs define the Custom Resource Definitions
     enabled: true
   prometheus-operator:                       # Prometheus Operator creates Prometheus instances
