@@ -1,4 +1,4 @@
-l{ocal sslGateway(config) = {
+local sslGateway(config) = {
   "apiVersion": "gateway.solo.io.v2/v2",
   "kind": "Gateway",
   "metadata": {
