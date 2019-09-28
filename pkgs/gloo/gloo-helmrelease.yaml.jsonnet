@@ -49,7 +49,7 @@ local helmrelease(config) = {
     chart: {
       repository: 'https://storage.googleapis.com/solo-public-helm/',
       name: 'gloo',
-      version: '0.18.40',
+      version: '0.20.1',
     },
     values: {
       crds: {
