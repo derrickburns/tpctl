@@ -56,8 +56,25 @@
    }
  );
 
-function(flux, helm) {
+local updateTiller(deployment) = (
+  local container = deployment.spec.template.spec.containers[0];
+
+  deployment 
+    + {
+    spec+: {
+      template+: {
+        spec+: {
+           containers: [ container {
+              image: "gcr.io/kubernetes-helm/tiller:v2.14.3"
+           } ] }
+        },
+      },
+    }
+);
+
+function(flux, helm, tiller) {
   flux: updateFlux(flux),
   helm: updateHelmOperator(helm),
+  tiller: updateTiller(tiller),
 }
 
