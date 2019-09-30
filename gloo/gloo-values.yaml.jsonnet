@@ -26,35 +26,7 @@ local dnsNames(config) = (
   )
 );
 
-local helmrelease(config) = {
-  apiVersion: 'helm.fluxcd.io/v1',
-  kind: 'HelmRelease',
-  metadata: {
-    name: 'gloo',
-    namespace: config.pkgs.gloo.namespace,
-    annotations: {
-      'fluxcd.io/automated': 'false',
-    },
-  },
-  spec: {
-    rollback: {
-      // If set, will perform rollbacks for this release.
-      enable: true,
-      // If set, will force resource update through delete/recreate if needed.
-      force: true,
-      // Prevent hooks from running during rollback.
-      disableHooks: true,
-    },
-    releaseName: 'gloo',
-    chart: {
-      repository: 'https://storage.googleapis.com/solo-public-helm/',
-      name: 'gloo',
-      version: '0.20.1',
-    },
-    values: {
-      crds: {
-        create: false,
-      },
+local values(config) = {
       settings: {
         create: false,
       },
@@ -74,9 +46,7 @@ local helmrelease(config) = {
             },
           },
         },
-      },
     },
-  },
 };
 
-function(config) helmrelease(config)
+function(config) values(config)
