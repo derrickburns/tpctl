@@ -5,7 +5,7 @@ local gateway(config) = {
     "annotations": {
       "origin": "default"
     },
-    "name": "gateway",
+    "name": "gateway-proxy-v2",
     "namespace": config.pkgs.gloo.namespace,
   },
   "spec": {

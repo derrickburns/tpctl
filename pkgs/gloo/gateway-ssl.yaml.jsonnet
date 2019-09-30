@@ -5,7 +5,7 @@ local sslGateway(config) = {
     "annotations": {
       "origin": "default"
     },
-    "name": "gateway-ssl",
+    "name": "gateway-proxy-v2-ssl",
     "namespace": config.pkgs.gloo.namespace
   },
   "spec": {
