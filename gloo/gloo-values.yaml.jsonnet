@@ -36,6 +36,9 @@ local values(config) = {
       gatewayProxies: {
         gatewayProxyV2: {
           readConfig: true,
+          gatewaySettings: {
+	    disableGeneratedGateways: true
+          },
           service: {
             extraAnnotations: {
               'service.beta.kubernetes.io/aws-load-balancer-type': 'nlb',
