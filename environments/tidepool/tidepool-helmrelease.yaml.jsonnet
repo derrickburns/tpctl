@@ -23,7 +23,7 @@ local prefixAnnotations(prefix, repos) = {
 };
 
 local filterAnnotations(repos, tag) = {
-  ["filter.fluxcd.io/%s" % repo ]: tag for repo in repos
+  ["fluxcd.io/tag.%s" % repo ]: tag for repo in repos
 };
 
 local tidepool(config, namespace) = {
