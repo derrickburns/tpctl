@@ -24,7 +24,6 @@ local prefixAnnotations(prefix, repos) = {
 
 local locationAnnotations(repos) = 
   prefixAnnotations("repository", repos) +
-  prefixAnnotations("registry", repos) +
   prefixAnnotations("tag", repos);
 
 local filterAnnotations(repos, tag) = {
