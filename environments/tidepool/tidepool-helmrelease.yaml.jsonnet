@@ -17,35 +17,36 @@ local getElse(x, path, default) = (
 local dataBucket(config, namespace) = "tidepool-%s-%s-data" % [ config.cluster.metadata.name, namespace ];
 local assetBucket(config, namespace) = "tidepool-%s-%s-asset" % [ config.cluster.metadata.name, namespace ];
 
+local prefixAnnotations(prefix, repos) {
+  ["%s.fluxcd.io/%s" % [prefix, repo] ]: "values.%s.deployment.image" % repo
+  for repo in repos
+};
+
+local locationAnnotations(repos) = 
+  prefixAnnotations("repository") +
+  prefixAnnotations("registry") +
+  prefixAnnotations("tag");
+
+local filterAnnotations(repos, tag) = {
+  ["filter.fluxcd.io/%s" % repo ]: tag for repo in repos
+};
+
 local tidepool(config, namespace) = {
   local env = config.environments[namespace].tidepool,
   local tag = "glob:%s-*" % env.gitops.branch,
+
+  local repos = [ "auth", "blip", "blob", "export", "gatekeeper",
+     "highwater", "hydrophone", "image", "jellyfish", 
+     "messageapi", "notification", "seagull", "shoreline",
+     "task", "tidewhisperer", "tools", "user" ]
 
   apiVersion: "helm.fluxcd.io/v1",
   kind: "HelmRelease",
   metadata: {
     annotations: {
-      "fluxcd.io/automated": "true",
-      "fluxcd.io/tag.auth": tag,
-      "fluxcd.io/tag.blip": tag,
-      "fluxcd.io/tag.blob": tag,
-      "fluxcd.io/tag.data": tag,
-      "fluxcd.io/tag.export": tag,
-      "fluxcd.io/tag.gatekeeper": tag,
-      "fluxcd.io/tag.highwater": tag,
-      "fluxcd.io/tag.hydrophone": tag,
-      "fluxcd.io/tag.image": tag,
-      "fluxcd.io/tag.jellyfish": tag,
-      "fluxcd.io/tag.messageapi": tag,
-      "fluxcd.io/tag.migrations": tag,
-      "fluxcd.io/tag.notification": tag,
-      "fluxcd.io/tag.seagull": tag,
-      "fluxcd.io/tag.shoreline": tag,
-      "fluxcd.io/tag.task": tag,
-      "fluxcd.io/tag.tidewhisperer": tag,
-      "fluxcd.io/tag.tools": tag,
-      "fluxcd.io/tag.user": tag
-    },
+      "fluxcd.io/automated": "true"
+    } + filterAnnotations(repos, tag)
+      + locationAnnotations(repos)
     name: "tidepool",
     namespace: namespace
   },
