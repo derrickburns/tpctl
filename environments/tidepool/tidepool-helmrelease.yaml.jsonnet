@@ -18,7 +18,7 @@ local dataBucket(config, namespace) = "tidepool-%s-%s-data" % [ config.cluster.m
 local assetBucket(config, namespace) = "tidepool-%s-%s-asset" % [ config.cluster.metadata.name, namespace ];
 
 local prefixAnnotations(prefix, repos) = {
-  ["%s.fluxcd.io/%s" % [prefix, repo] ]: "values.%s.deployment.image" % repo
+  ["%s.fluxcd.io/%s" % [prefix, repo] ]: "%s.deployment.image" % repo
   for repo in repos
 };
 
