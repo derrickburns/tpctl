@@ -7,7 +7,7 @@
       template+: {
         spec+: {
            containers: [ container {
-              image: docker.io/fluxcd/flux:1.14.2,
+              image: "docker.io/fluxcd/flux:1.14.2",
               args+: [
 	        '--sync-interval=1m',
                 '--git-poll-interval=1m',
