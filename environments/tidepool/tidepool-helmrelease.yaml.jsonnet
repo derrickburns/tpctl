@@ -38,7 +38,7 @@ local tidepool(config, namespace) = {
   local repos = [ "auth", "blip", "blob", "export", "gatekeeper",
      "highwater", "hydrophone", "image", "jellyfish", 
      "messageapi", "notification", "seagull", "shoreline",
-     "task", "tidewhisperer", "tools", "user" ]
+     "task", "tidewhisperer", "tools", "user" ],
 
   apiVersion: "helm.fluxcd.io/v1",
   kind: "HelmRelease",
