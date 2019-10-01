@@ -49,7 +49,7 @@ local tidepool(config, namespace) = {
     chart: {
       git: "git@github.com:tidepool-org/development",
       path: "charts/tidepool/0.1.7",
-      ref: "dexcom"
+      ref: "develop"
     },
     releaseName: "%s-tidepool" % namespace,
     values: {
