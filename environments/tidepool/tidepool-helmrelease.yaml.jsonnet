@@ -22,9 +22,6 @@ local prefixAnnotations(prefix, repos) = {
   for repo in repos
 };
 
-local locationAnnotations(repos) = 
-  prefixAnnotations("repository", repos)
-
 local filterAnnotations(repos, tag) = {
   ["filter.fluxcd.io/%s" % repo ]: tag for repo in repos
 };
@@ -44,7 +41,7 @@ local tidepool(config, namespace) = {
     annotations: {
       "fluxcd.io/automated": "true"
     } + filterAnnotations(repos, tag)
-      + locationAnnotations(repos),
+      + prefixAnnotations(repos),
     name: "tidepool",
     namespace: namespace
   },
