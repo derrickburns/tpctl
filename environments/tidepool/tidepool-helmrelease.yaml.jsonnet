@@ -23,9 +23,9 @@ local prefixAnnotations(prefix, repos) = {
 };
 
 local locationAnnotations(repos) = 
-  prefixAnnotations("repository") +
-  prefixAnnotations("registry") +
-  prefixAnnotations("tag");
+  prefixAnnotations("repository", repos) +
+  prefixAnnotations("registry", repos) +
+  prefixAnnotations("tag", repos);
 
 local filterAnnotations(repos, tag) = {
   ["filter.fluxcd.io/%s" % repo ]: tag for repo in repos
