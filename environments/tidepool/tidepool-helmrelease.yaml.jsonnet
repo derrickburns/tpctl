@@ -46,7 +46,7 @@ local tidepool(config, namespace) = {
     annotations: {
       "fluxcd.io/automated": "true"
     } + filterAnnotations(repos, tag)
-      + locationAnnotations(repos)
+      + locationAnnotations(repos),
     name: "tidepool",
     namespace: namespace
   },
