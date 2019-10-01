@@ -208,22 +208,22 @@ local policyAndAccount(accountName, namespace, policy) = {
 };
 
 local blobServiceAccount(config, env, namespace) = (
-  local bucket = getElse(env, 'buckets.data', dataBucket(config, namespace));
+  local bucket = getElse(env, 'tidepool.buckets.data', dataBucket(config, namespace));
   policyAndAccount("blob", namespace, withBucketWritingPolicy(config, env, bucket))
 );
 
 local imageServiceAccount(config, env, namespace) = (
-  local bucket = getElse(env, 'buckets.data', dataBucket(config, namespace));
+  local bucket = getElse(env, 'tidepool.buckets.data', dataBucket(config, namespace));
   policyAndAccount("image", namespace, withBucketWritingPolicy(config, env, bucket))
 
 );
 local jellyfishServiceAccount(config, env, namespace) = (
-  local bucket = getElse(env, 'buckets.data', dataBucket(config, namespace));
+  local bucket = getElse(env, 'tidepool.buckets.data', dataBucket(config, namespace));
   policyAndAccount("jellyfish", namespace, withBucketWritingPolicy(config, env, bucket))
 );
  
 local hydrophoneServiceAccount(config, env, namespace) = (
-  local bucket = getElse(env, 'buckets.data', assetBucket(config, namespace));
+  local bucket = getElse(env, 'tidepool.buckets.asset', assetBucket(config, namespace));
   policyAndAccount(
     "hydrophone", 
     namespace, 
