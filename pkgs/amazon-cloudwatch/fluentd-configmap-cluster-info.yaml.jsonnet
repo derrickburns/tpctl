@@ -1,15 +1,8 @@
 local configmap(config) = {
   apiVersion: "v1",
   data: {
-    "cluster-info.json": std.manifestJson(
-    {
-      cluster: {
-        name: config.cluster.metadata.name,
-      },
-      logs: {
-        region: config.cluster.metadata.region,
-      }
-    }),
+    "cluster.name": config.cluster.metadata.name,
+    "logs.region" : config.cluster.metadata.region,
   },
   "kind": "ConfigMap",
   "metadata": {
