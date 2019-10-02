@@ -108,6 +108,6 @@ environments:
           dnsNames:                          # DNS Names of the HTTP hosts to serve
           - localhost                       
         https:
-          enabled: false                     # Whether to offer HTTPS access
+          enabled: true                      # Whether to offer HTTPS access
           dnsNames:                          # DNS Names of the HTTPS hosts to serve
           - qa2.tidepool.org
