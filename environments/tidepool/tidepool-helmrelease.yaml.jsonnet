@@ -22,7 +22,7 @@ local prefixAnnotations(prefix, repos) = {
   for repo in repos
 };
 
-local filterAnnotations(env, repos, tag) = {
+local filterAnnotations(env, repos) = {
   local default = getElse(env, "gitops.default", "glob:develop-*"),
   ["fluxcd.io/tag.%s" % repo ]: getElse(env, "gitops.%s" % repo, default) for repo in repos
 };
@@ -40,7 +40,7 @@ local tidepool(config, namespace) = {
   metadata: {
     annotations: {
       "fluxcd.io/automated": "true"
-    } + filterAnnotations(env, repos, tag)
+    } + filterAnnotations(env, repos)
       + prefixAnnotations("repository", repos),
     name: "tidepool",
     namespace: namespace
