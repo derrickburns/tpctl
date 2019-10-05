@@ -13,4 +13,4 @@ local gen_namespace(config, namespace) = {
   }
 };
 
-function(config, namespace) gen_namespace(config, namespace)
+function(config, prev, namespace) gen_namespace(config, namespace)

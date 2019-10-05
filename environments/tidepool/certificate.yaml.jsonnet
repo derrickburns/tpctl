@@ -28,4 +28,4 @@ local certificate(config, namespace) = {
   },
 };
 
-function(config, namespace) certificate(config, namespace)
+function(config, prev, namespace) certificate(config, namespace)
