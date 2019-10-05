@@ -83,7 +83,7 @@ local tidepool(config, prev, namespace) = {
       },
       export: {
         deployment: {
-          image: getElse(prev, 'spec.values.data.export.image', "tidepool/export:develop-ddc5f311a4bdc2adae1b423f13e047ff1828d65c")
+          image: getElse(prev, 'spec.values.export.deploymentimage', "tidepool/export:develop-ddc5f311a4bdc2adae1b423f13e047ff1828d65c")
         }
       },
       gatekeeper: {
@@ -222,7 +222,7 @@ local tidepool(config, prev, namespace) = {
       },
       tools: {
         deployment: {
-          image: getElse(prev, 'spec.values.tools.deployment.images', "tidepool/platform-tools:develop-cebea363931570d3930848a21e6a3d07a54f4425")
+          image: getElse(prev, 'spec.values.tools.deployment.image', "tidepool/platform-tools:develop-cebea363931570d3930848a21e6a3d07a54f4425")
         }
       },
       user: {
