@@ -30,9 +30,9 @@ local filterAnnotations(env, repos) = {
 local tidepool(config, namespace) = {
   local env = config.environments[namespace].tidepool,
 
-  local repos = [ "auth", "blip", "blob", "export", "gatekeeper",
+  local repos = [ "auth", "blip", "blob", "data", "export", "gatekeeper",
      "highwater", "hydrophone", "image", "jellyfish", 
-     "messageapi", "notification", "seagull", "shoreline",
+     "messageapi", "migrations", "notification", "seagull", "shoreline",
      "task", "tidewhisperer", "tools", "user" ],
 
   apiVersion: "helm.fluxcd.io/v1",
