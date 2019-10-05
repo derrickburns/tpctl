@@ -17,4 +17,4 @@ local mongoSecret(namespace) = {
   type: "Opaque",
 };
 
-function(config, namespace) mongoSecret(namespace)
+function(config, prev, namespace) mongoSecret(namespace)
