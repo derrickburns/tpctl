@@ -2,16 +2,16 @@ local externalSecret(config) = {
   "apiVersion": "kubernetes-client.io/v1",
   "kind": "ExternalSecret",
   "metadata": {
-    "name": "sumologic",
-    "namespace": "sumologic"
+    "name": "slack",
+    "namespace": "flux"
   },
   "secretDescriptor": {
     "backendType": "secretsManager",
     "data": [
       {
-        "key": "%s/sumologic/sumologic" % config.cluster.metadata.name,
-        "name": "collector-url",
-        "property": "collector-url"
+        "key": "%s/flux/slack" % config.cluster.metadata.name,
+        "name": "url",
+        "property": "url"
       }
     ]
   }
