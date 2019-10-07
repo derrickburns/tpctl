@@ -12,6 +12,16 @@ local externalSecret(config) = {
         "key": "%s/sumologic/sumologic" % config.cluster.metadata.name,
         "name": "collector-url",
         "property": "collector-url"
+      },
+      {
+        "key": "%s/sumologic/sumologic" % config.cluster.metadata.name,
+        "name": "accessID",
+        "property": "accessID"
+      },
+      {
+        "key": "%s/sumologic/sumologic" % config.cluster.metadata.name,
+        "name": "accessKey",
+        "property": "accessKey"
       }
     ]
   }
