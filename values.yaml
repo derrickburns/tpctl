@@ -74,6 +74,8 @@ pkgs:
     enabled: true
   sumologic:                                 # Sumologic collects metrics and logs and sents to the hosted service
     enabled: false
+    apiEndpoint: https://api.us2.sumologic.com/api/v1/
+    namespace: sumologic
   thanos:                                    # Thanos aggregates telemetry from all Tidepool clusters
     enabled: true
     bucket: tidepool-thanos                  # Writable S3 bucket in which to aggregate multi-cluster telemetry data
@@ -81,6 +83,8 @@ pkgs:
 
 environments:
   qa2:
+    marketo:
+      enabled: false
     mongodb:
       enabled: true                          # Whether to use an embedded mongodb 
     tidepool:
