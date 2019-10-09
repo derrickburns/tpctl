@@ -22,7 +22,7 @@ local Deployment(config) = {
       },
     },
     replicas: 1,
-    strategy: {}
+    strategy: {},
     template: {
       metadata: {
         labels: {
