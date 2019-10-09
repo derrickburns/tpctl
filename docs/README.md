@@ -267,12 +267,21 @@ The Flux GitOps controller keeps your Kubernetes cluster up to date with the con
   
 To install the GitOps operator:
 
-
 ```bash
 tpctl flux
 ```
 
 In addition, this command installs the `tiller` server (the counterpart to the `Helm` client) and creates and installs TLS certificates that the Helm client needs to communicate with `tiller` server.
+
+### Install the Gloo API Gateway
+
+The Gloo API Gateway provides the interface between the Tidepool services and end users.  To install the API Gateway:
+
+```bash
+tpctl gloo
+```
+
+N.B. This command must be rerun if you change the DNS names or ingress settings in your `values.yaml` configuration file. 
 
 ## Common Issues
 
