@@ -35,6 +35,7 @@ docker run -it \
   -e SSH_AUTH_SOCK=/.ssh-agent/socket \
   -e GITHUB_TOKEN=${GITHUB_TOKEN} \
   -e REMOTE_REPO=${REMOTE_REPO} \
+  -e TPCTL_BRANCH=${TPCTL_BRANCH} \
   -v ${GIT_CONFIG}:/root/.gitconfig:ro \
   -v ${HELM_HOME}:/root/.helm \
   -v ${AWS_CONFIG}:/root/.aws:ro \
