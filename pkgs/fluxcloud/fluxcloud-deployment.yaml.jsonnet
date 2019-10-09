@@ -16,6 +16,11 @@ local Deployment(config) = {
     namespace: "flux",
   },
   spec: {
+    selector: {
+      matchLabels:
+        name: "fluxcloud",
+      },
+    },
     replicas: 1,
     strategy: 'Recreate',
     template: {
