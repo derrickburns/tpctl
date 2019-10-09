@@ -15,7 +15,7 @@ local Deployment(config) = {
     name: "fluxcloud",
     namespace: "flux",
     annotations: {
-      "secret.reloader.stakater.com/reload": "slackA
+      "secret.reloader.stakater.com/reload": "slack"
     },"
   },
   spec: {
