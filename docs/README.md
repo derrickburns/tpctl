@@ -53,35 +53,55 @@ from Docker Hub with tag `tidepool/tpctl:latest`.
 docker pull tidepool/tpctl
 ```
 
-Execute the following to create a file called `tpctl` and to make it executable:
+Copy the following to a file called `tpctl` and to make it executable:
 
 ```bash
-cat <<! >tpctl
-#!/bin/bash
+#!/bin/sh
 
-HELM_HOME=\${HELM_HOME:-~/.helm}
-KUBE_CONFIG=\${KUBECONFIG:-~/.kube/config}
-AWS_CONFIG=\${AWS_CONFIG:-~/.aws}
-GIT_CONFIG=\${GIT_CONFIG:-~/.gitconfig}
-SSH_HOME=\${SSH_HOME:-~/.ssh}
+# set defaults
+HELM_HOME=${HELM_HOME:-~/.helm}
+KUBE_CONFIG=${KUBECONFIG:-~/.kube/config}
+AWS_CONFIG=${AWS_CONFIG:-~/.aws}
+GIT_CONFIG=${GIT_CONFIG:-~/.gitconfig}
+SSH_KEY=${SSH_KEY:-id_rsa}
+AGENT_CONTAINER=""
 
-mkdir -p \$HELM_HOME
-if [ ! -f "\$KUBE_CONFIG" ]
+function shutdown_agent {
+	docker kill ssh-agent >/dev/null
+	docker rm $AGENT_CONTAINER >/dev/null
+}
+
+running=$(docker inspect -f '{{.State.Running}}' ssh-agent 2>/dev/null)
+if [ $? -ne 0 -o "$running" == "false"  ]
 then
-        touch \$KUBE_CONFIG
+	AGENT_CONTAINER=$(docker run -d --name=ssh-agent nardeas/ssh-agent)
+	docker run --rm --volumes-from=ssh-agent -v ~/.ssh:/.ssh -it nardeas/ssh-agent ssh-add /root/.ssh/${SSH_KEY}
+        trap shutdown_agent EXIT
 fi
 
-docker run --rm -it \
--e REMOTE_REPO=\${REMOTE_REPO} \
--e GITHUB_TOKEN=\${GITHUB_TOKEN} \
--v \${SSH_HOME}:/root/.ssh \
--v \${HELM_HOME}:/root/.helm \
--v \${AWS_CONFIG}:/root/.aws \
--v \${KUBE_CONFIG}:/root/.kube/config \
--v \${GIT_CONFIG}:/root/.gitconfig \
-tidepool/tpctl /root/tpctl \$*
-!
-chmod +x tpctl
+if [ -z "$GITHUB_TOKEN" ]
+then
+	echo "GITHUB_TOKEN with repo scope is needed."
+	exit 1
+fi
+
+mkdir -p $HELM_HOME
+if [ ! -f "$KUBE_CONFIG" ]
+then
+	touch $KUBE_CONFIG
+fi
+
+docker run -it \
+--volumes-from=ssh-agent \
+-e SSH_AUTH_SOCK=/.ssh-agent/socket \
+-e GITHUB_TOKEN=${GITHUB_TOKEN} \
+-e REMOTE_REPO=${REMOTE_REPO} \
+-v ${GIT_CONFIG}:/root/.gitconfig:ro \
+-v ${HELM_HOME}:/root/.helm \
+-v ${AWS_CONFIG}:/root/.aws:ro \
+-v ${KUBE_CONFIG}:/root/.kube/config \
+tidepool/tpctl /root/tpctl $*
+
 ```
 
 Alternatively, you may build your own local Docker image from the source by cloning the Tidepool `development` repo and running the `build.sh` script:
