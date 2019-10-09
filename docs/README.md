@@ -2,7 +2,7 @@
 `tpctl` is used to create AWS EKS clusters that run the Tidepool services
 in a HIPAA compliant way.
 
-## Running `tpctl` (via Docker)
+## Running tpctl Via Docker
 
 `tpctl` is a bash script that runs `tpctl.sh` in a Docker container. `tpctl.sh` requires a number of tools be installed in its environment.  The Docker container cointains those tools.
 
@@ -15,7 +15,7 @@ You also need an AWS account with an identity that has the right:
 * to create secrets in the AWS Secrets Manager; and,
 * to create stacks in AWS CloudFormation.
 
-## Run `tpctl.sh` Natively
+## Run tpctl Natively
 
 Mounting your credentials works ok for a single SSH identity, but if you have multiple identities that must be shared, then you will run into problems.  In that case, you will find it easier to simply install the prerequisites onto your local Mac.  Most of these can be installed  using `'brew bundle  on the following Brewfile:
 
@@ -46,8 +46,7 @@ pip3 install --upgrade --user awscli boto3 environs
 ```
 
 ## Installation
-You may pull down the latest version Docker image of `tpctl`
-from Docker Hub with tag `tidepool/tpctl:latest`.
+You may pull down the latest version Docker image of `tpctl` from Docker Hub with tag `tidepool/tpctl:latest`.
 
 ```bash
 docker pull tidepool/tpctl
@@ -104,10 +103,10 @@ tidepool/tpctl /root/tpctl $*
 
 ```
 
-Alternatively, you may build your own local Docker image from the source by cloning the Tidepool `development` repo and running the `build.sh` script:
+Alternatively, you may build your own local Docker image from the source by cloning the Tidepool `tpctl` repo and running the `cmd/build.sh` script:
 ```bash
-git clone git@github.com:tidepool-org/development
-cd development/cmd
+git clone git@github.com:tidepool-org/tpctl
+cd cmd
 ./build.sh
 ```
 
