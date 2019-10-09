@@ -246,8 +246,8 @@ function set_template_dir {
         if [[ ! -d $TEMPLATE_DIR ]]; then
                 start "cloning quickstart"
                 pushd $TMP_DIR >/dev/null 2>&1
-                git clone $(repo_with_token https://github.com/tidepool-org/eks-template)
-                export TEMPLATE_DIR=$(pwd)/eks-template
+                git clone $(repo_with_token https://github.com/tidepool-org/tpctl)
+                export TEMPLATE_DIR=$(pwd)/tpctl
                 popd >/dev/null 2>&1
                 complete "cloned quickstart"
         fi
@@ -806,7 +806,7 @@ function expect_values_not_exist {
 function make_values {
         start "creating values.yaml"
         add_file "values.yaml"
-        cat $TMP_DIR/eks-template/values.yaml >values.yaml
+        cat $TMP_DIR/tpctl/values.yaml >values.yaml
         cat >>values.yaml <<!
 github:
   git: $GIT_REMOTE_REPO
