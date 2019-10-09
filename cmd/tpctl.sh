@@ -598,8 +598,6 @@ function make_flux() {
   local email=$(get_email)
   start "installing flux into cluster $cluster"
   establish_ssh
-  rm -rf flux
-  save_changes "Removing flux"
   EKSCTL_EXPERIMENTAL=true unbuffer eksctl install \
     flux -f config.yaml --git-url=${GIT_REMOTE_REPO}.git --git-email=$email --git-label=$cluster | tee $TMP_DIR/eksctl.out
   expect_success "eksctl install flux failed."
