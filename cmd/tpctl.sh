@@ -727,8 +727,9 @@ function make_mesh() {
   complete "installed mesh"
 }
 
-# get secrets from legacy environments if requested
-function get_secrets() {
+# get values from legacy environments
+function get_legacy_values() {
+  local kind=$1
   local cluster=$(get_cluster)
   local env
   for env in $(get_environments); do
@@ -737,7 +738,7 @@ function get_secrets() {
       continue
     fi
     if [ "$source" == "dev" -o "$source" == "stg" -o "$source" == "int" -o "$source" == "prd" ]; then
-      $SM_DIR/bin/git_to_map $source | $SM_DIR/bin/map_to_k8s $env
+      $SM_DIR/bin/git_to_map $source | $SM_DIR/bin/map_to_k8s $env $kind
     else
       panic "Unknown secret source $source"
     fi
@@ -896,7 +897,8 @@ function migrate_secrets() {
   mkdir -p external-secrets
   (
     cd external-secrets
-    get_secrets | external_secret upsert $cluster plaintext | separate_files | add_names
+    get_legacy_values Secret | external_secret upsert $cluster plaintext | separate_files | add_names
+    get_legacy_values ConfigMap | separate_files | add_names
   )
 }
 
