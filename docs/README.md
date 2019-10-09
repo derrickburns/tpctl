@@ -6,9 +6,9 @@ in a HIPAA compliant way.
 
 `tpctl` is a bash script that runs `tpctl.sh` in a Docker container. `tpctl.sh` requires a number of tools be installed in its environment.  The Docker container cointains those tools.
 
-However, we need to communicate using ssh, and using ssh-agent with Docker is challenging if you are running Docker for Mac. We have not attempted to do so.  
+However, we need to communicate using ssh.  Using your local `ssh-agent` with Docker is challenging if you are running Docker for Mac. We have not attempted to do so.  
 
-We mount your SSH crendentials.  This will require you to enter in a passphrase if your SSH credentials are protected by one.
+Instead, we run another `ssh-agent` inside a separate Docker container which shares credentials with the container that runs `tpctl.sh`.  This will require you to enter in a passphrase if your SSH credentials are protected by one.
 
 You also need an AWS account with an identity that has the right:
 * to create a Kubernetes cluster in EKS, 
@@ -17,7 +17,7 @@ You also need an AWS account with an identity that has the right:
 
 ## Run tpctl Natively
 
-Mounting your credentials works ok for a single SSH identity, but if you have multiple identities that must be shared, then you will run into problems.  In that case, you will find it easier to simply install the prerequisites onto your local Mac.  Most of these can be installed  using `'brew bundle  on the following Brewfile:
+You may also run `tpctl.sh` nativel if you first install the required tools. Most of these can be installed  using `'brew bundle  on the following Brewfile on MacOs:
 
 ```bash
 tap "weaveworks/tap"
