@@ -3,7 +3,7 @@ local secret(config) = {
   kind: 'Secret',
   metadata: {
     name: config.pkgs.fluxcloud.secret,
-    namespace: flux,
+    namespace: "flux",
   },
   data: {
     url: '',

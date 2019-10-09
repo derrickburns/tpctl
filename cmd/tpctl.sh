@@ -243,22 +243,24 @@ function set_template_dir() {
     start "cloning quickstart"
     pushd $TMP_DIR >/dev/null 2>&1
     git clone $(repo_with_token https://github.com/tidepool-org/tpctl)
+    if [ -n "$TPCTL_BRANCH" ]; then
+      git checkout $TPCTL_BRANCH
+    fi
     export TEMPLATE_DIR=$(pwd)/tpctl
     popd >/dev/null 2>&1
     complete "cloned quickstart"
   fi
 }
 
-# clone development repo, exports DEV_DIR and CHART_DIR
-function set_tools_dir() {
+# clone development repo, exports CHART_DIR
+function set_chart_dir() {
   if [[ ! -d $CHART_DIR ]]; then
     start "cloning development tools"
     pushd $TMP_DIR >/dev/null 2>&1
     git clone $(repo_with_token https://github.com/tidepool-org/development)
     cd development
     git checkout develop
-    DEV_DIR=$(pwd)
-    CHART_DIR=${DEV_DIR}/charts/tidepool/0.1.7
+    CHART_DIR=$(pwd)/charts/tidepool/0.1.7
     popd >/dev/null 2>&1
     complete "cloned development tools"
   fi
@@ -820,6 +822,7 @@ function edit_values() {
 
 # generate random secrets
 function randomize_secrets() {
+  set_chart_dir
   local env
   for env in $(get_environments); do
     local file
@@ -834,6 +837,11 @@ function randomize_secrets() {
   done
 }
 
+function additional_stack_name {
+  local cluster=$1
+  echo "stack_name=eksctl-${cluster}-broad-managed-policy"
+}
+
 # delete cluster from EKS, including cloudformation templates
 function delete_cluster() {
   cluster=$(get_cluster)
@@ -841,6 +849,9 @@ function delete_cluster() {
   start "deleting cluster $cluster"
   eksctl delete cluster --name=$cluster
   expect_success "Cluster deletion failed."
+  local stack_name=$(additional_stack_name $cluster)
+  aws cloudformation delete-stack --stack-name $stack_name
+  expect_success "Additional stack deletion failed."
   info "cluster $cluster deletion takes ~10 minutes to complete"
 }
 
@@ -888,6 +899,8 @@ function await_deletion() {
   start "awaiting cluster $cluster deletion"
   aws cloudformation wait stack-delete-complete --stack-name eksctl-${cluster}-cluster
   expect_success "Aborting wait"
+  aws cloudformation wait stack-delete-complete --stack-name $(additional_stack_name)
+  expect_success "Aborting wait"
   complete "cluster $cluster deleted"
 }
 
@@ -907,7 +920,7 @@ function create_secrets_managed_policy() {
 
   local cluster=$(get_cluster)
   local region=$(get_region)
-  local stack_name=eksctl-${cluster}-external-secrets-managed-policy
+  local stack_name=$(additional_stack_name $cluster)
   aws cloudformation describe-stacks --stack-name $stack_name >/dev/null 2>&1
   if [ $? -ne 0 ]; then
     start "Creating IAM Managed Policy for secrets management for $cluster in region $region"
@@ -1060,7 +1073,6 @@ eval set -- "$PARAMS"
 unset TMP_DIR
 unset TEMPLATE_DIR
 unset CHART_DIR
-unset DEV_DIR
 unset SM_DIR
 
 define_colors
@@ -1073,7 +1085,6 @@ for param in $PARAMS; do
       setup_tmpdir
       clone_remote
       set_template_dir
-      set_tools_dir
       expect_values_not_exist
       make_values
       save_changes "Added values"
@@ -1118,7 +1129,6 @@ for param in $PARAMS; do
       setup_tmpdir
       clone_remote
       set_template_dir
-      set_tools_dir
       make_config
       save_changes "Added config packages"
       ;;
@@ -1126,7 +1136,6 @@ for param in $PARAMS; do
       check_remote_repo
       setup_tmpdir
       clone_remote
-      set_tools_dir
       create_secrets_managed_policy
       make_cluster
       merge_kubeconfig
@@ -1139,7 +1148,6 @@ for param in $PARAMS; do
       setup_tmpdir
       clone_remote
       set_template_dir
-      set_tools_dir
       confirm_matching_cluster
       install_gloo
       save_changes "Installed gloo"
@@ -1150,7 +1158,6 @@ for param in $PARAMS; do
       setup_tmpdir
       clone_remote
       set_template_dir
-      set_tools_dir
       confirm_matching_cluster
       make_flux
       save_ca
@@ -1163,7 +1170,6 @@ for param in $PARAMS; do
       check_remote_repo
       setup_tmpdir
       clone_remote
-      set_tools_dir
       confirm_matching_cluster
       make_mesh
       save_changes "Added linkerd mesh"
@@ -1173,7 +1179,6 @@ for param in $PARAMS; do
       setup_tmpdir
       clone_remote
       set_template_dir
-      set_tools_dir
       edit_values
       make_config
       save_changes "Edited values. Updated config."
@@ -1182,7 +1187,6 @@ for param in $PARAMS; do
       check_remote_repo
       setup_tmpdir
       clone_remote
-      set_tools_dir
       make_cert
       ;;
     copy_assets)
@@ -1193,7 +1197,6 @@ for param in $PARAMS; do
       check_remote_repo
       setup_tmpdir
       clone_remote
-      set_tools_dir
       local cluster=$(get_cluster)
       mkdir -p external-secrets
       (
@@ -1206,7 +1209,6 @@ for param in $PARAMS; do
       check_remote_repo
       setup_tmpdir
       clone_remote
-      set_tools_dir
       clone_secret_map
       establish_ssh
       migrate_secrets
@@ -1216,7 +1218,6 @@ for param in $PARAMS; do
       check_remote_repo
       setup_tmpdir
       clone_remote
-      set_tools_dir
       local cluster=$(get_cluster)
       mkdir -p external-secrets
       (
