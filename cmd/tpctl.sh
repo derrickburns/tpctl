@@ -599,6 +599,7 @@ function make_flux() {
   start "installing flux into cluster $cluster"
   establish_ssh
   rm -rf flux
+  save_changes "Removing flux"
   EKSCTL_EXPERIMENTAL=true unbuffer eksctl install \
     flux -f config.yaml --git-url=${GIT_REMOTE_REPO}.git --git-email=$email --git-label=$cluster | tee $TMP_DIR/eksctl.out
   expect_success "eksctl install flux failed."
@@ -1160,11 +1161,13 @@ for param in $PARAMS; do
       set_template_dir
       confirm_matching_cluster
       make_flux
+      save_changes "Added flux"
+      git pull
       save_ca
       make_cert
       make_key
       update_flux
-      save_changes "Added flux"
+      save_changes "Updated flux"
       ;;
     mesh)
       check_remote_repo
