@@ -17,7 +17,7 @@ local Deployment(config) = {
   },
   spec: {
     selector: {
-      matchLabels:
+      matchLabels: {
         name: "fluxcloud",
       },
     },
