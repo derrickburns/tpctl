@@ -3,6 +3,7 @@ local service(config) = {
   kind: 'Service',
   metadata: {
     name: 'fluxcloud',
+    namespace: 'flux',
   },
   spec: {
     selector: {

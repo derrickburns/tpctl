@@ -11,10 +11,19 @@ local getElse(x, path, default) = (
 local Deployment(config) = {
   apiVersion: 'v1',
   kind: 'Deployment',
+  metadata: {
+    name: "fluxcloud",
+    namespace: "flux",
+  },
   spec: {
     replicas: 1,
     strategy: 'Recreate',
     template: {
+      metadata: {
+        labels: {
+            name: "fluxcloud",
+        },
+      },
       spec: {
         containers: [
           {
