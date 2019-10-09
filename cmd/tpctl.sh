@@ -660,26 +660,17 @@ function update_flux() {
     jsonnet --tla-code config="$config" --tla-code-file flux="$TMP_DIR/flux.json" --tla-code-file helm="$TMP_DIR/helm.json" $TEMPLATE_DIR/flux/flux.jsonnet --tla-code-file tiller="$TMP_DIR/tiller.json" >$TMP_DIR/updated.json
     expect_success "Templating failure flux/flux.jsonnet"
 
-    add_file flux/flux-deployment-updated.yaml
-    yq r $TMP_DIR/updated.json flux >flux/flux-deployment-updated.yaml
-    expect_success "Serialization flux/flux-deployment-updated.yaml"
+    add_file flux/flux-deployment.yaml 
+    yq r $TMP_DIR/updated.json flux >flux/flux-deployment.yaml
+    expect_success "Serialization flux/flux-deployment.yaml"
 
-    add_file flux/helm-operator-deployment-updated.yaml
-    yq r $TMP_DIR/updated.json helm >flux/helm-operator-deployment-updated.yaml
-    expect_success "Serialization flux/helm-operator-deployment-updated.yaml"
+    add_file flux/helm-operator-deployment.yaml 
+    yq r $TMP_DIR/updated.json helm >flux/helm-operator-deployment.yaml
+    expect_success "Serialization flux/helm-operator-deployment.yaml"
 
-    add_file flux/tiller-dep-updated.yaml
-    yq r $TMP_DIR/updated.json tiller >flux/tiller-dep-updated.yaml
-    expect_success "Serialization flux/tiller-dep--updated.yaml"
-
-    rename_file flux/flux-deployment.yaml flux/flux-deployment.yaml.orig
-    mv flux/flux-deployment.yaml flux/flux-deployment.yaml.orig
-
-    rename_file flux/helm-operator-deployment.yaml flux/helm-operator-deployment.yaml.orig
-    mv flux/helm-operator-deployment.yaml flux/helm-operator-deployment.yaml.orig
-
-    rename_file flux/tiller-dep.yaml flux/tiller-dep.yaml.orig
-    mv flux/tiller-dep.yaml flux/tiller-dep.yaml.orig
+    add_file flux/tiller-dep.yaml 
+    yq r $TMP_DIR/updated.json tiller >flux/tiller-dep.yaml
+    expect_success "Serialization flux/tiller-dep.yaml"
   fi
   complete "updated flux and flux-helm-operator manifests"
 }
