@@ -16,7 +16,7 @@ local Deployment(config) = {
     namespace: "flux",
     annotations: {
       "secret.reloader.stakater.com/reload": "slack"
-    },"
+    },
   },
   spec: {
     selector: {
