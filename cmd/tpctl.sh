@@ -947,7 +947,7 @@ EOF
                             Action:
                             - s3:ListBucket
                             Resource:
-                            - "arn:aws:s3:::${dataBucket}/*"
+                            - "arn:aws:s3:::${dataBucket}"
                           - Effect: Allow
                             Action:
                             - s3:GetObject
@@ -959,7 +959,7 @@ EOF
                             Action:
                             - s3:ListBucket
                             Resource:
-                            - "arn:aws:s3:::${assetBucket}/*"
+                            - "arn:aws:s3:::${assetBucket}"
                           - Effect: Allow
                             Action:
                             - s3:GetObject
