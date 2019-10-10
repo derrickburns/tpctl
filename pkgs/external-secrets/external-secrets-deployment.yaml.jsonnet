@@ -38,7 +38,7 @@ local deployment(config) = {
               },
               {
                 name: "POLLER_INTERVAL_MILLISECONDS",
-                value: config.pkgs."external-secrets".poller_interval,
+                value: config.pkgs["external-secrets"].poller_interval,
               }
             ],
             image: "godaddy/kubernetes-external-secrets:1.5.0",
