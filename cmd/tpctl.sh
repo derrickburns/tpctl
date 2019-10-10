@@ -845,11 +845,6 @@ function randomize_secrets() {
   done
 }
 
-function additional_stack_name() {
-  local cluster=$1
-  echo "stack_name=eksctl-${cluster}-broad-managed-policy"
-}
-
 # delete cluster from EKS, including cloudformation templates
 function delete_cluster() {
   cluster=$(get_cluster)
@@ -857,9 +852,6 @@ function delete_cluster() {
   start "deleting cluster $cluster"
   eksctl delete cluster --name=$cluster
   expect_success "Cluster deletion failed."
-  local stack_name=$(additional_stack_name $cluster)
-  aws cloudformation delete-stack --stack-name $stack_name
-  expect_success "Additional stack deletion failed."
   info "cluster $cluster deletion takes ~10 minutes to complete"
 }
 
@@ -906,8 +898,6 @@ function await_deletion() {
   local cluster=$(get_cluster)
   start "awaiting cluster $cluster deletion"
   aws cloudformation wait stack-delete-complete --stack-name eksctl-${cluster}-cluster
-  expect_success "Aborting wait"
-  aws cloudformation wait stack-delete-complete --stack-name $(additional_stack_name)
   expect_success "Aborting wait"
   complete "cluster $cluster deleted"
 }
