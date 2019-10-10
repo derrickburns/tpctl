@@ -44,7 +44,7 @@ local deployment(config) = {
                 value: config.pkgs["external-secrets"].poller_interval,
               }
             ],
-            image: "godaddy/kubernetes-external-secrets:1.5.0",
+            image: "tidepool/external-secrets:iam2"
             imagePullPolicy: "IfNotPresent",
             name: "kubernetes-external-secrets",
           }
