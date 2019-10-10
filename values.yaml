@@ -88,6 +88,9 @@ environments:
     mongodb:
       enabled: true                          # Whether to use an embedded mongodb 
     tidepool:
+      chart:
+        path: charts/tidepool/0.1.7
+        ref: develop
       source: stg                            # Where to get initial secrets from
       enabled: true
       hpa:                                   # Whether to implement horizontal pod scalers for each service

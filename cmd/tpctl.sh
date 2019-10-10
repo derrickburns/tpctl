@@ -931,11 +931,6 @@ function create_secrets_managed_policy() {
                           Statement:
                           - Effect: Allow
                             Action:
-                            - secretsmanager:GetSecretValue
-                            Resource:
-                            - "arn:aws:secretsmanager:${region}:${account}:secret:${cluster}/*"
-                          - Effect: Allow
-                            Action:
                             - "ses:*"
                             Resource: "*"
 EOF
