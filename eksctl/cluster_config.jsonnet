@@ -122,7 +122,7 @@ local withBucketWritingPolicy(config, env, bucket) = {
       {
         Effect: "Allow",
         Action: "s3:ListBucket",
-        Resource: "arn:aws:s3:::%s/*" % bucket
+        Resource: "arn:aws:s3:::%s" % bucket
       },
       {
         Effect: "Allow",
@@ -145,7 +145,7 @@ local withBucketReadingPolicy(config, env, bucket) = {
       {
         Effect: "Allow",
         Action: "s3:ListBucket",
-        Resource: "arn:aws:s3:::%s/*" % bucket
+        Resource: "arn:aws:s3:::%s" % bucket
       },
       {
         Effect: "Allow",
