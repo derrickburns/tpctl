@@ -15,8 +15,10 @@ function cluster_in_context() {
 }
 
 function make_envrc() {
+  local cluster=$(get_cluster)
   local context=$(yq r kubeconfig.yaml current-context)
   echo "kubectx $context" >.envrc
+  echo "export REMOTE_REPO=cluster-$cluster"
   add_file ".envrc"
 }
 
@@ -659,15 +661,15 @@ function update_flux() {
     jsonnet --tla-code config="$config" --tla-code-file flux="$TMP_DIR/flux.json" --tla-code-file helm="$TMP_DIR/helm.json" $TEMPLATE_DIR/flux/flux.jsonnet --tla-code-file tiller="$TMP_DIR/tiller.json" >$TMP_DIR/updated.json
     expect_success "Templating failure flux/flux.jsonnet"
 
-    add_file flux/flux-deployment.yaml 
+    add_file flux/flux-deployment.yaml
     yq r $TMP_DIR/updated.json flux >flux/flux-deployment.yaml
     expect_success "Serialization flux/flux-deployment.yaml"
 
-    add_file flux/helm-operator-deployment.yaml 
+    add_file flux/helm-operator-deployment.yaml
     yq r $TMP_DIR/updated.json helm >flux/helm-operator-deployment.yaml
     expect_success "Serialization flux/helm-operator-deployment.yaml"
 
-    add_file flux/tiller-dep.yaml 
+    add_file flux/tiller-dep.yaml
     yq r $TMP_DIR/updated.json tiller >flux/tiller-dep.yaml
     expect_success "Serialization flux/tiller-dep.yaml"
   fi
@@ -720,6 +722,7 @@ function make_mesh() {
 
 # get values from legacy environments
 function get_legacy_values() {
+  set -x
   local kind=$1
   local cluster=$(get_cluster)
   local env
@@ -826,7 +829,7 @@ function randomize_secrets() {
   done
 }
 
-function additional_stack_name {
+function additional_stack_name() {
   local cluster=$1
   echo "stack_name=eksctl-${cluster}-broad-managed-policy"
 }
@@ -896,12 +899,15 @@ function await_deletion() {
 # migrate secrets from legacy GitHub repo to AWS secrets manager
 function migrate_secrets() {
   local cluster=$(get_cluster)
+  local secrets=$(get_legacy_values Secret)
+  local configmaps=$(get_legacy_values ConfigMap)
+  echo $secrets
+  echo $configmaps
   mkdir -p external-secrets
-  (
-    cd external-secrets
-    get_legacy_values Secret | external_secret upsert $cluster plaintext | separate_files | add_names
-    get_legacy_values ConfigMap | separate_files | add_names
-  )
+  pushd external-secrets
+  echo "$secrets" | external_secret upsert $cluster plaintext | separate_files | add_names
+  echo "$configmaps" | separate_files | add_names
+  popd
 }
 
 function linkerd_dashboard() {
