@@ -36,6 +36,9 @@ local deployment(config) = {
             image: "k8s.gcr.io/cluster-autoscaler:v1.12.3",
             imagePullPolicy: "Always",
             name: "cluster-autoscaler",
+            securityContext: {
+              fsGroup: 65534 # To be able to read Kubernetes and AWS token files
+            },
             resources: {
               limits: {
                 cpu: "100m",

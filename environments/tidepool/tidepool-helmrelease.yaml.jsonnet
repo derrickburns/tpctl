@@ -64,6 +64,9 @@ local tidepool(config, prev, namespace) = {
         }
       },
       blob: {
+        securityContext: {
+          fsGroup: 65534 // To be able to read Kubernetes and AWS token files
+        },
         deployment: {
           env: {
             store: {
@@ -111,6 +114,9 @@ local tidepool(config, prev, namespace) = {
         }
       },
       hydrophone: {
+        securityContext: {
+          fsGroup: 65534 // To be able to read Kubernetes and AWS token files
+        },
         deployment: {
           env: {
             store: {
@@ -124,6 +130,9 @@ local tidepool(config, prev, namespace) = {
         }
       },
       image: {
+        securityContext: {
+          fsGroup: 65534 // To be able to read Kubernetes and AWS token files
+        },
         deployment: {
           env: {
             store: {
@@ -162,6 +171,9 @@ local tidepool(config, prev, namespace) = {
         }
       },
       jellyfish: {
+        securityContext: {
+          fsGroup: 65534 // To be able to read Kubernetes and AWS token files
+        },
         deployment: {
           env: {
             store: {
