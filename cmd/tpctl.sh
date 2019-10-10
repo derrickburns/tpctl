@@ -901,8 +901,6 @@ function migrate_secrets() {
   local cluster=$(get_cluster)
   local secrets=$(get_legacy_values Secret)
   local configmaps=$(get_legacy_values ConfigMap)
-  echo $secrets
-  echo $configmaps
   mkdir -p external-secrets
   pushd external-secrets
   echo "$secrets" | external_secret upsert $cluster plaintext | separate_files | add_names
