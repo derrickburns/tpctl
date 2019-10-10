@@ -9,17 +9,17 @@ local externalSecret(config, namespace) = {
     "backendType": "secretsManager",
     "data": [
       {
-        "key": "%s/%s/marketo" % [ config.cluster.metadata.name, namespace ]
+        "key": "%s/%s/marketo" % [ config.cluster.metadata.name, namespace ],
         "name": "ID",
         "property": "ID"
       },
       {
-        "key": "%s/%s/marketo" % [ config.cluster.metadata.name, namespace ]
+        "key": "%s/%s/marketo" % [ config.cluster.metadata.name, namespace ],
         "name": "Secret",
         "property": "Secret"
       },
       {
-        "key": "%s/%s/marketo" % [ config.cluster.metadata.name, namespace ]
+        "key": "%s/%s/marketo" % [ config.cluster.metadata.name, namespace ],
         "name": "URL",
         "property": "URL"
       }
