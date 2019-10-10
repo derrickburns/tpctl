@@ -29,7 +29,10 @@ local helmrelease(config) = {
         create: true,
         serviceAccountName: "external-dns"
       },
-      txtOwnerId: config.cluster.metadata.name
+      txtOwnerId: config.cluster.metadata.name,
+      podSecurityContext: {
+        fsGroup: 65534 // For ExternalDNS to be able to read Kubernetes and AWS token files
+      },
     }
   }
 };
