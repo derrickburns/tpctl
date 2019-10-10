@@ -905,78 +905,13 @@ function migrate_secrets() {
   )
 }
 
-function create_secrets_managed_policy() {
-  local file=$TMP_DIR/policy.yaml
-
-  local cluster=$(get_cluster)
-  local region=$(get_region)
-  local stack_name=$(additional_stack_name $cluster)
-  aws cloudformation describe-stacks --stack-name $stack_name >/dev/null 2>&1
-  if [ $? -ne 0 ]; then
-    start "Creating IAM Managed Policy for secrets management for $cluster in region $region"
-    local cf_file=file://$(realpath $file)
-    local account=$(get_aws_account)
-    # XXX - only supports case where cluster == env
-
-    cat >$file <<EOF
-                  AWSTemplateFormatVersion: 2010-09-09
-                  Description: Kubernetes IAM Role for External Secrets
-                  Resources:
-                    ExternalSecretsManagedPolicy:
-                      Type: AWS::IAM::ManagedPolicy
-                      Properties:
-                        ManagedPolicyName: $stack_name
-                        PolicyDocument:
-                          Version: '2012-10-17'
-                          Statement:
-                          - Effect: Allow
-                            Action:
-                            - "ses:*"
-                            Resource: "*"
-EOF
-    for env in $(get_environments); do
-      local dataBucket=$(get_bucket $env data)
-      local assetBucket=$(get_bucket $env asset)
-      cat >>$file <<EOF
-                          - Effect: Allow
-                            Action:
-                            - s3:ListBucket
-                            Resource:
-                            - "arn:aws:s3:::${dataBucket}"
-                          - Effect: Allow
-                            Action:
-                            - s3:GetObject
-                            - s3:PutObject
-                            - s3:DeleteObject
-                            Resource:
-                            - "arn:aws:s3:::${dataBucket}/*"
-                          - Effect: Allow
-                            Action:
-                            - s3:ListBucket
-                            Resource:
-                            - "arn:aws:s3:::${assetBucket}"
-                          - Effect: Allow
-                            Action:
-                            - s3:GetObject
-                            Resource:
-                            - "arn:aws:s3:::${assetBucket}/*"
-EOF
-    done
-    aws cloudformation create-stack --stack-name ${stack_name} --capabilities CAPABILITY_NAMED_IAM --template-body ${cf_file}
-
-    aws cloudformation wait stack-create-complete --stack-name ${stack_name}
-    complete "Created IAM Managed Policy for secrets management"
-    rm $file
-  fi
-}
-
 function linkerd_dashboard() {
   linkerd dashboard &
 }
 
 # show help
 function help() {
-  echo "$0 [-h|--help] (all|values|edit_values|config|edit_repo|cluster|flux|gloo|regenerate_cert|copy_assets|mesh|migrate_secrets|randomize_secrets|upsert_plaintext_secrets|install_users|deploy_key|delete_cluster|await_deletion|remove_mesh|merge_kubeconfig|gloo_dashboard|linkerd_dashboard|managed_policies|diff|envrc)*"
+  echo "$0 [-h|--help] (all|values|edit_values|config|edit_repo|cluster|flux|gloo|regenerate_cert|copy_assets|mesh|migrate_secrets|randomize_secrets|upsert_plaintext_secrets|install_users|deploy_key|delete_cluster|await_deletion|remove_mesh|merge_kubeconfig|gloo_dashboard|linkerd_dashboard|diff|envrc)*"
   echo
   echo
   echo "So you want to built a Kubernetes cluster that runs Tidepool. Great!"
@@ -1016,7 +951,6 @@ function help() {
   echo "merge_kubeconfig - copy the KUBECONFIG into the local $KUBECONFIG file"
   echo "gloo_dashboard - open the Gloo dashboard"
   echo "linkerd_dashboard - open the Linkerd dashboard"
-  echo "managed_policies - create managed policies"
   echo "diff - show recent git diff"
   echo "envrc - create .envrc file for direnv to change kubecontexts"
 }
@@ -1075,7 +1009,6 @@ for param in $PARAMS; do
       save_changes "Added values"
       make_config
       save_changes "Added config packages"
-      create_secrets_managed_policy
       make_cluster
       merge_kubeconfig
       make_users
@@ -1121,7 +1054,6 @@ for param in $PARAMS; do
       check_remote_repo
       setup_tmpdir
       clone_remote
-      create_secrets_managed_policy
       make_cluster
       merge_kubeconfig
       make_users
@@ -1283,12 +1215,6 @@ for param in $PARAMS; do
       clone_remote
       confirm_matching_cluster
       linkerd_dashboard
-      ;;
-    managed_policies)
-      check_remote_repo
-      setup_tmpdir
-      clone_remote
-      create_secrets_managed_policy
       ;;
     diff)
       check_remote_repo

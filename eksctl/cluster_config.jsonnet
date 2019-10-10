@@ -233,11 +233,6 @@ local hydrophoneServiceAccount(config, env, namespace) = (
 
 local annotatedNodegroup(config, ng, clusterName) =
   ng + {
-      iam+: {
-        attachPolicyARNs+: [
-          "arn:aws:iam::%s:policy/eksctl-%s-external-secrets-managed-policy" % [config.aws.accountNumber, config.cluster.metadata.name]
-	]
-      },
       tags+: {
         "k8s.io/cluster-autoscaler/enabled": "true",
         ["k8s.io/cluster-autoscaler/" + clusterName]: "true"
