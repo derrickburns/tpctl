@@ -46,10 +46,11 @@ local tidepool(config, prev, namespace) = {
     namespace: namespace
   },
   spec: {
+    local tp = config.environments[namespace].tidepool,
     chart: {
       git: "git@github.com:tidepool-org/development",
-      path: "charts/tidepool/0.1.7",
-      ref: "develop"
+      path: getElse(tp, "chart.path", "charts/tidepool/0.1.7"),
+      ref: getElse(tp, "chart.ref", "develop"),
     },
     releaseName: "%s-tidepool" % namespace,
     values: {
@@ -74,7 +75,7 @@ local tidepool(config, prev, namespace) = {
           env: {
             store: {
               "s3": {
-		"bucket": getElse(config.environments[namespace].tidepool, 'buckets.data', dataBucket(config, namespace))
+		"bucket": getElse(tp, 'buckets.data', dataBucket(config, namespace))
               }
             },
             type: "s3"
@@ -127,7 +128,7 @@ local tidepool(config, prev, namespace) = {
           env: {
             store: {
               s3: {
-		"bucket": getElse(config.environments[namespace].tidepool, 'buckets.asset', assetBucket(config, namespace))
+		"bucket": getElse(tp, 'buckets.asset', assetBucket(config, namespace))
               }
             },
             type: "s3"
@@ -146,7 +147,7 @@ local tidepool(config, prev, namespace) = {
           env: {
             store: {
               s3: {
-		"bucket": getElse(config.environments[namespace].tidepool, 'buckets.data', dataBucket(config, namespace))
+		"bucket": getElse(tp, 'buckets.data', dataBucket(config, namespace))
               }
             },
             type: "s3"
@@ -190,7 +191,7 @@ local tidepool(config, prev, namespace) = {
           env: {
             store: {
               s3: {
-		"bucket": getElse(config.environments[namespace].tidepool, 'buckets.data', dataBucket(config, namespace))
+		"bucket": getElse(tp, 'buckets.data', dataBucket(config, namespace))
               }
             },
             type: "s3"
