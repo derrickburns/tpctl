@@ -4,6 +4,9 @@ local values(config) = {
       settings: {
         create: false,
       },
+      namespace: {
+        create: false,
+      },
       discovery: {
         fdsMode: 'WHITELIST',
       },
