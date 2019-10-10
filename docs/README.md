@@ -490,12 +490,6 @@ If you have installed a service mesh, you may view a dashboard to monitor traffi
 tpctl linkerd_dashboard
 ```
 
-### Create Managed Policies
-  
-```bash
-tpctl managed_policies
-```
-
 ### Show Recent git diff
 
 If you would like to see the most recent changes to your config repo, you may use standard Git tools, or you may simply run:
