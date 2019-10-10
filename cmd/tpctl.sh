@@ -15,8 +15,7 @@ function cluster_in_context() {
 }
 
 function make_envrc() {
-  local context=$(get_context)
-  context=$(yq r kubeconfig.yaml current-context)
+  local context=$(yq r kubeconfig.yaml current-context)
   echo "kubectx $context" >.envrc
   add_file ".envrc"
 }
