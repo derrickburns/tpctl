@@ -648,6 +648,22 @@ EOF
   complete "authorized access to ${GIT_REMOTE_REPO}"
 }
 
+function update_gloo_service() {
+  local glooServiceFile=gloo/gloo-system/Service/gateway-proxy-v2.yaml
+  if [ -f $glooServiceFile ]; then
+    start "updating gloo service"
+    local config=$(get_config)
+    local prev=$TMP_DIR/svc.json
+    yq r $glooServiceFile -j >$prev
+    jsonnet --tla-code config="$config" --tla-code-file prev=$prev $TEMPLATE_DIR/gloo/svc.jsonnet >$glooServiceFile
+    expect_success "Templating failure $TEMPLATE_DIR/gloo/svc.jsonnet"
+    add_file $glooServiceFile
+    complete "updated gloo service"
+  else
+    info "No gloo service to update"
+  fi
+}
+
 # update flux and helm operator manifests
 function update_flux() {
   start "updating flux and flux-helm-operator manifests"
@@ -914,7 +930,7 @@ function linkerd_dashboard() {
 
 # show help
 function help() {
-  echo "$0 [-h|--help] (all|values|edit_values|config|edit_repo|cluster|flux|gloo|regenerate_cert|copy_assets|mesh|migrate_secrets|randomize_secrets|upsert_plaintext_secrets|install_users|deploy_key|delete_cluster|await_deletion|remove_mesh|merge_kubeconfig|gloo_dashboard|linkerd_dashboard|diff|envrc)*"
+  echo "$0 [-h|--help] (all|values|edit_values|config|edit_repo|cluster|flux|gloo|regenerate_cert|copy_assets|mesh|migrate_secrets|randomize_secrets|upsert_plaintext_secrets|install_users|deploy_key|delete_cluster|await_deletion|remove_mesh|merge_kubeconfig|gloo_dashboard|linkerd_dashboard|diff|envrc|dns)*"
   echo
   echo
   echo "So you want to built a Kubernetes cluster that runs Tidepool. Great!"
@@ -953,9 +969,10 @@ function help() {
   echo "await_deletion - await completion of deletion of gthe AWS EKS cluster"
   echo "merge_kubeconfig - copy the KUBECONFIG into the local $KUBECONFIG file"
   echo "gloo_dashboard - open the Gloo dashboard"
+  echo "dns - update the DNS aliases served"
   echo "linkerd_dashboard - open the Linkerd dashboard"
   echo "diff - show recent git diff"
-  echo "envrc - create .envrc file for direnv to change kubecontexts"
+  echo "envrc - create .envrc file for direnv to change kubecontexts and to set REMOTE_REPO"
 }
 
 if [ $# -eq 0 ]; then
@@ -1237,6 +1254,13 @@ for param in $PARAMS; do
       setup_tmpdir
       clone_remote
       install_sumo
+      ;;
+    dns)
+      check_remote_repo
+      setup_tmpdir
+      clone_remote
+      set_template_dir
+      update_gloo_service
       ;;
     *)
       panic "unknown command: $param"
