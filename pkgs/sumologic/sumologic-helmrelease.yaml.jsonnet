@@ -22,7 +22,7 @@ local helmrelease(config) = {
       sumologic: {
         collectorUrlExistingSecret: "sumologic",
         readFromHead: false,
-        sourceCategoryPrefix: config.cluster.metadata.name
+        sourceCategoryPrefix: "kubernetes/%s/" % config.cluster.metadata.name
       }
     }
   }
