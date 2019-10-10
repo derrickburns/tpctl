@@ -1,4 +1,4 @@
-local deployment(context) = {
+local deployment(config) = {
   apiVersion: "apps/v1",
   kind: "Deployment",
   metadata: {
