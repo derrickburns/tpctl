@@ -14,7 +14,7 @@
   isTrue(x, path):: $.isEq(x, path, true),
 
   dnsNames(config):: (
-    local e = $get(config, 'environments');
+    local e = $.get(config, 'environments');
     if e == null
     then 'none'
     else (
