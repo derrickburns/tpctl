@@ -21,6 +21,9 @@ local deployment(config) = {
         }
       },
       spec: {
+        securityContext: {
+          fsGroup: 65534
+        },
         containers: [
           {
             env: [
@@ -44,9 +47,6 @@ local deployment(config) = {
             image: "godaddy/kubernetes-external-secrets:1.5.0",
             imagePullPolicy: "IfNotPresent",
             name: "kubernetes-external-secrets",
-            securityContext: {
-              fsGroup: 65534
-            }
           }
         ],
         "serviceAccountName": "external-secrets"
