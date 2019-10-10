@@ -89,7 +89,7 @@ local tidepool(config, prev, namespace) = {
       },
       export: {
         deployment: {
-          image: getElse(prev, 'spec.values.export.deploymentimage', "tidepool/export:develop-ddc5f311a4bdc2adae1b423f13e047ff1828d65c")
+          image: getElse(prev, 'spec.values.export.deployment.image', "tidepool/export:develop-ddc5f311a4bdc2adae1b423f13e047ff1828d65c")
         }
       },
       gatekeeper: {
