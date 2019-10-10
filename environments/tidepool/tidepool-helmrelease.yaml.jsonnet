@@ -64,6 +64,9 @@ local tidepool(config, prev, namespace) = {
         }
       },
       blob: {
+        serviceAccount: {
+          name: "blob",
+        },
         securityContext: {
           fsGroup: 65534 // To be able to read Kubernetes and AWS token files
         },
@@ -114,6 +117,9 @@ local tidepool(config, prev, namespace) = {
         }
       },
       hydrophone: {
+        serviceAccount: {
+          name: "hydrophone",
+        },
         securityContext: {
           fsGroup: 65534 // To be able to read Kubernetes and AWS token files
         },
@@ -130,6 +136,9 @@ local tidepool(config, prev, namespace) = {
         }
       },
       image: {
+        serviceAccount: {
+          name: "image",
+        },
         securityContext: {
           fsGroup: 65534 // To be able to read Kubernetes and AWS token files
         },
@@ -171,6 +180,9 @@ local tidepool(config, prev, namespace) = {
         }
       },
       jellyfish: {
+        serviceAccount: {
+          name: "jellyfish",
+        },
         securityContext: {
           fsGroup: 65534 // To be able to read Kubernetes and AWS token files
         },
