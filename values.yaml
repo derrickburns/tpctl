@@ -5,9 +5,12 @@ aws:
   accountNumber: 118346523422                # AWS account number
   iamUsers:                                  # AWS IAM users who will be grants system:master privileges to the cluster
   - derrickburns-cli
+  - lennartgoedhart
   - lennartgoedhart-cli
+  - benderr
   - benderr-cli
   - jamesraby-cli
+  - jamesraby
   - haroldbernard-cli
 
 kubeconfig: "$HOME/.kube/config"             # place to put KUBECONFIG
