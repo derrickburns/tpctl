@@ -14,6 +14,26 @@ function cluster_in_context() {
   fi
 }
 
+function install_certmanager {
+  start "installing cert-manager"
+  kubectl create namespace cert-manager
+  kubectl apply --validate=false -f https://github.com/jetstack/cert-manager/releases/download/v0.11.0/cert-manager.yaml
+  mkdir -p pkgs/certmanager
+  pushd pkgs/certmanager
+  curl -sL https://github.com/jetstack/cert-manager/releases/download/v0.11.0/cert-manager.yaml | separate_files | add_names
+  popd
+  complete "installed cert-manager"
+}
+
+function uninstall_certmanager {
+  start "uninstalling cert-manager"
+  kubectl get Issuers,ClusterIssuers,Certificates,CertificateRequests,Orders,Challenges --all-namespaces | kubectl delete -f -
+  curl -sL https://github.com/jetstack/cert-manager/releases/download/v0.11.0/cert-manager.yaml | kubectl delete -f -
+  kubectl delete namespace cert-manager
+  complete "uninstalled cert-manager"
+}
+
+
 function make_envrc() {
   local cluster=$(get_cluster)
   local context=$(yq r kubeconfig.yaml current-context)
@@ -920,7 +940,7 @@ function linkerd_dashboard() {
 
 # show help
 function help() {
-  echo "$0 [-h|--help] (all|values|edit_values|config|edit_repo|cluster|flux|gloo|regenerate_cert|copy_assets|mesh|migrate_secrets|randomize_secrets|upsert_plaintext_secrets|install_users|deploy_key|delete_cluster|await_deletion|remove_mesh|merge_kubeconfig|gloo_dashboard|linkerd_dashboard|diff|envrc|dns)*"
+  echo "$0 [-h|--help] (all|values|edit_values|config|edit_repo|cluster|flux|gloo|regenerate_cert|copy_assets|mesh|migrate_secrets|randomize_secrets|upsert_plaintext_secrets|install_users|deploy_key|delete_cluster|await_deletion|remove_mesh|merge_kubeconfig|gloo_dashboard|linkerd_dashboard|diff|envrc|dns|install_certmanager|uninstall_certmanager)*"
   echo
   echo
   echo "So you want to built a Kubernetes cluster that runs Tidepool. Great!"
@@ -958,6 +978,8 @@ function help() {
   echo "delete_cluster - initiate deletion of the AWS EKS cluster"
   echo "await_deletion - await completion of deletion of gthe AWS EKS cluster"
   echo "merge_kubeconfig - copy the KUBECONFIG into the local $KUBECONFIG file"
+  echo "install_certmanager - install cert-manager"
+  echo "uninstall_certmanager - uninstall cert-manager"
   echo "gloo_dashboard - open the Gloo dashboard"
   echo "dns - update the DNS aliases served"
   echo "linkerd_dashboard - open the Linkerd dashboard"
@@ -1251,6 +1273,15 @@ for param in $PARAMS; do
       clone_remote
       set_template_dir
       update_gloo_service
+      ;;
+    install_certmanager)
+      check_remote_repo
+      setup_tmpdir
+      clone_remote
+      install_certmanager
+      ;;
+    uninstall_certmanager)
+      uninstall_certmanager
       ;;
     *)
       panic "unknown command: $param"
