@@ -1,7 +1,7 @@
 local certificate(config, namespace) = {
   local e = config.environments[namespace].tidepool,
 
-  apiVersion: 'certmanager.k8s.io/v1alpha1',
+  apiVersion: 'cert-manager.io/v1alpha2',
   kind: 'Certificate',
   metadata: {
     name: e.gateway.https.dnsNames[0],
@@ -15,16 +15,6 @@ local certificate(config, namespace) = {
     },
     commonName: e.gateway.https.dnsNames[0],
     dnsNames: e.gateway.https.dnsNames,
-    acme: {
-      config: [
-        {
-          dns01: {
-            provider: 'route53',
-          },
-          domains: e.gateway.https.dnsNames,
-        },
-      ],
-    },
   },
 };
 
