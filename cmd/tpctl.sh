@@ -18,10 +18,6 @@ function install_certmanager {
   start "installing cert-manager"
   kubectl create namespace cert-manager
   kubectl apply --validate=false -f https://github.com/jetstack/cert-manager/releases/download/v0.11.0/cert-manager.yaml
-  mkdir -p pkgs/certmanager
-  pushd pkgs/certmanager
-  curl -sL https://github.com/jetstack/cert-manager/releases/download/v0.11.0/cert-manager.yaml | separate_files | add_names
-  popd
   complete "installed cert-manager"
 }
 

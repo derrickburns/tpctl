@@ -12,7 +12,7 @@ aws:
   - jamesraby-cli
   - jamesraby
   - haroldbernard-cli
-
+  - haroldbernard
 kubeconfig: "$HOME/.kube/config"             # place to put KUBECONFIG
 
 cluster:
@@ -39,10 +39,6 @@ cluster:
       - arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy
       - arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy
       - arn:aws:iam::aws:policy/ElasticLoadBalancingFullAccess
-      withAddonPolicies:
-        autoScaler: true
-        certManager: true
-        externalDNS: true
 
 pkgs:
   amazon-cloudwatch:                         # AWS CloudWatch logging
@@ -102,6 +98,7 @@ environments:
         enabled: true
       gitops:          
         default: "glob:develop-*"            # Which filter to use for gitops image tags
+        blip: "glob:release-1.29*"
         #auth: "glob:go-common-*"            # Example filter for auth service
       buckets: {}                            # Which S3 buckets to store/retrieve data to/from
         #data: tidepool-test-qa2-data        # Name of the writable S3 bucket to store document data to
