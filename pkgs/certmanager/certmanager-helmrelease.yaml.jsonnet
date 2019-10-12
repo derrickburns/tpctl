@@ -16,8 +16,8 @@ local helmrelease(config) = {
     },
     releaseName: "certmanager",
     values: {
-      global : {
-         logLevel : 6
+      global: {
+         logLevel: 6
       },
       serviceAccount: {
         create: false,
