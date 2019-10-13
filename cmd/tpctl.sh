@@ -31,11 +31,13 @@ function uninstall_certmanager {
 
 
 function make_envrc() {
+  start "creating .envrc"
   local cluster=$(get_cluster)
   local context=$(yq r kubeconfig.yaml current-context)
   echo "kubectx $context" >.envrc
   echo "export REMOTE_REPO=cluster-$cluster" >.envrc
   add_file ".envrc"
+  complete "created .envrc"
 }
 
 function cluster_in_repo() {
