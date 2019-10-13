@@ -736,19 +736,13 @@ function mykubectl() {
 }
 
 # create service mesh
+# do NOT add linkerd to GitOps because upgrade path is can be complex
 function make_mesh() {
   linkerd check --pre
   expect_success "Failed linkerd pre-check."
   start "installing mesh"
   info "linkerd check --pre"
 
-  rm -rf linkerd
-  mkdir -p linkerd
-  add_file "linkerd/linkerd-config.yaml"
-  (
-    cd linkerd
-    linkerd install config | separate_files | add_names
-  )
   linkerd install config | mykubectl apply -f -
 
   linkerd check config
@@ -759,11 +753,6 @@ function make_mesh() {
   done
   info "linkerd check config"
 
-  add_file "linkerd/linkerd-control-plane.yaml"
-  (
-    cd linkerd
-    linkerd install control-plane | separate_files | add_names
-  )
   linkerd install control-plane | mykubectl apply -f -
 
   linkerd check
