@@ -13,3 +13,8 @@ spec:
   values:
     hostNetwork:
       enabled: true
+    args:
+    - --v=2
+    - --kubelet-preferred-address-types=InternalIP 
+    - --deprecated-kubelet-completely-insecure
+    - --kubelet-port=10255
