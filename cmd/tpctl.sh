@@ -42,7 +42,7 @@ type: Opaque
 
 function uninstall_certmanager {
   start "uninstalling cert-manager"
-  kubectl get Issuers,ClusterIssuers,Certificates,CertificateRequests,Orders,Challenges --all-namespaces | kubectl delete -f -
+  kubectl get Issuers,ClusterIssuers,Certificates,CertificateRequests,Orders,Challenges --all-namespaces -o yaml| kubectl delete -f -
   curl -sL https://github.com/jetstack/cert-manager/releases/download/v0.11.0/cert-manager.yaml | kubectl delete -f -
   kubectl delete namespace cert-manager
   complete "uninstalled cert-manager"
