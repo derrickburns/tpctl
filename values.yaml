@@ -85,6 +85,13 @@ environments:
     mongodb:
       enabled: true                          # Whether to use an embedded mongodb 
     tidepool:
+      resources:
+        requests: 
+          memory: "64Mi"
+          cpu: "50m"
+        limits: 
+          memory: "128Mi"
+          cpu: "100m"
       chart:
         path: charts/tidepool/0.1.7
         ref: develop

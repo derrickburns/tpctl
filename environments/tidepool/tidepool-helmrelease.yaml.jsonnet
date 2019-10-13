@@ -48,12 +48,12 @@ local tidepool(config, prev, namespace) = {
   local tp = config.environments[namespace].tidepool,
   local resources = {
     requests: {
-      memory: "256Mi",
-      cpu: "200m"
+      memory: getElse( tp, 'resources.requests.memory', "64Mi"),
+      cpu: getElse( tp, 'resources.requests.cpu', "50m"), 
     },
     limits: {
-      memory: "256Mi",
-      cpu: "200m"
+      memory: getElse( tp, 'resources.limits.memory', "128Mi"),
+      cpu: getElse( tp, 'resources.limits.cpu', "100m"),
     }
   }, 
   spec: {
