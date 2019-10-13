@@ -34,7 +34,7 @@ function make_envrc() {
   local cluster=$(get_cluster)
   local context=$(yq r kubeconfig.yaml current-context)
   echo "kubectx $context" >.envrc
-  echo "export REMOTE_REPO=cluster-$cluster"
+  echo "export REMOTE_REPO=cluster-$cluster" >.envrc
   add_file ".envrc"
 }
 
