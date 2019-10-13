@@ -17,20 +17,20 @@ local getElse(x, path, default) = (
 local dataBucket(config, namespace) = "tidepool-%s-%s-data" % [ config.cluster.metadata.name, namespace ];
 local assetBucket(config, namespace) = "tidepool-%s-%s-asset" % [ config.cluster.metadata.name, namespace ];
 
-local prefixAnnotations(prefix, repos) = {
-  ["%s.fluxcd.io/%s" % [prefix, repo] ]: "%s.deployment.image" % repo
-  for repo in repos
+local prefixAnnotations(prefix, svcs) = {
+  ["%s.fluxcd.io/%s" % [prefix, svc] ]: "%s.deployment.image" % svc
+  for svc in svcs
 };
 
-local filterAnnotations(env, repos) = {
-  local default = getElse(env, "gitops.default", "glob:develop-*"),
-  ["fluxcd.io/tag.%s" % repo ]: getElse(env, "gitops.%s" % repo, default) for repo in repos
+local filterAnnotations(env, svcs) = {
+  local default = getElse(tp, "gitops.default", "glob:develop-*"),
+  ["fluxcd.io/tag.%s" % svc ]: getElse(tp, "gitops.%s" % svc, default) for svc in svcs
 };
 
 local tidepool(config, prev, namespace) = {
   local env = config.environments[namespace].tidepool,
 
-  local repos = [ "auth", "blip", "blob", "data", "export", "gatekeeper",
+  local svcs = [ "auth", "blip", "blob", "data", "export", "gatekeeper",
      "highwater", "hydrophone", "image", "jellyfish", 
      "messageapi", "migrations", "notification", "seagull", "shoreline",
      "task", "tidewhisperer", "tools", "user" ],
@@ -40,8 +40,8 @@ local tidepool(config, prev, namespace) = {
   metadata: {
     annotations: {
       "fluxcd.io/automated": "true"
-    } + filterAnnotations(env, repos)
-      + prefixAnnotations("repository", repos),
+    } + filterAnnotations(env, svcs)
+      + prefixAnnotations("repository", svcs),
     name: "tidepool",
     namespace: namespace
   },
@@ -55,16 +55,25 @@ local tidepool(config, prev, namespace) = {
     releaseName: "%s-tidepool" % namespace,
     values: {
       auth: {
+        hpa: {
+          enabled: getElse(tp, 'hpa.enabled', false),
+        },
         deployment: {
           image: getElse(prev, 'spec.values.auth.deployment.image', "tidepool/platform-auth:develop-cebea363931570d3930848a21e6a3d07a54f4425")
         }
       },
       blip: {
+        hpa: {
+          enabled: getElse(tp, 'hpa.enabled', false),
+        },
         deployment: {
           image: getElse(prev, 'spec.values.blip.deployment.image', "tidepool/blip:release-1.23.0-264f7ad48eb7d8099b00dce07fa8576f7068d0a0")
         }
       },
       blob: {
+        hpa: {
+          enabled: getElse(tp, 'hpa.enabled', false),
+        },
         serviceAccount: {
           name: "blob",
         },
@@ -84,16 +93,25 @@ local tidepool(config, prev, namespace) = {
         }
       },
       data: {
+        hpa: {
+          enabled: getElse(tp, 'hpa.enabled', false),
+        },
         deployment: {
           image: getElse(prev, 'spec.values.data.deployment.image', "tidepool/platform-data:develop-cebea363931570d3930848a21e6a3d07a54f4425")
         }
       },
       export: {
+        hpa: {
+          enabled: getElse(tp, 'hpa.enabled', false),
+        },
         deployment: {
           image: getElse(prev, 'spec.values.export.deployment.image', "tidepool/export:develop-ddc5f311a4bdc2adae1b423f13e047ff1828d65c")
         }
       },
       gatekeeper: {
+        hpa: {
+          enabled: getElse(tp, 'hpa.enabled', false),
+        },
         deployment: {
           image: getElse(prev, 'spec.values.gatekeeper.deployment.image', "tidepool/gatekeeper:develop-6a0e3e6d83552ce378b21d76354973dcb95c9fa1")
         }
@@ -113,11 +131,17 @@ local tidepool(config, prev, namespace) = {
         enabled: false
       },
       highwater: {
+        hpa: {
+          enabled: getElse(tp, 'hpa.enabled', false),
+        },
         deployment: {
           image: getElse(prev, 'spec.values.highwater.deployment.image', "tidepool/highwater:develop-cb0ef1425b29f0a37c10e975876804f3ccfb1348")
         }
       },
       hydrophone: {
+        hpa: {
+          enabled: getElse(tp, 'hpa.enabled', false),
+        },
         serviceAccount: {
           name: "hydrophone",
         },
@@ -137,6 +161,9 @@ local tidepool(config, prev, namespace) = {
         }
       },
       image: {
+        hpa: {
+          enabled: getElse(tp, 'hpa.enabled', false),
+        },
         serviceAccount: {
           name: "image",
         },
@@ -181,6 +208,9 @@ local tidepool(config, prev, namespace) = {
         }
       },
       jellyfish: {
+        hpa: {
+          enabled: getElse(tp, 'hpa.enabled', false),
+        },
         serviceAccount: {
           name: "jellyfish",
         },
@@ -200,11 +230,17 @@ local tidepool(config, prev, namespace) = {
         }
       },
       messageapi: {
+        hpa: {
+          enabled: getElse(tp, 'hpa.enabled', false),
+        },
         deployment: {
           image: getElse(prev, 'spec.values.messageapi.deployment.image', "tidepool/message-api:develop-48e4e55d3119bd94c25fa7f01be79be85a860528")
         }
       },
       migrations: {
+        hpa: {
+          enabled: getElse(tp, 'hpa.enabled', false),
+        },
         deployment: {
           image: getElse(prev, 'spec.values.migrations.deployment.image', "tidepool/platform-migrations:develop-cebea363931570d3930848a21e6a3d07a54f4425")
         }
@@ -216,21 +252,33 @@ local tidepool(config, prev, namespace) = {
         enabled: env.nosqlclient.enabled
       },
       notification: {
+        hpa: {
+          enabled: getElse(tp, 'hpa.enabled', false),
+        },
         deployment: {
           image: getElse(prev, 'spec.values.notification.deployment.image', "tidepool/platform-notification:develop-cebea363931570d3930848a21e6a3d07a54f4425")
         }
       },
       seagull: {
+        hpa: {
+          enabled: getElse(tp, 'hpa.enabled', false),
+        },
         deployment: {
           image: getElse(prev, 'spec.values.seagull.deployment.image', "tidepool/seagull:develop-f5b583382cc468657710b15836eafad778817f7c")
         }
       },
       shoreline: {
+        hpa: {
+          enabled: getElse(tp, 'hpa.enabled', false),
+        },
         deployment: {
           image: getElse(prev, 'spec.values.shoreline.deployment.image', "tidepool/shoreline:develop-51f927083ba5bad0271add644728e02902d3b785")
         }
       },
       task: {
+        hpa: {
+          enabled: getElse(tp, 'hpa.enabled', false),
+        },
         deployment: {
           image: getElse(prev, 'spec.values.task.deployment.image', "tidepool/platform-task:develop-cebea363931570d3930848a21e6a3d07a54f4425")
         }
@@ -241,16 +289,25 @@ local tidepool(config, prev, namespace) = {
         }
       },
       tidewhisperer: {
+        hpa: {
+          enabled: getElse(tp, 'hpa.enabled', false),
+        },
         deployment: {
           image: getElse(prev, 'spec.values.tidewhisperer.deployment.image', "tidepool/tide-whisperer:develop-3d9d8e6b3417c70679ec43420f2a5e4a69cf9098")
         }
       },
       tools: {
+        hpa: {
+          enabled: getElse(tp, 'hpa.enabled', false),
+        },
         deployment: {
           image: getElse(prev, 'spec.values.tools.deployment.image', "tidepool/platform-tools:develop-cebea363931570d3930848a21e6a3d07a54f4425")
         }
       },
       user: {
+        hpa: {
+          enabled: getElse(tp, 'hpa.enabled', false),
+        },
         deployment: {
           image: getElse(prev, 'spec.values.user.deployment.image', "tidepool/platform-user:develop-cebea363931570d3930848a21e6a3d07a54f4425")
         }
