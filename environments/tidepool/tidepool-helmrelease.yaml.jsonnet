@@ -23,8 +23,8 @@ local prefixAnnotations(prefix, svcs) = {
 };
 
 local filterAnnotations(env, svcs) = {
-  local default = getElse(tp, "gitops.default", "glob:develop-*"),
-  ["fluxcd.io/tag.%s" % svc ]: getElse(tp, "gitops.%s" % svc, default) for svc in svcs
+  local default = getElse(env, "gitops.default", "glob:develop-*"),
+  ["fluxcd.io/tag.%s" % svc ]: getElse(env, "gitops.%s" % svc, default) for svc in svcs
 };
 
 local tidepool(config, prev, namespace) = {
