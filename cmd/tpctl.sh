@@ -54,7 +54,8 @@ function make_envrc() {
   local cluster=$(get_cluster)
   local context=$(yq r kubeconfig.yaml current-context)
   echo "kubectx $context" >.envrc
-  echo "export REMOTE_REPO=cluster-$cluster" >.envrc
+  echo "export REMOTE_REPO=cluster-$cluster" >>.envrc
+  echo "cp ~/.helm/clusters/$cluster/* ~/.helm/" >>.envrc
   add_file ".envrc"
   complete "created .envrc"
 }
@@ -108,6 +109,7 @@ function install_gloo() {
     cd gloo
     glooctl install gateway -n gloo-system --values $TMP_DIR/gloo-values.yaml --dry-run | separate_files | add_names
   )
+  find . -print
   expect_success "Templating failure gloo/gloo-values.yaml.jsonnet"
   add_gloo_manifest "$config" gateway-ssl
   add_gloo_manifest "$config" gateway
