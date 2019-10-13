@@ -56,7 +56,7 @@ local tidepool(config, prev, namespace) = {
     values: {
       auth: {
         podAnnotations: {
-          config.linkerd.io/proxy-cpu-request: "0.5"
+          "config.linkerd.io/proxy-cpu-request": "0.5"
         },
         hpa: {
           enabled: getElse(tp, 'hpa.enabled', false),
@@ -67,7 +67,7 @@ local tidepool(config, prev, namespace) = {
       },
       blip: {
         podAnnotations: {
-          config.linkerd.io/proxy-cpu-request: "0.5"
+          "config.linkerd.io/proxy-cpu-request": "0.5"
         },
         hpa: {
           enabled: getElse(tp, 'hpa.enabled', false),
@@ -78,7 +78,7 @@ local tidepool(config, prev, namespace) = {
       },
       blob: {
         podAnnotations: {
-          config.linkerd.io/proxy-cpu-request: "0.5"
+          "config.linkerd.io/proxy-cpu-request": "0.5"
         },
         hpa: {
           enabled: getElse(tp, 'hpa.enabled', false),
@@ -103,7 +103,7 @@ local tidepool(config, prev, namespace) = {
       },
       data: {
         podAnnotations: {
-          config.linkerd.io/proxy-cpu-request: "0.5"
+          "config.linkerd.io/proxy-cpu-request": "0.5"
         },
         hpa: {
           enabled: getElse(tp, 'hpa.enabled', false),
@@ -114,7 +114,7 @@ local tidepool(config, prev, namespace) = {
       },
       export: {
         podAnnotations: {
-          config.linkerd.io/proxy-cpu-request: "0.5"
+          "config.linkerd.io/proxy-cpu-request": "0.5"
         },
         hpa: {
           enabled: getElse(tp, 'hpa.enabled', false),
@@ -125,7 +125,7 @@ local tidepool(config, prev, namespace) = {
       },
       gatekeeper: {
         podAnnotations: {
-          config.linkerd.io/proxy-cpu-request: "0.5"
+          "config.linkerd.io/proxy-cpu-request": "0.5"
         },
         hpa: {
           enabled: getElse(tp, 'hpa.enabled', false),
@@ -150,7 +150,7 @@ local tidepool(config, prev, namespace) = {
       },
       highwater: {
         podAnnotations: {
-          config.linkerd.io/proxy-cpu-request: "0.5"
+          "config.linkerd.io/proxy-cpu-request": "0.5"
         },
         hpa: {
           enabled: getElse(tp, 'hpa.enabled', false),
@@ -161,7 +161,7 @@ local tidepool(config, prev, namespace) = {
       },
       hydrophone: {
         podAnnotations: {
-          config.linkerd.io/proxy-cpu-request: "0.5"
+          "config.linkerd.io/proxy-cpu-request": "0.5"
         },
         hpa: {
           enabled: getElse(tp, 'hpa.enabled', false),
@@ -186,7 +186,7 @@ local tidepool(config, prev, namespace) = {
       },
       image: {
         podAnnotations: {
-          config.linkerd.io/proxy-cpu-request: "0.5"
+          "config.linkerd.io/proxy-cpu-request": "0.5"
         },
         hpa: {
           enabled: getElse(tp, 'hpa.enabled', false),
@@ -236,7 +236,7 @@ local tidepool(config, prev, namespace) = {
       },
       jellyfish: {
         podAnnotations: {
-          config.linkerd.io/proxy-cpu-request: "0.5"
+          "config.linkerd.io/proxy-cpu-request": "0.5"
         },
         hpa: {
           enabled: getElse(tp, 'hpa.enabled', false),
@@ -261,7 +261,7 @@ local tidepool(config, prev, namespace) = {
       },
       messageapi: {
         podAnnotations: {
-          config.linkerd.io/proxy-cpu-request: "0.5"
+          "config.linkerd.io/proxy-cpu-request": "0.5"
         },
         hpa: {
           enabled: getElse(tp, 'hpa.enabled', false),
@@ -272,7 +272,7 @@ local tidepool(config, prev, namespace) = {
       },
       migrations: {
         podAnnotations: {
-          config.linkerd.io/proxy-cpu-request: "0.5"
+          "config.linkerd.io/proxy-cpu-request": "0.5"
         },
         hpa: {
           enabled: getElse(tp, 'hpa.enabled', false),
@@ -289,7 +289,7 @@ local tidepool(config, prev, namespace) = {
       },
       notification: {
         podAnnotations: {
-          config.linkerd.io/proxy-cpu-request: "0.5"
+          "config.linkerd.io/proxy-cpu-request": "0.5"
         },
         hpa: {
           enabled: getElse(tp, 'hpa.enabled', false),
@@ -300,7 +300,7 @@ local tidepool(config, prev, namespace) = {
       },
       seagull: {
         podAnnotations: {
-          config.linkerd.io/proxy-cpu-request: "0.5"
+          "config.linkerd.io/proxy-cpu-request": "0.5"
         },
         hpa: {
           enabled: getElse(tp, 'hpa.enabled', false),
@@ -311,7 +311,7 @@ local tidepool(config, prev, namespace) = {
       },
       shoreline: {
         podAnnotations: {
-          config.linkerd.io/proxy-cpu-request: "0.5"
+          "config.linkerd.io/proxy-cpu-request": "0.5"
         },
         hpa: {
           enabled: getElse(tp, 'hpa.enabled', false),
@@ -322,7 +322,7 @@ local tidepool(config, prev, namespace) = {
       },
       task: {
         podAnnotations: {
-          config.linkerd.io/proxy-cpu-request: "0.5"
+          "config.linkerd.io/proxy-cpu-request": "0.5"
         },
         hpa: {
           enabled: getElse(tp, 'hpa.enabled', false),
@@ -338,7 +338,7 @@ local tidepool(config, prev, namespace) = {
       },
       tidewhisperer: {
         podAnnotations: {
-          config.linkerd.io/proxy-cpu-request: "0.5"
+          "config.linkerd.io/proxy-cpu-request": "0.5"
         },
         hpa: {
           enabled: getElse(tp, 'hpa.enabled', false),
@@ -349,7 +349,7 @@ local tidepool(config, prev, namespace) = {
       },
       tools: {
         podAnnotations: {
-          config.linkerd.io/proxy-cpu-request: "0.5"
+          "config.linkerd.io/proxy-cpu-request": "0.5"
         },
         hpa: {
           enabled: getElse(tp, 'hpa.enabled', false),
@@ -360,7 +360,7 @@ local tidepool(config, prev, namespace) = {
       },
       user: {
         podAnnotations: {
-          config.linkerd.io/proxy-cpu-request: "0.5"
+          "config.linkerd.io/proxy-cpu-request": "0.5"
         },
         hpa: {
           enabled: getElse(tp, 'hpa.enabled', false),
