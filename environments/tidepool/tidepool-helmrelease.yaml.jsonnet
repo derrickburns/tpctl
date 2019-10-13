@@ -45,8 +45,8 @@ local tidepool(config, prev, namespace) = {
     name: "tidepool",
     namespace: namespace
   },
+  local tp = config.environments[namespace].tidepool,
   spec: {
-    local tp = config.environments[namespace].tidepool,
     chart: {
       git: "git@github.com:tidepool-org/development",
       path: getElse(tp, "chart.path", "charts/tidepool/0.1.7"),
