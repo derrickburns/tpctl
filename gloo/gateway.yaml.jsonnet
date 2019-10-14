@@ -9,10 +9,14 @@ local gateway(config) = {
     namespace: config.pkgs.gloo.namespace,
   },
   spec: {
-    plugins: {
-      healthCheck: {
-        path: "/status",
+    httpGateway: {
+      plugins: {
+        healthCheck: {
+          path: "/status",
+        },
       },
+    },
+    plugins: {
       accessLoggingService: {
         accessLog: [
           {

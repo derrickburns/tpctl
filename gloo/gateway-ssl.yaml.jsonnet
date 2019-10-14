@@ -11,11 +11,14 @@ local sslGateway(config) = {
   spec: {
     bindAddress: "::",
     bindPort: 8443,
-    httpGateway: {},
-    plugins: {
-      healthCheck: {
-        path: "/status",
+    httpGateway: {
+      plugins: {
+        healthCheck: {
+          path: "/status",
+        },
       },
+    },
+    plugins: {
       accessLoggingService: {
         accessLog: [
           {
