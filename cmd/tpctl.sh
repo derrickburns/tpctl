@@ -6,6 +6,14 @@
 set -o pipefail
 export FLUX_FORWARD_NAMESPACE=flux
 
+function find_peering_connections() {
+  local cluster=$(get_cluster)
+  local vpc=$(aws cloudformation describe-stacks --stack-name eksctl-${cluster}-cluster | jq '.Stacks[0].Outputs| .[] | select(.OutputKey | contains("VPC")) | .OutputValue' | sed -e 's/"//g')
+
+  aws ec2 describe-vpc-peering-connections --filters Name=accepter-vpc-info.vpc-id,Values=$vpc
+  aws ec2 describe-vpc-peering-connections --filters Name=requester-vpc-info.vpc-id,Values=$vpc
+}
+
 function cluster_in_context() {
   context=$(KUBECONFIG=$(get_kubeconfig) kubectl config current-context 2>/dev/null)
   if [ $? -eq 0 ]; then
@@ -950,7 +958,7 @@ function linkerd_dashboard() {
 
 # show help
 function help() {
-  echo "$0 [-h|--help] (all|values|edit_values|config|edit_repo|cluster|flux|gloo|regenerate_cert|copy_assets|mesh|migrate_secrets|randomize_secrets|upsert_plaintext_secrets|install_users|deploy_key|delete_cluster|await_deletion|remove_mesh|merge_kubeconfig|gloo_dashboard|linkerd_dashboard|diff|envrc|dns|install_certmanager|uninstall_certmanager|mongo_template|linkerd_check|sync)*"
+  echo "$0 [-h|--help] (all|values|edit_values|config|edit_repo|cluster|flux|gloo|regenerate_cert|copy_assets|mesh|migrate_secrets|randomize_secrets|upsert_plaintext_secrets|install_users|deploy_key|delete_cluster|await_deletion|remove_mesh|merge_kubeconfig|gloo_dashboard|linkerd_dashboard|diff|envrc|dns|install_certmanager|uninstall_certmanager|mongo_template|linkerd_check|sync|peering)*"
   echo
   echo
   echo "So you want to built a Kubernetes cluster that runs Tidepool. Great!"
@@ -977,6 +985,7 @@ function help() {
   echo
   echo "----- Advanced Commands -----"
   echo "sync - Cause flux to sync with the config repo."
+  echo "peering - List peering relationships"
   echo "edit_repo - open shell with config repo in current directory.  Exit shell to commit changes."
   echo "regenerate_cert - regenerate client certs for Helm to access Tiller"
   echo "edit_values - open editor to edit values.yaml file"
@@ -1304,6 +1313,12 @@ for param in $PARAMS; do
       ;;
     sync)
       fluxctl sync
+      ;;
+    peering)
+      check_remote_repo
+      setup_tmpdir
+      clone_remote
+      find_peering_connections
       ;;
     *)
       panic "unknown command: $param"
