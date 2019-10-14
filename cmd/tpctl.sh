@@ -4,6 +4,7 @@
 #
 
 set -o pipefail
+export FLUX_FORWARD_NAMESPACE=flux
 
 function cluster_in_context() {
   context=$(KUBECONFIG=$(get_kubeconfig) kubectl config current-context 2>/dev/null)
