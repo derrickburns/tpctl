@@ -741,6 +741,7 @@ function make_mesh() {
   linkerd check --pre
   expect_success "Failed linkerd pre-check."
   start "installing mesh"
+  linkerd version
   info "linkerd check --pre"
 
   linkerd install config | mykubectl apply -f -
@@ -950,7 +951,7 @@ function linkerd_dashboard() {
 
 # show help
 function help() {
-  echo "$0 [-h|--help] (all|values|edit_values|config|edit_repo|cluster|flux|gloo|regenerate_cert|copy_assets|mesh|migrate_secrets|randomize_secrets|upsert_plaintext_secrets|install_users|deploy_key|delete_cluster|await_deletion|remove_mesh|merge_kubeconfig|gloo_dashboard|linkerd_dashboard|diff|envrc|dns|install_certmanager|uninstall_certmanager|mongo_template)*"
+  echo "$0 [-h|--help] (all|values|edit_values|config|edit_repo|cluster|flux|gloo|regenerate_cert|copy_assets|mesh|migrate_secrets|randomize_secrets|upsert_plaintext_secrets|install_users|deploy_key|delete_cluster|await_deletion|remove_mesh|merge_kubeconfig|gloo_dashboard|linkerd_dashboard|diff|envrc|dns|install_certmanager|uninstall_certmanager|mongo_template|linkerd_check)*"
   echo
   echo
   echo "So you want to built a Kubernetes cluster that runs Tidepool. Great!"
@@ -993,6 +994,7 @@ function help() {
   echo "gloo_dashboard - open the Gloo dashboard"
   echo "dns - update the DNS aliases served"
   echo "linkerd_dashboard - open the Linkerd dashboard"
+  echo "linkerd_check - check Linkerd status"
   echo "mongo_template - output a template to use for creating a mongo secret"
   echo "diff - show recent git diff"
   echo "envrc - create .envrc file for direnv to change kubecontexts and to set REMOTE_REPO"
@@ -1296,6 +1298,9 @@ for param in $PARAMS; do
       ;;
     mongo_template)
       mongo_template
+      ;;
+    linkerd_check)
+      linkerd check --proxy
       ;;
     *)
       panic "unknown command: $param"

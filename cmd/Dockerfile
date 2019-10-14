@@ -36,7 +36,7 @@ RUN mv ~/.local/bin/* /usr/local/bin
 RUN curl -sL https://github.com/derailed/k9s/releases/download/0.8.4/k9s_0.8.4_Linux_x86_64.tar.gz | tar xz -C /tmp && \
     mv /tmp/k9s /usr/local/bin
 RUN curl -sL -o /usr/local/bin/linkerd https://github.com/linkerd/linkerd2/releases/download/stable-2.6.0/linkerd2-cli-stable-2.6.0-linux 
-RUN curl -sL -o /usr/local/bin/glooctl https://github.com/solo-io/gloo/releases/download/v0.19.1/glooctl-linux-amd64
+RUN curl -sL -o /usr/local/bin/glooctl https://github.com/solo-io/gloo/releases/download/v0.20.6/glooctl-linux-amd64
 COPY tpctl.sh /root/tpctl
 COPY separate_files /usr/local/bin/separate_files
 COPY external_secret /usr/local/bin/external_secret
