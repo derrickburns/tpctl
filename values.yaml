@@ -39,6 +39,10 @@ cluster:
       - arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy
       - arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy
       - arn:aws:iam::aws:policy/ElasticLoadBalancingFullAccess
+      withAddonPolicies:
+        autoScaler: true
+        certManager: true
+        externalDNS: true
 
 pkgs:
   amazon-cloudwatch:                         # AWS CloudWatch logging
