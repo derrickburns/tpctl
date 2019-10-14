@@ -44,7 +44,6 @@ local gateway(config) = {
     },
     bindAddress: "::",
     bindPort: 8080,
-    httpGateway: {},
     proxyNames: [
       "gateway-proxy-v2"
     ],
