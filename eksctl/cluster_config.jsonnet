@@ -42,7 +42,7 @@ local clusterAutoscalerRole =  metadata("cluster-autoscaler", "kube-system") + {
   }
 };
 
-local certManagerRole = metadata("certmanager", "certmanager") + {
+local certManagerRole = metadata("cert-manager", "cert-manager") + {
   attachPolicy: {
     Statement: [
       {
@@ -299,8 +299,8 @@ local defaultClusterConfig = {
   },
   iam+: {
     serviceAccounts+: [
-      clusterAutoscalerRole,
-      certManagerRole,
+      //clusterAutoscalerRole, 
+      //certManagerRole,
       cloudWatchRole,
       externalDNSRole,
       fluentdRole
