@@ -949,7 +949,7 @@ function linkerd_dashboard() {
 
 # show help
 function help() {
-  echo "$0 [-h|--help] (all|values|edit_values|config|edit_repo|cluster|flux|gloo|regenerate_cert|copy_assets|mesh|migrate_secrets|randomize_secrets|upsert_plaintext_secrets|install_users|deploy_key|delete_cluster|await_deletion|remove_mesh|merge_kubeconfig|gloo_dashboard|linkerd_dashboard|diff|envrc|dns|install_certmanager|uninstall_certmanager|mongo_template|linkerd_check)*"
+  echo "$0 [-h|--help] (all|values|edit_values|config|edit_repo|cluster|flux|gloo|regenerate_cert|copy_assets|mesh|migrate_secrets|randomize_secrets|upsert_plaintext_secrets|install_users|deploy_key|delete_cluster|await_deletion|remove_mesh|merge_kubeconfig|gloo_dashboard|linkerd_dashboard|diff|envrc|dns|install_certmanager|uninstall_certmanager|mongo_template|linkerd_check|sync)*"
   echo
   echo
   echo "So you want to built a Kubernetes cluster that runs Tidepool. Great!"
@@ -975,6 +975,7 @@ function help() {
   echo "If you run into trouble or have specific needs, check out these commands:"
   echo
   echo "----- Advanced Commands -----"
+  echo "sync - Cause flux to sync with the config repo."
   echo "edit_repo - open shell with config repo in current directory.  Exit shell to commit changes."
   echo "regenerate_cert - regenerate client certs for Helm to access Tiller"
   echo "edit_values - open editor to edit values.yaml file"
@@ -1299,6 +1300,9 @@ for param in $PARAMS; do
       ;;
     linkerd_check)
       linkerd check --proxy
+      ;;
+    sync)
+      fluxctl sync
       ;;
     *)
       panic "unknown command: $param"
