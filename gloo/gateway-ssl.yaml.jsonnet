@@ -13,6 +13,9 @@ local sslGateway(config) = {
     bindPort: 8443,
     httpGateway: {},
     plugins: {
+      healthCheck: {
+        path: "/status",
+      },
       accessLoggingService: {
         accessLog: [
           {
