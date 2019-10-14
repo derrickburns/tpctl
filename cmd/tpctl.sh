@@ -109,7 +109,6 @@ function install_gloo() {
     cd gloo
     glooctl install gateway -n gloo-system --values $TMP_DIR/gloo-values.yaml --dry-run | separate_files | add_names
   )
-  find . -print
   expect_success "Templating failure gloo/gloo-values.yaml.jsonnet"
   add_gloo_manifest "$config" gateway-ssl
   add_gloo_manifest "$config" gateway
@@ -767,7 +766,6 @@ function make_mesh() {
 
 # get values from legacy environments
 function get_legacy_values() {
-  set -x
   local kind=$1
   local cluster=$(get_cluster)
   local env
