@@ -10,11 +10,6 @@ local values(config) = {
       discovery: {
         fdsMode: 'WHITELIST',
       },
-      gateway: {
-	validation: {
-	  alwaysAcceptResources: false,
-        },
-      },
       gatewayProxies: {
         gatewayProxyV2: {
           readConfig: true,
