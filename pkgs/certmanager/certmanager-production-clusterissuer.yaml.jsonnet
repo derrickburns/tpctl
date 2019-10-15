@@ -28,6 +28,6 @@ local ClusterIssuer(config) = {
       ]
     }
   }
-}
+};
 
 function(config) ClusterIssuer(config)
