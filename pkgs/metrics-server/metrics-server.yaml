@@ -13,3 +13,5 @@ spec:
   values: 
     rbac:
       create: true
+    extraArgs:
+      "kubelet-preferred-address-types": "InternalIP"
