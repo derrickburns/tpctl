@@ -46,16 +46,6 @@ local tidepool(config, prev, namespace) = {
     namespace: namespace
   },
   local tp = config.environments[namespace].tidepool,
-  local resources = {
-    requests: {
-      memory: getElse( tp, 'resources.requests.memory', "64Mi"),
-      cpu: getElse( tp, 'resources.requests.cpu', "50m"), 
-    },
-    limits: {
-      memory: getElse( tp, 'resources.limits.memory', "128Mi"),
-      cpu: getElse( tp, 'resources.limits.cpu', "100m"),
-    }
-  }, 
   spec: {
     chart: {
       git: "git@github.com:tidepool-org/development",
@@ -68,7 +58,6 @@ local tidepool(config, prev, namespace) = {
         podAnnotations: {
           "config.linkerd.io/proxy-cpu-request": "0.5"
         },
-        resources: resources,
         hpa: {
           enabled: getElse(tp, 'hpa.enabled', false),
         },
@@ -77,7 +66,6 @@ local tidepool(config, prev, namespace) = {
         }
       },
       blip: {
-        resources: resources,
         podAnnotations: {
           "config.linkerd.io/proxy-cpu-request": "0.5"
         },
@@ -89,7 +77,6 @@ local tidepool(config, prev, namespace) = {
         }
       },
       blob: {
-        resources: resources,
         podAnnotations: {
           "config.linkerd.io/proxy-cpu-request": "0.5"
         },
@@ -115,7 +102,6 @@ local tidepool(config, prev, namespace) = {
         }
       },
       data: {
-        resources: resources,
         podAnnotations: {
           "config.linkerd.io/proxy-cpu-request": "0.5"
         },
@@ -127,7 +113,6 @@ local tidepool(config, prev, namespace) = {
         }
       },
       export: {
-        resources: resources,
         podAnnotations: {
           "config.linkerd.io/proxy-cpu-request": "0.5"
         },
@@ -139,7 +124,6 @@ local tidepool(config, prev, namespace) = {
         }
       },
       gatekeeper: {
-        resources: resources,
         podAnnotations: {
           "config.linkerd.io/proxy-cpu-request": "0.5"
         },
@@ -165,7 +149,6 @@ local tidepool(config, prev, namespace) = {
         enabled: false
       },
       highwater: {
-        resources: resources,
         podAnnotations: {
           "config.linkerd.io/proxy-cpu-request": "0.5"
         },
@@ -177,7 +160,6 @@ local tidepool(config, prev, namespace) = {
         }
       },
       hydrophone: {
-        resources: resources,
         podAnnotations: {
           "config.linkerd.io/proxy-cpu-request": "0.5"
         },
@@ -203,7 +185,6 @@ local tidepool(config, prev, namespace) = {
         }
       },
       image: {
-        resources: resources,
         podAnnotations: {
           "config.linkerd.io/proxy-cpu-request": "0.5"
         },
@@ -254,7 +235,6 @@ local tidepool(config, prev, namespace) = {
         }
       },
       jellyfish: {
-        resources: resources,
         podAnnotations: {
           "config.linkerd.io/proxy-cpu-request": "0.5"
         },
@@ -280,7 +260,6 @@ local tidepool(config, prev, namespace) = {
         }
       },
       messageapi: {
-        resources: resources,
         podAnnotations: {
           "config.linkerd.io/proxy-cpu-request": "0.5"
         },
@@ -292,7 +271,6 @@ local tidepool(config, prev, namespace) = {
         }
       },
       migrations: {
-        resources: resources,
         podAnnotations: {
           "config.linkerd.io/proxy-cpu-request": "0.5"
         },
@@ -310,7 +288,6 @@ local tidepool(config, prev, namespace) = {
         enabled: env.nosqlclient.enabled
       },
       notification: {
-        resources: resources,
         podAnnotations: {
           "config.linkerd.io/proxy-cpu-request": "0.5"
         },
@@ -322,7 +299,6 @@ local tidepool(config, prev, namespace) = {
         }
       },
       seagull: {
-        resources: resources,
         podAnnotations: {
           "config.linkerd.io/proxy-cpu-request": "0.5"
         },
@@ -334,7 +310,6 @@ local tidepool(config, prev, namespace) = {
         }
       },
       shoreline: {
-        resources: resources,
         podAnnotations: {
           "config.linkerd.io/proxy-cpu-request": "0.5"
         },
@@ -346,7 +321,6 @@ local tidepool(config, prev, namespace) = {
         }
       },
       task: {
-        resources: resources,
         podAnnotations: {
           "config.linkerd.io/proxy-cpu-request": "0.5"
         },
@@ -363,7 +337,6 @@ local tidepool(config, prev, namespace) = {
         }
       },
       tidewhisperer: {
-        resources: resources,
         podAnnotations: {
           "config.linkerd.io/proxy-cpu-request": "0.5"
         },
@@ -375,7 +348,6 @@ local tidepool(config, prev, namespace) = {
         }
       },
       tools: {
-        resources: resources,
         podAnnotations: {
           "config.linkerd.io/proxy-cpu-request": "0.5"
         },
@@ -387,7 +359,6 @@ local tidepool(config, prev, namespace) = {
         }
       },
       user: {
-        resources: resources,
         podAnnotations: {
           "config.linkerd.io/proxy-cpu-request": "0.5"
         },
