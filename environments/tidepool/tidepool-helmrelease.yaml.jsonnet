@@ -55,7 +55,7 @@ local tidepool(config, prev, namespace) = {
     releaseName: "%s-tidepool" % namespace,
     local podAnnotations = {
        "config.linkerd.io/proxy-cpu-request": "0.2",
-       "cluster-autoscaler.kubernetes.io/safe-to-evict": "true"
+       //"cluster-autoscaler.kubernetes.io/safe-to-evict": "true"
     },
     values: {
       auth: {
