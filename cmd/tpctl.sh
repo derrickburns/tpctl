@@ -6,12 +6,27 @@
 set -o pipefail
 export FLUX_FORWARD_NAMESPACE=flux
 
-function find_peering_connections() {
+function get_vpc {
   local cluster=$(get_cluster)
-  local vpc=$(aws cloudformation describe-stacks --stack-name eksctl-${cluster}-cluster | jq '.Stacks[0].Outputs| .[] | select(.OutputKey | contains("VPC")) | .OutputValue' | sed -e 's/"//g')
+  aws cloudformation describe-stacks --stack-name eksctl-${cluster}-cluster | jq '.Stacks[0].Outputs| .[] | select(.OutputKey | contains("VPC")) | .OutputValue' | sed -e 's/"//g'
+}
 
+function find_peering_connections() {
+  local vpc=$(get_vpc)
   aws ec2 describe-vpc-peering-connections --filters Name=accepter-vpc-info.vpc-id,Values=$vpc
   aws ec2 describe-vpc-peering-connections --filters Name=requester-vpc-info.vpc-id,Values=$vpc
+}
+
+function delete_peering_connections() {
+  start "deleting peering connections"
+  local ids=$(find_peering_connections | jq '.VpcPeeringConnections | .[].VpcPeeringConnectionId' | sed -e 's/"//g')
+  confirm "Delete peering connections: $ids?"
+  for id in ids
+  do
+    info "deleting peering connection $id"
+    aws ec2 delete-vpc-peering-connection --vpc-peering-connection-id  $id
+  done
+  complete "deleted peering connections"
 }
 
 function cluster_in_context() {
@@ -105,6 +120,16 @@ function add_gloo_manifest() {
   )
 }
 
+function make_gateway {
+  start "configuring gloo gateway"
+  local config=$(get_config)
+  mkdir -p gloo
+  add_gloo_manifest "$config" gateway-ssl
+  add_gloo_manifest "$config" gateway
+  add_gloo_manifest "$config" settings
+  complete "configured gloo gateway"
+}
+
 # install gloo
 function install_gloo() {
   start "installing gloo"
@@ -119,9 +144,6 @@ function install_gloo() {
     glooctl install gateway -n gloo-system --values $TMP_DIR/gloo-values.yaml --dry-run | separate_files | add_names
   )
   expect_success "Templating failure gloo/gloo-values.yaml.jsonnet"
-  add_gloo_manifest "$config" gateway-ssl
-  add_gloo_manifest "$config" gateway
-  add_gloo_manifest "$config" settings
 
   glooctl install gateway -n gloo-system --values $TMP_DIR/gloo-values.yaml
   expect_success "Gloo installation failure"
@@ -958,7 +980,7 @@ function linkerd_dashboard() {
 
 # show help
 function help() {
-  echo "$0 [-h|--help] (all|values|edit_values|config|edit_repo|cluster|flux|gloo|regenerate_cert|copy_assets|mesh|migrate_secrets|randomize_secrets|upsert_plaintext_secrets|install_users|deploy_key|delete_cluster|await_deletion|remove_mesh|merge_kubeconfig|gloo_dashboard|linkerd_dashboard|diff|envrc|dns|install_certmanager|uninstall_certmanager|mongo_template|linkerd_check|sync|peering)*"
+  echo "$0 [-h|--help] (all|values|edit_values|config|edit_repo|cluster|flux|gloo|regenerate_cert|copy_assets|mesh|migrate_secrets|randomize_secrets|upsert_plaintext_secrets|install_users|deploy_key|delete_cluster|await_deletion|remove_mesh|merge_kubeconfig|gloo_dashboard|linkerd_dashboard|diff|dns|install_certmanager|uninstall_certmanager|mongo_template|linkerd_check|sync|peering|vpc)*"
   echo
   echo
   echo "So you want to built a Kubernetes cluster that runs Tidepool. Great!"
@@ -984,6 +1006,7 @@ function help() {
   echo "If you run into trouble or have specific needs, check out these commands:"
   echo
   echo "----- Advanced Commands -----"
+  echo "vpc - identify the VPC"
   echo "sync - Cause flux to sync with the config repo."
   echo "peering - List peering relationships"
   echo "edit_repo - open shell with config repo in current directory.  Exit shell to commit changes."
@@ -1052,37 +1075,6 @@ define_colors
 
 for param in $PARAMS; do
   case $param in
-    all)
-      check_remote_repo
-      expect_github_token
-      setup_tmpdir
-      clone_remote
-      set_template_dir
-      expect_values_not_exist
-      make_values
-      save_changes "Added values"
-      make_config
-      save_changes "Added config packages"
-      make_cluster
-      merge_kubeconfig
-      make_users
-      save_changes "Added cluster and users"
-      install_gloo
-      save_changes "Added gloo"
-      make_mesh
-      save_changes "Added linkerd mesh"
-      make_flux
-      save_ca
-      make_cert
-      make_key
-      update_flux
-      save_changes "Added flux"
-      clone_secret_map
-      establish_ssh
-      migrate_secrets
-      establish_ssh
-      save_changes "Added migrated secrets"
-      ;;
     repo)
       setup_tmpdir
       create_repo
@@ -1102,6 +1094,8 @@ for param in $PARAMS; do
       clone_remote
       set_template_dir
       make_config
+      make_envrc
+      make_gateway
       save_changes "Added config packages"
       ;;
     cluster)
@@ -1276,13 +1270,6 @@ for param in $PARAMS; do
       clone_remote
       diff_config
       ;;
-    envrc)
-      check_remote_repo
-      setup_tmpdir
-      clone_remote
-      make_envrc
-      save_changes "Added .envrc"
-      ;;
     sumo)
       check_remote_repo
       setup_tmpdir
@@ -1319,6 +1306,19 @@ for param in $PARAMS; do
       setup_tmpdir
       clone_remote
       find_peering_connections
+      ;;
+    delete_peering)
+      check_remote_repo
+      setup_tmpdir
+      clone_remote
+      confirm_matching_cluster
+      delete_peering_connections
+      ;;
+    vpc)
+      check_remote_repo
+      setup_tmpdir
+      clone_remote
+      get_vpc
       ;;
     *)
       panic "unknown command: $param"
