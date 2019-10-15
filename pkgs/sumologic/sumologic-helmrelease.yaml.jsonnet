@@ -12,7 +12,7 @@ local helmrelease(config) = {
     chart: {
       name: "sumologic-fluentd",
       repository: "https://kubernetes-charts.storage.googleapis.com/",
-      version: "1.1.0"
+      version: "1.1.1"
     },
     releaseName: "sumologic-fluentd",
     values: {
@@ -22,7 +22,8 @@ local helmrelease(config) = {
       sumologic: {
         collectorUrlExistingSecret: "sumologic",
         readFromHead: false,
-        sourceCategoryPrefix: "kubernetes/%s/" % config.cluster.metadata.name
+        sourceCategoryPrefix: "kubernetes/%s/" % config.cluster.metadata.name,
+        excludeNamespaceRegex: "amazon-cloudwatch|external-dns|external-secrets|flux|kube-.*|linkerd|monitoring|reloader|sumologic"
       }
     }
   }
