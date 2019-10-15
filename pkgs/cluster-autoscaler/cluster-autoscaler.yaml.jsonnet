@@ -20,6 +20,9 @@ local helmrelease(config) = {
         "clusterName": config.cluster.metadata.name,
       },
       "awsRegion": config.cluster.metadata.region,
+      "extraArgs": [
+        "ignore-daemonsets-utilization": "true"
+      ],
       "image": {
         "tag": "v1.16.1"
       },
