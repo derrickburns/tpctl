@@ -4,22 +4,22 @@ local ClusterIssuer(config) = {
   metadata: {
     name: 'letsencrypt-staging',
   },
-  "spec": {
-    "acme": {
-      "email": config.email,
-      "privateKeySecretRef": {
-        "name": "letsencrypt-staging"
+  spec: {
+    acme: {
+      email: config.email,
+      privateKeySecretRef: {
+        name: "letsencrypt-staging"
       },
       server: 'https://acme-staging-v02.api.letsencrypt.org/directory',
-      "solvers": [
+      solvers: [
         {
-          "dns01": {
-            "route53": {
-              "region": config.cluster.metadata.region,
+          dns01: {
+            route53: {
+              region: config.cluster.metadata.region,
             }
           },
-          "selector": {
-            "dnsZones": [
+          selector: {
+            dnsZones: [
               "tidepool.org",
               "*.tidepool.org"
             ]
