@@ -4,7 +4,7 @@ local limitrange(config,namespace) = {
   "metadata": {
     "name": "limit-mem-cpu-per-container",
     "namespace" : namespace,
-  },-
+  },
   "spec": {
     "limits": [
       {
