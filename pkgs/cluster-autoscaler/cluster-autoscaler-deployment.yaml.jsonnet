@@ -34,6 +34,7 @@ local deployment(config) = {
               "--cloud-provider=aws",
               "--skip-nodes-with-local-storage=false",
               "--expander=least-waste",
+              "--ignore-daemon-set-pods-in-utilization=true",
               "--node-group-auto-discovery=asg:tag=k8s.io/cluster-autoscaler/enabled,k8s.io/cluster-autoscaler/%s" % config.cluster.metadata.name
             ],
             image: "k8s.gcr.io/cluster-autoscaler:v1.12.3",
