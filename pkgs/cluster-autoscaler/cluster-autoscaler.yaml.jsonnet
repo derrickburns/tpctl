@@ -22,7 +22,10 @@ local helmrelease(config) = {
       "awsRegion": config.cluster.metadata.region,
       "image": {
         "tag": "v1.16.1"
-      }
+      },
+      "rbac": {
+         create: true,
+      },
     }
   }
 };
