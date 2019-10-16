@@ -57,6 +57,10 @@ local tidepool(config, prev, namespace) = {
     }
   }, 
   spec: {
+     rollback: {
+       enable: true,
+       force: true,
+    },
     chart: {
       git: "git@github.com:tidepool-org/development",
       path: getElse(tp, "chart.path", "charts/tidepool/0.1.7"),
