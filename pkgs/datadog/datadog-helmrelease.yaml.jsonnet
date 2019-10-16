@@ -10,7 +10,7 @@ local helmrelease(config) = {
   },
   spec: {
     chart: {
-      name": "datadog",
+      name: "datadog",
       repository: "https://kubernetes-charts.storage.googleapis.com/",
       version: "1.31.11"
     },
