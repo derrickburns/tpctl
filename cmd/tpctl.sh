@@ -1118,6 +1118,7 @@ for param in $PARAMS; do
       make_cluster
       merge_kubeconfig
       make_users
+      make_envrc
       save_changes "Added cluster and users"
       ;;
     gloo)
@@ -1143,6 +1144,7 @@ for param in $PARAMS; do
       save_ca
       make_cert
       make_key
+      make_envrc
       update_flux
       save_changes "Updated flux"
       ;;
@@ -1326,6 +1328,12 @@ for param in $PARAMS; do
       clone_remote
       confirm_matching_cluster
       delete_peering_connections
+      ;;
+    envrc)
+      check_remote_repo
+      setup_tmpdir
+      clone_remote
+      make_envrc
       ;;
     vpc)
       check_remote_repo
