@@ -793,6 +793,9 @@ function make_mesh() {
     info "retrying linkerd check"
     linkerd check
   done
+
+  kubectl annotate deployments -n linkerd -l linkerd.io/control-plane-component=proxy-injector "cluster-autoscaler.kubernetes.io/safe-to-evict=false"
+  kubectl annotate pods -n linkerd -l linkerd.io/control-plane-component=proxy-injector "cluster-autoscaler.kubernetes.io/safe-to-evict=false"
   complete "installed mesh"
 }
 
