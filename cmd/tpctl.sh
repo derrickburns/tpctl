@@ -76,10 +76,16 @@ function uninstall_certmanager {
 function make_envrc() {
   start "creating .envrc"
   local cluster=$(get_cluster)
-  local context=$(yq r kubeconfig.yaml current-context)
-  echo "kubectx $context" >.envrc
+  if [ -f kubeconfig.yaml ]
+  then
+    local context=$(yq r kubeconfig.yaml current-context)
+    echo "kubectx $context" >.envrc
+  fi
   echo "export REMOTE_REPO=cluster-$cluster" >>.envrc
-  echo "cp ~/.helm/clusters/$cluster/* ~/.helm/" >>.envrc
+  if [ -d ~/.helm/clusters/$cluster ]
+  then
+    echo "cp ~/.helm/clusters/$cluster/* ~/.helm/" >>.envrc
+  fi
   add_file ".envrc"
   complete "created .envrc"
 }
@@ -625,7 +631,10 @@ function environment_template_files() {
 function make_environment_config() {
   local config=$(get_config)
   local env
-  mv environments $TMP_DIR
+  if [ -d environments ]
+  then
+    mv environments $TMP_DIR
+  fi
   for env in $(get_environments); do
     start "creating $env environment manifests"
     for dir in $(enabled_pkgs $TEMPLATE_DIR/environments environments.$env); do
