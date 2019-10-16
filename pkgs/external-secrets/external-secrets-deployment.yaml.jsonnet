@@ -1,3 +1,13 @@
+local get(x, path, sep='.') = (
+  local foldFunc(x, key) = if std.isObject(x) && std.objectHasAll(x, key) then x[key] else null;
+  std.foldl(foldFunc, std.split(path, sep), x)
+);
+
+local getElse(x, path, default) = (
+  local found = get(x, path);
+  if found == null then default else found
+);
+
 local deployment(config) = {
   apiVersion: "apps/v1",
   kind: "Deployment",
@@ -41,7 +51,7 @@ local deployment(config) = {
               },
               {
                 name: "POLLER_INTERVAL_MILLISECONDS",
-                value: config.pkgs["external-secrets"].poller_interval,
+                value: getElse(config.pkgs["external-secrets"], 'poller_interval', '120000'),
               }
             ],
             image: "tidepool/external-secrets:iam2",
