@@ -89,6 +89,8 @@ environments:
     mongodb:
       enabled: true                          # Whether to use an embedded mongodb 
     tidepool:
+      deployment:
+        replicas: 1
       resources:
         requests: 
           memory: "64Mi"
