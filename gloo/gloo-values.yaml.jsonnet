@@ -8,6 +8,7 @@ local values(config) = {
         create: false,
       },
       discovery: {
+        enabled: false,
         fdsMode: 'WHITELIST',
       },
       gatewayProxies: {
