@@ -148,6 +148,7 @@ function install_gloo() {
   glooctl install gateway -n gloo-system --values $TMP_DIR/gloo-values.yaml
   expect_success "Gloo installation failure"
   complete "installed gloo"
+  make_gateway
 }
 
 function confirm_matching_cluster() {
