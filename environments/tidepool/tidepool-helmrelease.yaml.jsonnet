@@ -135,11 +135,11 @@ local tidepool(config, prev, namespace) = {
       export: {
         resources : {
           requests: {
-            memory: "64Mi",
+            memory: "256Mi",
             cpu: "500m",
           },
           limits: {
-            memory: "128Mi",
+            memory: "256Mi",
             cpu: "1000m",
 	  }
         }, 
