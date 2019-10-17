@@ -54,7 +54,7 @@ local tidepool(config, prev, namespace) = {
     limits: {
       memory: getElse( tp, 'resources.limits.memory', "128Mi"),
       cpu: getElse( tp, 'resources.limits.cpu', "100m"),
-    }
+	    }
   }, 
   spec: {
      rollback: {
@@ -133,7 +133,16 @@ local tidepool(config, prev, namespace) = {
         }
       },
       export: {
-        resources: resources,
+        resources : {
+          requests: {
+            memory: "64Mi",
+            cpu: "500m",
+          },
+          limits: {
+            memory: "128Mi",
+            cpu: "1000m",
+	  }
+        }, 
         podAnnotations: podAnnotations,
         hpa: {
           enabled: getElse(tp, 'hpa.enabled', false),
@@ -144,7 +153,16 @@ local tidepool(config, prev, namespace) = {
         }
       },
       gatekeeper: {
-        resources: resources,
+        resources : {
+          requests: {
+            memory: "64Mi",
+            cpu: "500m",
+          },
+          limits: {
+            memory: "128Mi",
+            cpu: "1000m",
+	  }
+        }, 
         podAnnotations: podAnnotations,
         hpa: {
           enabled: getElse(tp, 'hpa.enabled', false),
