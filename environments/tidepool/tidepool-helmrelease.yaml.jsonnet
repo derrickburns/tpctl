@@ -310,7 +310,16 @@ local tidepool(config, prev, namespace) = {
         }
       },
       migrations: {
-        resources: resources,
+        resources : {
+          requests: {
+            memory: "256Mi",
+            cpu: "500m",
+          },
+          limits: {
+            memory: "256Mi",
+            cpu: "1000m",
+	  }
+        }, 
         podAnnotations: podAnnotations,
         hpa: {
           enabled: getElse(tp, 'hpa.enabled', false),
