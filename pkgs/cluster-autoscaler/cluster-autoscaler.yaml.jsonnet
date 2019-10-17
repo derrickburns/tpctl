@@ -21,7 +21,6 @@ local helmrelease(config) = {
       },
       awsRegion: config.cluster.metadata.region,
       extraArgs: {
-        "ignore-daemonsets-utilization": "true",
         "scale-down-utilization-threshold": 0.6,
         "skip-nodes-with-local-storage": false,
         v: 5
