@@ -27,7 +27,8 @@ local deployment(config) = {
       metadata: {
         labels: {
           "app.kubernetes.io/instance": "external-secrets",
-          "app.kubernetes.io/name": "kubernetes-external-secrets"
+          "app.kubernetes.io/name": "kubernetes-external-secrets",
+          "sumologic.com/exclude": "true"
         }
       },
       spec: {
