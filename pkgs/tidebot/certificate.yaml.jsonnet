@@ -6,7 +6,7 @@ local certificate(config) = {
   apiVersion: 'cert-manager.io/v1alpha2',
   kind: 'Certificate',
   metadata: {
-    name: e.service.https.dnsNames[0],
+    name: e.gateway.https.dnsNames[0],
     namespace: lib.getElse(e, 'namespace', 'tidebot'),
   },
   spec: {
@@ -15,8 +15,8 @@ local certificate(config) = {
       name: lib.getElse(e, 'certificate.issuer', 'letsencrypt-production'),
       kind: 'ClusterIssuer',
     },
-    commonName: e.service.https.dnsNames[0],
-    dnsNames: e.service.https.dnsNames,
+    commonName: e.gateway.https.dnsNames[0],
+    dnsNames: e.gateway.https.dnsNames,
   },
 };
 
