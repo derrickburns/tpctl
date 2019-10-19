@@ -10,7 +10,7 @@ local certificate(config) = {
     namespace: lib.getElse(e, 'namespace', 'tidebot'),
   },
   spec: {
-    secretName: lib.getElse(e, 'certificate.secret', 'tls'),
+    secretName: lib.getElse(e, 'certificate.secretName', 'tls'),
     issuerRef: {
       name: lib.getElse(e, 'certificate.issuer', 'letsencrypt-production'),
       kind: 'ClusterIssuer',
