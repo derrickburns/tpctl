@@ -20,7 +20,7 @@
       then []
       else (
         local envs = std.objectFields(e);
-        [e[env].tidepool for env in envs if $.isTrue(e[env], 'tidepool.enabled')];
+        [ e[env].tidepool for env in envs if $.isTrue(e[env], 'tidepool.enabled') ]
       );
 
     local p = $.get(config, 'pkgs');
@@ -29,7 +29,7 @@
       then []
       else (
         local pkgs = std.objectFields(p);
-        [p[pkg] for pkg in pkgs if $.isTrue(p[pkg], 'enabled')];
+        [p[pkg] for pkg in pkgs if $.isTrue(p[pkg], 'enabled')]
       );
 
     local all = tp + pk;
