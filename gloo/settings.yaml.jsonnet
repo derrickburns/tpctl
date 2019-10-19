@@ -13,12 +13,6 @@ local settings(config) = {
       validation: {
         alwaysAccept: false,
       },
-      certGenJob: {
-        image: {
-          repository: "certgen",
-        },
-        restartPolicy: "OnFailure",
-      },
     },
     bindAddr: "0.0.0.0:9977",
     discovery: {
