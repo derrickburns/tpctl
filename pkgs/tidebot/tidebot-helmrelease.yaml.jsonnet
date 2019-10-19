@@ -25,7 +25,6 @@ local helmrelease(config) = {
     releaseName: "tidebot",
     values: {
       ingress: tidebot.ingress,
-      }
     },
     configmap: {
       data_: {
