@@ -12,14 +12,6 @@ local values(config) = {
     fdsMode: 'WHITELIST',
   },
   gateway: {
-    certGenJob: {
-      restartPolicy: 'OnFailure', },
-    conversionJob: {
-      image: {
-        repository: 'gateway-conversion',
-      },
-      restartPolicy: 'Never',
-    },
     deployment: {
       image: {
         repository: 'gateway',
@@ -31,9 +23,6 @@ local values(config) = {
     enabled: true,
     proxyServiceAccount: {},
     upgrade: false,
-    validation: {
-      alwaysAcceptResources: true,
-    },
   },
   gatewayProxies: {
     gatewayProxyV2: {
