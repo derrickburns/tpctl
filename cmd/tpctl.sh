@@ -736,7 +736,7 @@ function update_gloo_service() {
     local config=$(get_config)
     local prev=$TMP_DIR/svc.json
     yq r $glooServiceFile -j >$prev
-    jsonnet --tla-code config="$config" --tla-code-file prev=$prev $TEMPLATE_DIR/gloo/svc.jsonnet >$glooServiceFile
+    jsonnet --tla-code config="$config" --tla-code-file prev=$prev $TEMPLATE_DIR/gloo/svc.jsonnet | yq r -  >$glooServiceFile
     expect_success "Templating failure $TEMPLATE_DIR/gloo/svc.jsonnet"
     add_file $glooServiceFile
     complete "updated gloo service"
