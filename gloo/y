@@ -1,0 +1,32 @@
+{
+  "gateway": {
+    "certGenJob": {
+      "image": {
+        "repository": "certgen"
+      },
+      "restartPolicy": "OnFailure"
+    },
+    "conversionJob": {
+      "image": {
+        "repository": "gateway-conversion"
+      },
+      "restartPolicy": "Never"
+    },
+    "deployment": {
+      "image": {
+        "repository": "gateway"
+      },
+      "replicas": 1,
+      "runAsUser": 10101,
+      "stats": true
+    },
+    "enabled": true,
+    "proxyServiceAccount": {},
+    "upgrade": false,
+    "validation": {
+      "alwaysAcceptResources": true,
+      "failurePolicy": "Ignore",
+      "secretName": "gateway-validation-certs"
+    }
+  }
+}
