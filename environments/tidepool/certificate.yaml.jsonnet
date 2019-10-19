@@ -8,7 +8,7 @@ local certificate(config, namespace) = {
     namespace: namespace,
   },
   spec: {
-    secretName: e.certificate.secret,
+    secretName: e.certificate.secretName,
     issuerRef: {
       name: e.certificate.issuer,
       kind: 'ClusterIssuer',
