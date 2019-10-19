@@ -13,11 +13,7 @@ local values(config) = {
   },
   gateway: {
     certGenJob: {
-      image: {
-        repository: 'certgen',
-      },
-      restartPolicy: 'OnFailure',
-    },
+      restartPolicy: 'OnFailure', },
     conversionJob: {
       image: {
         repository: 'gateway-conversion',
