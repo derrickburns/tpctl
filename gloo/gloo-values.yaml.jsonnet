@@ -37,8 +37,6 @@ local values(config) = {
     upgrade: false,
     validation: {
       alwaysAcceptResources: true,
-      failurePolicy: 'Ignore',
-      secretName: 'gateway-validation-certs',
     },
   },
   gatewayProxies: {
