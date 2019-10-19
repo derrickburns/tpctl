@@ -21,6 +21,6 @@ local certificate(config) = {
 };
 
 function(config) 
-  if lib.isTrue(config, 'ingress.service.https.enabled')
+  if lib.isTrue(config, 'pkgs.tidebot.ingress.service.https.enabled')
   then certificate(config)
   else {}
