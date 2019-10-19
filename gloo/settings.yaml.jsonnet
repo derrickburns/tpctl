@@ -11,8 +11,15 @@ local settings(config) = {
   spec: {
     gateway: {
       validation: {
-        alwaysAccept: false
-      }
+        alwaysAccept: false,
+        secretName: "gateway-validation-certs",
+      },
+      certGenJob: {
+        image: {
+          repository: "certgen",
+        },
+        restartPolicy: "OnFailure",
+      },
     },
     bindAddr: "0.0.0.0:9977",
     discovery: {
