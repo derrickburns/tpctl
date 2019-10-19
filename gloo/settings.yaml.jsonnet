@@ -8,14 +8,14 @@ local settings(config) = {
       app: "gloo"
     },
     name: "default",
-    namespace: lib.getElse(config, 'pkgs.gloo.namespace', 'gloo-system')
+    namespace: lib.getElse(config, 'pkgs.gloo.namespace', 'gloo-system'),
   },
   spec: {
     bindAddr: "0.0.0.0:9977",
     discovery: {
       fdsMode: "WHITELIST"
     },
-    discoveryNamespace: config.pkgs.gloo.namespace,
+    discoveryNamespace: lib.getElse(config, 'pkgs.gloo.namespace', 'gloo-system'),
     kubernetesArtifactSource: {},
     kubernetesConfigSource: {},
     kubernetesSecretSource: {},
