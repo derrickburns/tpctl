@@ -1,3 +1,5 @@
+local lib=import '../lib/lib.jsonnet';
+
 local settings(config) = {
   apiVersion: "gloo.solo.io/v1",
   kind: "Settings",
@@ -6,7 +8,7 @@ local settings(config) = {
       app: "gloo"
     },
     name: "default",
-    namespace: config.pkgs.gloo.namespace,
+    namespace: lib.getElse(config, 'pkgs.gloo.namespace', 'gloo-system')
   },
   spec: {
     bindAddr: "0.0.0.0:9977",
