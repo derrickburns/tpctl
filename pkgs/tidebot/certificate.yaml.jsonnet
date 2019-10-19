@@ -1,7 +1,7 @@
 local lib=import '../../lib/lib.jsonnet';
 
 local certificate(config) = {
-  local e = config.pkgs.tidebot,
+  local e = config.pkgs.tidebot.ingress,
 
   apiVersion: 'cert-manager.io/v1alpha2',
   kind: 'Certificate',
@@ -21,6 +21,6 @@ local certificate(config) = {
 };
 
 function(config) 
-  if lib.isTrue(config, 'servive.https.enabled')
+  if lib.isTrue(config, 'ingress.service.https.enabled')
   then certificate(config)
   else {}
