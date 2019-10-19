@@ -21,6 +21,6 @@ local certificate(config) = {
 };
 
 function(config) 
-  if isTrue(config, 'servive.https.enabled')
+  if lib.isTrue(config, 'servive.https.enabled')
   then certificate(config)
   else {}
