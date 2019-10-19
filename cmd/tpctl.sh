@@ -1299,6 +1299,7 @@ for param in $PARAMS; do
       clone_remote
       set_template_dir
       update_gloo_service
+      save_changes "Updated dns entries"
       ;;
     install_certmanager)
       check_remote_repo
