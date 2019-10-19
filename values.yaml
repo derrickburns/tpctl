@@ -81,6 +81,8 @@ pkgs:
     enabled: true
     bucket: tidepool-thanos                  # Writable S3 bucket in which to aggregate multi-cluster telemetry data
     secret: thanos-objstore-config           # Name of Kubernetes secret in which Thanos config is stored.
+  tidebot:
+    enabled: false
 
 environments:
   qa2:
