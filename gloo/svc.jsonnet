@@ -1,4 +1,4 @@
-local lib = import 'lib.jsonnet';
+local lib = import '../lib/lib.jsonnet';
 
 local update(config, prev) =  prev + {
   metadata+: {

@@ -1,3 +1,5 @@
+local lib=import '../lib/lib.jsonnet';
+
 local sslGateway(config) = {
   apiVersion: "gateway.solo.io.v2/v2",
   kind: "Gateway",
@@ -6,7 +8,7 @@ local sslGateway(config) = {
       origin: "default"
     },
     name: "gateway-proxy-v2-ssl",
-    namespace: config.pkgs.gloo.namespace
+    namespace: lib.getElse(config, 'pkgs.gloo.namespace', 'gloo-system')
   },
   spec: {
     bindAddress: "::",
