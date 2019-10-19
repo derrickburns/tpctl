@@ -25,15 +25,15 @@ local helmrelease(config) = {
     releaseName: "tidebot",
     values: {
       ingress: tidebot.ingress,
-    },
-    configmap: {
-      data_: {
-         HUBOT_GITHUB_EVENT_NOTIFIER_TYPES: getElse(tidebot, 'HUBOT_GITHUB_EVENT_NOTIFIER_TYPES', 
-           "commit_comment,create,delete,deployment,deployment_status,issue_comment,issues,page_build,pull_request_review_comment,pull_request,push,repository,release,status,ping,pull_request_review"),
-         HUBOT_SLACK_ACCOUNT: getElse(tidebot, 'HUBOT_SLACK_ACCOUNT', "Tidepool"),
-         HUBOT_SLACK_ROOMS: getElse(tidebot, 'HUBOT_SLACK_ROOMS', "tidebot,github-events"),
+      configmap: {
+        data_: {
+           HUBOT_GITHUB_EVENT_NOTIFIER_TYPES: getElse(tidebot, 'HUBOT_GITHUB_EVENT_NOTIFIER_TYPES', 
+             "commit_comment,create,delete,deployment,deployment_status,issue_comment,issues,page_build,pull_request_review_comment,pull_request,push,repository,release,status,ping,pull_request_review"),
+           HUBOT_SLACK_ACCOUNT: getElse(tidebot, 'HUBOT_SLACK_ACCOUNT', "Tidepool"),
+           HUBOT_SLACK_ROOMS: getElse(tidebot, 'HUBOT_SLACK_ROOMS', "tidebot,github-events"),
+        }
       }
-    }
+    },
   }
 };
 
