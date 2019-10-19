@@ -248,30 +248,14 @@ local tidepool(config, prev, namespace) = {
         }
       },
       ingress: {
-        certificate: {
-	  secretName: env.certificate.secret
-        },
+        certificate: env.certificate,
         deployment: {
           replicas: replicas,
           name: "gateway-proxy-v2",
           namespace: "gloo-system"
         },
-        gateway: {
-          http: {
-            dnsNames: env.gateway.http.dnsNames
-          },
-          https: {
-            dnsNames: env.gateway.https.dnsNames
-          }
-        },
-        service: {
-          http: {
-            enabled: env.gateway.http.enabled
-          },
-          https: {
-            enabled: env.gateway.https.enabled
-          }
-        }
+        gateway: env.gateway,
+        service: env.service,
       },
       jellyfish: {
         resources: resources,
