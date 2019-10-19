@@ -12,7 +12,6 @@ local settings(config) = {
     gateway: {
       validation: {
         alwaysAccept: false,
-        secretName: "gateway-validation-certs",
       },
       certGenJob: {
         image: {
