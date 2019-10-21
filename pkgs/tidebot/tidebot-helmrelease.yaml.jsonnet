@@ -26,6 +26,7 @@ local helmrelease(config) = {
     values: {
       ingress: tidebot.ingress,
       configmap: {
+        enabled: true,
         data_: {
            HUBOT_GITHUB_EVENT_NOTIFIER_TYPES: getElse(tidebot, 'HUBOT_GITHUB_EVENT_NOTIFIER_TYPES', 
              "commit_comment,create,delete,deployment,deployment_status,issue_comment,issues,page_build,pull_request_review_comment,pull_request,push,repository,release,status,ping,pull_request_review"),
