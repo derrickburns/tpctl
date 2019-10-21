@@ -46,9 +46,9 @@
       namespace: namespace,
     },
     spec: {
-      secretName: lib.getElse(e, 'certificate.secretName', 'tls'),
+      secretName: $.getElse(e, 'certificate.secretName', 'tls'),
       issuerRef: {
-        name: lib.getElse(e, 'certificate.issuer', 'letsencrypt-production'),
+        name: $.getElse(e, 'certificate.issuer', 'letsencrypt-production'),
         kind: 'ClusterIssuer',
       },
       commonName: e.gateway.https.dnsNames[0],
