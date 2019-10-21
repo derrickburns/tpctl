@@ -1,6 +1,6 @@
 // Generate eksctl ClusterConfig file with IAM policies and service accounts
 
-local lib='../lib/lib.jsonnet';
+local lib = import '../lib/lib.jsonnet';
 
 local values(obj) = [obj[field] for field in std.objectFields(obj)];
 
