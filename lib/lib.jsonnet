@@ -33,8 +33,8 @@
       );
 
     local all = tp + pk;
-    local httpNames = [x.ingress.gateway.http.dnsNames for x in all if $.isTrue(x, 'ingress.gateway.http.enabled')];
-    local httpsNames = [x.ingress.gateway.https.dnsNames for x in all if $.isTrue(x, 'ingress.gateway.https.enabled')];
+    local httpNames = [x.ingress.gateway.http.dnsNames for x in all if $.isTrue(x, 'ingress.service.http.enabled')];
+    local httpsNames = [x.ingress.gateway.https.dnsNames for x in all if $.isTrue(x, 'ingress.service.https.enabled')];
     std.join(',', std.filter(function(x) x != 'localhost', std.flattenArrays(httpNames + httpsNames)))
   ),
 
