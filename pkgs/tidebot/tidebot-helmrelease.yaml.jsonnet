@@ -9,7 +9,7 @@ local helmrelease(config) = {
     annotations: {
       'fluxcd.io/automated': 'true',
       'repository.fluxcd.io/tidebot': 'image',
-      'fluxcd.io/tag.tidebot': lib.getElse(config.pkgs.tidebot.gitops, 'glob:develop-*')
+      'fluxcd.io/tag.tidebot': lib.getElse(config, 'pkgs.tidebot.gitops', 'glob:develop-*')
     },
   },
   local tidebot = config.pkgs.tidebot,
