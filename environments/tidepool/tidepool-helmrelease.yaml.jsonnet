@@ -1,7 +1,7 @@
 local defaultHost(env) = (
-  if env.gateway.default.protocol == "http"
-  then env.gateway.http.dnsNames[0]
-  else env.gateway.https.dnsNames[0]
+  if env.ingress.gateway.default.protocol == "http"
+  then env.ingress.gateway.http.dnsNames[0]
+  else env.ingress.gateway.https.dnsNames[0]
 );
 
 local get(x, path, sep='.') = (
@@ -176,7 +176,7 @@ local tidepool(config, prev, namespace) = {
         gateway: {
           default: {
             host: defaultHost(env),
-            protocol: env.gateway.default.protocol,
+            protocol: env.ingress.gateway.default.protocol,
           }
         },
         store: {
@@ -254,8 +254,8 @@ local tidepool(config, prev, namespace) = {
           name: "gateway-proxy-v2",
           namespace: "gloo-system"
         },
-        gateway: env.gateway,
-        service: env.service,
+        gateway: env.ingress.gateway,
+        service: env.ingress.service,
       },
       jellyfish: {
         resources: resources,
