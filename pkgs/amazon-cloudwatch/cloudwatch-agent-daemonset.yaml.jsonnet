@@ -1,144 +1,144 @@
 local daemonset(config) = {
-  apiVersion: "apps/v1",
-  kind: "DaemonSet",
+  apiVersion: 'apps/v1',
+  kind: 'DaemonSet',
   metadata: {
-    name: "cloudwatch-agent",
-    namespace: "amazon-cloudwatch"
+    name: 'cloudwatch-agent',
+    namespace: 'amazon-cloudwatch',
   },
   spec: {
     selector: {
       matchLabels: {
-        name: "cloudwatch-agent"
-      }
+        name: 'cloudwatch-agent',
+      },
     },
     template: {
       metadata: {
         labels: {
-          name: "cloudwatch-agent"
-        }
+          name: 'cloudwatch-agent',
+        },
       },
       spec: {
         containers: [
           {
             env: [
               {
-                name: "CLUSTER_NAME",
+                name: 'CLUSTER_NAME',
                 value: config.cluster.metadata.name,
               },
               {
-                name: "HOST_IP",
+                name: 'HOST_IP',
                 valueFrom: {
                   fieldRef: {
-                    fieldPath: "status.hostIP"
-                  }
-                }
+                    fieldPath: 'status.hostIP',
+                  },
+                },
               },
               {
-                name: "HOST_NAME",
+                name: 'HOST_NAME',
                 valueFrom: {
                   fieldRef: {
-                    fieldPath: "spec.nodeName"
-                  }
-                }
+                    fieldPath: 'spec.nodeName',
+                  },
+                },
               },
               {
-                name: "K8S_NAMESPACE",
+                name: 'K8S_NAMESPACE',
                 valueFrom: {
                   fieldRef: {
-                    fieldPath: "metadata.namespace"
-                  }
-                }
-              }
+                    fieldPath: 'metadata.namespace',
+                  },
+                },
+              },
             ],
-            image: "amazon/cloudwatch-agent:latest",
-            imagePullPolicy: "Always",
-            name: "cloudwatch-agent",
+            image: 'amazon/cloudwatch-agent:latest',
+            imagePullPolicy: 'Always',
+            name: 'cloudwatch-agent',
             resources: {
               limits: {
-                cpu: "200m",
-                memory: "200Mi"
+                cpu: '200m',
+                memory: '200Mi',
               },
               requests: {
-                cpu: "200m",
-                memory: "200Mi"
-              }
+                cpu: '200m',
+                memory: '200Mi',
+              },
             },
             volumeMounts: [
               {
-                mountPath: "/etc/cwagentconfig",
-                name: "cwagentconfig"
+                mountPath: '/etc/cwagentconfig',
+                name: 'cwagentconfig',
               },
               {
-                mountPath: "/rootfs",
-                name: "rootfs",
-                readOnly: true
+                mountPath: '/rootfs',
+                name: 'rootfs',
+                readOnly: true,
               },
               {
-                mountPath: "/var/run/docker.sock",
-                name: "dockersock",
-                readOnly: true
+                mountPath: '/var/run/docker.sock',
+                name: 'dockersock',
+                readOnly: true,
               },
               {
-                mountPath: "/var/lib/docker",
-                name: "varlibdocker",
-                readOnly: true
+                mountPath: '/var/lib/docker',
+                name: 'varlibdocker',
+                readOnly: true,
               },
               {
-                mountPath: "/sys",
-                name: "sys",
-                readOnly: true
+                mountPath: '/sys',
+                name: 'sys',
+                readOnly: true,
               },
               {
-                mountPath: "/dev/disk",
-                name: "devdisk",
-                readOnly: true
-              }
-            ]
-          }
+                mountPath: '/dev/disk',
+                name: 'devdisk',
+                readOnly: true,
+              },
+            ],
+          },
         ],
-        serviceAccountName: "cloudwatch-agent",
+        serviceAccountName: 'cloudwatch-agent',
         terminationGracePeriodSeconds: 60,
         volumes: [
           {
             configMap: {
-              name: "cwagentconfig"
+              name: 'cwagentconfig',
             },
-            name: "cwagentconfig"
+            name: 'cwagentconfig',
           },
           {
             hostPath: {
-              path: "/"
+              path: '/',
             },
-            name: "rootfs"
+            name: 'rootfs',
           },
           {
             hostPath: {
-              path: "/var/run/docker.sock"
+              path: '/var/run/docker.sock',
             },
-            name: "dockersock"
+            name: 'dockersock',
           },
           {
             hostPath: {
-              path: "/var/lib/docker"
+              path: '/var/lib/docker',
             },
-            name: "varlibdocker"
+            name: 'varlibdocker',
           },
           {
             hostPath: {
-              path: "/sys"
+              path: '/sys',
             },
-            name: "sys"
+            name: 'sys',
           },
           {
             hostPath: {
-              path: "/dev/disk/"
+              path: '/dev/disk/',
             },
-            name: "devdisk"
-          }
-        ]
-      }
-    }
-  }
+            name: 'devdisk',
+          },
+        ],
+      },
+    },
+  },
 };
 
 function(config) daemonset(config)

@@ -41,7 +41,7 @@ local updateHelmOperator(deployment) = (
           ],
           containers: [
             container {
-	      image: 'docker.io/fluxcd/helm-operator:1.0.0-rc2',
+              image: 'docker.io/fluxcd/helm-operator:1.0.0-rc2',
               volumeMounts+: [
                 {
                   name: 'repositories-yaml',

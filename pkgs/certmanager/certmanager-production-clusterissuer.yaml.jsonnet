@@ -1,33 +1,33 @@
 local ClusterIssuer(config) = {
-  apiVersion: "cert-manager.io/v1alpha2",
-  kind: "ClusterIssuer",
+  apiVersion: 'cert-manager.io/v1alpha2',
+  kind: 'ClusterIssuer',
   metadata: {
-    name: "letsencrypt-production"
+    name: 'letsencrypt-production',
   },
   spec: {
     acme: {
       email: config.email,
       privateKeySecretRef: {
-        name: "letsencrypt-production"
+        name: 'letsencrypt-production',
       },
-      server: "https://acme-v02.api.letsencrypt.org/directory",
+      server: 'https://acme-v02.api.letsencrypt.org/directory',
       solvers: [
         {
           dns01: {
             route53: {
               region: config.cluster.metadata.region,
-            }
+            },
           },
           selector: {
             dnsZones: [
-              "tidepool.org",
-              "*.tidepool.org"
-            ]
-          }
-        }
-      ]
-    }
-  }
+              'tidepool.org',
+              '*.tidepool.org',
+            ],
+          },
+        },
+      ],
+    },
+  },
 };
 
 function(config) ClusterIssuer(config)

@@ -1,32 +1,32 @@
 local helmrelease(config) = {
-  apiVersion: "helm.fluxcd.io/v1",
-  kind: "HelmRelease",
+  apiVersion: 'helm.fluxcd.io/v1',
+  kind: 'HelmRelease',
   metadata: {
     annotations: {
-      "fluxcd.io/automated": "true"
+      'fluxcd.io/automated': 'true',
     },
-    name: "sumologic-fluentd",
-    namespace: "sumologic"
+    name: 'sumologic-fluentd',
+    namespace: 'sumologic',
   },
   spec: {
     chart: {
-      name: "sumologic-fluentd",
-      repository: "https://kubernetes-charts.storage.googleapis.com/",
-      version: "1.1.1"
+      name: 'sumologic-fluentd',
+      repository: 'https://kubernetes-charts.storage.googleapis.com/',
+      version: '1.1.1',
     },
-    releaseName: "sumologic-fluentd",
+    releaseName: 'sumologic-fluentd',
     values: {
       rbac: {
-        create: true
+        create: true,
       },
       sumologic: {
-        collectorUrlExistingSecret: "sumologic",
+        collectorUrlExistingSecret: 'sumologic',
         readFromHead: false,
-        sourceCategoryPrefix: "kubernetes/%s/" % config.cluster.metadata.name,
-        excludeNamespaceRegex: "amazon-cloudwatch|external-dns|external-secrets|flux|kube-.*|linkerd|monitoring|reloader|sumologic"
-      }
-    }
-  }
+        sourceCategoryPrefix: 'kubernetes/%s/' % config.cluster.metadata.name,
+        excludeNamespaceRegex: 'amazon-cloudwatch|external-dns|external-secrets|flux|kube-.*|linkerd|monitoring|reloader|sumologic',
+      },
+    },
+  },
 };
 
 function(config) helmrelease(config)

@@ -1,27 +1,27 @@
-local lib=import '../lib/lib.jsonnet';
+local lib = import '../lib/lib.jsonnet';
 
 local settings(config) = {
-  apiVersion: "gloo.solo.io/v1",
-  kind: "Settings",
+  apiVersion: 'gloo.solo.io/v1',
+  kind: 'Settings',
   metadata: {
     labels: {
-      app: "gloo"
+      app: 'gloo',
     },
-    name: "default",
+    name: 'default',
     namespace: lib.getElse(config, 'pkgs.gloo.namespace', 'gloo-system'),
   },
   spec: {
-    bindAddr: "0.0.0.0:9977",
+    bindAddr: '0.0.0.0:9977',
     discovery: {
-      fdsMode: "WHITELIST"
+      fdsMode: 'WHITELIST',
     },
     discoveryNamespace: lib.getElse(config, 'pkgs.gloo.namespace', 'gloo-system'),
     kubernetesArtifactSource: {},
     kubernetesConfigSource: {},
     kubernetesSecretSource: {},
     linkerd: true,
-    refreshRate: "60s"
-  }
+    refreshRate: '60s',
+  },
 };
 
 function(config) settings(config)

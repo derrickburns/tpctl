@@ -20,11 +20,11 @@
       then []
       else (
         local envs = std.objectFields(e);
-        [ e[env].tidepool for env in envs if $.isTrue(e[env], 'tidepool.enabled') ]
+        [e[env].tidepool for env in envs if $.isTrue(e[env], 'tidepool.enabled')]
       );
 
     local p = $.get(config, 'pkgs');
-    local pk = 
+    local pk =
       if p == null
       then []
       else (
@@ -33,8 +33,26 @@
       );
 
     local all = tp + pk;
-    local httpNames = [x.gateway.http.dnsNames for x in all if $.isTrue(x, 'gateway.http.enabled')];
-    local httpsNames = [x.gateway.https.dnsNames for x in all if $.isTrue(x, 'gateway.https.enabled')];
+    local httpNames = [x.ingress.gateway.http.dnsNames for x in all if $.isTrue(x, 'ingress.gateway.http.enabled')];
+    local httpsNames = [x.ingress.gateway.https.dnsNames for x in all if $.isTrue(x, 'ingress.gateway.https.enabled')];
     std.join(',', std.filter(function(x) x != 'localhost', std.flattenArrays(httpNames + httpsNames)))
   ),
+
+  certificate(e, namespace):: {
+    apiVersion: 'cert-manager.io/v1alpha2',
+    kind: 'Certificate',
+    metadata: {
+      name: e.gateway.https.dnsNames[0],
+      namespace: namespace,
+    },
+    spec: {
+      secretName: lib.getElse(e, 'certificate.secretName', 'tls'),
+      issuerRef: {
+        name: lib.getElse(e, 'certificate.issuer', 'letsencrypt-production'),
+        kind: 'ClusterIssuer',
+      },
+      commonName: e.gateway.https.dnsNames[0],
+      dnsNames: e.gateway.https.dnsNames,
+    },
+  },
 }

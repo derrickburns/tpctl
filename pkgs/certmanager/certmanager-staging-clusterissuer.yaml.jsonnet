@@ -8,7 +8,7 @@ local ClusterIssuer(config) = {
     acme: {
       email: config.email,
       privateKeySecretRef: {
-        name: "letsencrypt-staging"
+        name: 'letsencrypt-staging',
       },
       server: 'https://acme-staging-v02.api.letsencrypt.org/directory',
       solvers: [
@@ -16,17 +16,17 @@ local ClusterIssuer(config) = {
           dns01: {
             route53: {
               region: config.cluster.metadata.region,
-            }
+            },
           },
           selector: {
             dnsZones: [
-              "tidepool.org",
-              "*.tidepool.org"
-            ]
-          }
-        }
-      ]
-    }
+              'tidepool.org',
+              '*.tidepool.org',
+            ],
+          },
+        },
+      ],
+    },
   },
 };
 

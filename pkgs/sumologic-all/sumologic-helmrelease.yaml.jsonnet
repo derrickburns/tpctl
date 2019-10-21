@@ -1,75 +1,75 @@
 local helmrelease(config) = {
-  apiVersion: "helm.fluxcd.io/v1",
-  kind: "HelmRelease",
+  apiVersion: 'helm.fluxcd.io/v1',
+  kind: 'HelmRelease',
   metadata: {
     annotations: {
-      "fluxcd.io/automated": "true"
+      'fluxcd.io/automated': 'true',
     },
-    name: "sumologic-fluentd",
-    namespace: "sumologic"
+    name: 'sumologic-fluentd',
+    namespace: 'sumologic',
   },
   spec: {
     chart: {
-      name: "sumologic-fluentd",
-      repository: "https://sumologic.github.io/sumologic-kubernetes-collection",
-      version: "0.8.0"
+      name: 'sumologic-fluentd',
+      repository: 'https://sumologic.github.io/sumologic-kubernetes-collection',
+      version: '0.8.0',
     },
-    releaseName: "collection",
+    releaseName: 'collection',
     deployment: {
       replicaCount: 3,
       resources: {
         limits: {
           cpu: 1,
-          memory: "1Gi"
+          memory: '1Gi',
         },
         requests: {
           cpu: 0.5,
-          memory: "768Mi"
-        }
-      }
+          memory: '768Mi',
+        },
+      },
     },
     eventsDeployment: {
       resources: {
         limits: {
-          cpu: "100m",
-          memory: "256Mi"
+          cpu: '100m',
+          memory: '256Mi',
         },
         requests: {
-          cpu: "100m",
-          memory: "256Mi"
-        }
-      }
+          cpu: '100m',
+          memory: '256Mi',
+        },
+      },
     },
     falco: {
       enabled: true,
       falco: {
-        jsonOutput: true
-      }
+        jsonOutput: true,
+      },
     },
-    "fluent-bit": {
+    'fluent-bit': {
       backend: {
         forward: {
-          host: "collection-sumologic.sumologic.svc.cluster.local",
+          host: 'collection-sumologic.sumologic.svc.cluster.local',
           port: 24321,
           shared_key: null,
-          tls: "off",
+          tls: 'off',
           tls_debug: 1,
-          tls_verify: "on"
+          tls_verify: 'on',
         },
-        type: "forward"
+        type: 'forward',
       },
       enabled: true,
       input: {
         systemd: {
-          enabled: true
-        }
+          enabled: true,
+        },
       },
       metrics: {
-        enabled: true
+        enabled: true,
       },
       rawConfig: |||
         @INCLUDE fluent-bit-service.conf
-        
+
         [INPUT]
           Name             tail
           Path             /var/log/containers/*.log
@@ -139,780 +139,780 @@ local helmrelease(config) = {
       |||,
       tolerations: [
         {
-          effect: "NoSchedule",
-          operator: "Exists"
-        }
+          effect: 'NoSchedule',
+          operator: 'Exists',
+        },
       ],
-      trackOffsets: true
+      trackOffsets: true,
     },
-    fullnameOverride: "",
+    fullnameOverride: '',
     image: {
-      pullPolicy: "IfNotPresent",
-      repository: "sumologic/kubernetes-fluentd",
-      tag: "0.8.0"
+      pullPolicy: 'IfNotPresent',
+      repository: 'sumologic/kubernetes-fluentd',
+      tag: '0.8.0',
     },
-    nameOverride: "",
-    "prometheus-operator": {
+    nameOverride: '',
+    'prometheus-operator': {
       alertmanager: {
-        enabled: false
+        enabled: false,
       },
       enabled: true,
       grafana: {
         defaultDashboardsEnabled: false,
-        enabled: false
+        enabled: false,
       },
       prometheus: {
         additionalServiceMonitors: [
           {
             additionalLabels: {
-              app: "collection-sumologic"
+              app: 'collection-sumologic',
             },
             endpoints: [
               {
-                port: "metrics"
-              }
+                port: 'metrics',
+              },
             ],
-            name: "collection-sumologic",
+            name: 'collection-sumologic',
             namespaceSelector: {
               matchNames: [
-                "sumologic"
-              ]
+                'sumologic',
+              ],
             },
             selector: {
               matchLabels: {
-                app: "collection-sumologic"
-              }
-            }
+                app: 'collection-sumologic',
+              },
+            },
           },
           {
             additionalLabels: {
-              app: "collection-sumologic-events"
+              app: 'collection-sumologic-events',
             },
             endpoints: [
               {
-                port: "metrics"
-              }
+                port: 'metrics',
+              },
             ],
-            name: "collection-sumologic-events",
+            name: 'collection-sumologic-events',
             namespaceSelector: {
               matchNames: [
-                "sumologic"
-              ]
+                'sumologic',
+              ],
             },
             selector: {
               matchLabels: {
-                app: "collection-sumologic-events"
-              }
-            }
+                app: 'collection-sumologic-events',
+              },
+            },
           },
           {
             additionalLabels: {
-              app: "collection-fluent-bit"
+              app: 'collection-fluent-bit',
             },
             endpoints: [
               {
-                path: "/api/v1/metrics/prometheus",
-                port: "metrics"
-              }
+                path: '/api/v1/metrics/prometheus',
+                port: 'metrics',
+              },
             ],
-            name: "collection-fluent-bit",
+            name: 'collection-fluent-bit',
             namespaceSelector: {
               matchNames: [
-                "sumologic"
-              ]
+                'sumologic',
+              ],
             },
             selector: {
               matchLabels: {
-                app: "fluent-bit"
-              }
-            }
-          }
+                app: 'fluent-bit',
+              },
+            },
+          },
         ],
         prometheusSpec: {
           externalLabels: {
-            cluster: config.cluster.metadata.name
+            cluster: config.cluster.metadata.name,
           },
           remoteWrite: [
             {
-              url: "http://collection-sumologic.sumologic.svc.cluster.local:9888/prometheus.metrics.state.statefulset",
+              url: 'http://collection-sumologic.sumologic.svc.cluster.local:9888/prometheus.metrics.state.statefulset',
               writeRelabelConfigs: [
                 {
-                  action: "keep",
-                  regex: "kube-state-metrics;kube_statefulset_status_(?:observed_generation|replicas)",
+                  action: 'keep',
+                  regex: 'kube-state-metrics;kube_statefulset_status_(?:observed_generation|replicas)',
                   sourceLabels: [
-                    "job",
-                    "__name__"
-                  ]
-                }
-              ]
+                    'job',
+                    '__name__',
+                  ],
+                },
+              ],
             },
             {
-              url: "http://collection-sumologic.sumologic.svc.cluster.local:9888/prometheus.metrics.state.statefulset",
+              url: 'http://collection-sumologic.sumologic.svc.cluster.local:9888/prometheus.metrics.state.statefulset',
               writeRelabelConfigs: [
                 {
-                  action: "keep",
-                  regex: "kube-state-metrics;kube_statefulset_(?:replicas|metadata_generation)",
+                  action: 'keep',
+                  regex: 'kube-state-metrics;kube_statefulset_(?:replicas|metadata_generation)',
                   sourceLabels: [
-                    "job",
-                    "__name__"
-                  ]
-                }
-              ]
+                    'job',
+                    '__name__',
+                  ],
+                },
+              ],
             },
             {
-              url: "http://collection-sumologic.sumologic.svc.cluster.local:9888/prometheus.metrics.state.daemonset",
+              url: 'http://collection-sumologic.sumologic.svc.cluster.local:9888/prometheus.metrics.state.daemonset',
               writeRelabelConfigs: [
                 {
-                  action: "keep",
-                  regex: "kube-state-metrics;kube_daemonset_status_(?:current_number_scheduled|desired_number_scheduled|number_misscheduled|number_unavailable)",
+                  action: 'keep',
+                  regex: 'kube-state-metrics;kube_daemonset_status_(?:current_number_scheduled|desired_number_scheduled|number_misscheduled|number_unavailable)',
                   sourceLabels: [
-                    "job",
-                    "__name__"
-                  ]
-                }
-              ]
+                    'job',
+                    '__name__',
+                  ],
+                },
+              ],
             },
             {
-              url: "http://collection-sumologic.sumologic.svc.cluster.local:9888/prometheus.metrics.state.daemonset",
+              url: 'http://collection-sumologic.sumologic.svc.cluster.local:9888/prometheus.metrics.state.daemonset',
               writeRelabelConfigs: [
                 {
-                  action: "keep",
-                  regex: "kube-state-metrics;kube_daemonset_metadata_generation",
+                  action: 'keep',
+                  regex: 'kube-state-metrics;kube_daemonset_metadata_generation',
                   sourceLabels: [
-                    "job",
-                    "__name__"
-                  ]
-                }
-              ]
+                    'job',
+                    '__name__',
+                  ],
+                },
+              ],
             },
             {
-              url: "http://collection-sumologic.sumologic.svc.cluster.local:9888/prometheus.metrics.state.deployment",
+              url: 'http://collection-sumologic.sumologic.svc.cluster.local:9888/prometheus.metrics.state.deployment',
               writeRelabelConfigs: [
                 {
-                  action: "keep",
-                  regex: "kube-state-metrics;kube_deployment_(?:metadata_generation|spec_paused|spec_replicas|spec_strategy_rollingupdate_max_unavailable)",
+                  action: 'keep',
+                  regex: 'kube-state-metrics;kube_deployment_(?:metadata_generation|spec_paused|spec_replicas|spec_strategy_rollingupdate_max_unavailable)',
                   sourceLabels: [
-                    "job",
-                    "__name__"
-                  ]
-                }
-              ]
+                    'job',
+                    '__name__',
+                  ],
+                },
+              ],
             },
             {
-              url: "http://collection-sumologic.sumologic.svc.cluster.local:9888/prometheus.metrics.state.deployment",
+              url: 'http://collection-sumologic.sumologic.svc.cluster.local:9888/prometheus.metrics.state.deployment',
               writeRelabelConfigs: [
                 {
-                  action: "keep",
-                  regex: "kube-state-metrics;kube_deployment_status_(?:replicas_available|observed_generation|replicas_unavailable)",
+                  action: 'keep',
+                  regex: 'kube-state-metrics;kube_deployment_status_(?:replicas_available|observed_generation|replicas_unavailable)',
                   sourceLabels: [
-                    "job",
-                    "__name__"
-                  ]
-                }
-              ]
+                    'job',
+                    '__name__',
+                  ],
+                },
+              ],
             },
             {
-              url: "http://collection-sumologic.sumologic.svc.cluster.local:9888/prometheus.metrics.state.node",
+              url: 'http://collection-sumologic.sumologic.svc.cluster.local:9888/prometheus.metrics.state.node',
               writeRelabelConfigs: [
                 {
-                  action: "keep",
-                  regex: "kube-state-metrics;kube_node_(?:info|spec_unschedulable|status_allocatable|status_capacity|status_condition)",
+                  action: 'keep',
+                  regex: 'kube-state-metrics;kube_node_(?:info|spec_unschedulable|status_allocatable|status_capacity|status_condition)',
                   sourceLabels: [
-                    "job",
-                    "__name__"
-                  ]
-                }
-              ]
+                    'job',
+                    '__name__',
+                  ],
+                },
+              ],
             },
             {
-              url: "http://collection-sumologic.sumologic.svc.cluster.local:9888/prometheus.metrics.state.pod",
+              url: 'http://collection-sumologic.sumologic.svc.cluster.local:9888/prometheus.metrics.state.pod',
               writeRelabelConfigs: [
                 {
-                  action: "keep",
-                  regex: "kube-state-metrics;kube_pod_container_(?:info|resource_requests|resource_limits|status_ready|status_terminated_reason|status_waiting_reason|status_restarts_total)",
+                  action: 'keep',
+                  regex: 'kube-state-metrics;kube_pod_container_(?:info|resource_requests|resource_limits|status_ready|status_terminated_reason|status_waiting_reason|status_restarts_total)',
                   sourceLabels: [
-                    "job",
-                    "__name__"
-                  ]
-                }
-              ]
+                    'job',
+                    '__name__',
+                  ],
+                },
+              ],
             },
             {
-              url: "http://collection-sumologic.sumologic.svc.cluster.local:9888/prometheus.metrics.state.pod",
+              url: 'http://collection-sumologic.sumologic.svc.cluster.local:9888/prometheus.metrics.state.pod',
               writeRelabelConfigs: [
                 {
-                  action: "keep",
-                  regex: "kube-state-metrics;kube_pod_status_phase",
+                  action: 'keep',
+                  regex: 'kube-state-metrics;kube_pod_status_phase',
                   sourceLabels: [
-                    "job",
-                    "__name__"
-                  ]
-                }
-              ]
+                    'job',
+                    '__name__',
+                  ],
+                },
+              ],
             },
             {
-              url: "http://collection-sumologic.sumologic.svc.cluster.local:9888/prometheus.metrics.controller-manager",
+              url: 'http://collection-sumologic.sumologic.svc.cluster.local:9888/prometheus.metrics.controller-manager',
               writeRelabelConfigs: [
                 {
-                  action: "keep",
-                  regex: "kubelet;cloudprovider_.*_api_request_duration_seconds.*",
+                  action: 'keep',
+                  regex: 'kubelet;cloudprovider_.*_api_request_duration_seconds.*',
                   sourceLabels: [
-                    "job",
-                    "__name__"
-                  ]
-                }
-              ]
+                    'job',
+                    '__name__',
+                  ],
+                },
+              ],
             },
             {
-              url: "http://collection-sumologic.sumologic.svc.cluster.local:9888/prometheus.metrics.scheduler",
+              url: 'http://collection-sumologic.sumologic.svc.cluster.local:9888/prometheus.metrics.scheduler',
               writeRelabelConfigs: [
                 {
-                  action: "keep",
-                  regex: "kube-scheduler;scheduler_(?:e2e_scheduling|binding|scheduling_algorithm)_latency_microseconds.*",
+                  action: 'keep',
+                  regex: 'kube-scheduler;scheduler_(?:e2e_scheduling|binding|scheduling_algorithm)_latency_microseconds.*',
                   sourceLabels: [
-                    "job",
-                    "__name__"
-                  ]
-                }
-              ]
+                    'job',
+                    '__name__',
+                  ],
+                },
+              ],
             },
             {
-              url: "http://collection-sumologic.sumologic.svc.cluster.local:9888/prometheus.metrics.apiserver",
+              url: 'http://collection-sumologic.sumologic.svc.cluster.local:9888/prometheus.metrics.apiserver',
               writeRelabelConfigs: [
                 {
-                  action: "keep",
-                  regex: "apiserver;apiserver_request_(?:count|latencies.*)",
+                  action: 'keep',
+                  regex: 'apiserver;apiserver_request_(?:count|latencies.*)',
                   sourceLabels: [
-                    "job",
-                    "__name__"
-                  ]
-                }
-              ]
+                    'job',
+                    '__name__',
+                  ],
+                },
+              ],
             },
             {
-              url: "http://collection-sumologic.sumologic.svc.cluster.local:9888/prometheus.metrics.apiserver",
+              url: 'http://collection-sumologic.sumologic.svc.cluster.local:9888/prometheus.metrics.apiserver',
               writeRelabelConfigs: [
                 {
-                  action: "keep",
-                  regex: "apiserver;etcd_request_cache_(?:get|add)_latencies_summary.*",
+                  action: 'keep',
+                  regex: 'apiserver;etcd_request_cache_(?:get|add)_latencies_summary.*',
                   sourceLabels: [
-                    "job",
-                    "__name__"
-                  ]
-                }
-              ]
+                    'job',
+                    '__name__',
+                  ],
+                },
+              ],
             },
             {
-              url: "http://collection-sumologic.sumologic.svc.cluster.local:9888/prometheus.metrics.apiserver",
+              url: 'http://collection-sumologic.sumologic.svc.cluster.local:9888/prometheus.metrics.apiserver',
               writeRelabelConfigs: [
                 {
-                  action: "keep",
-                  regex: "apiserver;etcd_helper_cache_(?:hit|miss)_count",
+                  action: 'keep',
+                  regex: 'apiserver;etcd_helper_cache_(?:hit|miss)_count',
                   sourceLabels: [
-                    "job",
-                    "__name__"
-                  ]
-                }
-              ]
+                    'job',
+                    '__name__',
+                  ],
+                },
+              ],
             },
             {
-              url: "http://collection-sumologic.sumologic.svc.cluster.local:9888/prometheus.metrics.kubelet",
+              url: 'http://collection-sumologic.sumologic.svc.cluster.local:9888/prometheus.metrics.kubelet',
               writeRelabelConfigs: [
                 {
-                  action: "keep",
-                  regex: "kubelet;kubelet_docker_operations_(?:errors|latency_microseconds.*)",
+                  action: 'keep',
+                  regex: 'kubelet;kubelet_docker_operations_(?:errors|latency_microseconds.*)',
                   sourceLabels: [
-                    "job",
-                    "__name__"
-                  ]
-                }
-              ]
+                    'job',
+                    '__name__',
+                  ],
+                },
+              ],
             },
             {
-              url: "http://collection-sumologic.sumologic.svc.cluster.local:9888/prometheus.metrics.kubelet",
+              url: 'http://collection-sumologic.sumologic.svc.cluster.local:9888/prometheus.metrics.kubelet',
               writeRelabelConfigs: [
                 {
-                  action: "keep",
-                  regex: "kubelet;kubelet_(running_container_count|running_pod_count|runtime_operations_latency_microseconds.*)",
+                  action: 'keep',
+                  regex: 'kubelet;kubelet_(running_container_count|running_pod_count|runtime_operations_latency_microseconds.*)',
                   sourceLabels: [
-                    "job",
-                    "__name__"
-                  ]
-                }
-              ]
+                    'job',
+                    '__name__',
+                  ],
+                },
+              ],
             },
             {
-              url: "http://collection-sumologic.sumologic.svc.cluster.local:9888/prometheus.metrics.container",
+              url: 'http://collection-sumologic.sumologic.svc.cluster.local:9888/prometheus.metrics.container',
               writeRelabelConfigs: [
                 {
-                  action: "drop",
-                  regex: "POD",
+                  action: 'drop',
+                  regex: 'POD',
                   sourceLabels: [
-                    "container"
-                  ]
+                    'container',
+                  ],
                 },
                 {
-                  action: "drop",
-                  regex: "POD",
+                  action: 'drop',
+                  regex: 'POD',
                   sourceLabels: [
-                    "container_name"
-                  ]
+                    'container_name',
+                  ],
                 },
                 {
-                  action: "keep",
-                  regex: "kubelet;container_cpu_(?:load_average_10s|(?:system|usage|cfs_throttled)_seconds_total)",
+                  action: 'keep',
+                  regex: 'kubelet;container_cpu_(?:load_average_10s|(?:system|usage|cfs_throttled)_seconds_total)',
                   sourceLabels: [
-                    "job",
-                    "__name__"
-                  ]
-                }
-              ]
+                    'job',
+                    '__name__',
+                  ],
+                },
+              ],
             },
             {
-              url: "http://collection-sumologic.sumologic.svc.cluster.local:9888/prometheus.metrics.container",
+              url: 'http://collection-sumologic.sumologic.svc.cluster.local:9888/prometheus.metrics.container',
               writeRelabelConfigs: [
                 {
-                  action: "drop",
-                  regex: "POD",
+                  action: 'drop',
+                  regex: 'POD',
                   sourceLabels: [
-                    "container"
-                  ]
+                    'container',
+                  ],
                 },
                 {
-                  action: "drop",
-                  regex: "POD",
+                  action: 'drop',
+                  regex: 'POD',
                   sourceLabels: [
-                    "container_name"
-                  ]
+                    'container_name',
+                  ],
                 },
                 {
-                  action: "keep",
-                  regex: "kubelet;container_memory_(?:usage_bytes|swap|working_set_bytes)",
+                  action: 'keep',
+                  regex: 'kubelet;container_memory_(?:usage_bytes|swap|working_set_bytes)',
                   sourceLabels: [
-                    "job",
-                    "__name__"
-                  ]
-                }
-              ]
+                    'job',
+                    '__name__',
+                  ],
+                },
+              ],
             },
             {
-              url: "http://collection-sumologic.sumologic.svc.cluster.local:9888/prometheus.metrics.container",
+              url: 'http://collection-sumologic.sumologic.svc.cluster.local:9888/prometheus.metrics.container',
               writeRelabelConfigs: [
                 {
-                  action: "drop",
-                  regex: "POD",
+                  action: 'drop',
+                  regex: 'POD',
                   sourceLabels: [
-                    "container"
-                  ]
+                    'container',
+                  ],
                 },
                 {
-                  action: "drop",
-                  regex: "POD",
+                  action: 'drop',
+                  regex: 'POD',
                   sourceLabels: [
-                    "container_name"
-                  ]
+                    'container_name',
+                  ],
                 },
                 {
-                  action: "keep",
-                  regex: "kubelet;container_spec_memory_(?:|swap_|reservation_)limit_bytes",
+                  action: 'keep',
+                  regex: 'kubelet;container_spec_memory_(?:|swap_|reservation_)limit_bytes',
                   sourceLabels: [
-                    "job",
-                    "__name__"
-                  ]
-                }
-              ]
+                    'job',
+                    '__name__',
+                  ],
+                },
+              ],
             },
             {
-              url: "http://collection-sumologic.sumologic.svc.cluster.local:9888/prometheus.metrics.container",
+              url: 'http://collection-sumologic.sumologic.svc.cluster.local:9888/prometheus.metrics.container',
               writeRelabelConfigs: [
                 {
-                  action: "drop",
-                  regex: "POD",
+                  action: 'drop',
+                  regex: 'POD',
                   sourceLabels: [
-                    "container"
-                  ]
+                    'container',
+                  ],
                 },
                 {
-                  action: "drop",
-                  regex: "POD",
+                  action: 'drop',
+                  regex: 'POD',
                   sourceLabels: [
-                    "container_name"
-                  ]
+                    'container_name',
+                  ],
                 },
                 {
-                  action: "keep",
-                  regex: "kubelet;container_spec_cpu_(?:|quota|period)",
+                  action: 'keep',
+                  regex: 'kubelet;container_spec_cpu_(?:|quota|period)',
                   sourceLabels: [
-                    "job",
-                    "__name__"
-                  ]
-                }
-              ]
+                    'job',
+                    '__name__',
+                  ],
+                },
+              ],
             },
             {
-              url: "http://collection-sumologic.sumologic.svc.cluster.local:9888/prometheus.metrics.container",
+              url: 'http://collection-sumologic.sumologic.svc.cluster.local:9888/prometheus.metrics.container',
               writeRelabelConfigs: [
                 {
-                  action: "drop",
-                  regex: "POD",
+                  action: 'drop',
+                  regex: 'POD',
                   sourceLabels: [
-                    "container"
-                  ]
+                    'container',
+                  ],
                 },
                 {
-                  action: "drop",
-                  regex: "POD",
+                  action: 'drop',
+                  regex: 'POD',
                   sourceLabels: [
-                    "container_name"
-                  ]
+                    'container_name',
+                  ],
                 },
                 {
-                  action: "keep",
-                  regex: "kubelet;container_fs_(?:(?:usage|limit)_bytes|(?:reads|writes)_bytes_total)",
+                  action: 'keep',
+                  regex: 'kubelet;container_fs_(?:(?:usage|limit)_bytes|(?:reads|writes)_bytes_total)',
                   sourceLabels: [
-                    "job",
-                    "__name__"
-                  ]
-                }
-              ]
+                    'job',
+                    '__name__',
+                  ],
+                },
+              ],
             },
             {
-              url: "http://collection-sumologic.sumologic.svc.cluster.local:9888/prometheus.metrics.container",
+              url: 'http://collection-sumologic.sumologic.svc.cluster.local:9888/prometheus.metrics.container',
               writeRelabelConfigs: [
                 {
-                  action: "drop",
-                  regex: "POD",
+                  action: 'drop',
+                  regex: 'POD',
                   sourceLabels: [
-                    "container"
-                  ]
+                    'container',
+                  ],
                 },
                 {
-                  action: "drop",
-                  regex: "POD",
+                  action: 'drop',
+                  regex: 'POD',
                   sourceLabels: [
-                    "container_name"
-                  ]
+                    'container_name',
+                  ],
                 },
                 {
-                  action: "keep",
-                  regex: "kubelet;container_network_(?:receive|transmit)_(?:bytes|errors|packets_dropped)_total",
+                  action: 'keep',
+                  regex: 'kubelet;container_network_(?:receive|transmit)_(?:bytes|errors|packets_dropped)_total',
                   sourceLabels: [
-                    "job",
-                    "__name__"
-                  ]
-                }
-              ]
+                    'job',
+                    '__name__',
+                  ],
+                },
+              ],
             },
             {
-              url: "http://collection-sumologic.sumologic.svc.cluster.local:9888/prometheus.metrics.node",
+              url: 'http://collection-sumologic.sumologic.svc.cluster.local:9888/prometheus.metrics.node',
               writeRelabelConfigs: [
                 {
-                  action: "keep",
-                  regex: "node-exporter;node_load(?:1|5|15)",
+                  action: 'keep',
+                  regex: 'node-exporter;node_load(?:1|5|15)',
                   sourceLabels: [
-                    "job",
-                    "__name__"
-                  ]
-                }
-              ]
+                    'job',
+                    '__name__',
+                  ],
+                },
+              ],
             },
             {
-              url: "http://collection-sumologic.sumologic.svc.cluster.local:9888/prometheus.metrics.node",
+              url: 'http://collection-sumologic.sumologic.svc.cluster.local:9888/prometheus.metrics.node',
               writeRelabelConfigs: [
                 {
-                  action: "keep",
-                  regex: "node-exporter;node_cpu_seconds_total",
+                  action: 'keep',
+                  regex: 'node-exporter;node_cpu_seconds_total',
                   sourceLabels: [
-                    "job",
-                    "__name__"
-                  ]
-                }
-              ]
+                    'job',
+                    '__name__',
+                  ],
+                },
+              ],
             },
             {
-              url: "http://collection-sumologic.sumologic.svc.cluster.local:9888/prometheus.metrics.node",
+              url: 'http://collection-sumologic.sumologic.svc.cluster.local:9888/prometheus.metrics.node',
               writeRelabelConfigs: [
                 {
-                  action: "keep",
-                  regex: "node-exporter;node_memory_(?:MemAvailable|MemTotal|Buffers|SwapCached|Cached|MemFree|SwapFree)_bytes",
+                  action: 'keep',
+                  regex: 'node-exporter;node_memory_(?:MemAvailable|MemTotal|Buffers|SwapCached|Cached|MemFree|SwapFree)_bytes',
                   sourceLabels: [
-                    "job",
-                    "__name__"
-                  ]
-                }
-              ]
+                    'job',
+                    '__name__',
+                  ],
+                },
+              ],
             },
             {
-              url: "http://collection-sumologic.sumologic.svc.cluster.local:9888/prometheus.metrics.node",
+              url: 'http://collection-sumologic.sumologic.svc.cluster.local:9888/prometheus.metrics.node',
               writeRelabelConfigs: [
                 {
-                  action: "keep",
-                  regex: "node-exporter;node_ipvs_(?:incoming|outgoing)_(?:bytes|packets)_total",
+                  action: 'keep',
+                  regex: 'node-exporter;node_ipvs_(?:incoming|outgoing)_(?:bytes|packets)_total',
                   sourceLabels: [
-                    "job",
-                    "__name__"
-                  ]
-                }
-              ]
+                    'job',
+                    '__name__',
+                  ],
+                },
+              ],
             },
             {
-              url: "http://collection-sumologic.sumologic.svc.cluster.local:9888/prometheus.metrics.node",
+              url: 'http://collection-sumologic.sumologic.svc.cluster.local:9888/prometheus.metrics.node',
               writeRelabelConfigs: [
                 {
-                  action: "keep",
-                  regex: "node-exporter;node_disk_(?:(?:reads|writes)_completed|(?:read|written)_bytes)_total",
+                  action: 'keep',
+                  regex: 'node-exporter;node_disk_(?:(?:reads|writes)_completed|(?:read|written)_bytes)_total',
                   sourceLabels: [
-                    "job",
-                    "__name__"
-                  ]
-                }
-              ]
+                    'job',
+                    '__name__',
+                  ],
+                },
+              ],
             },
             {
-              url: "http://collection-sumologic.sumologic.svc.cluster.local:9888/prometheus.metrics.node",
+              url: 'http://collection-sumologic.sumologic.svc.cluster.local:9888/prometheus.metrics.node',
               writeRelabelConfigs: [
                 {
-                  action: "keep",
-                  regex: "node-exporter;node_filesystem_(?:avail|free|size)_bytes",
+                  action: 'keep',
+                  regex: 'node-exporter;node_filesystem_(?:avail|free|size)_bytes',
                   sourceLabels: [
-                    "job",
-                    "__name__"
-                  ]
-                }
-              ]
+                    'job',
+                    '__name__',
+                  ],
+                },
+              ],
             },
             {
-              url: "http://collection-sumologic.sumologic.svc.cluster.local:9888/prometheus.metrics.node",
+              url: 'http://collection-sumologic.sumologic.svc.cluster.local:9888/prometheus.metrics.node',
               writeRelabelConfigs: [
                 {
-                  action: "keep",
-                  regex: "node-exporter;node_filesystem_(?:files)",
+                  action: 'keep',
+                  regex: 'node-exporter;node_filesystem_(?:files)',
                   sourceLabels: [
-                    "job",
-                    "__name__"
-                  ]
-                }
-              ]
+                    'job',
+                    '__name__',
+                  ],
+                },
+              ],
             },
             {
-              url: "http://collection-sumologic.sumologic.svc.cluster.local:9888/prometheus.metrics.operator.rule",
+              url: 'http://collection-sumologic.sumologic.svc.cluster.local:9888/prometheus.metrics.operator.rule',
               writeRelabelConfigs: [
                 {
-                  action: "keep",
-                  regex: "apiserver;cluster_quantile:apiserver_request_latencies:histogram_quantile",
+                  action: 'keep',
+                  regex: 'apiserver;cluster_quantile:apiserver_request_latencies:histogram_quantile',
                   sourceLabels: [
-                    "job",
-                    "__name__"
-                  ]
-                }
-              ]
+                    'job',
+                    '__name__',
+                  ],
+                },
+              ],
             },
             {
-              url: "http://collection-sumologic.sumologic.svc.cluster.local:9888/prometheus.metrics.operator.rule",
+              url: 'http://collection-sumologic.sumologic.svc.cluster.local:9888/prometheus.metrics.operator.rule',
               writeRelabelConfigs: [
                 {
-                  action: "keep",
-                  regex: "instance:node_(?:cpu|filesystem_usage|network_receive_bytes|node_network_transmit_bytes):rate:sum",
+                  action: 'keep',
+                  regex: 'instance:node_(?:cpu|filesystem_usage|network_receive_bytes|node_network_transmit_bytes):rate:sum',
                   sourceLabels: [
-                    "__name__"
-                  ]
-                }
-              ]
+                    '__name__',
+                  ],
+                },
+              ],
             },
             {
-              url: "http://collection-sumologic.sumologic.svc.cluster.local:9888/prometheus.metrics.operator.rule",
+              url: 'http://collection-sumologic.sumologic.svc.cluster.local:9888/prometheus.metrics.operator.rule',
               writeRelabelConfigs: [
                 {
-                  action: "keep",
-                  regex: "instance:node_cpu:ratio|cluster:node_cpu:sum_rate5m|cluster:node_cpu:ratio",
+                  action: 'keep',
+                  regex: 'instance:node_cpu:ratio|cluster:node_cpu:sum_rate5m|cluster:node_cpu:ratio',
                   sourceLabels: [
-                    "__name__"
-                  ]
-                }
-              ]
+                    '__name__',
+                  ],
+                },
+              ],
             },
             {
-              url: "http://collection-sumologic.sumologic.svc.cluster.local:9888/prometheus.metrics.operator.rule",
+              url: 'http://collection-sumologic.sumologic.svc.cluster.local:9888/prometheus.metrics.operator.rule',
               writeRelabelConfigs: [
                 {
-                  action: "keep",
-                  regex: "cluster_quantile:scheduler_(?:e2e_scheduling|scheduling_algorithm|binding)_latency:histogram_quantile",
+                  action: 'keep',
+                  regex: 'cluster_quantile:scheduler_(?:e2e_scheduling|scheduling_algorithm|binding)_latency:histogram_quantile',
                   sourceLabels: [
-                    "__name__"
-                  ]
-                }
-              ]
+                    '__name__',
+                  ],
+                },
+              ],
             },
             {
-              url: "http://collection-sumologic.sumologic.svc.cluster.local:9888/prometheus.metrics.operator.rule",
+              url: 'http://collection-sumologic.sumologic.svc.cluster.local:9888/prometheus.metrics.operator.rule',
               writeRelabelConfigs: [
                 {
-                  action: "keep",
-                  regex: "node_namespace_pod:kube_pod_info:|:kube_pod_info_node_count:",
+                  action: 'keep',
+                  regex: 'node_namespace_pod:kube_pod_info:|:kube_pod_info_node_count:',
                   sourceLabels: [
-                    "__name__"
-                  ]
-                }
-              ]
+                    '__name__',
+                  ],
+                },
+              ],
             },
             {
-              url: "http://collection-sumologic.sumologic.svc.cluster.local:9888/prometheus.metrics.operator.rule",
+              url: 'http://collection-sumologic.sumologic.svc.cluster.local:9888/prometheus.metrics.operator.rule',
               writeRelabelConfigs: [
                 {
-                  action: "keep",
-                  regex: "node:node_num_cpu:sum|:node_cpu_utilisation:avg1m|node:node_cpu_utilisation:avg1m|node:cluster_cpu_utilisation:ratio|:node_cpu_saturation_load1:|node:node_cpu_saturation_load1:",
+                  action: 'keep',
+                  regex: 'node:node_num_cpu:sum|:node_cpu_utilisation:avg1m|node:node_cpu_utilisation:avg1m|node:cluster_cpu_utilisation:ratio|:node_cpu_saturation_load1:|node:node_cpu_saturation_load1:',
                   sourceLabels: [
-                    "__name__"
-                  ]
-                }
-              ]
+                    '__name__',
+                  ],
+                },
+              ],
             },
             {
-              url: "http://collection-sumologic.sumologic.svc.cluster.local:9888/prometheus.metrics.operator.rule",
+              url: 'http://collection-sumologic.sumologic.svc.cluster.local:9888/prometheus.metrics.operator.rule',
               writeRelabelConfigs: [
                 {
-                  action: "keep",
-                  regex: ":node_memory_utilisation:|:node_memory_MemFreeCachedBuffers_bytes:sum|:node_memory_MemTotal_bytes:sum|node:node_memory_bytes_available:sum|node:node_memory_bytes_total:sum|node:node_memory_utilisation:ratio|node:cluster_memory_utilisation:ratio|:node_memory_swap_io_bytes:sum_rate|node:node_memory_utilisation:|node:node_memory_utilisation_2:|node:node_memory_swap_io_bytes:sum_rate",
+                  action: 'keep',
+                  regex: ':node_memory_utilisation:|:node_memory_MemFreeCachedBuffers_bytes:sum|:node_memory_MemTotal_bytes:sum|node:node_memory_bytes_available:sum|node:node_memory_bytes_total:sum|node:node_memory_utilisation:ratio|node:cluster_memory_utilisation:ratio|:node_memory_swap_io_bytes:sum_rate|node:node_memory_utilisation:|node:node_memory_utilisation_2:|node:node_memory_swap_io_bytes:sum_rate',
                   sourceLabels: [
-                    "__name__"
-                  ]
-                }
-              ]
+                    '__name__',
+                  ],
+                },
+              ],
             },
             {
-              url: "http://collection-sumologic.sumologic.svc.cluster.local:9888/prometheus.metrics.operator.rule",
+              url: 'http://collection-sumologic.sumologic.svc.cluster.local:9888/prometheus.metrics.operator.rule',
               writeRelabelConfigs: [
                 {
-                  action: "keep",
-                  regex: ":node_disk_utilisation:avg_irate|node:node_disk_utilisation:avg_irate|:node_disk_saturation:avg_irate|node:node_disk_saturation:avg_irate",
+                  action: 'keep',
+                  regex: ':node_disk_utilisation:avg_irate|node:node_disk_utilisation:avg_irate|:node_disk_saturation:avg_irate|node:node_disk_saturation:avg_irate',
                   sourceLabels: [
-                    "__name__"
-                  ]
-                }
-              ]
+                    '__name__',
+                  ],
+                },
+              ],
             },
             {
-              url: "http://collection-sumologic.sumologic.svc.cluster.local:9888/prometheus.metrics.operator.rule",
+              url: 'http://collection-sumologic.sumologic.svc.cluster.local:9888/prometheus.metrics.operator.rule',
               writeRelabelConfigs: [
                 {
-                  action: "keep",
-                  regex: "node:node_filesystem_usage:|node:node_filesystem_avail:",
+                  action: 'keep',
+                  regex: 'node:node_filesystem_usage:|node:node_filesystem_avail:',
                   sourceLabels: [
-                    "__name__"
-                  ]
-                }
-              ]
+                    '__name__',
+                  ],
+                },
+              ],
             },
             {
-              url: "http://collection-sumologic.sumologic.svc.cluster.local:9888/prometheus.metrics.operator.rule",
+              url: 'http://collection-sumologic.sumologic.svc.cluster.local:9888/prometheus.metrics.operator.rule',
               writeRelabelConfigs: [
                 {
-                  action: "keep",
-                  regex: ":node_net_utilisation:sum_irate|node:node_net_utilisation:sum_irate|:node_net_saturation:sum_irate|node:node_net_saturation:sum_irate",
+                  action: 'keep',
+                  regex: ':node_net_utilisation:sum_irate|node:node_net_utilisation:sum_irate|:node_net_saturation:sum_irate|node:node_net_saturation:sum_irate',
                   sourceLabels: [
-                    "__name__"
-                  ]
-                }
-              ]
+                    '__name__',
+                  ],
+                },
+              ],
             },
             {
-              url: "http://collection-sumologic.sumologic.svc.cluster.local:9888/prometheus.metrics.operator.rule",
+              url: 'http://collection-sumologic.sumologic.svc.cluster.local:9888/prometheus.metrics.operator.rule',
               writeRelabelConfigs: [
                 {
-                  action: "keep",
-                  regex: "node:node_inodes_total:|node:node_inodes_free:",
+                  action: 'keep',
+                  regex: 'node:node_inodes_total:|node:node_inodes_free:',
                   sourceLabels: [
-                    "__name__"
-                  ]
-                }
-              ]
+                    '__name__',
+                  ],
+                },
+              ],
             },
             {
-              url: "http://collection-sumologic.sumologic.svc.cluster.local:9888/prometheus.metrics",
+              url: 'http://collection-sumologic.sumologic.svc.cluster.local:9888/prometheus.metrics',
               writeRelabelConfigs: [
                 {
-                  action: "keep",
-                  regex: "up",
+                  action: 'keep',
+                  regex: 'up',
                   sourceLabels: [
-                    "__name__"
-                  ]
-                }
-              ]
+                    '__name__',
+                  ],
+                },
+              ],
             },
             {
-              url: "http://collection-sumologic.sumologic.svc.cluster.local:9888/prometheus.metrics",
+              url: 'http://collection-sumologic.sumologic.svc.cluster.local:9888/prometheus.metrics',
               writeRelabelConfigs: [
                 {
-                  action: "keep",
-                  regex: "prometheus_remote_storage_.*",
+                  action: 'keep',
+                  regex: 'prometheus_remote_storage_.*',
                   sourceLabels: [
-                    "__name__"
-                  ]
-                }
-              ]
+                    '__name__',
+                  ],
+                },
+              ],
             },
             {
-              url: "http://collection-sumologic.sumologic.svc.cluster.local:9888/prometheus.metrics",
+              url: 'http://collection-sumologic.sumologic.svc.cluster.local:9888/prometheus.metrics',
               writeRelabelConfigs: [
                 {
-                  action: "keep",
-                  regex: "fluentd_.*",
+                  action: 'keep',
+                  regex: 'fluentd_.*',
                   sourceLabels: [
-                    "__name__"
-                  ]
-                }
-              ]
+                    '__name__',
+                  ],
+                },
+              ],
             },
             {
-              url: "http://collection-sumologic.sumologic.svc.cluster.local:9888/prometheus.metrics",
+              url: 'http://collection-sumologic.sumologic.svc.cluster.local:9888/prometheus.metrics',
               writeRelabelConfigs: [
                 {
-                  action: "keep",
-                  regex: "fluentbit.*",
+                  action: 'keep',
+                  regex: 'fluentbit.*',
                   sourceLabels: [
-                    "__name__"
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      }
+                    '__name__',
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      },
     },
     sumologic: {
-      addStream: "true",
-      addTime: "true",
-      addTimestamp: "true",
-      chunkLimitSize: "100k",
+      addStream: 'true',
+      addTime: 'true',
+      addTimestamp: 'true',
+      chunkLimitSize: '100k',
       clusterName: config.cluster.metadata.name,
-      concatSeparator: "",
+      concatSeparator: '',
       eventCollectionEnabled: true,
-      excludeContainerRegex: "",
-      excludeHostRegex: "",
-      excludeNamespaceRegex: "",
-      excludePodRegex: "",
-      flushInterval: "5s",
+      excludeContainerRegex: '',
+      excludeHostRegex: '',
+      excludeNamespaceRegex: '',
+      excludePodRegex: '',
+      flushInterval: '5s',
       k8sMetadataFilter: {
-        bearerCacheSize: "1000",
-        bearerCacheTtl: "3600",
-        verifySsl: "true",
-        watch: "true"
+        bearerCacheSize: '1000',
+        bearerCacheTtl: '3600',
+        verifySsl: 'true',
+        watch: 'true',
       },
-      kubernetesMeta: "true",
-      kubernetesMetaReduce: "false",
-      logFormat: "fields",
-      multilineStartRegexp: "/^\\w{3} \\d{1,2}, \\d{4}/",
+      kubernetesMeta: 'true',
+      kubernetesMetaReduce: 'false',
+      logFormat: 'fields',
+      multilineStartRegexp: '/^\\w{3} \\d{1,2}, \\d{4}/',
       numThreads: 4,
       setupEnabled: true,
-      sourceCategory: "%{namespace}/%{pod_name}",
-      sourceCategoryPrefix: "kubernetes/",
-      sourceCategoryReplaceDash: "/",
-      sourceName: "%{namespace}.%{pod}.%{container}",
-      timestampKey: "timestamp",
-      totalLimitSize: "128m",
-      verifySsl: "true"
-    }
-  }
+      sourceCategory: '%{namespace}/%{pod_name}',
+      sourceCategoryPrefix: 'kubernetes/',
+      sourceCategoryReplaceDash: '/',
+      sourceName: '%{namespace}.%{pod}.%{container}',
+      timestampKey: 'timestamp',
+      totalLimitSize: '128m',
+      verifySsl: 'true',
+    },
+  },
 };
 
 function(config) helmrelease(config)

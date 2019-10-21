@@ -1,27 +1,19 @@
-local get(x, path, sep='.') = (
-  local foldFunc(x, key) = if std.isObject(x) && std.objectHasAll(x, key) then x[key] else null;
-  std.foldl(foldFunc, std.split(path, sep), x)
-);
-
-local getElse(x, path, default) = (
-  local found = get(x, path);
-  if found == null then default else found
-);
+local lib = import '../../lib/lib.jsonnet';
 
 local Deployment(config) = {
   apiVersion: 'apps/v1',
   kind: 'Deployment',
   metadata: {
-    name: "fluxcloud",
-    namespace: "flux",
+    name: 'fluxcloud',
+    namespace: 'flux',
     annotations: {
-      "secret.reloader.stakater.com/reload": "slack"
+      'secret.reloader.stakater.com/reload': 'slack',
     },
   },
   spec: {
     selector: {
       matchLabels: {
-        name: "fluxcloud",
+        name: 'fluxcloud',
       },
     },
     replicas: 1,
@@ -29,7 +21,7 @@ local Deployment(config) = {
     template: {
       metadata: {
         labels: {
-            name: "fluxcloud",
+          name: 'fluxcloud',
         },
       },
       spec: {
@@ -54,11 +46,11 @@ local Deployment(config) = {
               },
               {
                 name: 'SLACK_CHANNEL',
-                value: getElse(config, 'pkgs.fluxcloud.channel', '#flux-%s' % config.cluster.metadata.name),
+                value: lib.getElse(config, 'pkgs.fluxcloud.channel', '#flux-%s' % config.cluster.metadata.name),
               },
               {
                 name: 'SLACK_USERNAME',
-                value: getElse(config, 'pkgs.fluxcloud.username', 'derrickburns'),
+                value: lib.getElse(config, 'pkgs.fluxcloud.username', 'derrickburns'),
               },
               {
                 name: 'SLACK_ICON_EMOJI',

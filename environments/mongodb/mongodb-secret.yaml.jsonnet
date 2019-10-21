@@ -1,20 +1,20 @@
 local mongoSecret(namespace) = {
-  apiVersion: "v1",
+  apiVersion: 'v1',
   data: {
-    Scheme: std.base64( "mongodb" ),
-    Addresses: std.base64( "mongodb" ),
-    Username: "",
-    Password: "",
-    Database: "",
-    Tls: std.base64( "false" ),
-    OptParams: "",
+    Scheme: std.base64('mongodb'),
+    Addresses: std.base64('mongodb'),
+    Username: '',
+    Password: '',
+    Database: '',
+    Tls: std.base64('false'),
+    OptParams: '',
   },
-  kind: "Secret",
+  kind: 'Secret',
   metadata: {
-    name: "mongo",
-    namespace:  namespace,
+    name: 'mongo',
+    namespace: namespace,
   },
-  type: "Opaque",
+  type: 'Opaque',
 };
 
 function(config, prev, namespace) mongoSecret(namespace)
