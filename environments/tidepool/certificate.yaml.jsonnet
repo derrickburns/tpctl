@@ -1,5 +1,5 @@
 local certificate(config, namespace) = {
-  local e = config.environments[namespace].tidepool,
+  local e = config.environments[namespace].tidepool.ingress,
 
   apiVersion: 'cert-manager.io/v1alpha2',
   kind: 'Certificate',
