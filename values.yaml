@@ -118,20 +118,21 @@ environments:
       buckets: {}                            # Which S3 buckets to store/retrieve data to/from
         #data: tidepool-test-qa2-data        # Name of the writable S3 bucket to store document data to
         #asset: tidepool-test-qa2-asset      # Name of the readable S3 bucker form which to get email assets
-      certificate:
-        secretName: tls                      # Name of the K8s secret to store the TLS certificate for the hosts served
-        issuer: letsencrypt-staging          # Name of the Certificate Issuer to use
-      gateway:
-        default:                             # Default protocol to use for communication for email verification
-          protocol: http                
-        http:
-          dnsNames:                          # DNS Names of the HTTP hosts to serve
-          - localhost                       
-        https:
-          dnsNames:                          # DNS Names of the HTTPS hosts to serve
-          - qa2.tidepool.org
-      service:
-        http:
-          enabled: true                      # Whether to offer HTTP access
-        https:
-          enabled: true                      # Whether to offer HTTPS access
+      ingress:
+        certificate:
+          secretName: tls                      # Name of the K8s secret to store the TLS certificate for the hosts served
+          issuer: letsencrypt-staging          # Name of the Certificate Issuer to use
+        gateway:
+          default:                             # Default protocol to use for communication for email verification
+            protocol: http                
+          http:
+            dnsNames:                          # DNS Names of the HTTP hosts to serve
+            - localhost                       
+          https:
+            dnsNames:                          # DNS Names of the HTTPS hosts to serve
+            - qa2.tidepool.org
+        service:
+          http:
+            enabled: true                      # Whether to offer HTTP access
+          https:
+            enabled: true                      # Whether to offer HTTPS access
