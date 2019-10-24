@@ -142,6 +142,7 @@ local tidepool(config, prev, namespace) = {
           image: lib.getElse(prev, 'spec.values.data.deployment.image', 'tidepool/platform-data:develop-cebea363931570d3930848a21e6a3d07a54f4425'),
         },
       },
+      dexcom: lib.getElse(tp, 'dexcom', {}),
       export: {
         resources: {
           requests: {
