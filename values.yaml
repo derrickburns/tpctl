@@ -125,6 +125,7 @@ environments:
         gateway:
           default:                             # Default protocol to use for communication for email verification
             protocol: http                
+            domain: tidepool.org
           http:
             dnsNames:                          # DNS Names of the HTTP hosts to serve
             - localhost                       

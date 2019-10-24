@@ -186,6 +186,7 @@ local tidepool(config, prev, namespace) = {
         gateway: {
           default: {
             host: defaultHost(env),
+            domain: env.ingress.gateway.default.domain,
             protocol: env.ingress.gateway.default.protocol,
           },
         },
