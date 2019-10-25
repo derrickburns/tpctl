@@ -74,7 +74,7 @@ local tidepool(config, prev, namespace) = {
     hpa: {
       enabled: lib.getElse(tp, 'hpa.enabled', false),
     },
-    deployment: {
+    deployment+: {
       replicas: lib.getElse(tp, 'deployment.replicas', 1),
     },
   },
@@ -92,26 +92,26 @@ local tidepool(config, prev, namespace) = {
     releaseName: '%s-tidepool' % namespace,
     values: {
 
-      auth: common {
-        deployment: {
+      auth: lib.mergeList(common, {
+        deployment+: {
           image: lib.getElse(prev, 'spec.values.auth.deployment.image', 'tidepool/platform-auth:develop-cebea363931570d3930848a21e6a3d07a54f4425'),
         },
-      } + lib.getElse(tp, 'auth', {}),
+      }, lib.getElse(tp, 'auth', {})),
 
-      blip: common {
-        deployment: {
+      blip: lib.mergeList(common, {
+        deployment+: {
           image: lib.getElse(prev, 'spec.values.blip.deployment.image', 'tidepool/blip:release-1.23.0-264f7ad48eb7d8099b00dce07fa8576f7068d0a0'),
         },
-      } + lib.getElse(tp, 'blip', {}),
+      }, lib.getElse(tp, 'blip', {})),
 
-      blob: common {
+      blob: lib.mergeList(common, {
         serviceAccount: {
           name: 'blob',
         },
         securityContext: {
           fsGroup: 65534,  // To be able to read Kubernetes and AWS token files
         },
-        deployment: {
+        deployment+: {
           env: {
             store: {
               s3: {
@@ -122,17 +122,17 @@ local tidepool(config, prev, namespace) = {
           },
           image: lib.getElse(prev, 'spec.values.blob.deployment.image', 'tidepool/platform-blob:develop-cebea363931570d3930848a21e6a3d07a54f4425'),
         },
-      } + lib.getElse(tp, 'blob', {}),
+      }, lib.getElse(tp, 'blob', {})),
 
-      data: common {
-        deployment: {
+      data: lib.mergeList(common, {
+        deployment+: {
           image: lib.getElse(prev, 'spec.values.data.deployment.image', 'tidepool/platform-data:develop-cebea363931570d3930848a21e6a3d07a54f4425'),
         },
-      } + lib.getElse(tp, 'data', {}),
+      }, lib.getElse(tp, 'data', {})),
 
       dexcom: lib.getElse(tp, 'dexcom', {}),
 
-      export: common {
+      export: lib.mergeList(common, {
         resources: {
           requests: {
             memory: '256Mi',
@@ -143,12 +143,12 @@ local tidepool(config, prev, namespace) = {
             cpu: '1000m',
           },
         },
-        deployment: {
+        deployment+: {
           image: lib.getElse(prev, 'spec.values.export.deployment.image', 'tidepool/export:develop-ddc5f311a4bdc2adae1b423f13e047ff1828d65c'),
         },
-      } + lib.getElse(tp, 'export', {}),
+      }, lib.getElse(tp, 'export', {})),
 
-      gatekeeper: common {
+      gatekeeper: lib.mergeList(common, {
         resources: {
           requests: {
             memory: '64Mi',
@@ -159,10 +159,10 @@ local tidepool(config, prev, namespace) = {
             cpu: '1000m',
           },
         },
-        deployment: {
+        deployment+: {
           image: lib.getElse(prev, 'spec.values.gatekeeper.deployment.image', 'tidepool/gatekeeper:develop-6a0e3e6d83552ce378b21d76354973dcb95c9fa1'),
         },
-      } + lib.getElse(tp, 'gatekeeper', {}),
+      }, lib.getElse(tp, 'gatekeeper', {})),
 
       global: {
         gateway: {
@@ -181,20 +181,20 @@ local tidepool(config, prev, namespace) = {
         enabled: false,
       },
 
-      highwater: common {
-        deployment: {
+      highwater: lib.mergeList(common, {
+        deployment+: {
           image: lib.getElse(prev, 'spec.values.highwater.deployment.image', 'tidepool/highwater:develop-cb0ef1425b29f0a37c10e975876804f3ccfb1348'),
         },
-      } + lib.getElse(tp, 'highwater', {}),
+      }, lib.getElse(tp, 'highwater', {})),
 
-      hydrophone: common {
+      hydrophone: lib.mergeList(common, {
         serviceAccount: {
           name: 'hydrophone',
         },
         securityContext: {
           fsGroup: 65534,  // To be able to read Kubernetes and AWS token files
         },
-        deployment: {
+        deployment+: {
           env: {
             store: {
               s3: {
@@ -205,16 +205,16 @@ local tidepool(config, prev, namespace) = {
           },
           image: lib.getElse(prev, 'spec.values.hydrophone.deployment.image', 'tidepool/hydrophone:develop-0683c6ba2c75ffd21ac01cd577acfeaf5cd0ef8f'),
         },
-      } + lib.getElse(tp, 'hydrophone', {}),
+      }, lib.getElse(tp, 'hydrophone', {})),
 
-      image: common {
+      image: lib.mergeList(common, {
         serviceAccount: {
           name: 'image',
         },
         securityContext: {
           fsGroup: 65534,  // To be able to read Kubernetes and AWS token files
         },
-        deployment: {
+        deployment+: {
           env: {
             store: {
               s3: {
@@ -225,11 +225,11 @@ local tidepool(config, prev, namespace) = {
           },
           image: lib.getElse(prev, 'spec.values.image.deployment.image', 'tidepool/platform-image:develop-cebea363931570d3930848a21e6a3d07a54f4425'),
         },
-      } + lib.getElse(tp, 'image', {}),
+      }, lib.getElse(tp, 'image', {})),
 
       ingress: {
         certificate: env.ingress.certificate,
-        deployment: {
+        deployment+: {
           name: 'gateway-proxy-v2',
           namespace: 'gloo-system',
         },
@@ -237,14 +237,14 @@ local tidepool(config, prev, namespace) = {
         service: env.ingress.service,
       },
 
-      jellyfish: common {
+      jellyfish: lib.mergeList(common, {
         serviceAccount: {
           name: 'jellyfish',
         },
         securityContext: {
           fsGroup: 65534,  // To be able to read Kubernetes and AWS token files
         },
-        deployment: {
+        deployment+: {
           env: {
             store: {
               s3: {
@@ -255,15 +255,15 @@ local tidepool(config, prev, namespace) = {
           },
           image: lib.getElse(prev, 'spec.values.jellyfish.deployment.image', 'tidepool/jellyfish:mongo-database-a8b117f07c277dfae78a6b5f270f84cd661b3b8d'),
         },
-      } + lib.getElse(tp, 'jellyfish', {}),
+      }, lib.getElse(tp, 'jellyfish', {})),
 
-      messageapi: common {
-        deployment: {
+      messageapi: lib.mergeList(common, {
+        deployment+: {
           image: lib.getElse(prev, 'spec.values.messageapi.deployment.image', 'tidepool/message-api:develop-48e4e55d3119bd94c25fa7f01be79be85a860528'),
         },
-      } + lib.getElse(tp, 'messageapi', {}),
+      }, lib.getElse(tp, 'messageapi', {})),
 
-      migrations: common {
+      migrations: lib.mergeList(common, {
         resources: {
           requests: {
             memory: '256Mi',
@@ -274,10 +274,10 @@ local tidepool(config, prev, namespace) = {
             cpu: '1000m',
           },
         },
-        deployment: {
+        deployment+: {
           image: lib.getElse(prev, 'spec.values.migrations.deployment.image', 'tidepool/platform-migrations:develop-cebea363931570d3930848a21e6a3d07a54f4425'),
         },
-      } + lib.getElse(tp, 'migrations', {}),
+      }, lib.getElse(tp, 'migrations', {})),
 
       mongodb: {
         enabled: env.mongodb.enabled,
@@ -287,13 +287,13 @@ local tidepool(config, prev, namespace) = {
         enabled: env.nosqlclient.enabled,
       },
 
-      notification: common {
-        deployment: {
+      notification: lib.mergeList(common, {
+        deployment+: {
           image: lib.getElse(prev, 'spec.values.notification.deployment.image', 'tidepool/platform-notification:develop-cebea363931570d3930848a21e6a3d07a54f4425'),
         },
-      } + lib.getElse(tp, 'notification', {}),
+      }, lib.getElse(tp, 'notification', {})),
 
-      seagull: common {
+      seagull: lib.mergeList(common, {
         resources: {
           requests: {
             memory: '256Mi',
@@ -304,22 +304,22 @@ local tidepool(config, prev, namespace) = {
             cpu: '1000m',
           },
         },
-        deployment: {
+        deployment+: {
           image: lib.getElse(prev, 'spec.values.seagull.deployment.image', 'tidepool/seagull:develop-f5b583382cc468657710b15836eafad778817f7c'),
         },
-      } + lib.getElse(tp, 'seagull', {}),
+      }, lib.getElse(tp, 'seagull', {})),
 
-      shoreline: common {
-        deployment: {
+      shoreline: lib.mergeList(common, {
+        deployment+: {
           image: lib.getElse(prev, 'spec.values.shoreline.deployment.image', 'tidepool/shoreline:develop-51f927083ba5bad0271add644728e02902d3b785'),
         },
-      } + lib.getElse(tp, 'shoreline', {}),
+      }, lib.getElse(tp, 'shoreline', {})),
 
-      task: common {
-        deployment: {
+      task: lib.mergeList(common, {
+        deployment+: {
           image: lib.getElse(prev, 'spec.values.task.deployment.image', 'tidepool/platform-task:develop-cebea363931570d3930848a21e6a3d07a54f4425'),
         },
-      } + lib.getElse(tp, 'task', {}),
+      }, lib.getElse(tp, 'task', {})),
 
       tidepool: {
         namespace: {
@@ -327,23 +327,23 @@ local tidepool(config, prev, namespace) = {
         },
       },
 
-      tidewhisperer: common {
-        deployment: {
+      tidewhisperer: lib.mergeList(common, {
+        deployment+: {
           image: lib.getElse(prev, 'spec.values.tidewhisperer.deployment.image', 'tidepool/tide-whisperer:develop-3d9d8e6b3417c70679ec43420f2a5e4a69cf9098'),
         },
-      } + lib.getElse(tp, 'tidewhisperer', {}),
+      }, lib.getElse(tp, 'tidewhisperer', {})),
 
-      tools: common {
-        deployment: {
+      tools: lib.mergeList(common, {
+        deployment+: {
           image: lib.getElse(prev, 'spec.values.tools.deployment.image', 'tidepool/platform-tools:develop-cebea363931570d3930848a21e6a3d07a54f4425'),
         },
-      } + lib.getElse(tp, 'tools', {}),
+      }, lib.getElse(tp, 'tools', {})),
 
-      user: common {
-        deployment: {
+      user: lib.mergeList(common, {
+        deployment+: {
           image: lib.getElse(prev, 'spec.values.user.deployment.image', 'tidepool/platform-user:develop-cebea363931570d3930848a21e6a3d07a54f4425'),
         },
-      } + lib.getElse(tp, 'users', {}),
+      }, lib.getElse(tp, 'users', {})),
 
     },
   },
