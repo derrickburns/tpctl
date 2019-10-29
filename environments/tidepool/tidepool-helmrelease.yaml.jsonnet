@@ -115,7 +115,7 @@ local tidepool(config, prev, namespace) = {
           env: {
             store: {
               s3: {
-                bucket: lib.getElse(tp, 'buckets.data', dataBucket(config, namespace)]),
+                bucket: lib.getElse(tp, 'buckets.data', dataBucket(config, namespace)),
               },
             },
             type: 's3',
@@ -198,7 +198,7 @@ local tidepool(config, prev, namespace) = {
           env: {
             store: {
               s3: {
-                bucket: lib.getElse(tp, 'buckets.asset', assetBucket(config, namespace)]),
+                bucket: lib.getElse(tp, 'buckets.asset', assetBucket(config, namespace)),
               },
             },
             type: 's3',
@@ -218,7 +218,7 @@ local tidepool(config, prev, namespace) = {
           env: {
             store: {
               s3: {
-                bucket: lib.getElse(tp, 'buckets.data', dataBucket(config, namespace)]),
+                bucket: lib.getElse(tp, 'buckets.data', dataBucket(config, namespace)),
               },
             },
             type: 's3',
@@ -248,7 +248,7 @@ local tidepool(config, prev, namespace) = {
           env: {
             store: {
               s3: {
-                bucket: lib.getElse(tp, 'buckets.data', dataBucket(config, namespace)]),
+                bucket: lib.getElse(tp, 'buckets.data', dataBucket(config, namespace)),
               },
             },
             type: 's3',
