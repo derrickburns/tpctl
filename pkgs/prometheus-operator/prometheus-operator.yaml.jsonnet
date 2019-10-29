@@ -31,7 +31,7 @@ local Helmrelease(config) = {
         },
       },
       grafana: {  // (optional) we don't need Grafana in all clusters
-        enabled: false,
+        enabled: true,
       },
       alertmanager: {
         enabled: false,
