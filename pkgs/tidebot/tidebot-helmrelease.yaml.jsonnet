@@ -8,7 +8,7 @@ local helmrelease(config) = {
     namespace: 'tidebot',
     annotations: {
       'fluxcd.io/automated': 'true',
-      'repository.fluxcd.io/tidebot': 'image',
+      'repository.fluxcd.io/tidebot': 'deployment.image',
       'fluxcd.io/tag.tidebot': lib.getElse(config, 'pkgs.tidebot.gitops', 'glob:develop-*')
     },
   },
