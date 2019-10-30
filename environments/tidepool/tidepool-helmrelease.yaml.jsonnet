@@ -264,16 +264,6 @@ local tidepool(config, prev, namespace) = {
       }, lib.getElse(tp, 'messageapi', {})]),
 
       migrations: lib.mergeList([common, {
-        resources: {
-          requests: {
-            memory: '256Mi',
-            cpu: '500m',
-          },
-          limits: {
-            memory: '256Mi',
-            cpu: '1000m',
-          },
-        },
         deployment+: {
           image: lib.getElse(prev, 'spec.values.migrations.deployment.image', 'tidepool/platform-migrations:develop-cebea363931570d3930848a21e6a3d07a54f4425'),
         },
@@ -294,16 +284,6 @@ local tidepool(config, prev, namespace) = {
       }, lib.getElse(tp, 'notification', {})]),
 
       seagull: lib.mergeList([common, {
-        resources: {
-          requests: {
-            memory: '256Mi',
-            cpu: '500m',
-          },
-          limits: {
-            memory: '256Mi',
-            cpu: '1000m',
-          },
-        },
         deployment+: {
           image: lib.getElse(prev, 'spec.values.seagull.deployment.image', 'tidepool/seagull:develop-f5b583382cc468657710b15836eafad778817f7c'),
         },

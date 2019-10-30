@@ -137,3 +137,27 @@ environments:
             enabled: true                      # Whether to offer HTTP access
           https:
             enabled: true                      # Whether to offer HTTPS access
+      migrations:
+        resources: 
+          requests: 
+            memory: '256Mi'
+            cpu: '500m'
+          limits: 
+            memory: '256Mi'
+            cpu: '1000m'
+      seagull:
+        resources: 
+          requests: 
+            memory: '256Mi'
+            cpu: '500m'
+          limits: 
+            memory: '256Mi'
+            cpu: '1000m'
+      tidewhisperer:
+        resources: 
+          requests: 
+            memory: '256Mi'
+            cpu: '500m'
+          limits: 
+            memory: '256Mi'
+            cpu: '1000m'
