@@ -22,7 +22,7 @@ local helmrelease(config) = {
     releaseName: 'tidebot',
     values: {
       deployment: {
-        image: 'tidepool/slack-tidebot:latest',
+        image: 'tidepool/slack-tidebot:k8s-83a16688d311591f11079690442a791c43fb45ab',
       },
       ingress: tidebot.ingress,
       configmap: {
