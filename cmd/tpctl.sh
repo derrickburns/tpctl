@@ -295,7 +295,7 @@ function setup_tmpdir() {
     TMP_DIR=$(mktemp -d 2>/dev/null || mktemp -d -t 'TMP_DIR')
     complete "created temporary working directory"
     trap cleanup EXIT
-    cd $TMP_DIR
+    #cd $TMP_DIR
   fi
 }
 
@@ -304,16 +304,18 @@ function repo_with_token() {
   echo $repo | sed -e "s#https://#https://$GITHUB_TOKEN@#"
 }
 
-# clone config repo, change to that directory
+# clone remote 
 function clone_remote() {
-  cd $TMP_DIR
-  if [[ ! -d $(basename $HTTPS_REMOTE_REPO) ]]; then
-    start "cloning remote"
-    git clone $(repo_with_token $HTTPS_REMOTE_REPO)
-    expect_success "Cannot clone $HTTPS_REMOTE_REPO"
-    complete "cloned remote"
+  if [ "$CLONE_REMOTE" == "true" ]; then
+    cd $TMP_DIR
+    if [[ ! -d $(basename $HTTPS_REMOTE_REPO) ]]; then
+      start "cloning remote"
+      git clone $(repo_with_token $HTTPS_REMOTE_REPO)
+      expect_success "Cannot clone $HTTPS_REMOTE_REPO"
+      complete "cloned remote"
+    fi
+    cd $(basename $HTTPS_REMOTE_REPO)
   fi
-  cd $(basename $HTTPS_REMOTE_REPO)
 }
 
 # clone quickstart repo, export TEMPLATE_DIR
@@ -1053,11 +1055,16 @@ if [ $# -eq 0 ]; then
 fi
 
 APPROVE=false
+CLONE_REMOTE=true
 PARAMS=""
 while (("$#")); do
   case "$1" in
     -y | --approve)
       APPROVE=true
+      shift 1
+      ;;
+    -l | --local)
+      CLONE_REMOTE=false
       shift 1
       ;;
     -h | --help)

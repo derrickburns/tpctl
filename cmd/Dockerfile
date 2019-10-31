@@ -1,4 +1,5 @@
 FROM ubuntu:18.04 
+WORKDIR /root/workdir
 ENV TERM xterm-256color
 ENV TZ America/Los_Angeles
 ENV DEBIAN_FRONTEND noninteractive
@@ -41,4 +42,5 @@ COPY tpctl.sh /root/tpctl
 COPY separate_files /usr/local/bin/separate_files
 COPY external_secret /usr/local/bin/external_secret
 RUN ln -s /usr/bin/python3 /usr/local/bin/python3 && chmod +x /usr/local/bin/*
+RUN cd /root/workdir
 CMD [ "/root/tpctl"  ]

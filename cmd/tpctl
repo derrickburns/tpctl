@@ -40,4 +40,5 @@ docker run -it \
   -v ${HELM_HOME}:/root/.helm \
   -v ${AWS_CONFIG}:/root/.aws:ro \
   -v ${KUBE_CONFIG}:/root/.kube/config \
+  -v $(pwd):/root/workdir \
   tidepool/tpctl /root/tpctl $*
