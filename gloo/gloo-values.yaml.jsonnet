@@ -75,7 +75,7 @@ local values(config) = {
         httpsPort: 8443,
         runAsUser: 10101,
         extraAnnotations: {
-          linkerd.io/inject: "enabled",
+          "linkerd.io/inject": "enabled",
         },
       },
       service: {
