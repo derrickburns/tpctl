@@ -25,6 +25,7 @@ local helmrelease(config) = {
         'skip-nodes-with-local-storage': false,
         'skip-nodes-with-system-pods' : false,
         'ignore-daemonsets-utilization' : true,
+        'ignore-mirror-pods-utilization' : true,
         v: 5,
       },
       image: {
