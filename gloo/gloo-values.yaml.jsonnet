@@ -44,7 +44,6 @@ local values(config) = {
             name: 'zipkin',
             connect_timeout: '1s',
             type: 'STRICT_DNS',
-            lb_policy: 'ROUND_ROBIN',
             load_assignment: {
               cluster_name: 'zipkin',
               endpoints: [
