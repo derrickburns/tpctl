@@ -147,7 +147,6 @@ function install_gloo() {
   mkdir -p gloo
   (
     cd gloo
-    cat $TMP_DIR/gloo-values.yaml
     glooctl install gateway --with-admin-console -n gloo-system --values $TMP_DIR/gloo-values.yaml --dry-run | separate_files | add_names
   )
   rm gloo/global/Namespace/gloo-system.yaml
