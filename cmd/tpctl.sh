@@ -142,7 +142,7 @@ function install_gloo() {
   local config=$(get_config)
   jsonnet --tla-code config="$config" $TEMPLATE_DIR/gloo/gloo-values.yaml.jsonnet | yq r - >$TMP_DIR/gloo-values.yaml
   expect_success "Templating failure gloo/gloo-values.yaml.jsonnet"
-  cat $TMP_DIR/gloo-values.yaml
+  cat $TMP_DIR/gloo-values.yaml >/tmp/foo
 
   rm -rf gloo
   mkdir -p gloo
