@@ -12,6 +12,11 @@ local settings(config) = {
   },
   spec: {
     bindAddr: '0.0.0.0:9977',
+    gateway: {
+      validation: {
+        alwaysAccept: false,
+      },
+    },
     discovery: {
       fdsMode: 'WHITELIST',
     },
