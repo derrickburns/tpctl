@@ -15,6 +15,12 @@ local sslGateway(config) = {
     bindPort: 8443,
     httpGateway: {
       plugins: {
+        httpConnectionManagerSettings: {
+          tracing: {
+            verbose: true,
+            requestHeadersForTags: [ "path", "origin" ]
+          }
+        },
         healthCheck: {
           path: '/status',
         },

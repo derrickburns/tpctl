@@ -13,6 +13,12 @@ local gateway(config) = {
   spec: {
     httpGateway: {
       plugins: {
+        httpConnectionManagerSettings: {
+          tracing: {
+            verbose: true,
+            requestHeadersForTags: [ "path", "origin" ]
+          }
+        },
         healthCheck: {
           path: '/status',
         },
