@@ -142,6 +142,7 @@ function install_gloo() {
   local config=$(get_config)
   jsonnet --tla-code config="$config" $TEMPLATE_DIR/gloo/gloo-values.yaml.jsonnet | yq r - >$TMP_DIR/gloo-values.yaml
   expect_success "Templating failure gloo/gloo-values.yaml.jsonnet"
+  cat $TMP_DIR/gloo-values.yaml
 
   rm -rf gloo
   mkdir -p gloo
@@ -149,8 +150,8 @@ function install_gloo() {
     cd gloo
     glooctl install gateway --with-admin-console -n gloo-system --values $TMP_DIR/gloo-values.yaml --dry-run | separate_files | add_names
   )
-  rm gloo/global/Namespace/gloo-system.yaml
   expect_success "Templating failure gloo/gloo-values.yaml.jsonnet"
+  rm gloo/global/Namespace/gloo-system.yaml
 
   glooctl install gateway --with-admin-console -n gloo-system --values $TMP_DIR/gloo-values.yaml
   expect_success "Gloo installation failure"
