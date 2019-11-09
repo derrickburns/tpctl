@@ -53,8 +53,8 @@ local values(config) = {
                       endpoint: {
                         address: {
                           socket_address: {
-                            address: 'zipkin',
-                            port_value: 1234,
+                            address: 'simplest-collector',
+                            port_value: 9411,
                           },
                         },
                       },
