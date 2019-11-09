@@ -13,4 +13,4 @@ local kubeconfig(config, prev) = prev {
   } ]
 };
 
-function(config) kubeconfig(config, prev)
+function(config, prev) kubeconfig(config, prev)
