@@ -1,7 +1,7 @@
 local kubeconfig(config, prev) = prev {
   contexts: [ { 
       context: {
-        cluster: prev.contexts[0].context.cluster
+        cluster: prev.contexts[0].context.cluster,
         user: "tidepool-user",
       },
       name: config.cluster.metadata.name + '.' + config.cluster.metadata.region
