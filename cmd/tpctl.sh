@@ -1347,6 +1347,7 @@ for param in $PARAMS; do
     update_kubeconfig)
       check_remote_repo
       setup_tmpdir
+      set_template_dir
       clone_remote
       update_kubeconfig
       ;;
