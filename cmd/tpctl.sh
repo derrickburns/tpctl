@@ -499,7 +499,8 @@ function get_kubeconfig() {
 
 function update_kubeconfig() {
   local config=$(get_config)
-  jsonnet --tla-code-file prev=./kubeconfig.yaml --tla-code config="$config" ${TEMPLATE_DIR}/eksctl/kubeconfig.jsonnet | yq r - >kubeconfig.yaml.updated
+  yq r ./kubeconfig.yaml -j >$TMP_DIR/kubeconfig.yaml
+  jsonnet --tla-code-file prev=${TMP_DIR}/kubeconfig.yaml --tla-code config="$config" ${TEMPLATE_DIR}/eksctl/kubeconfig.jsonnet | yq r - >kubeconfig.yaml.updated
 }
 
 # create EKS cluster using config.yaml file, add kubeconfig to config repo
