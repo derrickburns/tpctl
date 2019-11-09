@@ -497,12 +497,18 @@ function get_kubeconfig() {
   realpath $(eval "echo $kc")
 }
 
+function update_kubeconfig() {
+  local config=$(get_config)
+  jsonnet --tla-code-file prev=./kubeconfig.yaml --tla-code config="$config" ${TEMPLATE_DIR}/eksctl/kubeconfig.jsonnet | yq r - >kubeconfig.yaml.updated
+}
+
 # create EKS cluster using config.yaml file, add kubeconfig to config repo
 function make_cluster() {
   local cluster=$(get_cluster)
   start "creating cluster $cluster"
   eksctl create cluster -f config.yaml --kubeconfig ./kubeconfig.yaml
   expect_success "eksctl create cluster failed."
+  update_kubeconfig
   git pull
   add_file "./kubeconfig.yaml"
   make_envrc
@@ -995,7 +1001,7 @@ function linkerd_dashboard() {
 
 # show help
 function help() {
-  echo "$0 [-h|--help] (all|values|edit_values|config|edit_repo|cluster|flux|gloo|regenerate_cert|copy_assets|mesh|migrate_secrets|randomize_secrets|upsert_plaintext_secrets|install_users|deploy_key|delete_cluster|await_deletion|remove_mesh|merge_kubeconfig|gloo_dashboard|linkerd_dashboard|diff|dns|install_certmanager|uninstall_certmanager|mongo_template|linkerd_check|sync|peering|vpc)*"
+  echo "$0 [-h|--help] (all|values|edit_values|config|edit_repo|cluster|flux|gloo|regenerate_cert|copy_assets|mesh|migrate_secrets|randomize_secrets|upsert_plaintext_secrets|install_users|deploy_key|delete_cluster|await_deletion|remove_mesh|merge_kubeconfig|gloo_dashboard|linkerd_dashboard|diff|dns|install_certmanager|uninstall_certmanager|mongo_template|linkerd_check|sync|peering|vpc|update_kubeconfig)*"
   echo
   echo
   echo "So you want to built a Kubernetes cluster that runs Tidepool. Great!"
@@ -1045,6 +1051,7 @@ function help() {
   echo "mongo_template - output a template to use for creating a mongo secret"
   echo "diff - show recent git diff"
   echo "envrc - create .envrc file for direnv to change kubecontexts and to set REMOTE_REPO"
+  echo "update_kubeconfig - modify context and user for kubeconfig"
 }
 
 if [ $# -eq 0 ]; then
@@ -1336,6 +1343,12 @@ for param in $PARAMS; do
       clone_remote
       confirm_matching_cluster
       delete_peering_connections
+      ;;
+    update_kubeconfig)
+      check_remote_repo
+      setup_tmpdir
+      clone_remote
+      update_kubeconfig
       ;;
     envrc)
       check_remote_repo
