@@ -38,9 +38,9 @@ RUN curl -sL https://github.com/derailed/k9s/releases/download/0.8.4/k9s_0.8.4_L
     mv /tmp/k9s /usr/local/bin
 RUN curl -sL -o /usr/local/bin/linkerd https://github.com/linkerd/linkerd2/releases/download/stable-2.6.0/linkerd2-cli-stable-2.6.0-linux 
 RUN curl -sL -o /usr/local/bin/glooctl https://github.com/solo-io/gloo/releases/download/v0.20.8/glooctl-linux-amd64
-COPY tpctl.sh /root/tpctl
+RUN ln -s /usr/bin/python3 /usr/local/bin/python3 && chmod +x /usr/local/bin/*
 COPY separate_files /usr/local/bin/separate_files
 COPY external_secret /usr/local/bin/external_secret
-RUN ln -s /usr/bin/python3 /usr/local/bin/python3 && chmod +x /usr/local/bin/*
+COPY tpctl.sh /root/tpctl
 RUN cd /root/workdir
 CMD [ "/root/tpctl"  ]
