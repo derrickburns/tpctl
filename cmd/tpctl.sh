@@ -1354,6 +1354,7 @@ for param in $PARAMS; do
       set_template_dir
       clone_remote
       update_kubeconfig
+      save_changes "Updated kubeconfig"
       ;;
     envrc)
       check_remote_repo
