@@ -143,6 +143,8 @@ function install_gloo() {
   jsonnet --tla-code config="$config" $TEMPLATE_DIR/gloo/gloo-values.yaml.jsonnet | yq r - >$TMP_DIR/gloo-values.yaml
   expect_success "Templating failure gloo/gloo-values.yaml.jsonnet"
 
+  kubectl delete jobs -n gloo-system gateway-certgen
+
   rm -rf gloo
   mkdir -p gloo
   (
