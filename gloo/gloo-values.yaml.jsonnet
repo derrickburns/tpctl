@@ -25,6 +25,48 @@ local values(config) = {
     upgrade: false,
   },
   gatewayProxies: {
+    internalGatewayProxyV2: {
+      readConfig: true,
+      gatewaySettings: {
+        disableGeneratedGateways: true,
+      },
+      tracing: {
+        provider: {
+          name: 'envoy.zipkin',
+          typed_config: {
+            '@type': 'type.googleapis.com/envoy.config.trace.v2.ZipkinConfig',
+            collector_cluster: 'zipkin',
+            collector_endpoint: '/api/v1/spans',
+          },
+        },
+        cluster: [
+          {
+            name: 'zipkin',
+            connect_timeout: '1s',
+            type: 'STRICT_DNS',
+            load_assignment: {
+              cluster_name: 'zipkin',
+              endpoints: [
+                {
+                  lb_endpoints: [
+                    {
+                      endpoint: {
+                        address: {
+                          socket_address: {
+                            address: 'simplest-collector',
+                            port_value: 9411,
+                          },
+                        },
+                      },
+                    },
+                  ],
+                },
+              ],
+            },
+          },
+        ],
+      }
+    },
     gatewayProxyV2: {
       readConfig: true,
       gatewaySettings: {
@@ -83,7 +125,7 @@ local values(config) = {
         httpPort: 80,
         httpsPort: 443,
         extraAnnotations: {
-          //'service.beta.kubernetes.io/aws-load-balancer-type': 'nlb',
+          'service.beta.kubernetes.io/aws-load-balancer-type': 'nlb',
           'service.beta.kubernetes.io/aws-load-balancer-proxy-protocol': '*',
           'external-dns.alpha.kubernetes.io/alias': 'true',
           'external-dns.alpha.kubernetes.io/hostname': lib.dnsNames(config),

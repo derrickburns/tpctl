@@ -7,13 +7,13 @@ local gateway(config) = {
     annotations: {
       origin: 'default',
     },
-    name: 'gateway-proxy-v2',
+    name: 'internal-gateway-proxy-v2',
     namespace: lib.getElse(config, 'pkgs.gloo.namespace', 'gloo-system'),
   },
   spec: {
     httpGateway: {
       virtualServiceSelector: {
-        source: "external",
+        source: "internal",
       },
       plugins: {
         httpConnectionManagerSettings: {
@@ -58,9 +58,9 @@ local gateway(config) = {
     bindAddress: '::',
     bindPort: 8080,
     proxyNames: [
-      'gateway-proxy-v2',
+      'internal-gateway-proxy-v2',
     ],
-    useProxyProto: true,
+    useProxyProto: false,
   },
 };
 

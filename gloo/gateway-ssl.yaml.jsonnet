@@ -14,6 +14,9 @@ local sslGateway(config) = {
     bindAddress: '::',
     bindPort: 8443,
     httpGateway: {
+      virtualServiceSelector: {
+        source: "external",
+      },
       plugins: {
         httpConnectionManagerSettings: {
           tracing: {
