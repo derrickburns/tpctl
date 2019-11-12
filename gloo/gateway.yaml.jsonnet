@@ -37,7 +37,7 @@ local gateway(config) = {
                 forwardedFor: "%REQ(X-FORWARDED-FOR)%",
                 method: '%REQ(:method)%',
                 path: '%REQ(:path)%',
-                remoteAddress: "%DOWNSTREAM_REMOTE_ADDRESS%",
+                remoteAddress: "%DOWNSTREAM_REMOTE_ADDRESS_WITHOUT_PORT%",
                 request: '%REQ(x-tidepool-trace-request)%',
                 response: '%RESPONSE_CODE%',
                 scheme: '%REQ(:scheme)%',
