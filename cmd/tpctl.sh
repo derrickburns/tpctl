@@ -131,6 +131,7 @@ function make_gateway {
   local config=$(get_config)
   mkdir -p gloo
   add_gloo_manifest "$config" gateway-ssl
+  add_gloo_manifest "$config" internal-gateway
   add_gloo_manifest "$config" gateway
   add_gloo_manifest "$config" settings
   complete "configured gloo gateway"
