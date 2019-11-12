@@ -1,4 +1,4 @@
-!/bin/bash -ix
+#!/bin/bash -ix
 #
 # Configure EKS cluster to run Tidepool services
 #
