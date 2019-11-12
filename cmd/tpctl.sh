@@ -1,4 +1,4 @@
-#!/bin/bash -i
+#!/bin/bash -ix
 #
 # Configure EKS cluster to run Tidepool services
 #
@@ -152,6 +152,7 @@ function install_gloo() {
   )
 
   glooctl install gateway -n gloo-system --values $TMP_DIR/gloo-values.yaml
+  cat /root/.gloo/debug.log.
   expect_success "Gloo installation failure"
   complete "installed gloo"
   make_gateway
