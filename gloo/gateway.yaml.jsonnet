@@ -57,7 +57,7 @@ local gateway(config) = {
     proxyNames: [
       'gateway-proxy-v2',
     ],
-    useProxyProto: false,
+    useProxyProto: true,
   },
 };
 

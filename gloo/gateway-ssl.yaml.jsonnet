@@ -58,7 +58,7 @@ local sslGateway(config) = {
       'gateway-proxy-v2',
     ],
     ssl: true,
-    useProxyProto: false,
+    useProxyProto: true,
   },
 };
 
