@@ -13,7 +13,7 @@
       name: name,
       namespace: e,
     }
-    for e in lib.environments(config)
+    for e in $.environments(config)
   ],
   dnsNames(config):: (
     local tp = [config.environments[env].tidepool for env in $.environments(config)];
