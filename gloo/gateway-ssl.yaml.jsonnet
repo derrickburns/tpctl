@@ -14,9 +14,7 @@ local sslGateway(config) = {
     bindAddress: '::',
     bindPort: 8443,
     httpGateway: {
-      virtualServiceSelector: {
-        source: "external",
-      },
+      virtualServices: lib.virtualServices(config, 'gloo-https'),
       plugins: {
         httpConnectionManagerSettings: {
           tracing: {

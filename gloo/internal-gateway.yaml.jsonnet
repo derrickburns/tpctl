@@ -12,9 +12,7 @@ local gateway(config) = {
   },
   spec: {
     httpGateway: {
-      virtualServiceSelector: {
-        source: "internal",
-      },
+      virtualServices: lib.virtualServices(config, "internal"),
       plugins: {
         httpConnectionManagerSettings: {
           tracing: {

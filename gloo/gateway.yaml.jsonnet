@@ -12,9 +12,7 @@ local gateway(config) = {
   },
   spec: {
     httpGateway: {
-      virtualServiceSelector: {
-        source: "external",
-      },
+      virtualServices: lib.virtualServices(config, 'gloo-http'),
       plugins: {
         httpConnectionManagerSettings: {
           tracing: {
