@@ -1,14 +1,21 @@
 {
-  dnsNames(config):: (
+  environments(config):: (
     local e = $.get(config, 'environments');
-    local tp =
-      if e == null
-      then []
-      else (
-        local envs = std.objectFields(e);
-        [e[env].tidepool for env in envs if $.isTrue(e[env], 'tidepool.enabled')]
-      );
-
+    if e == null
+    then []
+    else (
+      local envs = std.objectFields(e);
+      [env for env in envs if $.isTrue(e[env], 'tidepool.enabled')]
+    )
+  ),
+  virtualServices(config, name):: [
+    {
+       name: name,
+       namespace: e
+    } for e in lib.environments(config)
+  ],
+  dnsNames(config):: (
+    local tp = [config.environments[env].tidepool for env in $.environments(config)];
     local p = $.get(config, 'pkgs');
     local pk =
       if p == null
