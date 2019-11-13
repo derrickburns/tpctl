@@ -44,7 +44,7 @@ local values(config) = {
         runAsUser: 10101,
       },
       service: {
-        type: "LoadBalancer",
+        type: "ClusterIP",
         httpPort: 80,
         httpsPort: 443, 
       },
