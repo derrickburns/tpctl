@@ -229,10 +229,7 @@ local tidepool(config, prev, namespace) = {
 
       ingress: {
         certificate: env.ingress.certificate,
-        deployment+: {
-          name: 'gateway-proxy-v2',
-          namespace: 'gloo-system',
-        },
+        deployment+: env.ingress.deployment,
         gateway: env.ingress.gateway,
         service: env.ingress.service,
       },
