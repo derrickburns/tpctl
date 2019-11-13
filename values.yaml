@@ -122,6 +122,9 @@ environments:
         certificate:
           secretName: tls                      # Name of the K8s secret to store the TLS certificate for the hosts served
           issuer: letsencrypt-staging          # Name of the Certificate Issuer to use
+        deployment:
+          name: internal-gateway-proxy-v2
+          namespace: gloo-system
         gateway:
           default:                             # Default protocol to use for communication for email verification
             protocol: http                
