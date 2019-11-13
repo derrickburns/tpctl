@@ -26,6 +26,29 @@ local values(config) = {
   },
   gatewayProxies: {
     internalGatewayProxyV2: {
+      stats: true,
+      kind: {
+         deployment: {
+           replicas: 1
+         }
+      },
+      podTemplate: {
+        probes: false,
+        image: {
+          repository: "gloo-envoy-wrapper" 
+        },
+        httpPort: 8080,
+        httpsPort: 8443,
+        runAsUser: 10101,
+      },
+      service: {
+        type: "LoadBalancer",
+        httpPort: 80,
+        httpsPort: 443, 
+      },
+      configMap: {
+        data: {}
+      },
       readConfig: true,
       gatewaySettings: {
         disableGeneratedGateways: true,

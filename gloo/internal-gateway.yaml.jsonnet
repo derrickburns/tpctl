@@ -12,9 +12,9 @@ local gateway(config) = {
   },
   spec: {
     httpGateway: {
-      virtualServiceSelector: {
-        source: "internal",
-      },
+      //virtualServiceSelector: {
+        //source: "internal",
+      //},
       plugins: {
         httpConnectionManagerSettings: {
           tracing: {
