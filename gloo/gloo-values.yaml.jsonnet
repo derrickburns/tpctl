@@ -35,7 +35,9 @@ local values(config) = {
       podTemplate: {
         probes: false,
         image: {
-          repository: "gloo-envoy-wrapper" 
+          repository: "gloo-envoy-wrapper",
+          registry: "quay.io/solo-io",
+          tag: "0.20.8",
         },
         httpPort: 8080,
         httpsPort: 8443,
