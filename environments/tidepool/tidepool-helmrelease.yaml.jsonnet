@@ -160,6 +160,7 @@ local tidepool(config, prev, namespace) = {
           },
         },
         deployment+: {
+          replicas: 2,
           image: lib.getElse(prev, 'spec.values.gatekeeper.deployment.image', 'tidepool/gatekeeper:develop-6a0e3e6d83552ce378b21d76354973dcb95c9fa1'),
         },
       }, lib.getElse(tp, 'gatekeeper', {})]),
