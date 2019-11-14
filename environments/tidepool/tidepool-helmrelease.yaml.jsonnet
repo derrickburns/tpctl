@@ -165,6 +165,7 @@ local tidepool(config, prev, namespace) = {
       }, lib.getElse(tp, 'gatekeeper', {})]),
 
       global: {
+        logLevel: config.logLevel,
         gateway: {
           default: {
             host: defaultHost(env),
