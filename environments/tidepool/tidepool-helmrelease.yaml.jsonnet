@@ -71,9 +71,7 @@ local tidepool(config, prev, namespace) = {
         cpu: lib.getElse(tp, 'resources.limits.cpu', '100m'),
       },
     },
-    hpa: {
-      enabled: lib.getElse(tp, 'hpa.enabled', false),
-    },
+    hpa: lib.getElse(tp, 'hpa', { enabled: false }),
     deployment+: {
       replicas: lib.getElse(tp, 'deployment.replicas', 1),
     },
