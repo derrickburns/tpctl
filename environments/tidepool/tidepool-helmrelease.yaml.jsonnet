@@ -125,6 +125,7 @@ local tidepool(config, prev, namespace) = {
       data: lib.mergeList([common, {
         deployment+: {
           image: lib.getElse(prev, 'spec.values.data.deployment.image', 'tidepool/platform-data:develop-cebea363931570d3930848a21e6a3d07a54f4425'),
+          replicas: 3,
         },
       }, lib.getElse(tp, 'data', {})]),
 
@@ -142,6 +143,7 @@ local tidepool(config, prev, namespace) = {
           },
         },
         deployment+: {
+          replicas: 3,
           image: lib.getElse(prev, 'spec.values.export.deployment.image', 'tidepool/export:develop-ddc5f311a4bdc2adae1b423f13e047ff1828d65c'),
         },
       }, lib.getElse(tp, 'export', {})]),
@@ -241,6 +243,7 @@ local tidepool(config, prev, namespace) = {
           fsGroup: 65534,  // To be able to read Kubernetes and AWS token files
         },
         deployment+: {
+          replicas: 3,
           env: {
             store: {
               s3: {
@@ -305,6 +308,7 @@ local tidepool(config, prev, namespace) = {
 
       tidewhisperer: lib.mergeList([common, {
         deployment+: {
+          replicas: 3,
           image: lib.getElse(prev, 'spec.values.tidewhisperer.deployment.image', 'tidepool/tide-whisperer:develop-3d9d8e6b3417c70679ec43420f2a5e4a69cf9098'),
         },
       }, lib.getElse(tp, 'tidewhisperer', {})]),
