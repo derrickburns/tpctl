@@ -791,9 +791,31 @@ function mykubectl() {
   KUBECONFIG=~/.kube/config kubectl $@
 }
 
+function ostype {
+  case "$OSTYPE" in
+  darwin*)  echo "darwin" ;; 
+  linux*)   echo "linux" ;;
+  bsd*)     echo "bsd" ;;
+  msys*)    echo "windows" ;;
+  *)        echo "unknown: $OSTYPE" ;;
+  esac
+}
+
+// this only works on a mac
+function install_mesh_client {
+  local linkerd_version=$(require_value mesh.version)
+  if ! command -v linkerd >/dev/null 2>&1 || [ $(linkerd version --client --short) != ${linkerd_version} ]
+  then
+    OS=$(ostype)
+    curl -sL -o /usr/local/bin/linkerd https://github.com/linkerd/linkerd2/releases/download/${linkerd_version}/linkerd2-cli-${linkerd_version}-${OS}
+    chmod 755 /usr/local/bin/linkerd 
+  fi
+}
+
 # create service mesh
 # do NOT add linkerd to GitOps because upgrade path is can be complex
 function make_mesh() {
+  install_mesh_client
   linkerd check --pre
   expect_success "Failed linkerd pre-check."
   start "installing mesh"

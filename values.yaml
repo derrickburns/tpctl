@@ -71,6 +71,8 @@ pkgs:
     username: "derrickburns"                 
     secret: slack                            # Name of secret in which Slack webhook URL is provided
     #channel: foo                            # Slack channel on which to post notifications
+  linkerd:
+    version: stable-2.6.0
   metrics-server:                            # Metrics server collects Node level metrics and sends to Prometheus
     enabled: true
   sumologic:                                 # Sumologic collects metrics and logs and sents to the hosted service
