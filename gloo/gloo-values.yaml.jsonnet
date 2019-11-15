@@ -42,6 +42,9 @@ local values(config) = {
         httpPort: 8080,
         httpsPort: 8443,
         runAsUser: 10101,
+        extraAnnotations: {
+          "linkerd.io/inject": "enabled",
+        },
       },
       service: {
         type: "ClusterIP",
