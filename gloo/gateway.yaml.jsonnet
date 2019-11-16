@@ -13,7 +13,7 @@ local gateway(config) = {
   spec: {
     httpGateway: {
       virtualServices: lib.virtualServices(config, 'gloo-http'),
-      plugins: {
+      settings: {
         httpConnectionManagerSettings: {
           tracing: {
             verbose: true,
@@ -25,7 +25,7 @@ local gateway(config) = {
         },
       },
     },
-    plugins: {
+    settings: {
       accessLoggingService: {
         accessLog: [
           {
