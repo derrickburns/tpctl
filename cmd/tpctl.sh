@@ -138,19 +138,26 @@ function make_gateway {
 }
 
 function install_glooctl {
+  start "checking glooctl"
   local glooctl_version=$(require_value "pkgs.gloo.version")
   if ! command -v glooctl >/dev/null 2>&1 || [ $(glooctl version -o json | grep Client | yq r - 'Client.version') != ${glooctl_version} ]
   then
+    start "installing glooctl"
     OS=$(ostype)
-    curl -sL -o /usr/local/bin/glooctl https://github.com/solo-io/gloo/releases/download/v${glooctl_version}/glooctl-${OS}-amd64
+    local name="https://github.com/solo-io/gloo/releases/download/v${glooctl_version}/glooctl-${OS}-amd64"
+    curl -sL -o /usr/local/bin/glooctl $name
+    expect_success "Failed to download $name"
     chmod 755 /usr/local/bin/glooctl 
+    complete "installed glooctl ${glooctl_version} for ${OS}"
+  else
+    complete "glooctl up-to-date"
   fi
 }
 
 # install gloo
 function install_gloo() {
-  start "installing gloo"
   install_glooctl
+  start "installing gloo"
   local config=$(get_config)
   jsonnet --tla-code config="$config" $TEMPLATE_DIR/gloo/gloo-values.yaml.jsonnet | yq r - >$TMP_DIR/gloo-values.yaml
   expect_success "Templating failure gloo/gloo-values.yaml.jsonnet"
@@ -813,12 +820,19 @@ function ostype {
 }
 
 function install_mesh_client {
+  start "checking linkerd client"
   local linkerd_version=$(require_value "pkgs.linkerd.version")
   if ! command -v linkerd >/dev/null 2>&1 || [ $(linkerd version --client --short) != ${linkerd_version} ]
   then
+    start "installing linkerd client"
     OS=$(ostype)
-    curl -sL -o /usr/local/bin/linkerd https://github.com/linkerd/linkerd2/releases/download/${linkerd_version}/linkerd2-cli-${linkerd_version}-${OS}
+    local name="https://github.com/linkerd/linkerd2/releases/download/${linkerd_version}/linkerd2-cli-${linkerd_version}-${OS}"
+    curl -sL -o /usr/local/bin/linkerd $name
+    expect_success "Failed to download $name"
     chmod 755 /usr/local/bin/linkerd 
+    complete "installed linkerd ${linkerd_version} for ${OS}"
+  else
+    complete "linkerd client up to date"
   fi
 }
 

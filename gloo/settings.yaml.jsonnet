@@ -11,7 +11,6 @@ local settings(config) = {
     namespace: lib.getElse(config, 'pkgs.gloo.namespace', 'gloo-system'),
   },
   spec: {
-    bindAddr: '0.0.0.0:9977',
     gateway: {
       validation: {
         alwaysAccept: false,
