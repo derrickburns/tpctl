@@ -25,7 +25,7 @@ local values(config) = {
     upgrade: false,
   },
   gatewayProxies: {
-    internalGatewayProxyV2: {
+    internalGatewayProxy: {
       stats: true,
       kind: {
          deployment: {
@@ -95,7 +95,7 @@ local values(config) = {
         ],
       }
     },
-    gatewayProxyV2: {
+    gatewayProxy: {
       readConfig: true,
       gatewaySettings: {
         disableGeneratedGateways: true,

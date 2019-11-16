@@ -1,13 +1,13 @@
 local lib = import '../lib/lib.jsonnet';
 
 local sslGateway(config) = {
-  apiVersion: 'gateway.solo.io.v2/v2',
+  apiVersion: 'gateway.solo.io/v1',
   kind: 'Gateway',
   metadata: {
     annotations: {
       origin: 'default',
     },
-    name: 'gateway-proxy-v2-ssl',
+    name: 'gateway-proxy-ssl',
     namespace: lib.getElse(config, 'pkgs.gloo.namespace', 'gloo-system'),
   },
   spec: {
@@ -56,7 +56,7 @@ local sslGateway(config) = {
       },
     },
     proxyNames: [
-      'gateway-proxy-v2',
+      'gateway-proxy',
     ],
     ssl: true,
     useProxyProto: true,

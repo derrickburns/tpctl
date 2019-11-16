@@ -1,13 +1,13 @@
 local lib = import '../lib/lib.jsonnet';
 
 local gateway(config) = {
-  apiVersion: 'gateway.solo.io.v2/v2',
+  apiVersion: 'gateway.solo.io/v1',
   kind: 'Gateway',
   metadata: {
     annotations: {
       origin: 'default',
     },
-    name: 'internal-gateway-proxy-v2',
+    name: 'internal-gateway-proxy',
     namespace: lib.getElse(config, 'pkgs.gloo.namespace', 'gloo-system'),
   },
   spec: {
@@ -56,7 +56,7 @@ local gateway(config) = {
     bindAddress: '::',
     bindPort: 8080,
     proxyNames: [
-      'internal-gateway-proxy-v2',
+      'internal-gateway-proxy',
     ],
     useProxyProto: false,
   },
