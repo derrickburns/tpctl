@@ -137,9 +137,20 @@ function make_gateway {
   complete "configured gloo gateway"
 }
 
+function install_glooctl {
+  local glooctl_version=$(require_value "pkgs.gloo.version")
+  if ! command -v glooctl >/dev/null 2>&1 || [ $(glooctl version -o json | grep Client | yq r - 'Client.version') != ${glooctl_version} ]
+  then
+    OS=$(ostype)
+    curl -sL -o /usr/local/bin/glooctl https://github.com/solo-io/gloo/releases/download/${glooctl_version}/glooctl-${OS}-amd64
+    chmod 755 /usr/local/bin/glooctl 
+  fi
+}
+
 # install gloo
 function install_gloo() {
   start "installing gloo"
+  install_glooctl
   local config=$(get_config)
   jsonnet --tla-code config="$config" $TEMPLATE_DIR/gloo/gloo-values.yaml.jsonnet | yq r - >$TMP_DIR/gloo-values.yaml
   expect_success "Templating failure gloo/gloo-values.yaml.jsonnet"
