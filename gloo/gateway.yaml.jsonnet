@@ -13,8 +13,9 @@ local gateway(config) = {
   spec: {
     httpGateway: {
       virtualServices: lib.virtualServices(config, 'gloo-http'),
-      settings: {
+      options: {
         httpConnectionManagerSettings: {
+          useRemoteAddress: true,
           tracing: {
             verbose: true,
             requestHeadersForTags: [ "path", "origin" ]
@@ -25,7 +26,7 @@ local gateway(config) = {
         },
       },
     },
-    settings: {
+    options: {
       accessLoggingService: {
         accessLog: [
           {

@@ -13,7 +13,7 @@ local gateway(config) = {
   spec: {
     httpGateway: {
       virtualServices: lib.virtualServices(config, "internal"),
-      settings: {
+      options: {
         httpConnectionManagerSettings: {
           tracing: {
             verbose: true,
@@ -25,7 +25,7 @@ local gateway(config) = {
         },
       },
     },
-    settings: {
+    options: {
       accessLoggingService: {
         accessLog: [
           {

@@ -15,8 +15,9 @@ local sslGateway(config) = {
     bindPort: 8443,
     httpGateway: {
       virtualServices: lib.virtualServices(config, 'gloo-https'),
-      settings: {
+      options: {
         httpConnectionManagerSettings: {
+	  useRemoteAddress: true,
           tracing: {
             verbose: true,
             requestHeadersForTags: [ "path", "origin" ]
@@ -27,7 +28,7 @@ local sslGateway(config) = {
         },
       },
     },
-    settings: {
+    options: {
       accessLoggingService: {
         accessLog: [
           {
