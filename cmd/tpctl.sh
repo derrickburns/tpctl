@@ -812,7 +812,6 @@ function ostype {
   esac
 }
 
-// this only works on a mac
 function install_mesh_client {
   local linkerd_version=$(require_value "pkgs.linkerd.version")
   if ! command -v linkerd >/dev/null 2>&1 || [ $(linkerd version --client --short) != ${linkerd_version} ]
