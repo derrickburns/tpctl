@@ -142,7 +142,7 @@ function install_glooctl {
   if ! command -v glooctl >/dev/null 2>&1 || [ $(glooctl version -o json | grep Client | yq r - 'Client.version') != ${glooctl_version} ]
   then
     OS=$(ostype)
-    curl -sL -o /usr/local/bin/glooctl https://github.com/solo-io/gloo/releases/download/${glooctl_version}/glooctl-${OS}-amd64
+    curl -sL -o /usr/local/bin/glooctl https://github.com/solo-io/gloo/releases/download/v${glooctl_version}/glooctl-${OS}-amd64
     chmod 755 /usr/local/bin/glooctl 
   fi
 }
