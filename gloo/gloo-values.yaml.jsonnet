@@ -37,7 +37,7 @@ local values(config) = {
         image: {
           repository: "gloo-envoy-wrapper",
           registry: "quay.io/solo-io",
-          tag: "0.20.8",
+          tag: config.pkgs.gloo.version,
         },
         httpPort: 8080,
         httpsPort: 8443,

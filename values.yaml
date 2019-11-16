@@ -50,6 +50,7 @@ pkgs:
   external-dns:                              # External DNS maintains DNS aliases to Amazon ELBs
     enabled: true
   gloo:                                      # Gloo provides the API Gateway 
+    version: 0.20.8
     enabled: true
     namespace: gloo-system                   # namespace to host gateway
   prometheus-operator:                       # Prometheus Operator creates Prometheus instances
