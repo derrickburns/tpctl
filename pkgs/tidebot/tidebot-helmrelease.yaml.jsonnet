@@ -34,7 +34,7 @@ local helmrelease(config) = {
           HUBOT_SLACK_ROOMS: lib.getElse(tidebot, 'HUBOT_SLACK_ROOMS', 'tidebot,github-events'),
         },
       },
-    } + lib.getElse( tidebot', 'values', {}),
+    } + lib.getElse( tidebot, 'values', {}),
   },
 };
 
