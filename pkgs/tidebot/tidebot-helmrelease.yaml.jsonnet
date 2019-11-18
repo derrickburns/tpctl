@@ -18,7 +18,7 @@ local helmrelease(config) = {
       git: 'git@github.com:tidepool-org/slack-tidebot',
       path: 'deploy',
       ref: 'master',
-    } + lib.getElse(tidebot, 'chart', {})
+    } + lib.getElse(tidebot, 'chart', {}),
     releaseName: 'tidebot',
     values: {
       deployment+: {
