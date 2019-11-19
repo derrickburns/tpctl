@@ -14,17 +14,6 @@ local helmrelease(config) = {
     },
   },
 
-  // convert the configmap data to json strings
-  local pkgConfig = lib.merge(tidebot, {
-    spec+: {
-      values+: {
-        configmap+: {
-          data_: lib.manifestJsonFields( lib.getElse(tidebot, 'spec.values.configmap.data_', {}))
-        }
-      }
-    }
-  }),
-
   spec: {
     chart+: {
       git: 'git@github.com:tidepool-org/slack-tidebot',
@@ -38,12 +27,9 @@ local helmrelease(config) = {
       },
       configmap+: {
         enabled: true,
-        HUBOT_GITHUB_EVENT_NOTIFIER_TYPES: 'commit_comment,create,delete,deployment,deployment_status,issue_comment,issues,page_build,pull_request_review_comment,pull_request,push,repository,release,status,ping,pull_request_review',
-        HUBOT_SLACK_ACCOUNT: 'Tidepool',
-        HUBOT_SLACK_ROOMS: 'tidebot,github-events',
       },
     },
-  } + lib.getElse(pkgConfig, 'spec', {}),
+  } + lib.getElse(tidebot, 'spec', {}),
 };
 
 function(config) helmrelease(config)
