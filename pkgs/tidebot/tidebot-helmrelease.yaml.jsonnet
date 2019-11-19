@@ -14,7 +14,7 @@ local helmrelease(config) = {
     },
   },
 
-  spec: {
+  spec+: {
     chart+: {
       git: 'git@github.com:tidepool-org/slack-tidebot',
       path: 'deploy',
