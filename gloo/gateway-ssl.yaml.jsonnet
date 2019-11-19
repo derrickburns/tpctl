@@ -16,7 +16,6 @@ local sslGateway(config) = {
     local vs = lib.virtualServices(config, 'gloo-https'),
     local extra = if vs == [] then {} else { virtualServices: vs },
     httpGateway: extra {
-      virtualServices: lib.virtualServices(config, 'gloo-https'),
       options: {
         httpConnectionManagerSettings: {
 	  useRemoteAddress: true,
