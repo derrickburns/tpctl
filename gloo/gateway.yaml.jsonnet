@@ -12,7 +12,7 @@ local gateway(config) = {
   },
   spec: {
     local vs = lib.virtualServices(config, 'gloo-http'),
-    local extra = if vs == [] then { virtualServices: vs } else {},
+    local extra = if vs == [] then {} else { virtualServices: vs },
     httpGateway: extra {
       options: {
         httpConnectionManagerSettings: {
