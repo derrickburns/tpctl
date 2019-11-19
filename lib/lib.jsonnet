@@ -61,6 +61,10 @@
 
   present(x, path):: $.get(x, path) != null,
 
+  manifestJsonFields(obj):: {
+    [k] : std.manifestJson(obj[k]) for k in std.objectFields(obj)
+  },
+
   remapKey(x, remap, key='resources')::
     if $.present(x, key)
     then { [key]+: std.mapWithKey(remap, x[key]) }
