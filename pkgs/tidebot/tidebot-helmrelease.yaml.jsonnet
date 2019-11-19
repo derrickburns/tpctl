@@ -14,7 +14,7 @@ local helmrelease(config) = {
     },
   },
 
-  spec+: {
+  spec+: lib.merge({
     chart+: {
       git: 'git@github.com:tidepool-org/slack-tidebot',
       path: 'deploy',
@@ -29,7 +29,7 @@ local helmrelease(config) = {
         enabled: true,
       },
     },
-  } + lib.getElse(tidebot, 'spec', {}),
+  },lib.getElse(tidebot, 'spec', {})),
 };
 
 function(config) helmrelease(config)
