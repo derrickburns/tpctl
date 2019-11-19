@@ -11,8 +11,9 @@ local gateway(config) = {
     namespace: lib.getElse(config, 'pkgs.gloo.namespace', 'gloo-system'),
   },
   spec: {
-    httpGateway: {
-      virtualServices: lib.virtualServices(config, 'gloo-http'),
+    local vs = lib.virtualServices(config, 'gloo-http'),
+    local extra = if vs == [] then { virtualServices: vs } else {},
+    httpGateway: extra {
       options: {
         httpConnectionManagerSettings: {
           useRemoteAddress: true,
