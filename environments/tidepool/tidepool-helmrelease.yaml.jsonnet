@@ -87,7 +87,7 @@ local tidepool(config, prev, namespace) = {
       path: lib.getElse(tp, 'chart.path', 'charts/tidepool/0.1.7'),
       ref: lib.getElse(tp, 'chart.ref', 'develop'),
     },
-    releaseName: '%s-tidepool' % namespace,
+    releaseName: 'tidepool-%s' % namespace,
     values: {
 
       auth: lib.mergeList([ common, {

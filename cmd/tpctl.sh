@@ -133,7 +133,6 @@ function make_gateway {
   add_gloo_manifest "$config" gateway-ssl
   add_gloo_manifest "$config" internal-gateway
   add_gloo_manifest "$config" gateway
-  add_gloo_manifest "$config" settings
   complete "configured gloo gateway"
 }
 
@@ -160,6 +159,7 @@ function install_gloo() {
   start "installing gloo"
   local config=$(get_config)
   jsonnet --tla-code config="$config" $TEMPLATE_DIR/gloo/gloo-values.yaml.jsonnet | yq r - >$TMP_DIR/gloo-values.yaml
+  cat $TMP_DIR/gloo-values.yaml
   expect_success "Templating failure gloo/gloo-values.yaml.jsonnet"
 
   kubectl delete jobs -n gloo-system gateway-certgen
@@ -176,7 +176,6 @@ function install_gloo() {
   cat /root/.gloo/debug.log
   expect_success "Gloo installation failure"
   complete "installed gloo"
-  make_gateway
 }
 
 function confirm_matching_cluster() {
@@ -345,7 +344,7 @@ function set_template_dir() {
     pushd $TMP_DIR >/dev/null 2>&1
     git clone $(repo_with_token https://github.com/tidepool-org/tpctl)
     if [ -n "$TPCTL_BRANCH" ]; then
-      git checkout $TPCTL_BRANCH
+      (cd tpctl; git checkout $TPCTL_BRANCH)
     fi
     export TEMPLATE_DIR=$(pwd)/tpctl
     popd >/dev/null 2>&1
@@ -592,7 +591,6 @@ function enabled_pkgs() {
 
 # make K8s manifest file for shared services given config, path to directory, and prefix to strip
 function template_files() {
-  set -x
   local config=$1
   local path=$2
   local prefix=$3

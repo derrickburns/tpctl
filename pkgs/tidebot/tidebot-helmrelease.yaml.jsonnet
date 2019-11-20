@@ -1,6 +1,6 @@
 local lib = import '../../lib/lib.jsonnet';
 
-local helmrelease(config) = {
+local helmrelease(config, prev) = {
   local tidebot = config.pkgs.tidebot,
   apiVersion: 'helm.fluxcd.io/v1',
   kind: 'HelmRelease',
@@ -23,7 +23,7 @@ local helmrelease(config) = {
     releaseName: 'tidebot',
     values+: {
       deployment+: {
-        image: 'tidepool/slack-tidebot:master-5783cd86c2ed10f6f107047c6d60944e4cdadc6b'
+        image: lib.getElse(prev, 'spec.values.deployment.image', 'tidepool/slack-tidebot:master-5783cd86c2ed10f6f107047c6d60944e4cdadc6b'),
       },
       configmap+: {
         enabled: true,
@@ -32,4 +32,4 @@ local helmrelease(config) = {
   },lib.getElse(tidebot, 'spec', {})),
 };
 
-function(config, prev) helmrelease(config)
+function(config, prev) helmrelease(config, prev)

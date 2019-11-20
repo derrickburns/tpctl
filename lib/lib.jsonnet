@@ -13,10 +13,119 @@
 
   isEnabled(x):: $.isTrue(x, 'enabled'),
 
+  // select all ingress sub-objects across the entire configuration
+  ingresses(config):: (
+    local envs = $.environments(config);
+    local pkgs = $.packages(config);
+    std.mapWithKey(function(n, v) $.getElse(v, 'ingress', null), envs )
+    + std.mapWithKey(function(n, v) $.getElse(v, 'spec.values.ingress', null), pkgs)),
+
+  // filter ingresses by name
+  ingressesForGateway(ingresses, gateway)::
+      std.mapWithKey(
+        function(n, v)
+          if $.isTrue(v, 'service.' + gateway + '.enabled') then v else null, 
+          ingresses
+      ),
+
+  vsName(protocol, isInternal):: if isInternal then protocol + '-internal' else protocol,
+
+  gatewayName(protocol, isInternal):: (
+    local tail = if protocol == "http" then "gateway-proxy" else "gateway-proxy-ssl";
+    local head = if isInternal then "internal-" else "";
+    head + tail 
+  ),
+
+  // We are awaiting a change in Gloo to allow Gateways to select virtual services 
+  // across namespaces using labels. 
+  //
+  // Until then, we select virtual services for a gateway using the convention that
+  // the name of the virtual service is the name of the gateway that includes it.
+  virtualServices(config, protocol, isInternal):: (
+    local ingresses = $.ingresses(config);
+    local gateway = $.vsName(protocol, isInternal);
+    $.pruneList( $.values(
+      std.mapWithKey(
+        function(n, v) if v != null then { name: gateway, namespace: n } else null, $.ingressesForGateway(ingresses, gateway)
+      )
+    ))
+  ),
+
+  proxyName(isInternal):: if isInternal then 'internal-gateway-proxy' else 'gateway-proxy',
+
+  bindPort(protocol)::
+    if protocol == 'http'
+    then 8080
+    else 8443,
+
+  gateway(config, protocol, isInternal):: {
+    apiVersion: 'gateway.solo.io/v1',
+    kind: 'Gateway',
+    metadata: {
+      annotations: {
+        origin: 'default',
+      },
+      name: $.gatewayName(protocol, isInternal),
+      namespace: $.getElse(config, 'pkgs.gloo.namespace', 'gloo-system'),
+    },
+    spec: {
+      httpGateway: {
+        virtualServices: $.virtualServices(config, protocol, isInternal),
+        options: {
+          httpConnectionManagerSettings: {
+            useRemoteAddress: true,
+            tracing: {
+              verbose: true,
+              requestHeadersForTags: ['path', 'origin'],
+            },
+          },
+          healthCheck: {
+            path: '/status',
+          },
+        },
+      },
+      options: {
+        accessLoggingService: {
+          accessLog: [
+            {
+              fileSink: {
+                jsonFormat: {
+                  authority: '%REQ(:authority)%',
+                  authorization: '%REQ(authorization)%',
+                  content: '%REQ(content-type)%',
+                  duration: '%DURATION%',
+                  forwardedFor: '%REQ(X-FORWARDED-FOR)%',
+                  method: '%REQ(:method)%',
+                  path: '%REQ(:path)%',
+                  remoteAddress: '%DOWNSTREAM_REMOTE_ADDRESS_WITHOUT_PORT%',
+                  request: '%REQ(x-tidepool-trace-request)%',
+                  response: '%RESPONSE_CODE%',
+                  scheme: '%REQ(:scheme)%',
+                  session: '%REQ(x-tidepool-trace-session)%',
+                  startTime: '%START_TIME%',
+                  token: '%REQ(x-tidepool-session-token)%',
+                  upstream: '%UPSTREAM_CLUSTER%',
+                },
+                path: '/dev/stdout',
+              },
+            },
+          ],
+        },
+      },
+      bindAddress: '::',
+      bindPort: $.bindPort(protocol),
+      proxyNames: [
+        $.proxyName(isInternal),
+      ],
+      useProxyProto: !isInternal,
+    },
+  },
+
   dnsNames(config):: (
     local ingresses = $.ingresses(config);
-    local httpNames = [x.gateway.http.dnsNames for x in $.ingressesForGateway(ingresses, 'http')];
-    local httpsNames = [x.gateway.https.dnsNames for x in $.ingressesForGateway(ingresses, 'https')];
+     
+    local httpNames = [x.gateway.http.dnsNames for x in $.pruneList($.values($.ingressesForGateway(ingresses, 'http')))];
+    local httpsNames = [x.gateway.https.dnsNames for x in $.pruneList($.values($.ingressesForGateway(ingresses, 'https')))];
     std.join(',', std.filter(function(x) x != 'localhost', std.flattenArrays(httpNames + httpsNames)))
   ),
 

@@ -2,7 +2,8 @@ local lib = import '../lib/lib.jsonnet';
 
 local values(config) = {
   settings: {
-    create: false,
+    create: true,
+    linkerd: true,
   },
   namespace: {
     create: false,
@@ -23,6 +24,10 @@ local values(config) = {
     enabled: true,
     proxyServiceAccount: {},
     upgrade: false,
+    validation: {
+      enabled: true,
+      alwaysAcceptResources: false,
+    },
   },
   gatewayProxies: {
     internalGatewayProxy: {
@@ -31,6 +36,9 @@ local values(config) = {
          deployment: {
            replicas: 1
          }
+      },
+      configMap: {
+        data: null,
       },
       podTemplate: {
         probes: false,
@@ -50,9 +58,6 @@ local values(config) = {
         type: "ClusterIP",
         httpPort: 80,
         httpsPort: 443, 
-      },
-      configMap: {
-        data: {}
       },
       readConfig: true,
       gatewaySettings: {
@@ -96,9 +101,17 @@ local values(config) = {
       }
     },
     gatewayProxy: {
+      kind: {
+         deployment: {
+           replicas: 1
+         }
+      },
       readConfig: true,
       gatewaySettings: {
         disableGeneratedGateways: true,
+      },
+      configMap: {
+        data: null,
       },
       tracing: {
         provider: {
@@ -139,7 +152,9 @@ local values(config) = {
       podTemplate: {
         probes: false,
         image: {
-          repository: 'gloo-envoy-wrapper',
+          repository: "gloo-envoy-wrapper",
+          registry: "quay.io/solo-io",
+          tag: config.pkgs.gloo.version,
         },
         httpPort: 8080,
         httpsPort: 8443,

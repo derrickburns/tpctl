@@ -1,4 +1,3 @@
 local lib = import '../lib/lib.jsonnet';
-local utils = import 'gateway-utils.jsonnet';
 
-function(config) utils.gateway(config, "https", false)
+function(config) lib.gateway(config, "https", false)
