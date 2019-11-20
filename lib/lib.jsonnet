@@ -13,18 +13,6 @@
 
   isEnabled(x):: $.isTrue(x, 'enabled'),
 
-  ingresses(config):: (
-     local envs = $.environments(config);
-     local pkgs = $.packages(config);
-     std.prune(std.mapWithKey(function(n, v) $.getElse(v, 'ingress', null), envs + pkgs))
-  ),
-
-  ingressesForGateway(ingresses, gateway)::
-    std.prune(std.mapWithKey(function(n,v) if $.isTrue(v, 'service.' + gateway + '.enabled') else null, ingresses)),
-
-  virtualServices(config, gateway):: 
-    $.values(std.mapWithKey( function(n,v) { name: gateway, namespace: n }, $.ingressesForGateway(ingresses(config),gateway))),
-
   dnsNames(config):: (
     local ingresses = $.ingresses(config);
     local httpNames = [x.gateway.http.dnsNames for x in $.ingressesForGateway(ingresses, 'http')];

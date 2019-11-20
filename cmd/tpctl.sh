@@ -592,6 +592,7 @@ function enabled_pkgs() {
 
 # make K8s manifest file for shared services given config, path to directory, and prefix to strip
 function template_files() {
+  set -x
   local config=$1
   local path=$2
   local prefix=$3
@@ -606,7 +607,13 @@ function template_files() {
       cp $fullpath $filename
     elif [ "${filename: -8}" == ".jsonnet" ]; then
       add_file ${filename%.jsonnet}
-      jsonnet --tla-code config="$config" $fullpath | yq r - >${filename%.jsonnet}
+      local prev=$TMP_DIR/${filename%.jsonnet}
+      if [ -f $prev ]; then
+        yq r $prev -j >$TMP_DIR/${filename%.jsonnet}.json
+      else
+        echo "{}" >$TMP_DIR/${file%.jsonnet}.json
+      fi
+      jsonnet --tla-code-file prev=$TMP_DIR/${filename%.jsonnet}.json --tla-code config="$config" $fullpath | yq r - >${filename%.jsonnet}
       expect_success "Templating failure $filename"
     fi
   done
@@ -616,6 +623,7 @@ function template_files() {
 function make_shared_config() {
   start "creating package manifests"
   local config=$(get_config)
+  cp -r pkgs $TMP_DIR 
   rm -rf pkgs
   local dir
   for dir in $(enabled_pkgs $TEMPLATE_DIR/pkgs pkgs); do
