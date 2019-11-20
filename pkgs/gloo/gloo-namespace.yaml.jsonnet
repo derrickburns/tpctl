@@ -9,4 +9,4 @@ local namespace(config) = {
   },
 };
 
-function(config) namespace(config)
+function(config, prev) namespace(config)

@@ -1,34 +1,34 @@
 {
   environments(config):: (
-    local e = $.get(config, 'environments');
-    if e == null
-    then []
-    else (
-      local envs = std.objectFields(e);
-      [env for env in envs if $.isTrue(e[env], 'tidepool.enabled')]
-    )
+    local e = $.getElse(config, 'environments', {});
+    local envs = std.objectFields(e);
+    { [env] : e[env].tidepool for env in envs if $.isTrue(e[env], 'tidepool.enabled') }
   ),
-  virtualServices(config, name):: [
-    {
-      name: name,
-      namespace: e,
-    }
-    for e in $.environments(config)
-  ],
-  dnsNames(config):: (
-    local tp = [config.environments[env].tidepool for env in $.environments(config)];
-    local p = $.get(config, 'pkgs');
-    local pk =
-      if p == null
-      then []
-      else (
-        local pkgs = std.objectFields(p);
-        [p[pkg] for pkg in pkgs if $.isTrue(p[pkg], 'enabled')]
-      );
 
-    local all = tp + pk;
-    local httpNames = [x.ingress.gateway.http.dnsNames for x in all if $.isTrue(x, 'ingress.service.http.enabled')];
-    local httpsNames = [x.ingress.gateway.https.dnsNames for x in all if $.isTrue(x, 'ingress.service.https.enabled')];
+  packages(config):: (
+    local p = $.getElse(config, 'pkgs', {});
+    local pkgs = std.objectFields(p);
+    { [pkg] : p[pkg] for pkg in pkgs if $.isEnabled(p[pkg]) }
+  ),
+
+  isEnabled(x):: $.isTrue(x, 'enabled'),
+
+  ingresses(config):: (
+     local envs = $.environments(config);
+     local pkgs = $.packages(config);
+     std.prune(std.mapWithKey(function(n, v) $.getElse(v, 'ingress', null), envs + pkgs))
+  ),
+
+  ingressesForGateway(ingresses, gateway)::
+    std.prune(std.mapWithKey(function(n,v) if $.isTrue(v, 'service.' + gateway + '.enabled') else null, ingresses)),
+
+  virtualServices(config, gateway):: 
+    $.values(std.mapWithKey( function(n,v) { name: gateway, namespace: n }, $.ingressesForGateway(ingresses(config),gateway))),
+
+  dnsNames(config):: (
+    local ingresses = $.ingresses(config);
+    local httpNames = [x.gateway.http.dnsNames for x in $.ingressesForGateway(ingresses, 'http')];
+    local httpsNames = [x.gateway.https.dnsNames for x in $.ingressesForGateway(ingresses, 'https')];
     std.join(',', std.filter(function(x) x != 'localhost', std.flattenArrays(httpNames + httpsNames)))
   ),
 

@@ -11,7 +11,7 @@ local gateway(config) = {
     namespace: lib.getElse(config, 'pkgs.gloo.namespace', 'gloo-system'),
   },
   spec: {
-    local vs = lib.virtualServices(config, 'gloo-http'),
+    local vs = lib.virtualServices(config, 'http'),
     local extra = if vs == [] then {} else { virtualServices: vs },
     httpGateway: extra {
       options: {

@@ -19,4 +19,4 @@ local service(config) = {
   },
 };
 
-function(config) service(config)
+function(config, prev) service(config)

@@ -13,7 +13,7 @@ local sslGateway(config) = {
   spec: {
     bindAddress: '::',
     bindPort: 8443,
-    local vs = lib.virtualServices(config, 'gloo-https'),
+    local vs = lib.virtualServices(config, 'https'),
     local extra = if vs == [] then {} else { virtualServices: vs },
     httpGateway: extra {
       options: {

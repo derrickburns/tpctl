@@ -29,4 +29,4 @@ local secret(config) = {
   },
 };
 
-function(config) secret(config)
+function(config, prev) secret(config)

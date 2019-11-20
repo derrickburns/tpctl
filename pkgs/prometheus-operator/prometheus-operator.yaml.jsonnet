@@ -40,4 +40,4 @@ local Helmrelease(config) = {
   },
 };
 
-function(config) Helmrelease(config)
+function(config, prev) Helmrelease(config)

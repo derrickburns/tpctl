@@ -25,4 +25,4 @@ local externalSecret(config) = {
   },
 };
 
-function(config) externalSecret(config)
+function(config, prev) externalSecret(config)

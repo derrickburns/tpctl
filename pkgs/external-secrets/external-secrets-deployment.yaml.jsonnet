@@ -58,4 +58,4 @@ local deployment(config) = {
   },
 };
 
-function(config) deployment(config)
+function(config, prev) deployment(config)

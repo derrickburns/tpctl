@@ -915,4 +915,4 @@ local helmrelease(config) = {
   },
 };
 
-function(config) helmrelease(config)
+function(config, prev) helmrelease(config)

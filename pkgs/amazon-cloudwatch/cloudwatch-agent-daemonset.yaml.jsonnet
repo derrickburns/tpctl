@@ -141,4 +141,4 @@ local daemonset(config) = {
   },
 };
 
-function(config) daemonset(config)
+function(config, prev) daemonset(config)

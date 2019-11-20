@@ -117,4 +117,4 @@ local fluxHelmRepos() = {
   },
 };
 
-function(config) fluxHelmRepos()
+function(config, prev) fluxHelmRepos()

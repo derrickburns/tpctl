@@ -32,4 +32,4 @@ local helmrelease(config) = {
   },lib.getElse(tidebot, 'spec', {})),
 };
 
-function(config) helmrelease(config)
+function(config, prev) helmrelease(config)

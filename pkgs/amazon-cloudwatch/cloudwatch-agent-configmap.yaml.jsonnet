@@ -25,4 +25,4 @@ local configmap(config) = {
   },
 };
 
-function(config) configmap(config)
+function(config, prev) configmap(config)
