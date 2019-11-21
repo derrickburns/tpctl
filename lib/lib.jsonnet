@@ -118,6 +118,7 @@
         $.proxyName(isInternal),
       ],
       useProxyProto: !isInternal,
+      ssl: protocol == "https" 
     },
   },
 
