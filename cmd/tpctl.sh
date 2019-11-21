@@ -695,7 +695,7 @@ function make_config() {
 
 # persist changes to config repo in GitHub
 function save_changes() {
-  if [ -z "$changes" ]
+  if [ -z "$(git diff-index --name-only HEAD --)" ]
   then
     info "No changes made"
     return 
