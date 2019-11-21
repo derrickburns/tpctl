@@ -695,6 +695,11 @@ function make_config() {
 
 # persist changes to config repo in GitHub
 function save_changes() {
+  if [ "$APPROVE" != "true" ]
+  then
+    git diff head
+    confirm "Do you want to save these changes"
+  fi
   establish_ssh
   start "saving changes to config repo"
   git add .
