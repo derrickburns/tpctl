@@ -25,8 +25,8 @@ local values(config) = {
     proxyServiceAccount: {},
     upgrade: false,
     validation: {
-      enabled: true,
-      alwaysAcceptResources: false,
+      enabled: false,
+      alwaysAcceptResources: true,
     },
   },
   gatewayProxies: {
