@@ -25,7 +25,7 @@ local deployment(config) = {
       },
       spec: {
         securityContext: {
-          fsGroup: 65534,
+          fsGroup: 1000,
         },
         containers: [
           {
@@ -47,7 +47,7 @@ local deployment(config) = {
                 value: lib.getElse(config.pkgs['external-secrets'], 'poller_interval', '120000'),
               },
             ],
-            image: 'godaddy/kubernetes-external-secrets:2.0.0',
+            image: 'godaddy/kubernetes-external-secrets:2.2.0',
             imagePullPolicy: 'IfNotPresent',
             name: 'kubernetes-external-secrets',
           },
