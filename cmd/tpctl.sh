@@ -700,11 +700,12 @@ function save_changes() {
     info "No changes made"
     return 
   fi
-  info "Changes..."
+  info "Begin Changes..."
   GIT_PAGER=/bin/cat git diff HEAD
+   info "END Changes"
   if [ "$APPROVE" != "true" ]
   then
-    confirm "Do you want to save these changes"
+    confirm "Do you want to save these changes? "
   fi
   establish_ssh
   start "saving changes to config repo"
