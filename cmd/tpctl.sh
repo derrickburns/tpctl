@@ -697,7 +697,7 @@ function make_config() {
 function save_changes() {
   if [ "$APPROVE" != "true" ]
   then
-    git diff head
+    git diff HEAD
     confirm "Do you want to save these changes"
   fi
   establish_ssh
