@@ -695,9 +695,15 @@ function make_config() {
 
 # persist changes to config repo in GitHub
 function save_changes() {
+  if [ -z "$changes" ]
+  then
+    info "No changes made"
+    return 
+  fi
+  info "Changes..."
+  git diff HEAD
   if [ "$APPROVE" != "true" ]
   then
-    git diff HEAD
     confirm "Do you want to save these changes"
   fi
   establish_ssh
