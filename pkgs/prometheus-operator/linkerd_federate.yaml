@@ -1,0 +1,39 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"monitoring.coreos.com/v1","kind":"ServiceMonitor","metadata":{"annotations":{},"creationTimestamp":"2019-10-17T01:16:08Z","generation":1,"labels":{"k8s-app":"linkerd-prometheus","release":"monitoring"},"name":"linkerd-federate","namespace":"monitoring","resourceVersion":"5301700","selfLink":"/apis/monitoring.coreos.com/v1/namespaces/linkerd/servicemonitors/linkerd-federate","uid":"b2c248a9-f07b-11e9-b006-0eadf731706a"},"spec":{"endpoints":[{"honorLabels":true,"interval":"30s","params":{"match[]":["{job=\"linkerd-proxy\"}","{job=\"linkerd-controller\"}"]},"path":"/federate","port":"admin-http","relabelings":[{"action":"keep","regex":"^prometheus$","sourceLabels":["__meta_kubernetes_pod_container_name"]}],"scrapeTimeout":"30s"}],"jobLabel":"app","namespaceSelector":{"matchNames":["linkerd"]},"selector":{"matchLabels":{"linkerd.io/control-plane-component":"prometheus"}}}}
+  creationTimestamp: "2019-10-17T05:16:17Z"
+  generation: 1
+  labels:
+    k8s-app: linkerd-prometheus
+    release: monitoring-prometheus-operator
+  name: linkerd-federate
+  namespace: monitoring
+  resourceVersion: "5357480"
+  selfLink: /apis/monitoring.coreos.com/v1/namespaces/monitoring/servicemonitors/linkerd-federate
+  uid: 3f5796a5-f09d-11e9-98b7-02a97237eade
+spec:
+  endpoints:
+  - honorLabels: true
+    interval: 30s
+    params:
+      match[]:
+      - '{job="linkerd-proxy"}'
+      - '{job="linkerd-controller"}'
+    path: /federate
+    port: admin-http
+    relabelings:
+    - action: keep
+      regex: ^prometheus$
+      sourceLabels:
+      - __meta_kubernetes_pod_container_name
+    scrapeTimeout: 30s
+  jobLabel: app
+  namespaceSelector:
+    matchNames:
+    - linkerd
+  selector:
+    matchLabels:
+      linkerd.io/control-plane-component: prometheus
