@@ -701,7 +701,7 @@ function save_changes() {
     return 
   fi
   info "Changes..."
-  git diff HEAD
+  GIT_PAGER=/bin/cat git diff HEAD
   if [ "$APPROVE" != "true" ]
   then
     confirm "Do you want to save these changes"
