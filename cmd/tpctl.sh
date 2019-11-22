@@ -5,7 +5,7 @@
 
 set -o pipefail
 export FLUX_FORWARD_NAMESPACE=flux
-export REVIEWERS="derrickburns lennartgoedhart jamesraby"
+export REVIEWERS="derrickburns pazaan jamesraby"
 
 function get_vpc {
   local cluster=$(get_cluster)
