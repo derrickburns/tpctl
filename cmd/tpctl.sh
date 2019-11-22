@@ -703,7 +703,7 @@ function save_changes() {
     return 
   fi
   info "==== BEGIN Changes"
-  echo $DIFFS
+  GIT_PAGER=/bin/cat git diff HEAD
   info "==== END Changes"
   local branch
   if [ "$APPROVE" != "true" ]
