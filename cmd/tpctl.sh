@@ -5,6 +5,7 @@
 
 set -o pipefail
 export FLUX_FORWARD_NAMESPACE=flux
+export REVIEWERS="derrickburns lennartgoedhart jamesraby"
 
 function get_vpc {
   local cluster=$(get_cluster)
@@ -695,26 +696,44 @@ function make_config() {
 
 # persist changes to config repo in GitHub
 function save_changes() {
-  if [ -z "$(git diff-index --name-only HEAD --)" ]
+  DIFFS=$(GIT_PAGER=/bin/cat git diff HEAD)
+  if [ -z "$DIFFS" ]
   then
     info "No changes made"
     return 
   fi
-  info "Begin Changes..."
-  GIT_PAGER=/bin/cat git diff HEAD
-   info "END Changes"
+  info "==== BEGIN Changes"
+  echo $DIFFS
+  info "==== END Changes"
+  local branch
   if [ "$APPROVE" != "true" ]
   then
     confirm "Do you want to save these changes? "
+    read -p "${GREEN}Branch name?${RESET} " -r
+    branch=$REPLY
+  else
+    branch="tpctl-"+$(date "%Y%m%d%H%M%S")
   fi
   establish_ssh
   start "saving changes to config repo"
   git add .
-  complete "added changes to config repo"
+  expect_success "git add failed"
+  git checkout -b $branch
+  expect_success "git checkout failed"
   git commit -m "$1"
+  expect_success "git commit failed"
   complete "committed changes to config repo"
-  git push
-  complete "pushed changes to config repo"
+  git push origin $branch
+  expect_success "git push failed"
+  complete "pushed changes to config repo branch $branch"
+  info "Please select PR reviewer: "
+  select REVIEWER in $REVIEWERS;
+  do
+    hub pull-request -m "tpctl generated update" -r $REVIEWER
+    expect_success "failed to create pull request, please create manually"
+    complete "create pull request for review by $REVIEWER"
+    return
+  done
 }
 
 # confirm cluster exists or exist
