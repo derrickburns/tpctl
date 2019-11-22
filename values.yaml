@@ -50,7 +50,7 @@ pkgs:
   external-dns:                              # External DNS maintains DNS aliases to Amazon ELBs
     enabled: true
   gloo:                                      # Gloo provides the API Gateway 
-    version: 0.20.8
+    version: 1.0.0
     enabled: true
     namespace: gloo-system                   # namespace to host gateway
   prometheus-operator:                       # Prometheus Operator creates Prometheus instances
@@ -95,7 +95,7 @@ environments:
       enabled: true                          # Whether to use an embedded mongodb 
     tidepool:
       deployment:
-        replicas: 1
+        replicas: 2
       resources:
         requests: 
           memory: "64Mi"
@@ -105,7 +105,7 @@ environments:
           cpu: "100m"
       chart:
         path: charts/tidepool/0.1.7
-        ref: develop
+        ref: gloo2
       source: stg                            # Where to get initial secrets from
       enabled: true
       hpa:                                   # Whether to implement horizontal pod scalers for each service
@@ -141,6 +141,8 @@ environments:
         service:
           http:
             enabled: true                      # Whether to offer HTTP access
+          http-internal:
+            enabled: true
           https:
             enabled: true                      # Whether to offer HTTPS access
       migrations:
