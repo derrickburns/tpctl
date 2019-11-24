@@ -1,20 +1,50 @@
+local lib = import '../lib/lib.jsonnet';
+
 local updateFlux(config, deployment) = (
   local container = deployment.spec.template.spec.containers[0];
+
+  local volumes =
+    if lib.isTrue(config, 'pkgs.fluxrecv.sidecar')
+    then [ {
+      name: "fluxrecv-config",
+      secret: {
+        secretName: "fluxrecv-config",
+        defaultMode: 0400,
+      }
+    } ]
+    else [ ];
+
+  local sidecar =
+    if lib.isTrue(config, 'pkgs.fluxrecv.sidecar')
+    then [{
+      name: "recv",
+      image: "fluxcd/flux-recv:0.2.0",
+      imagePullPolicy: "IfNotPresent",
+      args: [ "--config=/etc/fluxrecv/fluxrecv.yaml" ],
+      ports: [{
+        containerPort: 8080
+      }],
+      volumeMounts: [ {
+        name: "fluxrecv-config",
+        mountPath: "/etc/fluxrecv"
+      } ]
+    } ]
+    else [ ];
 
   deployment
   {
     spec+: {
       template+: {
+        volumes+: volumes,
         spec+: {
           containers: [container {
             image: 'docker.io/fluxcd/flux:1.15.0',
             args+: [
               '--sync-interval=1m',
               '--git-poll-interval=1m',
-            ] + if config.pkgs.fluxcloud.enabled
-            then ['--connect=ws://fluxcloud']
-            else [],
-          }],
+            ] + if lib.isTrue( config, 'pkgs.fluxcloud.enabled') then ['--connect=ws://fluxcloud'] else [],
+          }] + sidecar,
+          ],
         },
       },
     },
