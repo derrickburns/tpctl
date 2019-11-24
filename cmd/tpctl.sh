@@ -1087,7 +1087,7 @@ function migrate_secrets() {
 }
 
 function linkerd_dashboard() {
-  linkerd dashboard &
+  linkerd dashboard --port 0 &
 }
 
 # show help
