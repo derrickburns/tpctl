@@ -32,7 +32,7 @@ local deployment(config) =
               imagePullPolicy: 'IfNotPresent',
               args: ['--config=/etc/fluxrecv/fluxrecv.yaml'],
               ports: [{
-                containerPort: lib.bindPort('http'),
+                containerPort: 8080,
               }],
               volumeMounts: [{
                 name: 'fluxrecv-config',
