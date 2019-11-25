@@ -220,7 +220,7 @@
       type: "ClusterIP",
       ports: $.ports(config.pkgs[pkg].spec.values.ingress),
       selector: {
-        name: pkg
+        name: pkg,
         namespace: $.namespace(config, pkg),
       }
     }
