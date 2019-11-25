@@ -5,31 +5,31 @@ local updateFlux(config, deployment) = (
 
   local volumes =
     if lib.isTrue(config, 'pkgs.fluxrecv.sidecar')
-    then [ {
-      name: "fluxrecv-config",
+    then [{
+      name: 'fluxrecv-config',
       secret: {
-        secretName: "fluxrecv-config",
-        defaultMode: 0400,
-      }
-    } ]
-    else [ ];
+        secretName: 'fluxrecv-config',
+        defaultMode: std.parseHex('0400'),
+      },
+    }]
+    else [];
 
   local sidecar =
     if lib.isTrue(config, 'pkgs.fluxrecv.sidecar')
     then [{
-      name: "recv",
-      image: "fluxcd/flux-recv:0.2.0",
-      imagePullPolicy: "IfNotPresent",
-      args: [ "--config=/etc/fluxrecv/fluxrecv.yaml" ],
+      name: 'recv',
+      image: 'fluxcd/flux-recv:0.2.0',
+      imagePullPolicy: 'IfNotPresent',
+      args: ['--config=/etc/fluxrecv/fluxrecv.yaml'],
       ports: [{
-        containerPort: 8080
+        containerPort: 8080,
       }],
-      volumeMounts: [ {
-        name: "fluxrecv-config",
-        mountPath: "/etc/fluxrecv"
-      } ]
-    } ]
-    else [ ];
+      volumeMounts: [{
+        name: 'fluxrecv-config',
+        mountPath: '/etc/fluxrecv',
+      }],
+    }]
+    else [];
 
   deployment
   {
@@ -42,9 +42,8 @@ local updateFlux(config, deployment) = (
             args+: [
               '--sync-interval=1m',
               '--git-poll-interval=1m',
-            ] + if lib.isTrue( config, 'pkgs.fluxcloud.enabled') then ['--connect=ws://fluxcloud'] else [],
+            ] + if lib.isTrue(config, 'pkgs.fluxcloud.enabled') then ['--connect=ws://fluxcloud'] else [],
           }] + sidecar,
-          ],
         },
       },
     },
