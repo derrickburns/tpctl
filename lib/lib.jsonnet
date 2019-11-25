@@ -202,7 +202,7 @@
 
   ports(ingress) :: [
     {
-      name: protocol
+      name: protocol,
       protocol: "TCP",
       port: $.port(ingress, protocol),
       targetPort: $.bindPort(protocol),
