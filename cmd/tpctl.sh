@@ -808,7 +808,7 @@ EOF
 }
 
 function update_gloo_service() {
-  local glooServiceFile=gloo/gloo-system/Service/gateway-proxy-v2.yaml
+  local glooServiceFile=gloo/gloo-system/Service/gateway-proxy.yaml
   if [ -f $glooServiceFile ]; then
     start "updating gloo service"
     local config=$(get_config)
