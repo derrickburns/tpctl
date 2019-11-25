@@ -696,14 +696,14 @@ function make_config() {
 
 # persist changes to config repo in GitHub
 function save_changes() {
-  DIFFS=$(GIT_PAGER=/bin/cat git diff HEAD)
+  DIFFS=$(GIT_PAGER=/bin/cat git diff --staged HEAD)
   if [ -z "$DIFFS" ]
   then
     info "No changes made"
     return 
   fi
   info "==== BEGIN Changes"
-  GIT_PAGER=/bin/cat git diff HEAD
+  GIT_PAGER=/bin/cat git diff --staged HEAD
   info "==== END Changes"
   local branch
   if [ "$APPROVE" != "true" ]
@@ -726,10 +726,12 @@ function save_changes() {
   git push origin $branch
   expect_success "git push failed"
   complete "pushed changes to config repo branch $branch"
+  read -p "${GREEN}PR Message? ${RESET} " -r
+  local message=$REPLY
   info "Please select PR reviewer: "
   select REVIEWER in $REVIEWERS;
   do
-    hub pull-request -m "tpctl generated update" -r $REVIEWER
+    hub pull-request -m "$message" -r $REVIEWER
     expect_success "failed to create pull request, please create manually"
     complete "create pull request for review by $REVIEWER"
     return
