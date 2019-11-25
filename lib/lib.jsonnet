@@ -89,8 +89,8 @@
         name: $.getElse(ingress, 'certificate.secretName', 'tls'),
         namespace: namespace,
       },
+      sniDomains: ingress.gateway.https.dnsNames,
     },
-    sniDomains: ingress.gateway.https.dnsNames,
   },
 
   virtualService(name, namespace, ingress, protocol):: {
