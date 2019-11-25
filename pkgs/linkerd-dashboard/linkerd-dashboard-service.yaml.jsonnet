@@ -4,8 +4,8 @@ function(config, prev) {
   apiVersion: 'v1',
   kind: 'Service',
   metadata: {
-    name: pkg,
-    namespace: lib.namespace(config, pkg),
+    name: "linkerd-dashboard",
+    namespace: lib.namespace(config, "linkerd"),
   },
   spec: {
     type: 'ClusterIP',
