@@ -2,13 +2,13 @@
   environments(config):: (
     local e = $.getElse(config, 'environments', {});
     local envs = std.objectFields(e);
-    { [env] : e[env].tidepool for env in envs if $.isTrue(e[env], 'tidepool.enabled') }
+    { [env]: e[env].tidepool for env in envs if $.isTrue(e[env], 'tidepool.enabled') }
   ),
 
   packages(config):: (
     local p = $.getElse(config, 'pkgs', {});
     local pkgs = std.objectFields(p);
-    { [pkg] : p[pkg] for pkg in pkgs if $.isEnabled(p[pkg]) }
+    { [pkg]: p[pkg] for pkg in pkgs if $.isEnabled(p[pkg]) }
   ),
 
   isEnabled(x):: $.isTrue(x, 'enabled'),
@@ -17,34 +17,35 @@
   ingresses(config):: (
     local envs = $.environments(config);
     local pkgs = $.packages(config);
-    std.mapWithKey(function(n, v) $.getElse(v, 'ingress', null), envs )
-    + std.mapWithKey(function(n, v) $.getElse(v, 'spec.values.ingress', null), pkgs)),
+    std.mapWithKey(function(n, v) $.getElse(v, 'ingress', null), envs)
+    + std.mapWithKey(function(n, v) $.getElse(v, 'spec.values.ingress', null), pkgs)
+  ),
 
   // filter ingresses by name
   ingressesForGateway(ingresses, gateway)::
-      std.mapWithKey(
-        function(n, v)
-          if $.isTrue(v, 'service.' + gateway + '.enabled') then v else null, 
-          ingresses
-      ),
+    std.mapWithKey(
+      function(n, v)
+        if $.isTrue(v, 'service.' + gateway + '.enabled') then v else null,
+      ingresses
+    ),
 
   vsName(protocol, isInternal):: if isInternal then protocol + '-internal' else protocol,
 
   gatewayName(protocol, isInternal):: (
-    local tail = if protocol == "http" then "gateway-proxy" else "gateway-proxy-ssl";
-    local head = if isInternal then "internal-" else "";
-    head + tail 
+    local tail = if protocol == 'http' then 'gateway-proxy' else 'gateway-proxy-ssl';
+    local head = if isInternal then 'internal-' else '';
+    head + tail
   ),
 
-  // We are awaiting a change in Gloo to allow Gateways to select virtual services 
-  // across namespaces using labels. 
+  // We are awaiting a change in Gloo to allow Gateways to select virtual services
+  // across namespaces using labels.
   //
   // Until then, we select virtual services for a gateway using the convention that
   // the name of the virtual service is the name of the gateway that includes it.
   virtualServices(config, protocol, isInternal):: (
     local ingresses = $.ingresses(config);
     local gateway = $.vsName(protocol, isInternal);
-    $.pruneList( $.values(
+    $.pruneList($.values(
       std.mapWithKey(
         function(n, v) if v != null then { name: gateway, namespace: n } else null, $.ingressesForGateway(ingresses, gateway)
       )
@@ -53,10 +54,65 @@
 
   proxyName(isInternal):: if isInternal then 'internal-gateway-proxy' else 'gateway-proxy',
 
-  bindPort(protocol)::
-    if protocol == 'http'
-    then 8080
-    else 8443,
+  defaultPort(protocol):: if protocol == 'http' then 80 else 443,
+
+  bindPort(protocol):: 8000 + $.defaultPort(protocol),
+
+  domainFrom(name, port, default)::
+    if name == '*'
+    then '*'
+    else if port != default then '%s:%s' % [name, port] else name,
+
+  domains(gateway, protocol):: (
+    local default = $.defaultPort(protocol);
+    local spec = gateway[protocol];
+    local port = $.getElse(spec, 'port', default);
+    [$.domainFrom(name, port, default) for name in spec.dnsNames]
+  ),
+
+  sslConfig(ingress, namespace):: {
+    sslConfig: {
+      secretRef: {
+        name: lib.getElse(ingress, 'certificate.secretName', 'tls'),
+        namespace: namespace,
+      },
+    },
+    sniDomains: ingress.gateway.https.dnsNames,
+  },
+
+  virtualService(name, namespace, ingress, protocol):: {
+    apiVersion: 'gateway.solo.io/v1',
+    kind: 'VirtualService',
+    metadata: {
+      name: protocol,
+      namespace: namespace,
+    },
+    spec: {
+      displayName: protocol,
+      virtualHost: if protocol == 'https' then $.sslConfig(ingress, namespace) else {} + {
+        domains: $.domains(ingress.gateway, protocol),
+        routes: [
+          {
+            matchers: [
+              {
+                prefix: '/',
+              },
+            ],
+            routeAction: {
+              single: {
+                kube: {
+                  ref: {
+                    name: name,
+                    namespace: namespace,
+                  },
+                },
+              },
+            },
+          },
+        ],
+      },
+    },
+  },
 
   gateway(config, protocol, isInternal):: {
     apiVersion: 'gateway.solo.io/v1',
@@ -118,13 +174,13 @@
         $.proxyName(isInternal),
       ],
       useProxyProto: !isInternal,
-      ssl: protocol == "https" 
+      ssl: protocol == 'https',
     },
   },
 
   dnsNames(config):: (
     local ingresses = $.ingresses(config);
-     
+
     local httpNames = [x.gateway.http.dnsNames for x in $.pruneList($.values($.ingressesForGateway(ingresses, 'http')))];
     local httpsNames = [x.gateway.https.dnsNames for x in $.pruneList($.values($.ingressesForGateway(ingresses, 'https')))];
     std.join(',', std.filter(function(x) x != 'localhost', std.flattenArrays(httpNames + httpsNames)))
@@ -160,7 +216,8 @@
   present(x, path):: $.get(x, path) != null,
 
   manifestJsonFields(obj):: {
-    [k] : std.manifestJson(obj[k]) for k in std.objectFields(obj)
+    [k]: std.manifestJson(obj[k])
+    for k in std.objectFields(obj)
   },
 
   remapKey(x, remap, key='resources')::
