@@ -73,7 +73,7 @@
   sslConfig(ingress, namespace):: {
     sslConfig: {
       secretRef: {
-        name: lib.getElse(ingress, 'certificate.secretName', 'tls'),
+        name: $.getElse(ingress, 'certificate.secretName', 'tls'),
         namespace: namespace,
       },
     },
