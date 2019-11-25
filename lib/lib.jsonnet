@@ -37,6 +37,9 @@
     head + tail
   ),
 
+  namespace(config, pkg) :: $.getElse(config, 'pkgs.' + pkg + '.namespace', pkg),
+
+
   // We are awaiting a change in Gloo to allow Gateways to select virtual services
   // across namespaces using labels.
   //
@@ -47,7 +50,11 @@
     local gateway = $.vsName(protocol, isInternal);
     $.pruneList($.values(
       std.mapWithKey(
-        function(n, v) if v != null then { name: gateway, namespace: n } else null, $.ingressesForGateway(ingresses, gateway)
+        function(n, v) 
+          if v != null
+          then { name: gateway, namespace: $.namespace(config,pkg) }
+          else null,
+          $.ingressesForGateway(ingresses, gateway)
       )
     ))
   ),
