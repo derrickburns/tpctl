@@ -52,7 +52,7 @@
       std.mapWithKey(
         function(n, v) 
           if v != null
-          then { name: gateway, namespace: $.namespace(config,pkg) }
+          then { name: gateway, namespace: $.namespace(config,n) }
           else null,
           $.ingressesForGateway(ingresses, gateway)
       )
