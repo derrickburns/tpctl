@@ -6,7 +6,7 @@ local deployment(config) =
     kind: 'Deployment',
     metadata: {
       name: 'fluxrecv',
-      namespace: 'flux',
+      namespace: lib.getElse(config, 'pkgs.fluxrecv.namespace', 'flux'),
     },
     spec: {
       replicas: 1,
