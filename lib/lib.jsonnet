@@ -100,9 +100,9 @@
       name: protocol,
       namespace: namespace,
     },
-    spec: {
+    spec: (if protocol == 'https' then $.sslConfig(ingress, namespace) else {}) + {
       displayName: protocol,
-      virtualHost: (if protocol == 'https' then $.sslConfig(ingress, namespace) else {}) + {
+      virtualHost: {
         domains: $.domains(ingress, protocol),
         routes: [
           {
