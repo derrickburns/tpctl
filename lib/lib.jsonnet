@@ -78,6 +78,7 @@
 
   domains(gateway, protocol):: (
     local port = $.port(gateway, protocol);
+    local default = $.defaultPort(protocol);
     [$.domainFrom(name, port, default) for name in gateway.dnsNames]
   ),
 
