@@ -55,4 +55,4 @@ local deployment(config) =
     },
   };
 
-function(config) if lib.getElse(config, 'pkgs.fluxrecv.sidecar', false) then {} else deployment(config)
+function(config, prev) if lib.getElse(config, 'pkgs.fluxrecv.sidecar', false) then {} else deployment(config)
