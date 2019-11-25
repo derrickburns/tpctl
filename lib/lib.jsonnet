@@ -70,10 +70,14 @@
     then '*'
     else if port != default then '%s:%s' % [name, port] else name,
 
-  domains(gateway, protocol):: (
+  port(ingress, protocol):: (
+    local gateway = ingress.gateway[protocol];
     local default = $.defaultPort(protocol);
-    local spec = gateway[protocol];
-    local port = $.getElse(spec, 'port', default);
+    $.getElse(gateway, 'port', default)
+  ),
+
+  domains(gateway, protocol):: (
+    local port = $.port(gateway, protocol);
     [$.domainFrom(name, port, default) for name in spec.dnsNames]
   ),
 
@@ -112,7 +116,8 @@
                     name: name,
                     namespace: namespace,
                   },
-		      },
+                  port: $.port(ingress, protocol),
+		},
               },
             },
           },
@@ -185,6 +190,8 @@
     },
   },
 
+  protocols(ingress):: [ x for x in std.objectFields(ingress.gateway) if $.getElse(ingress.service[x], 'enabled')],
+
   dnsNames(config):: (
     local ingresses = $.ingresses(config);
 
@@ -193,21 +200,47 @@
     std.join(',', std.filter(function(x) x != 'localhost', std.flattenArrays(httpNames + httpsNames)))
   ),
 
-  certificate(e, namespace):: {
+  ports(ingress) :: [
+    {
+      name: protocol
+      protocol: "TCP",
+      port: $.port(ingress, protocol),
+      targetPort: $.bindPort(protocol),
+    } for protocol in $.protocols(ingress)
+  ],
+
+  service(config, pkg):: {
+    apiVersion: "v1",
+    kind: "Service",
+    metadata: {
+      name: pkg,
+      namespace: $.namespace(config, pkg),
+    },
+    spec: {
+      type: "ClusterIP",
+      ports: $.ports(config.pkgs[pkg].spec.values.ingress),
+      selector: {
+        name: pkg
+        namespace: $.namespace(config, pkg),
+      }
+    }
+  },
+
+  certificate(ingress, namespace):: {
     apiVersion: 'cert-manager.io/v1alpha2',
     kind: 'Certificate',
     metadata: {
-      name: e.gateway.https.dnsNames[0],
+      name: ingress.gateway.https.dnsNames[0],
       namespace: namespace,
     },
     spec: {
-      secretName: $.getElse(e, 'certificate.secretName', 'tls'),
+      secretName: $.getElse(ingress, 'certificate.secretName', 'tls'),
       issuerRef: {
-        name: $.getElse(e, 'certificate.issuer', 'letsencrypt-production'),
+        name: $.getElse(ingress, 'certificate.issuer', 'letsencrypt-production'),
         kind: 'ClusterIssuer',
       },
-      commonName: e.gateway.https.dnsNames[0],
-      dnsNames: e.gateway.https.dnsNames,
+      commonName: ingress.gateway.https.dnsNames[0],
+      dnsNames: ingress.gateway.https.dnsNames,
     },
   },
   contains(list, value):: std.foldl(function(a, b) (a || (b == value)), list, false),
