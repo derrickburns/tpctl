@@ -15,6 +15,8 @@ function shutdown_agent() {
 
 running=$(docker inspect -f '{{.State.Running}}' ssh-agent 2>/dev/null)
 if [ $? -ne 0 -o "$running" == "false" ]; then
+  echo "Starting ssh-agent.  You will need to provide your passphrase for your GitHub ID."
+  echo "To avoid having to do this each time, run agent.sh once."
   AGENT_CONTAINER=$(docker run -d --name=ssh-agent nardeas/ssh-agent)
   docker run --rm --volumes-from=ssh-agent -v ~/.ssh:/.ssh -it nardeas/ssh-agent ssh-add /root/.ssh/${SSH_KEY}
   trap shutdown_agent EXIT
