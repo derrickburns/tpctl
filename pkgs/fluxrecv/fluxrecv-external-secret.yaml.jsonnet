@@ -1,8 +1,8 @@
-local lib = '../../lib/lib.jsonnet';
+local lib = import '../../lib/lib.jsonnet';
 
 local externalSecret(config) = (
-  local namespace = lib.getElse(config, 'pkgs.fluxrecv.namespace', 'flux');
   local cluster = config.cluster.metadata.name;
+  local namespace = lib.getElse(config, 'pkgs.fluxrecv.namespace', 'flux');
   {
     apiVersion: 'kubernetes-client.io/v1',
     kind: 'ExternalSecret',
