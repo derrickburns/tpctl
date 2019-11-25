@@ -37,7 +37,7 @@
     head + tail
   ),
 
-  namespace(config, pkg) :: $.getElse(config, 'pkgs.' + pkg + '.namespace', pkg),
+  namespace(config, pkg):: $.getElse(config, 'pkgs.' + pkg + '.namespace', pkg),
 
 
   // We are awaiting a change in Gloo to allow Gateways to select virtual services
@@ -50,11 +50,11 @@
     local gateway = $.vsName(protocol, isInternal);
     $.pruneList($.values(
       std.mapWithKey(
-        function(n, v) 
+        function(n, v)
           if v != null
-          then { name: gateway, namespace: $.namespace(config,n) }
+          then { name: gateway, namespace: $.namespace(config, n) }
           else null,
-          $.ingressesForGateway(ingresses, gateway)
+        $.ingressesForGateway(ingresses, gateway)
       )
     ))
   ),
@@ -76,9 +76,10 @@
     $.getElse(gateway, 'port', default)
   ),
 
-  domains(gateway, protocol):: (
-    local port = $.port(gateway, protocol);
+  domains(ingress, protocol):: (
+    local port = $.port(ingress, protocol);
     local default = $.defaultPort(protocol);
+    local gateway = ingress.gateway[protocol];
     [$.domainFrom(name, port, default) for name in gateway.dnsNames]
   ),
 
@@ -102,7 +103,7 @@
     spec: {
       displayName: protocol,
       virtualHost: (if protocol == 'https' then $.sslConfig(ingress, namespace) else {}) + {
-        domains: $.domains(ingress.gateway, protocol),
+        domains: $.domains(ingress, protocol),
         routes: [
           {
             matchers: [
@@ -118,7 +119,7 @@
                     namespace: namespace,
                   },
                   port: $.port(ingress, protocol),
-		},
+                },
               },
             },
           },
@@ -191,7 +192,7 @@
     },
   },
 
-  protocols(ingress):: [ x for x in std.objectFields(ingress.gateway) if $.getElse(ingress.service[x], 'enabled')],
+  protocols(ingress):: [x for x in std.objectFields(ingress.gateway) if $.getElse(ingress.service[x], 'enabled')],
 
   dnsNames(config):: (
     local ingresses = $.ingresses(config);
@@ -201,30 +202,31 @@
     std.join(',', std.filter(function(x) x != 'localhost', std.flattenArrays(httpNames + httpsNames)))
   ),
 
-  ports(ingress) :: [
+  ports(ingress):: [
     {
       name: protocol,
-      protocol: "TCP",
+      protocol: 'TCP',
       port: $.port(ingress, protocol),
       targetPort: $.bindPort(protocol),
-    } for protocol in $.protocols(ingress)
+    }
+    for protocol in $.protocols(ingress)
   ],
 
   service(config, pkg):: {
-    apiVersion: "v1",
-    kind: "Service",
+    apiVersion: 'v1',
+    kind: 'Service',
     metadata: {
       name: pkg,
       namespace: $.namespace(config, pkg),
     },
     spec: {
-      type: "ClusterIP",
+      type: 'ClusterIP',
       ports: $.ports(config.pkgs[pkg].spec.values.ingress),
       selector: {
         name: pkg,
         namespace: $.namespace(config, pkg),
-      }
-    }
+      },
+    },
   },
 
   certificate(ingress, namespace):: {
