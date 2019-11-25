@@ -219,7 +219,6 @@
       }],
       selector: {
         name: pkg,
-        namespace: $.namespace(config, pkg),
       },
     },
   },
