@@ -1,3 +1,3 @@
 local lib = import 'lib/lib.jsonnet';
 
-function(config) lib.service(config, 'fluxrecv')
+function(config, prev) lib.service(config, 'fluxrecv')
