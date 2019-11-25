@@ -214,7 +214,7 @@
       ports: [{
         name: 'http',
         protocol: 'TCP',
-        port: 80,
+        port: 8080,
         targetPort: 8080,
       }],
       selector: {
