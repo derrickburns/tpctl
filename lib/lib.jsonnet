@@ -78,7 +78,7 @@
 
   domains(gateway, protocol):: (
     local port = $.port(gateway, protocol);
-    [$.domainFrom(name, port, default) for name in spec.dnsNames]
+    [$.domainFrom(name, port, default) for name in gateway.dnsNames]
   ),
 
   sslConfig(ingress, namespace):: {
