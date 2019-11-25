@@ -192,7 +192,7 @@
     },
   },
 
-  protocols(ingress):: [x for x in std.objectFields(ingress.gateway) if $.getElse(ingress.service[x], 'enabled')],
+  protocols(ingress):: [x for x in std.objectFields(ingress.gateway) if $.getElse(ingress.service[x], 'enabled', false)],
 
   dnsNames(config):: (
     local ingresses = $.ingresses(config);
