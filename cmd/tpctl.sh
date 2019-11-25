@@ -729,11 +729,18 @@ function save_changes() {
   read -p "${GREEN}PR Message? ${RESET} " -r
   local message=$REPLY
   info "Please select PR reviewer: "
-  select REVIEWER in $REVIEWERS;
+  select REVIEWER in none $REVIEWERS ;
   do
-    hub pull-request -m "$message" -r $REVIEWER
-    expect_success "failed to create pull request, please create manually"
-    complete "create pull request for review by $REVIEWER"
+    if [ "$REVIEWER" == "none" ]
+    then
+      hub pull-request -m "$message" 
+      expect_success "failed to create pull request, please create manually"
+      complete "create pull request"
+    else
+      hub pull-request -m "$message" -r $REVIEWER
+      expect_success "failed to create pull request, please create manually"
+      complete "create pull request for review by $REVIEWER"
+    fi
     return
   done
 }
