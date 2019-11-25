@@ -118,7 +118,7 @@
                     name: name,
                     namespace: namespace,
                   },
-                  port: $.port(ingress, protocol),
+                  port: 8080,
                 },
               },
             },
@@ -202,16 +202,6 @@
     std.join(',', std.filter(function(x) x != 'localhost', std.flattenArrays(httpNames + httpsNames)))
   ),
 
-  ports(ingress):: [
-    {
-      name: protocol,
-      protocol: 'TCP',
-      port: $.port(ingress, protocol),
-      targetPort: $.bindPort(protocol),
-    }
-    for protocol in $.protocols(ingress)
-  ],
-
   service(config, pkg):: {
     apiVersion: 'v1',
     kind: 'Service',
@@ -221,7 +211,12 @@
     },
     spec: {
       type: 'ClusterIP',
-      ports: $.ports(config.pkgs[pkg].spec.values.ingress),
+      ports: [{
+        name: 'http',
+        protocol: 'TCP',
+        port: 80,
+        targetPort: 8080,
+      }],
       selector: {
         name: pkg,
         namespace: $.namespace(config, pkg),
