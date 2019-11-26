@@ -33,8 +33,13 @@ local updateFlux(config, deployment) = (
 
   deployment
   {
-    annotations+ {
-│     "secret.reloader.stakater.com/reload": "fluxrecv-config,flux-helm-repositories"
+    metadata+: {
+      annotations+: {
+        "secret.reloader.stakater.com/reload": 
+	  if lib.isTrue(config, 'pkgs.fluxrecv.sidecar')
+          then "fluxrecv-config,flux-helm-repositories"
+          else "flux-helm-repositories"
+      },
     },
     spec+: {
       template+: {
