@@ -9,7 +9,7 @@ local updateFlux(config, deployment) = (
       name: 'fluxrecv-config',
       secret: {
         secretName: 'fluxrecv-config',
-        defaultMode: std.parseHex('0400'),
+        defaultMode: std.parseOctal('0400'),
       },
     }]
     else [];
