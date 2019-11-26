@@ -41,7 +41,6 @@ local updateFlux(config, deployment) = (
             image: 'docker.io/fluxcd/flux:1.15.0',
             args+: [
               '--sync-interval=1m',
-              '--git-poll-interval=1m',
             ] + if lib.isTrue(config, 'pkgs.fluxcloud.enabled') then ['--connect=ws://fluxcloud'] else [],
           }] + sidecar,
         },
