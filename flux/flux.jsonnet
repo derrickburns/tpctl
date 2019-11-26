@@ -35,8 +35,8 @@ local updateFlux(config, deployment) = (
   {
     spec+: {
       template+: {
-        volumes+: volumes,
         spec+: {
+          volumes+: volumes,
           containers: [container {
             image: 'docker.io/fluxcd/flux:1.15.0',
             args+: [
