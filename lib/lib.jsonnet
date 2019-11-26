@@ -199,7 +199,7 @@
 
     local httpNames = [x.gateway.http.dnsNames for x in $.pruneList($.values($.ingressesForGateway(ingresses, 'http')))];
     local httpsNames = [x.gateway.https.dnsNames for x in $.pruneList($.values($.ingressesForGateway(ingresses, 'https')))];
-    std.join(',', std.filter(function(x) x != 'localhost', std.flattenArrays(httpNames + httpsNames)))
+    std.join(',', std.filter(function(x) x != 'localhost', std.uniq(std.sort(std.flattenArrays(httpNames + httpsNames)))))
   ),
 
   service(config, pkg):: {
