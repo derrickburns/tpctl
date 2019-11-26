@@ -23,6 +23,11 @@ local externalSecret(config) = (
           name: 'github.key',
           property: 'github.key',
         },
+        {
+          key: '%s/%s/fluxrecv-config' % [cluster, namespace],
+          name: 'dockerhub.key',
+          property: 'dockerhub.key',
+        },
       ],
     },
   }
