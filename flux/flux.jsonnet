@@ -33,6 +33,9 @@ local updateFlux(config, deployment) = (
 
   deployment
   {
+    annotations+ {
+│     "secret.reloader.stakater.com/reload": "fluxrecv-config,flux-helm-repositories"
+    },
     spec+: {
       template+: {
         spec+: {
