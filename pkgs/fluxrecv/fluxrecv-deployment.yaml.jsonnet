@@ -5,6 +5,9 @@ local deployment(config) =
     apiVersion: 'extensions/v1beta1',
     kind: 'Deployment',
     metadata: {
+      annotations: {
+        "secret.reloader.stakater.com/reload": "fluxrecv-config"
+      },
       name: 'fluxrecv',
       namespace: lib.getElse(config, 'pkgs.fluxrecv.namespace', 'flux'),
     },
