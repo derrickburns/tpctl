@@ -121,8 +121,8 @@ function add_gloo_manifest() {
   config=$1
   file=$2
   (
-    cd gloo
-    jsonnet --tla-code config="$config" $TEMPLATE_DIR/gloo/${file}.yaml.jsonnet | separate_files | add_names
+    cd pkgs/gloo
+    jsonnet --tla-code config="$config" $TEMPLATE_DIR/gloo/${file}.yaml.jsonnet >${file}.yaml
     expect_success "Templating failure gloo/$1.yaml.jsonnet"
   )
 }
@@ -130,7 +130,7 @@ function add_gloo_manifest() {
 function make_gateway {
   start "configuring gloo gateway"
   local config=$(get_config)
-  mkdir -p gloo
+  mkdir -p pkgs/gloo
   add_gloo_manifest "$config" gateway-ssl
   add_gloo_manifest "$config" internal-gateway
   add_gloo_manifest "$config" gateway
