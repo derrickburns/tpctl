@@ -34,7 +34,7 @@ local values(config) = {
       stats: true,
       kind: {
          deployment: {
-           replicas: 1
+           replicas: 2
          }
       },
       configMap: {
@@ -103,7 +103,7 @@ local values(config) = {
     gatewayProxy: {
       kind: {
          deployment: {
-           replicas: 1
+           replicas: 2
          }
       },
       readConfig: true,
