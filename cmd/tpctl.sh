@@ -696,14 +696,15 @@ function make_config() {
 
 # persist changes to config repo in GitHub
 function save_changes() {
-  DIFFS=$(GIT_PAGER=/bin/cat git diff HEAD)
+  export GIT_PAGER=/bin/cat
+  DIFFS=$(git diff HEAD)
   if [ -z "$DIFFS" ]
   then
     info "No changes made"
     return 
   fi
   info "==== BEGIN Changes"
-  GIT_PAGER=/bin/cat git diff HEAD
+  git diff HEAD
   info "==== END Changes"
   local branch
   if [ "$APPROVE" != "true" ]
