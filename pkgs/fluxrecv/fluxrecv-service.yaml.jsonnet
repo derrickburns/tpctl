@@ -4,7 +4,7 @@ function(config, prev) {
   apiVersion: 'v1',
   kind: 'Service',
   metadata: {
-    name: "fluxrecv",
+    name: "fluxrecv-https",
     namespace: lib.namespace(config, "flux"),
   },
   spec: {
@@ -16,7 +16,7 @@ function(config, prev) {
       targetPort: 8080,
     }],
     selector: {
-      "name": "flux",
+      "name": if lib.getElse(config, 'pkgs.fluxrecv.sidecar', false) then  "flux" else "fluxrecv",
     },
   },
 }

@@ -2,64 +2,155 @@
   environments(config):: (
     local e = $.getElse(config, 'environments', {});
     local envs = std.objectFields(e);
-    { [env]: e[env].tidepool for env in envs if $.isTrue(e[env], 'tidepool.enabled') }
+    { [env]: $.withName($.withNamespace(e[env].tidepool, env), env) for env in envs if $.isTrue(e[env], 'tidepool.enabled') }
   ),
 
   packages(config):: (
     local p = $.getElse(config, 'pkgs', {});
     local pkgs = std.objectFields(p);
-    { [pkg]: p[pkg] for pkg in pkgs if $.isEnabled(p[pkg]) }
+    { [pkg]: $.withNamespace(p[pkg], pkg) for pkg in pkgs if $.isEnabled(p[pkg]) }
   ),
 
   isEnabled(x):: $.isTrue(x, 'enabled'),
 
-  // select all ingress sub-objects across the entire configuration
-  ingresses(config):: (
-    local envs = $.environments(config);
-    local pkgs = $.packages(config);
-    std.mapWithKey(function(n, v) $.getElse(v, 'ingress', null), envs)
-    + std.mapWithKey(function(n, v) $.getElse(v, 'spec.values.ingress', null), pkgs)
+  withDefault(obj, field, default)::
+    if obj == null || std.objectHas(obj, field)
+    then obj
+    else obj { [field]: default },
+
+  // add a default namespace to an object if it does not have one
+  withNamespace(obj, default):: $.withDefault(obj, 'namespace', default),
+
+  // add a default name to an object if it does not have one
+  withName(obj, default):: $.withDefault(obj, 'name', default),
+
+  propagate(c, key, field):: c {
+    [key]: { [env]: $.withDefault(c[key][env], field, env) for env in std.objectFields(c[key]) },
+  },
+
+  complete(config):: $.propagate($.propagate(config, 'environments', 'namespace'), 'pkgs', 'namespace'),
+
+  expandConfig(config)::
+    config
+    + (if std.objectHas(config, 'environments')
+      then { environments: $.expandEnvironments(config.environments) }
+      else {})
+    + (if $.getElse(config, 'pkgs.pomerium.enabled', false)
+       then { pkgs+: { pomerium: $.expandPomerium(config.pkgs.pomerium) } }
+       else {}),
+
+  expandEnvironments(envs):: std.mapWithKey($.expandEnvironment, envs),
+
+  expandEnvironment(name, env):: (
+    local dnsNames = $.getElse(env, 'tidepool.dnsNames', []);
+    env + $.expandEnvironmentVirtualServices(dnsNames, name)
   ),
 
-  // filter ingresses by name
-  ingressesForGateway(ingresses, gateway)::
-    std.mapWithKey(
-      function(n, v)
-        if $.isTrue(v, 'service.' + gateway + '.enabled') then v else null,
-      ingresses
-    ),
+  expandPomerium(pomerium):: pomerium + $.expandPomeriumVirtualServices(pomerium.rootDomain),
 
-  vsName(protocol, isInternal):: if isInternal then protocol + '-internal' else protocol,
+  expandPomeriumVirtualServices(rootDomain):: {
+    virtualServices: {
+      authenticate: {
+        dnsNames: [
+          'authenticate.%s' % rootDomain,
+        ],
+        enabled: true,
+        labels: {
+          protocol: 'https',
+          type: 'external',
+        },
+      },
+      authorize: {
+        dnsNames: [
+          'authorize.%s' % rootDomain,
+        ],
+        enabled: true,
+        labels: {
+          protocol: 'https',
+          type: 'external',
+        },
+      },
+      proxy: {
+        enabled: true,
+        labels: {
+          protocol: 'https',
+          type: 'external',
+        },
+      },
+    },
+  },
 
-  gatewayName(protocol, isInternal):: (
-    local tail = if protocol == 'http' then 'gateway-proxy' else 'gateway-proxy-ssl';
-    local head = if isInternal then 'internal-' else '';
-    head + tail
+  expandEnvironmentVirtualServices(dnsNames, namespace):: {
+    tidepool+: {
+      virtualServices: {
+        http: {
+          dnsNames: dnsNames,
+          enabled: true,
+          labels: {
+            protocol: 'http',
+            type: 'external',
+          },
+          redirectAction: true,
+        },
+        'http-internal': {
+          delegateAction: 'tidepool-routes',
+          dnsNames: [
+            'internal.%s' % namespace,
+          ],
+          enabled: true,
+          labels: {
+            protocol: 'http',
+            type: 'internal',
+          },
+        },
+        https: {
+          delegateAction: 'tidepool-routes',
+          dnsNames: dnsNames,
+          enabled: true,
+          labels: {
+            protocol: 'https',
+            type: 'external',
+          },
+        },
+      },
+    },
+  },
+
+  // provide an array of virtual services for a config
+  virtualServices(config):: (
+    $.virtualServicesForPkgs($.environments(config)) +
+    $.virtualServicesForPkgs($.packages(config))
   ),
+
+  // provide array of virtual service maps for array of packages
+  virtualServicesForPkgs(pkgs)::
+    std.flattenArrays($.values(std.mapWithKey($.virtualServicesForPkg, pkgs))),
+
+  // provide array of virtual service maps for package
+  // use the name of the package as the namespace if the namespace is not explicitly declared
+  // use the key of the virtual service object as the name of the virtual service
+  virtualServicesForPkg(name, pkg)::
+    $.pruneList($.virtualServicesToList($.getElse(pkg, 'virtualServices', {}), $.getElse(pkg, 'namespace', name))),
+
+  // flatten a map after adding name and namespace fields
+  virtualServicesToList(map, ns):: std.filter(function(x) $.getElse(x, 'enabled', false), $.values($.addName($.addNamespace(map, ns)))),
+
+  // add namespace field to each object under a map if it does not already have one
+  addNamespace(map, ns):: std.mapWithKey(function(n, v) $.withNamespace(v, ns), map),
+
+  // add a name field to each entry of a map, where the name is the key
+  addName(map):: std.mapWithKey(function(n, v) $.withName(v, n), map),
 
   namespace(config, pkg):: $.getElse(config, 'pkgs.' + pkg + '.namespace', pkg),
 
+  matches(labels, selector)::
+    std.foldl(function(a, b) a && b, [$.getElse(labels, x, false) == selector[x] for x in std.objectFields(selector)], true),
 
   // We are awaiting a change in Gloo to allow Gateways to select virtual services
-  // across namespaces using labels.
+  // across namespaces using labels. For now, we simulate that behavior here.
   //
-  // Until then, we select virtual services for a gateway using the convention that
-  // the name of the virtual service is the name of the gateway that includes it.
-  virtualServices(config, protocol, isInternal):: (
-    local ingresses = $.ingresses(config);
-    local gateway = $.vsName(protocol, isInternal);
-    $.pruneList($.values(
-      std.mapWithKey(
-        function(n, v)
-          if v != null
-          then { name: gateway, namespace: $.namespace(config, n) }
-          else null,
-        $.ingressesForGateway(ingresses, gateway)
-      )
-    ))
-  ),
-
-  proxyName(isInternal):: if isInternal then 'internal-gateway-proxy' else 'gateway-proxy',
+  virtualServicesForSelector(vss, selector)::
+    std.filter(function(x) $.matches(x.labels, selector), vss),
 
   defaultPort(protocol):: if protocol == 'http' then 80 else 443,
 
@@ -70,137 +161,166 @@
     then '*'
     else if port != default then '%s:%s' % [name, port] else name,
 
-  port(ingress, protocol):: (
-    local gateway = ingress.gateway[protocol];
+  protocol(vs):: vs.labels.protocol,
+
+  port(vs):: (
+    local protocol = $.protocol(vs);
     local default = $.defaultPort(protocol);
-    $.getElse(gateway, 'port', default)
+    $.getElse(vs, 'port', default)
   ),
 
-  domains(ingress, protocol):: (
-    local port = $.port(ingress, protocol);
+  domains(vs):: (
+    local port = $.port(vs);
+    local protocol = $.protocol(vs);
     local default = $.defaultPort(protocol);
-    local gateway = ingress.gateway[protocol];
-    [$.domainFrom(name, port, default) for name in gateway.dnsNames]
+    [$.domainFrom(name, port, default) for name in $.getElse(vs, 'dnsNames', [])]
   ),
 
-  sslConfig(ingress, namespace):: {
+  sslConfig(vs):: if $.getElse(vs, 'labels.protocol', 'http') == 'https' then {
     sslConfig: {
       secretRef: {
-        name: $.getElse(ingress, 'certificate.secretName', 'tls'),
-        namespace: namespace,
+        name: $.certificateSecretName(vs.name),
+        namespace: vs.namespace,
       },
-      sniDomains: ingress.gateway.https.dnsNames,
+      sniDomains: $.getElse(vs, 'dnsNames', []),
     },
-  },
+  } else {},
 
-  virtualService(name, namespace, ingress, protocol):: {
+  route(vs)::
+    if std.objectHas(vs, 'redirectAction') then {
+      redirectAction: {
+        httpsRedirect: true,
+      },
+    } else if std.objectHas(vs, 'delegateAction') then {
+      delegateAction: {
+        namespace: vs.namespace,
+        name: vs.delegateAction,
+      },
+    } else {
+      routeAction: {
+        single: {
+          kube: {
+            ref: {
+              name: vs.name,
+              namespace: vs.namespace,
+            },
+            port: 8080,
+          },
+        },
+      },
+    },
+
+  virtualService(vsin, defaultName, defaultNamespace):: {
+    local vs = $.withNamespace($.withName(vsin, defaultName), defaultNamespace),
+    local procotol = vs.labels.protocol,
     apiVersion: 'gateway.solo.io/v1',
     kind: 'VirtualService',
     metadata: {
-      name: protocol,
-      namespace: namespace,
+      name: vs.name,
+      namespace: vs.namespace,
+      labels: vs.labels,
     },
-    spec: (if protocol == 'https' then $.sslConfig(ingress, namespace) else {}) + {
-      displayName: protocol,
+    spec: $.sslConfig(vs) + {
+      displayName: vs.name,
       virtualHost: {
-        domains: $.domains(ingress, protocol),
+        domains: $.domains(vs),
         routes: [
           {
-            matchers: [
-              {
-                prefix: '/',
-              },
-            ],
-            routeAction: {
-              single: {
-                kube: {
-                  ref: {
-                    name: name,
-                    namespace: namespace,
-                  },
-                  port: 8080,
-                },
-              },
-            },
-          },
+            matchers: [{ prefix: '/' }],
+          } + $.route(vs),
         ],
       },
     },
   },
 
-  gateway(config, protocol, isInternal):: {
+  gateways(config):: (
+    local vss = $.virtualServices(config);
+    local gloo = $.withNamespace(config.pkgs.gloo, 'gloo-system');
+    local gws = $.values(std.mapWithKey(function(n, v) $.withName(v, n), gloo.gateways));
+    [$.gateway($.withNamespace(gw, gloo.namespace), vss) for gw in gws]
+  ),
+
+  dnsNames(config):: (
+    local vss = $.virtualServices(config);
+    local externalVss = $.virtualServicesForSelector(vss, { placement: 'external' });
+    std.uniq(std.sort(std.flattenArrays(std.filter(function(vs)
+      $.getElse(vs, 'dnsNames', []), externalVss))))
+  ),
+
+  accessLoggingOption:: {
+    accessLoggingService: {
+      accessLog: [
+        {
+          fileSink: {
+            jsonFormat: {
+              authority: '%REQ(:authority)%',
+              authorization: '%REQ(authorization)%',
+              content: '%REQ(content-type)%',
+              duration: '%DURATION%',
+              forwardedFor: '%REQ(X-FORWARDED-FOR)%',
+              method: '%REQ(:method)%',
+              path: '%REQ(:path)%',
+              remoteAddress: '%DOWNSTREAM_REMOTE_ADDRESS_WITHOUT_PORT%',
+              request: '%REQ(x-tidepool-trace-request)%',
+              response: '%RESPONSE_CODE%',
+              scheme: '%REQ(:scheme)%',
+              session: '%REQ(x-tidepool-trace-session)%',
+              startTime: '%START_TIME%',
+              token: '%REQ(x-tidepool-session-token)%',
+              upstream: '%UPSTREAM_CLUSTER%',
+            },
+            path: '/dev/stdout',
+          },
+        },
+      ],
+    },
+  },
+
+  httpConnectionManagerOption:: {
+    httpConnectionManagerSettings: {
+      useRemoteAddress: true,
+      tracing: {
+        verbose: true,
+        requestHeadersForTags: ['path', 'origin'],
+      },
+    },
+  },
+
+  healthCheckOption:: {
+    healthCheck: {
+      path: '/status',
+    },
+  },
+
+  gateway(gw, vss):: {
     apiVersion: 'gateway.solo.io/v1',
     kind: 'Gateway',
     metadata: {
       annotations: {
         origin: 'default',
       },
-      name: $.gatewayName(protocol, isInternal),
-      namespace: $.getElse(config, 'pkgs.gloo.namespace', 'gloo-system'),
+      name: gw.name,
+      namespace: gw.namespace,
     },
     spec: {
       httpGateway: {
-        virtualServices: $.virtualServices(config, protocol, isInternal),
-        options: {
-          httpConnectionManagerSettings: {
-            useRemoteAddress: true,
-            tracing: {
-              verbose: true,
-              requestHeadersForTags: ['path', 'origin'],
-            },
-          },
-          healthCheck: {
-            path: '/status',
-          },
-        },
+        virtualServices:
+          std.map(
+            function(v) { name: v.name, namespace: v.namespace },
+            $.virtualServicesForSelector(vss, gw.selector)
+          ),
+        options:
+          (if $.getElse(gw, 'options.healthCheck', false) then $.healthCheckOption else {})
+          + (if $.getElse(gw, 'options.tracing', false) then $.httpConnectionManagerOption else {}),
       },
-      options: {
-        accessLoggingService: {
-          accessLog: [
-            {
-              fileSink: {
-                jsonFormat: {
-                  authority: '%REQ(:authority)%',
-                  authorization: '%REQ(authorization)%',
-                  content: '%REQ(content-type)%',
-                  duration: '%DURATION%',
-                  forwardedFor: '%REQ(X-FORWARDED-FOR)%',
-                  method: '%REQ(:method)%',
-                  path: '%REQ(:path)%',
-                  remoteAddress: '%DOWNSTREAM_REMOTE_ADDRESS_WITHOUT_PORT%',
-                  request: '%REQ(x-tidepool-trace-request)%',
-                  response: '%RESPONSE_CODE%',
-                  scheme: '%REQ(:scheme)%',
-                  session: '%REQ(x-tidepool-trace-session)%',
-                  startTime: '%START_TIME%',
-                  token: '%REQ(x-tidepool-session-token)%',
-                  upstream: '%UPSTREAM_CLUSTER%',
-                },
-                path: '/dev/stdout',
-              },
-            },
-          ],
-        },
-      },
+      options: if $.getElse(gw, 'options.accessLogging', false) then $.accessLoggingOption else {},
       bindAddress: '::',
-      bindPort: $.bindPort(protocol),
-      proxyNames: [
-        $.proxyName(isInternal),
-      ],
-      useProxyProto: !isInternal,
-      ssl: protocol == 'https',
+      bindPort: $.bindPort(gw.selector.protocol),
+      proxyNames: gw.proxies,
+      useProxyProto: $.getElse(gw, 'options.proxyProtocol', false),
+      ssl: $.getElse(gw, 'options.ssl', false),
     },
   },
-
-  protocols(ingress):: [x for x in std.objectFields(ingress.gateway) if $.getElse(ingress.service[x], 'enabled', false)],
-
-  dnsNames(config):: (
-    local ingresses = $.ingresses(config);
-
-    local httpNames = [x.gateway.http.dnsNames for x in $.pruneList($.values($.ingressesForGateway(ingresses, 'http')))];
-    local httpsNames = [x.gateway.https.dnsNames for x in $.pruneList($.values($.ingressesForGateway(ingresses, 'https')))];
-    std.join(',', std.filter(function(x) x != 'localhost', std.uniq(std.sort(std.flattenArrays(httpNames + httpsNames)))))
-  ),
 
   service(config, pkg):: {
     apiVersion: 'v1',
@@ -223,26 +343,54 @@
     },
   },
 
-  certificate(ingress, namespace):: {
-    apiVersion: 'cert-manager.io/v1alpha2',
-    kind: 'Certificate',
-    metadata: {
-      name: ingress.gateway.https.dnsNames[0],
-      namespace: namespace,
-    },
-    spec: {
-      secretName: $.getElse(ingress, 'certificate.secretName', 'tls'),
-      issuerRef: {
-        name: $.getElse(ingress, 'certificate.issuer', 'letsencrypt-production'),
-        kind: 'ClusterIssuer',
+  virtualServicesForPackage(config, pkgname):: (
+    local vsarray = $.virtualServicesForPkg(pkgname, config.pkgs[pkgname]);
+    std.map(function(v) $.virtualService(v, v.name, $.namespace(config, pkgname)), vsarray)
+  ),
+
+  virtualServicesForEnvironment(config, envname):: (
+    local vsarray = $.virtualServicesForPkg(envname, config.environments[envname].tidepool);
+    std.map(function(v) $.virtualService(v, v.name, envname), vsarray)
+  ),
+
+  certificatesForPackage(config, pkgname):: (
+    local vsarray = $.virtualServicesForPkg(pkgname, config.pkgs[pkgname]);
+    std.map(function(v) $.certificate(config, v, v.name, $.namespace(config, pkgname)), vsarray)
+  ),
+
+  certificatesForEnvironment(config, envname):: (
+    local vsarray = $.virtualServicesForPkg(envname, config.environments[envname].tidepool);
+    $.pruneList(std.map(function(v) $.certificate(config, v, v.name, envname), vsarray))
+  ),
+
+  certificateSecretName(base):: base + '-certificate',
+
+  certificate(config, vsin, defaultName, defaultNamespace):: (
+    local vs = $.withNamespace($.withName(vsin, defaultName), defaultNamespace);
+    if $.getElse(config, 'pkgs.certmanager.enabled', false) && $.getElse(vsin, 'labels.protocol', 'http') == 'https'
+    then {
+      apiVersion: 'cert-manager.io/v1alpha2',
+      kind: 'Certificate',
+      metadata: {
+        name: std.strReplace(vs.dnsNames[0], '*', 'star'),
+        namespace: vs.namespace,
       },
-      commonName: ingress.gateway.https.dnsNames[0],
-      dnsNames: ingress.gateway.https.dnsNames,
-    },
-  },
+      spec: {
+        secretName: $.certificateSecretName(vs.name),
+        issuerRef: {
+          name: $.getElse(config, 'certmanager.issuer', 'letsencrypt-production'),
+          kind: 'ClusterIssuer',
+        },
+        commonName: vs.dnsNames[0],
+        dnsNames: vs.dnsNames,
+      },
+    }
+    else {}
+  ),
+
   contains(list, value):: std.foldl(function(a, b) (a || (b == value)), list, false),
 
-  pruneList(list):: std.foldl(function(a, b) if b == null then a else a + [b], list, []),
+  pruneList(list):: std.foldl(function(a, b) if b == null || b == {} then a else a + [b], list, []),
 
   // return a list of the fields of the object given
   values(obj):: [obj[field] for field in std.objectFields(obj)],

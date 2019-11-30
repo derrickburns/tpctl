@@ -1,11 +1,5 @@
 local lib = import '../../lib/lib.jsonnet';
 
-local defaultHost(env) = (
-  if env.ingress.gateway.default.protocol == 'http'
-  then env.ingress.gateway.http.dnsNames[0]
-  else env.ingress.gateway.https.dnsNames[0]
-);
-
 local dataBucket(config, namespace) = 'tidepool-%s-%s-data' % [config.cluster.metadata.name, namespace];
 local assetBucket(config, namespace) = 'tidepool-%s-%s-asset' % [config.cluster.metadata.name, namespace];
 
@@ -166,13 +160,14 @@ local tidepool(config, prev, namespace) = {
       }, lib.getElse(tp, 'gatekeeper', {})]),
 
       global: {
-        logLevel: config.logLevel,
+        local domain = lib.getElse(config, 'cluster.metadata.domain', 'tidepool.org'),
+        logLevel: lib.getElse(config, 'logLevel', 'info'),
         gateway: {
-          default: {
-            host: defaultHost(env),
-            domain: env.ingress.gateway.default.domain,
-            protocol: env.ingress.gateway.default.protocol,
-          },
+          default:  {
+	    host: lib.getElse(env, 'gateway.host', '%s.%s' % [  namespace, domain ]),
+            protocol: lib.getElse(env, 'gateway.protocol', 'https'),
+            domain: domain, 
+          }
         },
         store: {
           type: 's3',
@@ -229,12 +224,7 @@ local tidepool(config, prev, namespace) = {
         },
       }, lib.getElse(tp, 'image', {})]),
 
-      ingress: {
-        certificate: env.ingress.certificate,
-        deployment+: env.ingress.deployment,
-        gateway: env.ingress.gateway,
-        service: env.ingress.service,
-      },
+      virtualServices: env.virtualServices,
 
       jellyfish: lib.mergeList([common, {
         serviceAccount: {
@@ -330,4 +320,4 @@ local tidepool(config, prev, namespace) = {
   },
 };
 
-function(config, prev, namespace) tidepool(config, prev, namespace)
+function(config, prev, namespace) tidepool(lib.expandConfig(config), prev, namespace)
