@@ -3,9 +3,9 @@ local lib = import '../../lib/lib.jsonnet';
 local dnsNames(config) = (
   local pkgs = config.pkgs;
   [
-    pkgs[x].sso.dnsName
+    lib.getElse(pkgs[x].sso, 'dnsName', '%s.%s' % [ x, config.cluster.metadata.domain ])
     for x in std.objectFields(pkgs)
-    if lib.getElse(pkgs[x], 'sso.dnsName', '') != ''
+    if lib.getElse(pkgs[x], 'sso', {}) != {}
   ]
 );
 
