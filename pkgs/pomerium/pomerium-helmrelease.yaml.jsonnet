@@ -1,6 +1,5 @@
 local lib = import '../../lib/lib.jsonnet';
 
-local domain = lib.getElse(config, 'pkgs.pomerium.rootDomain', config.cluster.metadata.domain);
 
 local getPolicy(config) = (
   local pkgs = config.pkgs;
@@ -20,6 +19,7 @@ local getPolicy(config) = (
 );
 
 local helmrelease(config) = {
+  local domain = lib.rootDomain(config),
   apiVersion: 'helm.fluxcd.io/v1',
   kind: 'HelmRelease',
   metadata: {

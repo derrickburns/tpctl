@@ -1,8 +1,8 @@
 local lib = import '../../lib/lib.jsonnet';
 
-local domain = lib.getElse(config, 'pkgs.pomerium.rootDomain', config.cluster.metadata.domain);
 
 local dnsNames(config) = (
+  local domain = lib.rootDomain(config);
   local pkgs = config.pkgs;
   [
     pkgs[x].sso.dnsName

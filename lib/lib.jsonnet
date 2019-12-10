@@ -36,7 +36,7 @@
       then { environments: $.expandEnvironments(config.environments) }
       else {})
     + (if $.getElse(config, 'pkgs.pomerium.enabled', false)
-       then { pkgs+: { pomerium: $.expandPomerium(config.pkgs.pomerium) } }
+       then { pkgs+: { pomerium: $.expandPomerium(config) } }
        else {}),
 
   expandEnvironments(envs):: std.mapWithKey($.expandEnvironment, envs),
@@ -46,7 +46,9 @@
     env + $.expandEnvironmentVirtualServices(dnsNames, name)
   ),
 
-  expandPomerium(pomerium):: pomerium + $.expandPomeriumVirtualServices(pomerium.rootDomain),
+  rootDomain(config):: $.getElse(config, 'pkgs.pomerium.rootDomain', config.cluster.metadata.domain),
+
+  expandPomerium(config):: config.pkgs.pomerium + $.expandPomeriumVirtualServices($.rootDomain(config)),
 
   expandPomeriumVirtualServices(rootDomain):: {
     virtualServices: {

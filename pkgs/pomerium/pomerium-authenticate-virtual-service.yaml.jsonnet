@@ -1,7 +1,7 @@
 local lib = import '../../lib/lib.jsonnet';
 
 local virtualService(config) = {
-  local domain = lib.getElse(config, 'pkgs.pomerium.rootDomain', config.cluster.metadata.domain),
+  local domain = lib.rootDomain(config),
   apiVersion: 'gateway.solo.io/v1',
   kind: 'VirtualService',
   metadata: {
