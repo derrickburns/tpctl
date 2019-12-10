@@ -59,4 +59,4 @@ local defaults = {
 };
 
 
-function(config) std.manifestYamlStream(lib.gateways(lib.merge(defaults, expand.expandConfig(config))))
+function(config,prev) std.manifestYamlStream(lib.gateways(lib.merge(defaults, expand.expandConfig(config))))
