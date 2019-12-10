@@ -1,5 +1,7 @@
 local lib = import '../../lib/lib.jsonnet';
 
+local domain = lib.getElse(config, 'pkgs.pomerium.rootDomain', config.cluster.metadata.domain);
+
 local dnsNames(config) = (
   local pkgs = config.pkgs;
   [
@@ -8,8 +10,8 @@ local dnsNames(config) = (
     if lib.getElse(pkgs[x], 'sso.dnsName', '') != ''
   ] +
   [
-    'authenticate.%s' % config.pkgs.pomerium.rootDomain,
-    'authorize.%s' % config.pkgs.pomerium.rootDomain,
+    'authenticate.%s' % domain,
+    'authorize.%s' % domain,
   ]
 );
 

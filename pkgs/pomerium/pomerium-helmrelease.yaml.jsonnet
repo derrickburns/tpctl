@@ -1,5 +1,7 @@
 local lib = import '../../lib/lib.jsonnet';
 
+local domain = lib.getElse(config, 'pkgs.pomerium.rootDomain', config.cluster.metadata.domain);
+
 local getPolicy(config) = (
   local pkgs = config.pkgs;
   [
@@ -43,7 +45,7 @@ local helmrelease(config) = {
         type: 'NodePort',
       },
       config: {
-        rootDomain: config.pkgs.pomerium.rootDomain,
+        rootDomain: domain,
         existingSecret: 'pomerium',
         policy: getPolicy(config),
       },
