@@ -19,6 +19,7 @@ cluster:
   metadata:
     name: test1                              # name of the cluster
     region: us-west-2                        # AWS region to host the cluster
+    domain: tidepool.org
   cloudWatch:                                # AWS cloudwatch configuration
     clusterLogging:                          
       enableTypes:                           # Types of log messages to persist to CloudWatch
@@ -43,28 +44,20 @@ cluster:
         autoScaler: true
         certManager: true
         externalDNS: true
-
 pkgs:
   amazon-cloudwatch:                         # AWS CloudWatch logging
-    enabled: true
-  external-dns:                              # External DNS maintains DNS aliases to Amazon ELBs
-    enabled: true
-  gloo:                                      # Gloo provides the API Gateway 
-    version: 1.0.0
-    enabled: true
-    namespace: gloo-system                   # namespace to host gateway
-  prometheus-operator:                       # Prometheus Operator creates Prometheus instances
     enabled: true
   certmanager:                               # Certmanager issues TLS certificates
     enabled: true
   cluster-autoscaler:                        # Cluster autoscaler scales the nodes in the cluster as needed
     enabled: true
-  external-secrets:                          # External secrets loads persisted secrets from AWS Secrets Manager
-    enabled: true
-  reloader:                                  # Reloader restarts services on secrets/configmap changes
-    enabled: true
   datadog:                                   # Datadog send telemetry to the hosted Datadog service
     enabled: false
+  external-dns:                              # External DNS maintains DNS aliases to Amazon ELBs
+    enabled: true
+  external-secrets:                          # External secrets loads persisted secrets from AWS Secrets Manager
+    enabled: true
+    poller_interval: "120000"                # Polling interval in microseconds"
   flux:                                      # Flux provides GitOps
     enabled: true
   fluxcloud:                                 # Fluxcloud sends GitOps notifications to Slack
@@ -72,9 +65,31 @@ pkgs:
     username: "derrickburns"                 
     secret: slack                            # Name of secret in which Slack webhook URL is provided
     #channel: foo                            # Slack channel on which to post notifications
+  fluxrecv:                                  # Event receiver for GitHub and Docker Hub push events
+    enabled: true
+    sidecar: true
+    namespace: flux
+    virtualServices: # generates vs, cert, adds to external https gateway
+      fluxrecv-https:
+        enabled: true
+        labels:
+          type: external
+          protocol: https
+        dnsNames:
+        - fluxrecv.tidepool.org
+  gloo:                                      # Gloo provides the API Gateway 
+    version: 1.0.0
+    enabled: true
+    namespace: gloo-system                   # namespace to host gateway
   linkerd:
     version: stable-2.6.0
   metrics-server:                            # Metrics server collects Node level metrics and sends to Prometheus
+    enabled: true
+  pomerium:                                  # Single sign on proxy
+    enabled: true
+  prometheus-operator:                       # Prometheus Operator creates Prometheus instances
+    enabled: true
+  reloader:                                  # Reloader restarts services on secrets/configmap changes
     enabled: true
   sumologic:                                 # Sumologic collects metrics and logs and sents to the hosted service
     enabled: false
@@ -94,6 +109,8 @@ environments:
     mongodb:
       enabled: true                          # Whether to use an embedded mongodb 
     tidepool:
+      dnsNames:
+      - qa2.tidepool.org
       deployment:
         replicas: 2
       resources:
@@ -105,7 +122,7 @@ environments:
           cpu: "100m"
       chart:
         path: charts/tidepool/0.1.7
-        ref: gloo2
+        ref: no-virtual-services
       source: stg                            # Where to get initial secrets from
       enabled: true
       hpa:                                   # Whether to implement horizontal pod scalers for each service
@@ -121,30 +138,6 @@ environments:
       buckets: {}                            # Which S3 buckets to store/retrieve data to/from
         #data: tidepool-test-qa2-data        # Name of the writable S3 bucket to store document data to
         #asset: tidepool-test-qa2-asset      # Name of the readable S3 bucker form which to get email assets
-      ingress:
-        certificate:
-          secretName: tls                      # Name of the K8s secret to store the TLS certificate for the hosts served
-          issuer: letsencrypt-staging          # Name of the Certificate Issuer to use
-        deployment:
-          name: internal-gateway-proxy-v2
-          namespace: gloo-system
-        gateway:
-          default:                             # Default protocol to use for communication for email verification
-            protocol: http                
-            domain: tidepool.org
-          http:
-            dnsNames:                          # DNS Names of the HTTP hosts to serve
-            - localhost                       
-          https:
-            dnsNames:                          # DNS Names of the HTTPS hosts to serve
-            - qa2.tidepool.org
-        service:
-          http:
-            enabled: true                      # Whether to offer HTTP access
-          http-internal:
-            enabled: true
-          https:
-            enabled: true                      # Whether to offer HTTPS access
       migrations:
         resources: 
           requests: 

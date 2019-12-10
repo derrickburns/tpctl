@@ -9,7 +9,7 @@ local values(config) = {
     create: false,
   },
   discovery: {
-    enabled: false,
+    enabled: true,
     fdsMode: 'WHITELIST',
   },
   gateway: {
@@ -33,9 +33,9 @@ local values(config) = {
     internalGatewayProxy: {
       stats: true,
       kind: {
-         deployment: {
-           replicas: 2
-         }
+        deployment: {
+          replicas: 2,
+        },
       },
       configMap: {
         data: null,
@@ -43,21 +43,21 @@ local values(config) = {
       podTemplate: {
         probes: false,
         image: {
-          repository: "gloo-envoy-wrapper",
-          registry: "quay.io/solo-io",
+          repository: 'gloo-envoy-wrapper',
+          registry: 'quay.io/solo-io',
           tag: config.pkgs.gloo.version,
         },
         httpPort: 8080,
         httpsPort: 8443,
         runAsUser: 10101,
         extraAnnotations: {
-          "linkerd.io/inject": "enabled",
+          'linkerd.io/inject': 'enabled',
         },
       },
       service: {
-        type: "ClusterIP",
+        type: 'ClusterIP',
         httpPort: 80,
-        httpsPort: 443, 
+        httpsPort: 443,
       },
       readConfig: true,
       gatewaySettings: {
@@ -98,13 +98,13 @@ local values(config) = {
             },
           },
         ],
-      }
+      },
     },
     gatewayProxy: {
       kind: {
-         deployment: {
-           replicas: 2
-         }
+        deployment: {
+          replicas: 2,
+        },
       },
       readConfig: true,
       gatewaySettings: {
@@ -152,15 +152,15 @@ local values(config) = {
       podTemplate: {
         probes: false,
         image: {
-          repository: "gloo-envoy-wrapper",
-          registry: "quay.io/solo-io",
+          repository: 'gloo-envoy-wrapper',
+          registry: 'quay.io/solo-io',
           tag: config.pkgs.gloo.version,
         },
         httpPort: 8080,
         httpsPort: 8443,
         runAsUser: 10101,
         extraAnnotations: {
-          "linkerd.io/inject": "enabled",
+          'linkerd.io/inject': 'enabled',
         },
       },
       service: {

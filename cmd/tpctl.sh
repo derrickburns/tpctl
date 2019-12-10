@@ -7,6 +7,10 @@ set -o pipefail
 export FLUX_FORWARD_NAMESPACE=flux
 export REVIEWERS="derrickburns pazaan jamesraby"
 
+function envoy {
+  glooctl proxy served-config
+}
+
 function get_vpc {
   local cluster=$(get_cluster)
   aws cloudformation describe-stacks --stack-name eksctl-${cluster}-cluster | jq '.Stacks[0].Outputs| .[] | select(.OutputKey | contains("VPC")) | .OutputValue' | sed -e 's/"//g'
@@ -117,26 +121,6 @@ function install_sumo() {
   complete "installed sumo"
 }
 
-function add_gloo_manifest() {
-  config=$1
-  file=$2
-  (
-    cd pkgs/gloo
-    jsonnet --tla-code config="$config" $TEMPLATE_DIR/gloo/${file}.yaml.jsonnet >${file}.yaml
-    expect_success "Templating failure gloo/$1.yaml.jsonnet"
-  )
-}
-
-function make_gateway {
-  start "configuring gloo gateway"
-  local config=$(get_config)
-  mkdir -p pkgs/gloo
-  add_gloo_manifest "$config" gateway-ssl
-  add_gloo_manifest "$config" internal-gateway
-  add_gloo_manifest "$config" gateway
-  complete "configured gloo gateway"
-}
-
 function install_glooctl {
   start "checking glooctl"
   local glooctl_version=$(require_value "pkgs.gloo.version")
@@ -160,7 +144,6 @@ function install_gloo() {
   start "installing gloo"
   local config=$(get_config)
   jsonnet --tla-code config="$config" $TEMPLATE_DIR/gloo/gloo-values.yaml.jsonnet | yq r - >$TMP_DIR/gloo-values.yaml
-  cat $TMP_DIR/gloo-values.yaml
   expect_success "Templating failure gloo/gloo-values.yaml.jsonnet"
 
   kubectl delete jobs -n gloo-system gateway-certgen
@@ -174,7 +157,6 @@ function install_gloo() {
   )
 
   glooctl install gateway -n gloo-system --values $TMP_DIR/gloo-values.yaml
-  cat /root/.gloo/debug.log
   expect_success "Gloo installation failure"
   complete "installed gloo"
 }
@@ -604,15 +586,21 @@ function template_files() {
     if [ "${filename: -5}" == ".yaml" ]; then
       add_file $filename
       cp $fullpath $filename
-    elif [ "${filename: -8}" == ".jsonnet" ]; then
+    elif [ "${filename: -13}" == ".yaml.jsonnet" ]; then
       add_file ${filename%.jsonnet}
       local prev=$TMP_DIR/${filename%.jsonnet}
+      local out=$TMP_DIR/${filename%.jsonnet}.json
       if [ -f $prev ]; then
-        yq r $prev -j >$TMP_DIR/${filename%.jsonnet}.json
+        yq r $prev -j >$out
+	if [ $? -ne -0 ]
+	then
+          echo "{}" >$out
+	fi
       else
-        echo "{}" >$TMP_DIR/${file%.jsonnet}.json
+        mkdir -p $(dirname $out)
+        echo "{}" >$out
       fi
-      jsonnet --tla-code-file prev=$TMP_DIR/${filename%.jsonnet}.json --tla-code config="$config" $fullpath | yq r - >${filename%.jsonnet}
+      jsonnet --tla-code-file prev=$out --tla-code config="$config" $fullpath | yq r - >${filename%.jsonnet}
       expect_success "Templating failure $filename"
     fi
   done
@@ -658,11 +646,16 @@ function environment_template_files() {
       add_file $out
       if [ -f $prev ]; then
         yq r $prev -j >$TMP_DIR/${file%.jsonnet}
+	if [ $? -ne -0 ]
+	then
+          echo "{}" >$TMP_DIR/${file%.jsonnet}
+	fi
       else
+        mkdir -p $(dirname  $TMP_DIR/${file%.jsonnet})
         echo "{}" >$TMP_DIR/${file%.jsonnet}
       fi
       jsonnet --tla-code-file prev=$TMP_DIR/${file%.jsonnet} --tla-code config="$config" --tla-str namespace=$env $fullpath | yq r - >$dir/${file%.jsonnet}
-      expect_success "Templating failure $filename"
+      expect_success "Templating failure $dir/$filename"
       rm $TMP_DIR/${file%.jsonnet}
     fi
   done
@@ -1102,7 +1095,7 @@ function linkerd_dashboard() {
 
 # show help
 function help() {
-  echo "$0 [-h|--help] (all|values|edit_values|config|edit_repo|cluster|flux|gloo|regenerate_cert|copy_assets|mesh|migrate_secrets|randomize_secrets|upsert_plaintext_secrets|install_users|deploy_key|delete_cluster|await_deletion|remove_mesh|merge_kubeconfig|gloo_dashboard|linkerd_dashboard|diff|dns|install_certmanager|uninstall_certmanager|mongo_template|linkerd_check|sync|peering|vpc|update_kubeconfig)*"
+  echo "$0 [-h|--help] (all|values|edit_values|config|edit_repo|cluster|flux|gloo|regenerate_cert|copy_assets|mesh|migrate_secrets|randomize_secrets|upsert_plaintext_secrets|install_users|deploy_key|delete_cluster|await_deletion|remove_mesh|merge_kubeconfig|gloo_dashboard|linkerd_dashboard|diff|dns|install_certmanager|uninstall_certmanager|mongo_template|linkerd_check|sync|peering|vpc|update_kubeconfig|envoy)*"
   echo
   echo
   echo "So you want to built a Kubernetes cluster that runs Tidepool. Great!"
@@ -1153,6 +1146,7 @@ function help() {
   echo "diff - show recent git diff"
   echo "envrc - create .envrc file for direnv to change kubecontexts and to set REMOTE_REPO"
   echo "update_kubeconfig - modify context and user for kubeconfig"
+  echo "envoy - show envoy config"
 }
 
 if [ $# -eq 0 ]; then
@@ -1223,7 +1217,6 @@ for param in $PARAMS; do
       set_template_dir
       make_config
       make_envrc
-      make_gateway
       save_changes "Added config packages"
       ;;
     cluster)
@@ -1464,6 +1457,9 @@ for param in $PARAMS; do
       setup_tmpdir
       clone_remote
       get_vpc
+      ;;
+    envoy)
+      envoy
       ;;
     *)
       panic "unknown command: $param"

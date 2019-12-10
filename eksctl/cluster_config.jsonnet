@@ -285,10 +285,6 @@ local tidepoolServiceAccounts(config) = (
 local defaultClusterConfig = {
   apiVersion: 'eksctl.io/v1alpha5',
   kind: 'ClusterConfig',
-  metadata+: {
-    region: 'us-west-2',
-    version: '1.14',
-  },
   iam+: {
     serviceAccounts+: [
       //clusterAutoscalerRole,
@@ -304,7 +300,11 @@ local defaultClusterConfig = {
 local all(config) =
   defaultClusterConfig
   {
-    metadata+: config.cluster.metadata,
+    metadata+: {
+      name: config.cluster.metadata.name,
+      region: lib.getElse(config, 'cluster.metadata.region', 'us-west-2'),
+      version: lib.getElse(config, 'cluster.metadata.version', '1.14'),
+    },
     cloudWatch+: config.cluster.cloudWatch,
     vpc+: lib.getElse(config, 'cluster.vpc', {}),
     nodeGroups+: config.cluster.nodeGroups,
