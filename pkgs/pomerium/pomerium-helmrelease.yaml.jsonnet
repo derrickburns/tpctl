@@ -8,13 +8,13 @@ local getPolicy(config) = (
       local pkg = pkgs[x],
       local port = lib.getElse(pkg, 'sso.port', 8080),
       local suffix = if port == 80 then '' else ':%s' % port,
-      from: 'https://' + pkg.sso.dnsName,
+      from: 'https://' + lib.getElse(pkg.sso, 'dnsName', '%s.%s' [ x, config.cluster.metadata.domain ]),
       to: 'http://' + x + '.' + lib.getElse(pkg, 'namespace', x) + '.svc.cluster.local' + suffix ,
       allowed_groups: lib.getElse(pkg, 'sso.allowed_groups', []),
       allowed_users: lib.getElse(pkg, 'sso.allowed_users', []),
     }
     for x in std.objectFields(pkgs)
-    if lib.getElse(pkgs[x], 'sso.dnsName', '') != ''
+    if lib.getElse(pkgs[x], 'sso', {}) != {}
   ]
 );
 
