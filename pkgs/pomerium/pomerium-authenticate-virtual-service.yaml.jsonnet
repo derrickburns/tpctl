@@ -50,4 +50,4 @@ local virtualService(config) = {
   },
 };
 
-function(config) virtualService(config)
+function(config,prev) virtualService(config)
