@@ -166,7 +166,7 @@ local tidepool(config, prev, namespace) = {
           default:  {
 	    host: lib.getElse(env, 'gateway.host', '%s.%s' % [  namespace, domain ]),
             protocol: lib.getElse(env, 'gateway.protocol', 'https'),
-            domain: lib.getElse(config, 'gateway.domain', domain),
+            domain: lib.getElse(env, 'gateway.domain', domain),
           }
         },
         store: {
