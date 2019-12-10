@@ -159,8 +159,8 @@
   dnsNames(config):: (
     local vss = $.virtualServices(config);
     local externalVss = $.virtualServicesForSelector(vss, { placement: 'external' });
-    std.uniq(std.sort(std.flattenArrays(std.filter(function(vs)
-      $.getElse(vs, 'dnsNames', []), externalVss))))
+    externalVss
+    //std.uniq(std.sort(std.flattenArrays(std.filter(function(vs) $.getElse(vs, 'dnsNames', []), externalVss))))
   ),
 
   accessLoggingOption:: {
