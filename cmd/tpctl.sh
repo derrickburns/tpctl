@@ -586,7 +586,7 @@ function template_files() {
     if [ "${filename: -5}" == ".yaml" ]; then
       add_file $filename
       cp $fullpath $filename
-    elif [ "${filename: -8}" == ".jsonnet" ]; then
+    elif [ "${filename: -13}" == ".yaml.jsonnet" ]; then
       add_file ${filename%.jsonnet}
       local prev=$TMP_DIR/${filename%.jsonnet}
       local out=$TMP_DIR/${filename%.jsonnet}.json
