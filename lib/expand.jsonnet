@@ -1,6 +1,6 @@
 local lib = import 'lib.jsonnet';
 
-local pom = import 'pkgs/pomerium/lib.jsonnet';
+local pom = import '../pkgs/pomerium/lib.jsonnet';
 
 {
   expandConfig(config)::
