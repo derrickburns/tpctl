@@ -5,7 +5,7 @@ local getPolicy(config) = (
   [
     {
       local pkg = pkgs[x],
-      local port = lib.getElse(pkg, 'sso.port', 8080);
+      local port = lib.getElse(pkg, 'sso.port', 8080),
       local suffix = if port == '80' then '' else ':%s' % port;
       from: 'https://' + pkg.sso.dnsName,
       to: 'http://' + x + '.' + lib.getElse(pkg, 'namespace', x) + '.svc.cluster.local' + suffix ,
