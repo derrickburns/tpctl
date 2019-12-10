@@ -37,6 +37,7 @@ local helmrelease(config) = {
     values: {
       annotations: {
         'secret.reloader.stakater.com/reload': "pomerium",
+        'configmap.reloader.stakater.com/reload': "pomerium",
       },
       service: {
         type: 'NodePort',
