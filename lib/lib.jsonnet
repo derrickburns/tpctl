@@ -159,7 +159,7 @@
   dnsNames(config):: (
     local vss = $.virtualServices(config);
     local externalVss = $.virtualServicesForSelector(vss, { placement: 'external' });
-    externalVss
+    vss
     //std.uniq(std.sort(std.flattenArrays(std.filter(function(vs) $.getElse(vs, 'dnsNames', []), externalVss))))
   ),
 
