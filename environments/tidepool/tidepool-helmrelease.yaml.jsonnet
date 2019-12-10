@@ -1,5 +1,7 @@
 local lib = import '../../lib/lib.jsonnet';
 
+local expand = import '../../lib/expand.jsonnet';
+
 local dataBucket(config, namespace) = 'tidepool-%s-%s-data' % [config.cluster.metadata.name, namespace];
 local assetBucket(config, namespace) = 'tidepool-%s-%s-asset' % [config.cluster.metadata.name, namespace];
 
@@ -320,4 +322,4 @@ local tidepool(config, prev, namespace) = {
   },
 };
 
-function(config, prev, namespace) tidepool(lib.expandConfig(config), prev, namespace)
+function(config, prev, namespace) tidepool(expand.expandConfig(config), prev, namespace)

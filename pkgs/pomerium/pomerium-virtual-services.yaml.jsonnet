@@ -1,13 +1,6 @@
 local lib = import '../../lib/lib.jsonnet';
 
-local dnsNames(config) = (
-  local pkgs = config.pkgs;
-  [
-    lib.getElse(pkgs[x].sso, 'dnsName', '%s.%s' % [ x, config.cluster.metadata.domain ])
-    for x in std.objectFields(pkgs)
-    if lib.getElse(pkgs[x], 'sso', {}) != {}
-  ]
-);
+local mylib = import 'lib.jsonnet';
 
 local virtualService(config) = {
   apiVersion: 'gateway.solo.io/v1',
@@ -27,10 +20,10 @@ local virtualService(config) = {
         name: 'pomerium-tls',
         namespace: 'pomerium',
       },
-      sniDomains: dnsNames(config),
+      sniDomains: mylib.dnsNames(config),
     },
     virtualHost: {
-      domains: dnsNames(config),
+      domains: mylib.dnsNames(config),
       routes: [
         {
           matchers: [

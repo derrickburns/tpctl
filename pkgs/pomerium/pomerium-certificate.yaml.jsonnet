@@ -1,14 +1,10 @@
 local lib = import '../../lib/lib.jsonnet';
 
+local mylib = import 'lib.jsonnet';
 
 local dnsNames(config) = (
-  local domain = lib.rootDomain(config);
-  local pkgs = config.pkgs;
-  [
-    pkgs[x].sso.dnsName
-    for x in std.objectFields(pkgs)
-    if lib.getElse(pkgs[x], 'sso.dnsName', '') != ''
-  ] +
+  local domain = mylib.rootDomain(config);
+  mylib.dnsNames(config) +
   [
     'authenticate.%s' % domain,
     'authorize.%s' % domain,
