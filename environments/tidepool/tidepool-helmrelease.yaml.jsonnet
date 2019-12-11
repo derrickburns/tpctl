@@ -226,8 +226,6 @@ local tidepool(config, prev, namespace) = {
         },
       }, lib.getElse(tp, 'image', {})]),
 
-      virtualServices: env.virtualServices,
-
       jellyfish: lib.mergeList([common, {
         serviceAccount: {
           name: 'jellyfish',
@@ -254,6 +252,12 @@ local tidepool(config, prev, namespace) = {
           image: lib.getElse(prev, 'spec.values.messageapi.deployment.image', 'tidepool/message-api:develop-48e4e55d3119bd94c25fa7f01be79be85a860528'),
         },
       }, lib.getElse(tp, 'messageapi', {})]),
+
+      linkerd: {
+        generate: {
+          serviceProfiles: true,
+        },
+      },
 
       migrations: lib.mergeList([common, {
         deployment+: {
