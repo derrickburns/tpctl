@@ -1095,7 +1095,7 @@ function linkerd_dashboard() {
 
 # show help
 function help() {
-  echo "$0 [-h|--help] (values|edit_values|config|edit_repo|cluster|flux|gloo|regenerate_cert|copy_assets|mesh|migrate_secrets|randomize_secrets|upsert_plaintext_secrets|install_users|deploy_key|delete_cluster|await_deletion|remove_mesh|merge_kubeconfig|gloo_dashboard|linkerd_dashboard|diff|dns|install_certmanager|uninstall_certmanager|mongo_template|linkerd_check|sync|peering|vpc|update_kubeconfig|get_secret)*"
+  echo "$0 [-h|--help] (values|edit_values|config|edit_repo|cluster|flux|gloo|regenerate_cert|copy_assets|mesh|migrate_secrets|randomize_secrets|upsert_plaintext_secrets|install_users|deploy_key|delete_cluster|await_deletion|remove_mesh|merge_kubeconfig|gloo_dashboard|linkerd_dashboard|diff|dns|install_certmanager|uninstall_certmanager|mongo_template|linkerd_check|sync|peering|vpc|update_kubeconfig|get_secret|list_secrets|delete_secret|external_secrets)*"
   echo
   echo
   echo "So you want to built a Kubernetes cluster that runs Tidepool. Great!"
@@ -1186,6 +1186,21 @@ while (("$#")); do
   esac
 done
 
+function external_secrets() {
+  local cluster=$(get_cluster)
+  kubectl get externalsecrets --all-namespaces -o yaml | yq r - -j | jq '.items[] | .secretDescriptor.data[] | .key' | sort | uniq
+}
+
+function delete_secret() {
+  local cluster=$(get_cluster)
+  aws secretsmanager delete-secret --secret-id $cluster/$1/$2
+}
+
+function list_secrets() {
+  local cluster=$(get_cluster)
+  aws secretsmanager list-secrets | jq '.SecretList[].Name' | egrep "^\"$cluster/"
+}
+
 # get_secret ${ENVIRONMENT} ${SECRETNAME}
 function get_secret() {
   local cluster=$(get_cluster)
@@ -1213,11 +1228,26 @@ eval set -- "${PARAMS[*]}"
 cmd=$1
 shift
 case $cmd in
+  delete_secret)
+    check_remote_repo
+    setup_tmpdir
+    clone_remote
+    delete_secret "$@"
+    ;;
+  external_secrets)
+    external_secrets
+    ;;
   get_secret)
     check_remote_repo
     setup_tmpdir
     clone_remote
     get_secret "$@"
+    ;;
+  list_secrets)
+    check_remote_repo
+    setup_tmpdir
+    clone_remote
+    list_secrets "$@"
     ;;
   repo)
     setup_tmpdir
