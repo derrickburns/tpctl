@@ -38,4 +38,4 @@ local externalSecret(config) =
   },
 };
 
-function(config, prev) exteralSecret(config)
+function(config, prev) externalSecret(config)
