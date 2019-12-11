@@ -210,7 +210,7 @@ function define_colors() {
 
 # irrecoverable error. Show message and exit.
 function panic() {
-  echo "${RED}[✖] ${1}${RESET}"
+  >&2 echo "${RED}[✖] ${1}${RESET}"
   exit 1
 }
 
@@ -223,22 +223,22 @@ function expect_success() {
 
 # show info message
 function start() {
-  echo "${GREEN}[i] ${1}${RESET}"
+ >&2 echo "${GREEN}[i] ${1}${RESET}"
 }
 
 # show info message
 function complete() {
-  echo "${MAGENTA}[√] ${1}${RESET}"
+  >&2 echo "${MAGENTA}[√] ${1}${RESET}"
 }
 
 # show info message
 function info() {
-  echo "${MAGENTA}[√] ${1}${RESET}"
+  >&2 echo "${MAGENTA}[√] ${1}${RESET}"
 }
 
 # report that file is being added to config repo
 function add_file() {
-  echo "${GREEN}[ℹ] adding ${1}${RESET}"
+  >&2 echo "${GREEN}[ℹ] adding ${1}${RESET}"
 }
 
 # report all files added to config repo from list given in stdin
@@ -261,7 +261,7 @@ function confirm() {
     if [[ ! $REPLY =~ ^[Yy]$ ]]; then
       exit 1
     else
-      echo
+      >&2 echo
     fi
   fi
 }
@@ -312,7 +312,7 @@ function clone_remote() {
     cd $TMP_DIR
     if [[ ! -d $(basename $HTTPS_REMOTE_REPO) ]]; then
       start "cloning remote"
-      git clone $(repo_with_token $HTTPS_REMOTE_REPO)
+      git clone $(repo_with_token $HTTPS_REMOTE_REPO) >/dev/null
       expect_success "Cannot clone $HTTPS_REMOTE_REPO"
       complete "cloned remote"
     fi
@@ -1095,7 +1095,7 @@ function linkerd_dashboard() {
 
 # show help
 function help() {
-  echo "$0 [-h|--help] (all|values|edit_values|config|edit_repo|cluster|flux|gloo|regenerate_cert|copy_assets|mesh|migrate_secrets|randomize_secrets|upsert_plaintext_secrets|install_users|deploy_key|delete_cluster|await_deletion|remove_mesh|merge_kubeconfig|gloo_dashboard|linkerd_dashboard|diff|dns|install_certmanager|uninstall_certmanager|mongo_template|linkerd_check|sync|peering|vpc|update_kubeconfig|envoy)*"
+  echo "$0 [-h|--help] (values|edit_values|config|edit_repo|cluster|flux|gloo|regenerate_cert|copy_assets|mesh|migrate_secrets|randomize_secrets|upsert_plaintext_secrets|install_users|deploy_key|delete_cluster|await_deletion|remove_mesh|merge_kubeconfig|gloo_dashboard|linkerd_dashboard|diff|dns|install_certmanager|uninstall_certmanager|mongo_template|linkerd_check|sync|peering|vpc|update_kubeconfig|get_secret)*"
   echo
   echo
   echo "So you want to built a Kubernetes cluster that runs Tidepool. Great!"
@@ -1156,7 +1156,7 @@ fi
 
 APPROVE=false
 CLONE_REMOTE=true
-PARAMS=""
+declare -a PARAMS
 while (("$#")); do
   case "$1" in
     -y | --approve)
@@ -1180,13 +1180,27 @@ while (("$#")); do
       exit 1
       ;;
     *) # preserve positional arguments
-      PARAMS="$PARAMS $1"
+      PARAMS+=("$1")
       shift
       ;;
   esac
 done
-# set positional arguments in their proper place
-eval set -- "$PARAMS"
+
+# get_secret ${ENVIRONMENT} ${SECRETNAME}
+function get_secret() {
+  local cluster=$(get_cluster)
+  local yaml=$(aws secretsmanager get-secret-value  --secret-id $cluster/$1/$2 | jq '.SecretString | fromjson' | yq r - | sed -e 's/^/    /')
+  cat <<!
+apiVersion: v1
+kind: Secret
+type: Opaque
+data:
+$yaml
+metadata:
+  name: $2
+  namespace: $1
+!
+}
 
 unset TMP_DIR
 unset TEMPLATE_DIR
@@ -1195,274 +1209,281 @@ unset SM_DIR
 
 define_colors
 
-for param in $PARAMS; do
-  case $param in
-    repo)
-      setup_tmpdir
-      create_repo
-      ;;
-    values)
-      check_remote_repo
-      setup_tmpdir
-      clone_remote
-      expect_values_not_exist
-      set_template_dir
-      make_values
-      save_changes "Added values"
-      ;;
-    config)
-      check_remote_repo
-      setup_tmpdir
-      clone_remote
-      set_template_dir
-      make_config
-      make_envrc
-      save_changes "Added config packages"
-      ;;
-    cluster)
-      check_remote_repo
-      setup_tmpdir
-      clone_remote
-      make_cluster
-      merge_kubeconfig
-      make_users
-      make_envrc
-      save_changes "Added cluster and users"
-      ;;
-    gloo)
-      check_remote_repo
-      expect_github_token
-      setup_tmpdir
-      clone_remote
-      set_template_dir
-      confirm_matching_cluster
-      install_gloo
-      save_changes "Installed gloo"
-      ;;
-    flux)
-      check_remote_repo
-      expect_github_token
-      setup_tmpdir
-      clone_remote
-      set_template_dir
-      confirm_matching_cluster
-      make_flux
-      save_changes "Added flux"
-      git pull
-      save_ca
-      make_cert
-      make_key
-      make_envrc
-      update_flux
-      save_changes "Updated flux"
-      ;;
-    mesh)
-      check_remote_repo
-      setup_tmpdir
-      clone_remote
-      confirm_matching_cluster
-      make_mesh
-      save_changes "Added linkerd mesh"
-      ;;
-    edit_values)
-      check_remote_repo
-      setup_tmpdir
-      clone_remote
-      set_template_dir
-      edit_values
-      make_config
-      save_changes "Edited values. Updated config."
-      ;;
-    regenerate_cert)
-      check_remote_repo
-      setup_tmpdir
-      clone_remote
-      make_cert
-      ;;
-    copy_assets)
-      check_remote_repo
-      make_assets
-      ;;
-    randomize_secrets)
-      check_remote_repo
-      setup_tmpdir
-      clone_remote
-      local cluster=$(get_cluster)
-      mkdir -p external-secrets
-      (
-        cd external-secrets
-        randomize_secrets | external_secret upsert $cluster encoded | separate_files | add_names
-      )
-      save_changes "Added random secrets"
-      ;;
-    migrate_secrets)
-      check_remote_repo
-      setup_tmpdir
-      clone_remote
-      clone_secret_map
-      establish_ssh
-      migrate_secrets
-      save_changes "Added migrated secrets"
-      ;;
-    upsert_plaintext_secrets)
-      check_remote_repo
-      setup_tmpdir
-      clone_remote
-      local cluster=$(get_cluster)
-      mkdir -p external-secrets
-      (
-        cd external-secrets
-        external_secret upsert $cluster plaintext | separate_files | add_names
-      )
-      save_changes "Added plaintext secrets"
-      ;;
-    install_users)
-      check_remote_repo
-      setup_tmpdir
-      clone_remote
-      confirm_matching_cluster
-      make_users
-      ;;
-    deploy_key)
-      check_remote_repo
-      setup_tmpdir
-      clone_remote
-      expect_github_token
-      make_key
-      ;;
-    delete_cluster)
-      check_remote_repo
-      setup_tmpdir
-      clone_remote
-      confirm_matching_cluster
-      delete_cluster
-      ;;
-    await_deletion)
-      check_remote_repo
-      setup_tmpdir
-      clone_remote
-      confirm_matching_cluster
-      await_deletion
-      info "cluster deleted"
-      ;;
-    remove_mesh)
-      check_remote_repo
-      setup_tmpdir
-      clone_remote
-      confirm_matching_cluster
-      remove_mesh
-      save_changes "Removed mesh."
-      ;;
-    edit_repo)
-      check_remote_repo
-      setup_tmpdir
-      clone_remote
-      edit_config
-      save_changes "Manual changes."
-      ;;
-    merge_kubeconfig)
-      check_remote_repo
-      setup_tmpdir
-      clone_remote
-      merge_kubeconfig
-      ;;
-    remove_gloo)
-      check_remote_repo
-      setup_tmpdir
-      clone_remote
-      confirm_matching_cluster
-      remove_gloo
-      ;;
-    gloo_dashboard)
-      check_remote_repo
-      setup_tmpdir
-      clone_remote
-      confirm_matching_cluster
-      gloo_dashboard
-      ;;
-    linkerd_dashboard)
-      check_remote_repo
-      setup_tmpdir
-      clone_remote
-      confirm_matching_cluster
-      linkerd_dashboard
-      ;;
-    diff)
-      check_remote_repo
-      setup_tmpdir
-      clone_remote
-      diff_config
-      ;;
-    sumo)
-      check_remote_repo
-      setup_tmpdir
-      clone_remote
-      install_sumo
-      ;;
-    dns)
-      check_remote_repo
-      setup_tmpdir
-      clone_remote
-      set_template_dir
-      update_gloo_service
-      save_changes "Updated dns entries"
-      ;;
-    install_certmanager)
-      check_remote_repo
-      setup_tmpdir
-      clone_remote
-      install_certmanager
-      ;;
-    uninstall_certmanager)
-      uninstall_certmanager
-      ;;
-    mongo_template)
-      mongo_template
-      ;;
-    linkerd_check)
-      linkerd check --proxy
-      ;;
-    sync)
-      fluxctl sync
-      ;;
-    peering)
-      check_remote_repo
-      setup_tmpdir
-      clone_remote
-      find_peering_connections
-      ;;
-    delete_peering)
-      check_remote_repo
-      setup_tmpdir
-      clone_remote
-      confirm_matching_cluster
-      delete_peering_connections
-      ;;
-    update_kubeconfig)
-      check_remote_repo
-      setup_tmpdir
-      set_template_dir
-      clone_remote
-      update_kubeconfig
-      save_changes "Updated kubeconfig"
-      ;;
-    envrc)
-      check_remote_repo
-      setup_tmpdir
-      clone_remote
-      make_envrc
-      ;;
-    vpc)
-      check_remote_repo
-      setup_tmpdir
-      clone_remote
-      get_vpc
-      ;;
-    envoy)
-      envoy
-      ;;
-    *)
-      panic "unknown command: $param"
-      ;;
-  esac
-done
+eval set -- "${PARAMS[*]}"
+cmd=$1
+shift
+case $cmd in
+  get_secret)
+    check_remote_repo
+    setup_tmpdir
+    clone_remote
+    get_secret "$@"
+    ;;
+  repo)
+    setup_tmpdir
+    create_repo
+    ;;
+  values)
+    check_remote_repo
+    setup_tmpdir
+    clone_remote
+    expect_values_not_exist
+    set_template_dir
+    make_values
+    save_changes "Added values"
+    ;;
+  config)
+    check_remote_repo
+    setup_tmpdir
+    clone_remote
+    set_template_dir
+    make_config
+    make_envrc
+    save_changes "Added config packages"
+    ;;
+  cluster)
+    check_remote_repo
+    setup_tmpdir
+    clone_remote
+    make_cluster
+    merge_kubeconfig
+    make_users
+    make_envrc
+    save_changes "Added cluster and users"
+    ;;
+  gloo)
+    check_remote_repo
+    expect_github_token
+    setup_tmpdir
+    clone_remote
+    set_template_dir
+    confirm_matching_cluster
+    install_gloo
+    save_changes "Installed gloo"
+    ;;
+  flux)
+    check_remote_repo
+    expect_github_token
+    setup_tmpdir
+    clone_remote
+    set_template_dir
+    confirm_matching_cluster
+    make_flux
+    save_changes "Added flux"
+    git pull
+    save_ca
+    make_cert
+    make_key
+    make_envrc
+    update_flux
+    save_changes "Updated flux"
+    ;;
+  mesh)
+    check_remote_repo
+    setup_tmpdir
+    clone_remote
+    confirm_matching_cluster
+    make_mesh
+    save_changes "Added linkerd mesh"
+    ;;
+  edit_values)
+    check_remote_repo
+    setup_tmpdir
+    clone_remote
+    set_template_dir
+    edit_values
+    make_config
+    save_changes "Edited values. Updated config."
+    ;;
+  regenerate_cert)
+    check_remote_repo
+    setup_tmpdir
+    clone_remote
+    make_cert
+    ;;
+  copy_assets)
+    check_remote_repo
+    make_assets
+    ;;
+  randomize_secrets)
+    check_remote_repo
+    setup_tmpdir
+    clone_remote
+    local cluster=$(get_cluster)
+    mkdir -p external-secrets
+    (
+      cd external-secrets
+      randomize_secrets | external_secret upsert $cluster encoded | separate_files | add_names
+    )
+    save_changes "Added random secrets"
+    ;;
+  migrate_secrets)
+    check_remote_repo
+    setup_tmpdir
+    clone_remote
+    clone_secret_map
+    establish_ssh
+    migrate_secrets
+    save_changes "Added migrated secrets"
+    ;;
+  upsert_plaintext_secrets)
+    check_remote_repo
+    setup_tmpdir
+    clone_remote
+    local cluster=$(get_cluster)
+    mkdir -p external-secrets
+    (
+      cd external-secrets
+      external_secret upsert $cluster plaintext | separate_files | add_names
+    )
+    save_changes "Added plaintext secrets"
+    ;;
+  install_users)
+    check_remote_repo
+    setup_tmpdir
+    clone_remote
+    confirm_matching_cluster
+    make_users
+    ;;
+  deploy_key)
+    check_remote_repo
+    setup_tmpdir
+    clone_remote
+    expect_github_token
+    make_key
+    ;;
+  delete_cluster)
+    check_remote_repo
+    setup_tmpdir
+    clone_remote
+    confirm_matching_cluster
+    delete_cluster
+    ;;
+  await_deletion)
+    check_remote_repo
+    setup_tmpdir
+    clone_remote
+    confirm_matching_cluster
+    await_deletion
+    info "cluster deleted"
+    ;;
+  remove_mesh)
+    check_remote_repo
+    setup_tmpdir
+    clone_remote
+    confirm_matching_cluster
+    remove_mesh
+    save_changes "Removed mesh."
+    ;;
+  edit_repo)
+    check_remote_repo
+    setup_tmpdir
+    clone_remote
+    edit_config
+    save_changes "Manual changes."
+    ;;
+  merge_kubeconfig)
+    check_remote_repo
+    setup_tmpdir
+    clone_remote
+    merge_kubeconfig
+    ;;
+  remove_gloo)
+    check_remote_repo
+    setup_tmpdir
+    clone_remote
+    confirm_matching_cluster
+    remove_gloo
+    ;;
+  gloo_dashboard)
+    check_remote_repo
+    setup_tmpdir
+    clone_remote
+    confirm_matching_cluster
+    gloo_dashboard
+    ;;
+  linkerd_dashboard)
+    check_remote_repo
+    setup_tmpdir
+    clone_remote
+    confirm_matching_cluster
+    linkerd_dashboard
+    ;;
+  diff)
+    check_remote_repo
+    setup_tmpdir
+    clone_remote
+    diff_config
+    ;;
+  sumo)
+    check_remote_repo
+    setup_tmpdir
+    clone_remote
+    install_sumo
+    ;;
+  dns)
+    check_remote_repo
+    setup_tmpdir
+    clone_remote
+    set_template_dir
+    update_gloo_service
+    save_changes "Updated dns entries"
+    ;;
+  install_certmanager)
+    check_remote_repo
+    setup_tmpdir
+    clone_remote
+    install_certmanager
+    ;;
+  uninstall_certmanager)
+    uninstall_certmanager
+    ;;
+  mongo_template)
+    mongo_template
+    ;;
+  linkerd_check)
+    linkerd check --proxy
+    ;;
+  sync)
+    fluxctl sync
+    ;;
+  peering)
+    check_remote_repo
+    setup_tmpdir
+    clone_remote
+    find_peering_connections
+    ;;
+  delete_peering)
+    check_remote_repo
+    setup_tmpdir
+    clone_remote
+    confirm_matching_cluster
+    delete_peering_connections
+    ;;
+  update_kubeconfig)
+    check_remote_repo
+    setup_tmpdir
+    set_template_dir
+    clone_remote
+    update_kubeconfig
+    save_changes "Updated kubeconfig"
+    ;;
+  envrc)
+    check_remote_repo
+    setup_tmpdir
+    clone_remote
+    make_envrc
+    ;;
+  vpc)
+    check_remote_repo
+    setup_tmpdir
+    clone_remote
+    get_vpc
+    ;;
+  envoy)
+    envoy
+    ;;
+  *)
+    panic "unknown command: $param"
+    ;;
+esac
