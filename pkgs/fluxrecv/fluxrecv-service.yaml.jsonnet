@@ -4,7 +4,7 @@ function(config, prev) {
   apiVersion: 'v1',
   kind: 'Service',
   metadata: {
-    name: "fluxrecv-https",
+    name: "fluxrecv",
     namespace: lib.namespace(config, "flux"),
   },
   spec: {
