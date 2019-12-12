@@ -178,6 +178,11 @@ local tidepool(config, prev, namespace) = {
 
       gloo: {
         enabled: false,
+        generate: {
+          virtualServices: false,
+          gateways: false,
+          loadBalancer: false,
+        },
       },
 
       highwater: lib.mergeList([common, {
