@@ -42,6 +42,11 @@ local helmrelease(config) = {
         'secret.reloader.stakater.com/reload': "pomerium",
         'configmap.reloader.stakater.com/reload': "pomerium",
       },
+      authenticate: {
+        idp: {
+          serviceAccount: true,
+        },
+      },
       service: {
         type: 'NodePort',
       },
