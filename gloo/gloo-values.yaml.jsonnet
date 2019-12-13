@@ -52,6 +52,7 @@ local values(config) = {
         runAsUser: 10101,
         extraAnnotations: {
           'linkerd.io/inject': 'enabled',
+          'config.linkerd.io/skip-inbound-ports': 8081,
         },
       },
       service: {
@@ -161,6 +162,7 @@ local values(config) = {
         runAsUser: 10101,
         extraAnnotations: {
           'linkerd.io/inject': 'enabled',
+          'config.linkerd.io/skip-inbound-ports': 8081,
         },
       },
       service: {
