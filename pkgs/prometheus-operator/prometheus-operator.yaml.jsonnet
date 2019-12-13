@@ -9,7 +9,7 @@ local Helmrelease(config) = {
     chart: {
       repository: 'https://kubernetes-charts.storage.googleapis.com/',
       name: 'prometheus-operator',
-      version: '5.1.0',
+      version: '8.2.0',
     },
     values+: {
       prometheus+: {
