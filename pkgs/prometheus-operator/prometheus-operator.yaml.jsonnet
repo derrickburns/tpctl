@@ -30,12 +30,8 @@ local Helmrelease(config) = {
           },
         },
       },
-      grafana: {  // (optional) we don't need Grafana in all clusters
-        enabled: true,
-      },
-      alertmanager: {
-        enabled: false,
-      },
+      grafana: : lib.getElse(config, 'prometheus-operator.grafana', {}),
+      alertmanager: lib.getElse(config, 'prometheus-operator.alertmanager, {}),
     },
   },
 };
