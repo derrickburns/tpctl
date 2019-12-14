@@ -33,7 +33,7 @@ local serviceMonitor(config) = {
 };
 
 function(config,prev) 
- if lib.getElse(config, 'config.pkgs.prometheus-operator.enabled')
+ if lib.getElse(config, 'config.pkgs.prometheus-operator.enabled', false)
  then serviceMonitor(config)
  else {}
 
