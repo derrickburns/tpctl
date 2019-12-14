@@ -1,3 +1,5 @@
+local lib = import "../../lib/lib.jsonnet";
+
 local Helmrelease(config) = {
   apiVersion: 'helm.fluxcd.io/v1',
   kind: 'HelmRelease',
