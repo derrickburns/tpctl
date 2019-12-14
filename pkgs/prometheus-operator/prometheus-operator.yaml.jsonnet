@@ -30,7 +30,7 @@ local Helmrelease(config) = {
           },
         },
       },
-      grafana: : lib.getElse(config, 'prometheus-operator.grafana', {}),
+      grafana: lib.getElse(config, 'prometheus-operator.grafana', {}),
       alertmanager: lib.getElse(config, 'prometheus-operator.alertmanager', {}),
     },
   },
