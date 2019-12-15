@@ -286,6 +286,7 @@ function check_remote_repo() {
 
 # clean up all temporary files
 function cleanup() {
+  git reset
   if [ -f "$TMP_DIR" ]; then
     cd /
     rm -rf $TMP_DIR
@@ -691,15 +692,20 @@ function make_config() {
 
 # persist changes to config repo in GitHub
 function save_changes() {
+  git add .
+  expect_success "git add failed"
+  set -xv
   export GIT_PAGER=/bin/cat
   DIFFS=$(git diff HEAD)
-  if [ -z "$DIFFS" ]
+  DIFFSCACHED=$(git diff --cached HEAD)
+  if [ -z "$DIFFS" ] && [ -z "$DIFFSCACHED" ]
   then
     info "No changes made"
-    #return 
+    return
   fi
   info "==== BEGIN Changes"
   git diff HEAD
+  git diff --cached HEAD
   info "==== END Changes"
   local branch
   if [ "$APPROVE" != "true" ]
