@@ -70,8 +70,8 @@ local values(config) = {
   gatewayProxies: {
     internalGatewayProxy: {
       antiAffinity: false,
-      extraInitContainersHelper: ""
-      extraVolumeHelper: ""
+      extraInitContainersHelper: "",
+      extraVolumeHelper: "",
       stats: true,
       kind: {
         deployment: {
@@ -148,8 +148,8 @@ local values(config) = {
     },
     gatewayProxy: {
       antiAffinity: false,
-      extraInitContainersHelper: ""
-      extraVolumeHelper: ""
+      extraInitContainersHelper: "",
+      extraVolumeHelper: "",
       kind: {
         deployment: {
           replicas: 2,
