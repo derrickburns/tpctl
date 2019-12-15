@@ -10,7 +10,7 @@ local getPolicy(config) = (
       local port = lib.getElse(pkg, 'sso.port', 8080),
       local suffix = if port == 80 then '' else ':%s' % port,
       from: 'https://' + mylib.dnsNameForName(config, x),
-      to: 'http://' + x + '.' + lib.getElse(pkg, 'namespace', x) + '.svc.cluster.local' + suffix ,
+      to: 'http://' + lib.getElse(pkg, 'sso.serviceName', x) + '.' + lib.getElse(pkg, 'namespace', x) + '.svc.cluster.local' + suffix ,
       allowed_groups: lib.getElse(pkg, 'sso.allowed_groups', []),
       allowed_users: lib.getElse(pkg, 'sso.allowed_users', []),
     }
