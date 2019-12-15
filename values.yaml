@@ -81,11 +81,12 @@ pkgs:
     version: 1.0.0
     enabled: true
     namespace: gloo-system                   # namespace to host gateway
-  jaeger:
+  jaeger:                                    # An instance of the jaeger system
     enabled: true
-    #collector: simplest-collector
+    #name: simplest
+    #namespace: default
     #port: 9411
-  jaeger-operator:
+  jaeger-operator:                           # The Jaeger K8s Operator
     enabled: true
   linkerd:
     version: stable-2.6.0
