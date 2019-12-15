@@ -696,7 +696,7 @@ function save_changes() {
   if [ -z "$DIFFS" ]
   then
     info "No changes made"
-    return 
+    #return 
   fi
   info "==== BEGIN Changes"
   git diff HEAD
