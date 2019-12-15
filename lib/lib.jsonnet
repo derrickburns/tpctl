@@ -112,6 +112,8 @@
         namespace: vs.namespace,
         name: vs.delegateAction,
       },
+    } else if std.objectHas(vs, 'routeAction') then {
+      routeAction: vs.routeAction,
     } else {
       routeAction: {
         single: {

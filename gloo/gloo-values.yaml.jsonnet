@@ -1,5 +1,73 @@
 local lib = import '../lib/lib.jsonnet';
 
+local baseGatewayProxy(config) = {
+  stats: true,
+  kind: {
+    deployment: {
+      replicas: 2,
+    },
+  },
+  configMap: {
+    data: null,
+  },
+  podTemplate: {
+    probes: false,
+    image: {
+      repository: 'gloo-envoy-wrapper',
+    },
+    httpPort: 8080,
+    httpsPort: 8443,
+    runAsUser: 10101,
+    extraAnnotations: {
+      'linkerd.io/inject': 'enabled',
+    },
+  },
+  service: {
+    httpPort: 80,
+    httpsPort: 443,
+  },
+  readConfig: true,
+  gatewaySettings: {
+    disableGeneratedGateways: true,
+  },
+  tracing: {
+    provider: {
+      name: 'envoy.zipkin',
+      typed_config: {
+        '@type': 'type.googleapis.com/envoy.config.trace.v2.ZipkinConfig',
+        collector_cluster: 'zipkin',
+        collector_endpoint: '/api/v1/spans',
+      },
+    },
+    cluster: [
+      {
+        name: 'zipkin',
+        connect_timeout: '1s',
+        type: 'STRICT_DNS',
+        load_assignment: {
+          cluster_name: 'zipkin',
+          endpoints: [
+            {
+              lb_endpoints: [
+                {
+                  endpoint: {
+                    address: {
+                      socket_address: {
+                        address: 'simplest-collector',
+                        port_value: 9411,
+                      },
+                    },
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      },
+    ],
+  },
+};
+
 local values(config) = {
   settings: {
     create: true,
@@ -30,147 +98,15 @@ local values(config) = {
     },
   },
   gatewayProxies: {
-    internalGatewayProxy: {
-      stats: true,
-      kind: {
-        deployment: {
-          replicas: 2,
-        },
-      },
-      configMap: {
-        data: null,
-      },
-      podTemplate: {
-        probes: false,
-        image: {
-          repository: 'gloo-envoy-wrapper',
-          registry: 'quay.io/solo-io',
-          tag: config.pkgs.gloo.version,
-        },
-        httpPort: 8080,
-        httpsPort: 8443,
-        runAsUser: 10101,
-        extraAnnotations: {
-          'linkerd.io/inject': 'enabled',
-          'config.linkerd.io/skip-inbound-ports': '8081',
-        },
-      },
+    internalGatewayProxy: baseGatewayProxy(config) {
       service: {
         type: 'ClusterIP',
-        httpPort: 80,
-        httpsPort: 443,
-      },
-      readConfig: true,
-      gatewaySettings: {
-        disableGeneratedGateways: true,
-      },
-      tracing: {
-        provider: {
-          name: 'envoy.zipkin',
-          typed_config: {
-            '@type': 'type.googleapis.com/envoy.config.trace.v2.ZipkinConfig',
-            collector_cluster: 'zipkin',
-            collector_endpoint: '/api/v1/spans',
-          },
-        },
-        cluster: [
-          {
-            name: 'zipkin',
-            connect_timeout: '1s',
-            type: 'STRICT_DNS',
-            load_assignment: {
-              cluster_name: 'zipkin',
-              endpoints: [
-                {
-                  lb_endpoints: [
-                    {
-                      endpoint: {
-                        address: {
-                          socket_address: {
-                            address: 'simplest-collector',
-                            port_value: 9411,
-                          },
-                        },
-                      },
-                    },
-                  ],
-                },
-              ],
-            },
-          },
-        ],
       },
     },
-    gatewayProxy: {
-      kind: {
-        deployment: {
-          replicas: 2,
-        },
-      },
-      readConfig: true,
-      gatewaySettings: {
-        disableGeneratedGateways: true,
-      },
-      configMap: {
-        data: null,
-      },
-      tracing: {
-        provider: {
-          name: 'envoy.zipkin',
-          typed_config: {
-            '@type': 'type.googleapis.com/envoy.config.trace.v2.ZipkinConfig',
-            collector_cluster: 'zipkin',
-            collector_endpoint: '/api/v1/spans',
-          },
-        },
-        cluster: [
-          {
-            name: 'zipkin',
-            connect_timeout: '1s',
-            type: 'STRICT_DNS',
-            load_assignment: {
-              cluster_name: 'zipkin',
-              endpoints: [
-                {
-                  lb_endpoints: [
-                    {
-                      endpoint: {
-                        address: {
-                          socket_address: {
-                            address: 'simplest-collector',
-                            port_value: 9411,
-                          },
-                        },
-                      },
-                    },
-                  ],
-                },
-              ],
-            },
-          },
-        ],
-      },
-      podTemplate: {
-        probes: false,
-        image: {
-          repository: 'gloo-envoy-wrapper',
-          registry: 'quay.io/solo-io',
-          tag: config.pkgs.gloo.version,
-        },
-        httpPort: 8080,
-        httpsPort: 8443,
-        runAsUser: 10101,
-        extraAnnotations: {
-          'linkerd.io/inject': 'enabled',
-          'config.linkerd.io/skip-inbound-ports': 8081,
-        },
-      },
+    gatewayProxy: baseGatewayProxy(config) {
       service: {
         type: 'LoadBalancer',
-        httpPort: 80,
-        httpsPort: 443,
         extraAnnotations: {
-          //'service.beta.kubernetes.io/aws-load-balancer-type': 'nlb',
           'service.beta.kubernetes.io/aws-load-balancer-proxy-protocol': '*',
           'external-dns.alpha.kubernetes.io/alias': 'true',
           'external-dns.alpha.kubernetes.io/hostname': lib.dnsNames(config),

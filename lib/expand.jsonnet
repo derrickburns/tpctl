@@ -17,11 +17,6 @@ local pom = import '../pkgs/pomerium/lib.jsonnet';
     std.mapWithKey(expandEnvironment, config.environments)
   ),
 
-  expandConfigEnvironment(config, name, env):: (
-    local dnsNames = lib.getElse(env, 'tidepool.dnsNames', []);
-    env + $.expandEnvironmentVirtualServices(dnsNames, name)
-  ),
-
   expandPackages(config):: (
     local expandPackage = function(name, pkg) $.expandConfigPackage(config, name, pkg);
     std.mapWithKey(expandPackage, config.pkgs)
@@ -52,39 +47,42 @@ local pom = import '../pkgs/pomerium/lib.jsonnet';
     )
   ),
 
-  expandEnvironmentVirtualServices(dnsNames, namespace):: {
-    tidepool+: {
-      virtualServices: {
-        http: {
-          dnsNames: dnsNames,
-          enabled: true,
-          labels: {
-            protocol: 'http',
-            type: 'external',
+  expandConfigEnvironment(config, name, env):: (
+    local dnsNames = lib.getElse(env, 'tidepool.dnsNames', []);
+    env {
+      tidepool+: {
+        virtualServices: {
+          http: {
+            dnsNames: dnsNames,
+            enabled: true,
+            labels: {
+              protocol: 'http',
+              type: 'external',
+            },
+            redirectAction: true,
           },
-          redirectAction: true,
-        },
-        'http-internal': {
-          delegateAction: 'tidepool-routes',
-          dnsNames: [
-            'internal.%s' % namespace,
-          ],
-          enabled: true,
-          labels: {
-            protocol: 'http',
-            type: 'internal',
+          'http-internal': {
+            delegateAction: 'tidepool-routes',
+            dnsNames: [
+              'internal.%s' % name,
+            ],
+            enabled: true,
+            labels: {
+              protocol: 'http',
+              type: 'internal',
+            },
           },
-        },
-        https: {
-          delegateAction: 'tidepool-routes',
-          dnsNames: dnsNames,
-          enabled: true,
-          labels: {
-            protocol: 'https',
-            type: 'external',
+          https: {
+            delegateAction: 'tidepool-routes',
+            dnsNames: dnsNames,
+            enabled: true,
+            labels: {
+              protocol: 'https',
+              type: 'external',
+            },
           },
         },
       },
-    },
-  },
+    }
+  ),
 }
