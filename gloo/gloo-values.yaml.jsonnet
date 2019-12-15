@@ -12,6 +12,44 @@ local values(config) = {
     enabled: false,
     fdsMode: 'WHITELIST',
   },
+  gateway: {
+    certGenJob: {
+      enabled: true,
+      image: {
+        pullPolicy: 'IfNotPresent',
+        registry: 'quay.io/solo-io',
+        repository: 'certgen',
+        tag: '1.2.5',
+      },
+      restartPolicy: 'OnFailure',
+      setTtlAfterFinished: true,
+      ttlSecondsAfterFinished: 60,
+    },
+    deployment: {
+      floatingUserId: false,
+      image: {
+        pullPolicy: 'IfNotPresent',
+        registry: 'quay.io/solo-io',
+        repository: 'gateway',
+        tag: '1.2.5',
+      },
+      replicas: 1,
+      runAsUser: 10101,
+      stats: false,
+    },
+    enabled: true,
+    proxyServiceAccount: {
+      disableAutomount: false,
+    },
+    readGatewaysFromAllNamespaces: false,
+    updateValues: true,
+    validation: {
+      alwaysAcceptResources: true,
+      enabled: true,
+      failurePolicy: 'Ignore',
+      secretName: 'gateway-validation-certs',
+    },
+  },
   gloo: {
     deployment: {
       disableUsageStatistics: false,
@@ -28,26 +66,12 @@ local values(config) = {
       xdsPort: 9977, 
     }
   },
-  gateway: {
-    deployment: {
-      image: {
-        repository: 'gateway',
-	tag: config.pkgs.gloo.version,
-      },
-      replicas: 1,
-      runAsUser: 10101,
-      stats: true,
-    },
-    enabled: true,
-    proxyServiceAccount: {},
-    upgrade: false,
-    validation: {
-      enabled: true,
-      alwaysAcceptResources: true,
-    },
-  },
+
   gatewayProxies: {
     internalGatewayProxy: {
+      antiAffinity: false,
+      extraInitContainersHelper: ""
+      extraVolumeHelper: ""
       stats: true,
       kind: {
         deployment: {
@@ -123,6 +147,9 @@ local values(config) = {
       },
     },
     gatewayProxy: {
+      antiAffinity: false,
+      extraInitContainersHelper: ""
+      extraVolumeHelper: ""
       kind: {
         deployment: {
           replicas: 2,
