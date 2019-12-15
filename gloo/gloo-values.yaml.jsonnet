@@ -81,12 +81,12 @@ local values(config) = {
     namespace: {
       create: false,
     },
-  
+
     gatewayProxies: {
       internalGatewayProxy: {
         antiAffinity: false,
-        extraInitContainersHelper: "",
-        extraVolumeHelper: "",
+        extraInitContainersHelper: '',
+        extraVolumeHelper: '',
         stats: true,
         kind: {
           deployment: {
@@ -103,9 +103,9 @@ local values(config) = {
           httpPort: 8080,
           httpsPort: 8443,
           image: {
-            pullPolicy: "IfNotPresent",
-            repository: "gloo-ee-envoy-wrapper",
-            tag: "1.0.0-rc5",
+            pullPolicy: 'IfNotPresent',
+            repository: 'gloo-ee-envoy-wrapper',
+            tag: '1.0.0-rc5',
           },
           runAsUser: 0,
           runUnprivileged: false,
@@ -168,8 +168,8 @@ local values(config) = {
       },
       gatewayProxy: {
         antiAffinity: false,
-        extraInitContainersHelper: "",
-        extraVolumeHelper: "",
+        extraInitContainersHelper: '',
+        extraVolumeHelper: '',
         kind: {
           deployment: {
             replicas: 2,
@@ -225,9 +225,9 @@ local values(config) = {
           httpPort: 8080,
           httpsPort: 8443,
           image: {
-            pullPolicy: "IfNotPresent",
-            repository: "gloo-ee-envoy-wrapper",
-            tag: "1.0.0-rc5",
+            pullPolicy: 'IfNotPresent',
+            repository: 'gloo-ee-envoy-wrapper',
+            tag: '1.0.0-rc5',
           },
           runAsUser: 0,
           runUnprivileged: false,
@@ -249,7 +249,7 @@ local values(config) = {
             'external-dns.alpha.kubernetes.io/alias': 'true',
             'external-dns.alpha.kubernetes.io/hostname': lib.dnsNames(config),
             'service.beta.kubernetes.io/aws-load-balancer-additional-resource-tags': 'cluster:%s' % config.cluster.metadata.name,
-  
+
           },
         },
       },
@@ -401,9 +401,6 @@ local values(config) = {
     },
     k8s: {
       clusterName: 'cluster.local',
-    },
-    namespace: {
-      create: false,
     },
     settings: {
       linkerd: true,
@@ -1445,8 +1442,8 @@ local values(config) = {
       name: 'redis',
       port: 6379,
     },
-  }
+  },
 };
 
-  
-function(config) { values(config) }
+
+function(config) values(config)
