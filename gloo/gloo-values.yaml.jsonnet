@@ -30,7 +30,7 @@ local baseGatewayProxy(config) = {
   gatewaySettings: {
     disableGeneratedGateways: true,
   },
-  tracing: {
+  tracing: if lib.getElse(config, 'pkgs.tracing.enabled', false) {
     provider: {
       name: 'envoy.zipkin',
       typed_config: {
@@ -65,7 +65,7 @@ local baseGatewayProxy(config) = {
         },
       },
     ],
-  },
+  } else {},
 };
 
 local values(config) = {
