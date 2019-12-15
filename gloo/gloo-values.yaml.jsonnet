@@ -9,7 +9,19 @@ local values(config) = {
     create: false,
   },
   discovery: {
-    enabled: false,
+    enabled: true,
+    deployment: {
+      floatingUserId: false,
+      image: {
+        pullPolicy: "IfNotPresent",
+        registry: "quay.io/solo-io",
+        repository: "discovery",
+        tag: "1.2.5",
+      },
+      replicas: 1,
+      runAsUser: 10101,
+      stats: false,
+    },
     fdsMode: 'WHITELIST',
   },
   gateway: {
