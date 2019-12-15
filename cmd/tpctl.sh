@@ -156,9 +156,7 @@ function install_gloo() {
     expect_success "Templating failure gloo/gloo-values.yaml.jsonnet"
   )
 
-  set -x
   glooctl install gateway -n gloo-system --values $TMP_DIR/gloo-values.yaml
-  cat /root/.gloo/debug.log
   expect_success "Gloo installation failure"
   complete "installed gloo"
 }
@@ -694,17 +692,14 @@ function make_config() {
 function save_changes() {
   git add .
   expect_success "git add failed"
-  set -xv
   export GIT_PAGER=/bin/cat
-  DIFFS=$(git diff HEAD)
-  DIFFSCACHED=$(git diff --cached HEAD)
-  if [ -z "$DIFFS" ] && [ -z "$DIFFSCACHED" ]
+  DIFFS=$(git diff --cached HEAD)
+  if [ -z "$DIFFS" ]
   then
     info "No changes made"
     return
   fi
   info "==== BEGIN Changes"
-  git diff HEAD
   git diff --cached HEAD
   info "==== END Changes"
   local branch
