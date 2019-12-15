@@ -7,6 +7,11 @@ local jaeger(config) = {
     name: lib.getElse(config, 'pkgs.jaeger.name', 'simplest'),
     namespace: lib.getElse(config, 'pkgs.jaeger.namespace', 'default'),
   },
+  spec: {
+    ingress: {
+      enabled: false
+    },
+  },
 };
 
 function(config, prev) 
