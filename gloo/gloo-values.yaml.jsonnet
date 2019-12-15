@@ -19,7 +19,7 @@ local values(config) = {
       image: {
         pullPolicy: "IfNotPresent",
         repository: gloo-ee,
-        tag: 1.0.0-rc5,
+        tag: "1.0.0-rc5",
       },
       replicas: 1,
       runAsUser: 10101,
