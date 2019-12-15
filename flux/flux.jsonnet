@@ -101,6 +101,7 @@ local updateTiller(deployment) = (
 
   deployment
   {
+    apiVersion: "apps/v1",
     spec+: {
       template+: {
         spec+: {
