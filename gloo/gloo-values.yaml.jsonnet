@@ -18,14 +18,15 @@ local values(config) = {
       floatingUserId: false,
       image: {
         pullPolicy: "IfNotPresent",
-        repository: gloo-ee,
+        repository: "gloo-ee",
         tag: "1.0.0-rc5",
       },
       replicas: 1,
       runAsUser: 10101,
       stats: true,
       validationPort: 9988,
-      xdsPort: 9977,
+      xdsPort: 9977, 
+    }
   },
   gateway: {
     deployment: {
