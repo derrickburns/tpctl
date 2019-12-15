@@ -4,6 +4,9 @@ local values(config) = {
   rateLimit: {
     enabled: false
   },
+  extAuth: {
+    enable: false
+  },
   gloo: {
     crds: {
       create: true
