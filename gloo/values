@@ -1,10 +1,4 @@
-local lib = import '../lib/lib.jsonnet';
-
-
-
-
-
-local values(config) = {
+{
   apiServer: {
     deployment: {
       envoy: {
@@ -82,181 +76,6 @@ local values(config) = {
     },
   },
   gloo: {
-    namespace: {
-      create: false,
-    },
-  
-    gatewayProxies: {
-      internalGatewayProxy: {
-        antiAffinity: false,
-        extraInitContainersHelper: "",
-        extraVolumeHelper: "",
-        stats: true,
-        kind: {
-          deployment: {
-            replicas: 2,
-          },
-        },
-        configMap: {
-          data: null,
-        },
-        podTemplate: {
-          probes: false,
-          disableNetBind: false,
-          floatingUserId: false,
-          httpPort: 8080,
-          httpsPort: 8443,
-          image: {
-            pullPolicy: "IfNotPresent",
-            repository: "gloo-ee-envoy-wrapper",
-            tag: "1.0.0-rc5",
-          },
-          runAsUser: 0,
-          runUnprivileged: false,
-          tolerations: null,
-          extraAnnotations: {
-            'linkerd.io/inject': 'enabled',
-            'config.linkerd.io/skip-inbound-ports': '8081',
-          },
-        },
-        service: {
-          type: 'ClusterIP',
-          httpPort: 80,
-          httpsPort: 443,
-          extraAnnotations: {
-            'prometheus.io/path': '/metrics',
-            'prometheus.io/port': '8081',
-            'prometheus.io/scrape': 'true',
-        },
-        readConfig: true,
-        gatewaySettings: {
-          disableGeneratedGateways: true,
-        },
-        tracing: {
-          provider: {
-            name: 'envoy.zipkin',
-            typed_config: {
-              '@type': 'type.googleapis.com/envoy.config.trace.v2.ZipkinConfig',
-              collector_cluster: 'zipkin',
-              collector_endpoint: '/api/v1/spans',
-            },
-          },
-          cluster: [
-            {
-              name: 'zipkin',
-              connect_timeout: '1s',
-              type: 'STRICT_DNS',
-              load_assignment: {
-                cluster_name: 'zipkin',
-                endpoints: [
-                  {
-                    lb_endpoints: [
-                      {
-                        endpoint: {
-                          address: {
-                            socket_address: {
-                              address: 'simplest-collector',
-                              port_value: 9411,
-                            },
-                          },
-                        },
-                      },
-                    ],
-                  },
-                ],
-              },
-            },
-          ],
-        },
-      },
-      gatewayProxy: {
-        antiAffinity: false,
-        extraInitContainersHelper: "",
-        extraVolumeHelper: "",
-        kind: {
-          deployment: {
-            replicas: 2,
-          },
-        },
-        readConfig: true,
-        gatewaySettings: {
-          disableGeneratedGateways: true,
-        },
-        configMap: {
-          data: null,
-        },
-        tracing: {
-          provider: {
-            name: 'envoy.zipkin',
-            typed_config: {
-              '@type': 'type.googleapis.com/envoy.config.trace.v2.ZipkinConfig',
-              collector_cluster: 'zipkin',
-              collector_endpoint: '/api/v1/spans',
-            },
-          },
-          cluster: [
-            {
-              name: 'zipkin',
-              connect_timeout: '1s',
-              type: 'STRICT_DNS',
-              load_assignment: {
-                cluster_name: 'zipkin',
-                endpoints: [
-                  {
-                    lb_endpoints: [
-                      {
-                        endpoint: {
-                          address: {
-                            socket_address: {
-                              address: 'simplest-collector',
-                              port_value: 9411,
-                            },
-                          },
-                        },
-                      },
-                    ],
-                  },
-                ],
-              },
-            },
-          ],
-        },
-        podTemplate: {
-          probes: false,
-          disableNetBind: false,
-          floatingUserId: false,
-          httpPort: 8080,
-          httpsPort: 8443,
-          image: {
-            pullPolicy: "IfNotPresent",
-            repository: "gloo-ee-envoy-wrapper",
-            tag: "1.0.0-rc5",
-          },
-          runAsUser: 0,
-          runUnprivileged: false,
-          tolerations: null,
-          extraAnnotations: {
-            'linkerd.io/inject': 'enabled',
-            'config.linkerd.io/skip-inbound-ports': '8081',
-          },
-        },
-        service: {
-          type: 'LoadBalancer',
-          httpPort: 80,
-          httpsPort: 443,
-          extraAnnotations: {
-            'prometheus.io/path': '/metrics',
-            'prometheus.io/port': '8081',
-            'prometheus.io/scrape': 'true',
-            'service.beta.kubernetes.io/aws-load-balancer-proxy-protocol': '*',
-            'external-dns.alpha.kubernetes.io/alias': 'true',
-            'external-dns.alpha.kubernetes.io/hostname': lib.dnsNames(config),
-            'service.beta.kubernetes.io/aws-load-balancer-additional-resource-tags': 'cluster:%s' % config.cluster.metadata.name,
-  
-          },
-        },
-      },
-    },
     accessLogger: {
       enabled: false,
       image: {
@@ -322,6 +141,52 @@ local values(config) = {
         enabled: true,
         failurePolicy: 'Ignore',
         secretName: 'gateway-validation-certs',
+      },
+    },
+    gatewayProxies: {
+      gatewayProxy: {
+        antiAffinity: false,
+        configMap: {
+          data: null,
+        },
+        extraInitContainersHelper: '',
+        extraVolumeHelper: '',
+        gatewaySettings: {
+          disableGeneratedGateways: false,
+          useProxyProto: false,
+        },
+        kind: {
+          deployment: {
+            replicas: 1,
+          },
+        },
+        podTemplate: {
+          disableNetBind: false,
+          floatingUserId: false,
+          httpPort: 8080,
+          httpsPort: 8443,
+          image: {
+            pullPolicy: 'IfNotPresent',
+            repository: 'gloo-ee-envoy-wrapper',
+            tag: '1.0.0-rc5',
+          },
+          probes: false,
+          runAsUser: 0,
+          runUnprivileged: false,
+          tolerations: null,
+        },
+        readConfig: false,
+        service: {
+          extraAnnotations: {
+            'prometheus.io/path': '/metrics',
+            'prometheus.io/port': '8081',
+            'prometheus.io/scrape': 'true',
+          },
+          httpPort: 80,
+          httpsPort: 443,
+          type: 'LoadBalancer',
+        },
+        stats: true,
       },
     },
     global: {
@@ -409,7 +274,7 @@ local values(config) = {
       create: false,
     },
     settings: {
-      linkerd: true,
+      create: false,
       integrations: {
         knative: {
           enabled: false,
@@ -429,6 +294,7 @@ local values(config) = {
         invalidRouteResponseBody: 'Gloo Gateway has invalid configuration. Administrators should run `glooctl check` to find and fix config errors.',
         invalidRouteResponseCode: 404,
       },
+      linkerd: false,
       singleNamespace: false,
     },
   },
@@ -1449,6 +1315,9 @@ local values(config) = {
       port: 6379,
     },
   },
-
-  
-function(config) { values(config) }
+  settings: {
+    create: true,
+    linkerd: false,
+    singleNamespace: false,
+  },
+}
