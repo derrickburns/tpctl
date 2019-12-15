@@ -156,7 +156,9 @@ function install_gloo() {
     expect_success "Templating failure gloo/gloo-values.yaml.jsonnet"
   )
 
+  set -x
   glooctl install gateway -n gloo-system --values $TMP_DIR/gloo-values.yaml
+  cat /root/.gloo/debug.log
   expect_success "Gloo installation failure"
   complete "installed gloo"
 }
