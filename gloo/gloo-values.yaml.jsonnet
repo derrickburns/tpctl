@@ -30,7 +30,7 @@ local baseGatewayProxy(config) = {
   gatewaySettings: {
     disableGeneratedGateways: true,
   },
-  tracing: if lib.getElse(config, 'pkgs.tracing.enabled', false) {
+  tracing: if lib.getElse(config, 'pkgs.jaeger.enabled', false) {
     provider: {
       name: 'envoy.zipkin',
       typed_config: {
@@ -54,9 +54,9 @@ local baseGatewayProxy(config) = {
                     address: {
                       socket_address: {
                         address: '%s-collector.%s' [
-                          lib.getElse(config, 'pkgs.tracing.name', 'simplest-collector'),
-                          lib.getElse(config, 'pkgs.tracing.namespace', 'default')],
-                        port_value: lib.getElse(config, 'pkgs.tracing.port', 9411),
+                          lib.getElse(config, 'pkgs.jaeger.name', 'simplest'),
+                          lib.getElse(config, 'pkgs.jaeger.namespace', 'default')],
+                        port_value: lib.getElse(config, 'pkgs.jaeger.port', 9411),
                       },
                     },
                   },
