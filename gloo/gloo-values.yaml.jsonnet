@@ -9,7 +9,7 @@ local values(config) = {
     create: false,
   },
   discovery: {
-    enabled: true,
+    enabled: false,
     fdsMode: 'WHITELIST',
   },
   gateway: {
