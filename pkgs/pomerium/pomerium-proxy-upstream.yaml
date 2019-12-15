@@ -5,15 +5,15 @@ metadata:
   namespace: pomerium
 spec:
   discoveryMetadata: {}
-  kube:
-    selector:
-      app.kubernetes.io/instance: pomerium
-      app.kubernetes.io/name: pomerium-proxy
-    serviceName: pomerium-proxy
-    serviceNamespace: pomerium
-    servicePort: 443
-  sslConfig:
-    secretRef:
-      name: pomerium-proxy-tls
-      namespace: pomerium
-
+  upstreamSpec:
+    kube:
+      selector:
+        app.kubernetes.io/instance: pomerium
+        app.kubernetes.io/name: pomerium-proxy
+      serviceName: pomerium-proxy
+      serviceNamespace: pomerium
+      servicePort: 443
+    sslConfig:
+      secretRef:
+        name: pomerium-proxy-tls
+        namespace: pomerium
