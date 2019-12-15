@@ -1,9 +1,5 @@
 local lib = import '../lib/lib.jsonnet';
 
-
-
-
-
 local values(config) = {
   apiServer: {
     deployment: {
@@ -127,6 +123,7 @@ local values(config) = {
             'prometheus.io/path': '/metrics',
             'prometheus.io/port': '8081',
             'prometheus.io/scrape': 'true',
+          },
         },
         readConfig: true,
         gatewaySettings: {
@@ -1448,7 +1445,8 @@ local values(config) = {
       name: 'redis',
       port: 6379,
     },
-  },
+  }
+};
 
   
 function(config) { values(config) }
