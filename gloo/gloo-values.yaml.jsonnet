@@ -2,6 +2,9 @@ local lib = import '../lib/lib.jsonnet';
 
 local values(config) = {
   gloo: {
+    crds: {
+      create: true
+    },
     global: {
       image: {
         tag: "1.0.0-rc5",
