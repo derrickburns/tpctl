@@ -83,8 +83,18 @@ pkgs:
     namespace: gloo-system                   # namespace to host gateway
   linkerd:
     version: stable-2.6.0
+  linkerd-dashboard:
+    enabled: true
+    namespace: linkerd
+    sso:
+      allowed_groups: [ eng@tidepool.org ]
   metrics-server:                            # Metrics server collects Node level metrics and sends to Prometheus
     enabled: true
+  monitoring-prometheus-oper-prometheus:
+    namespace: monitoring
+    sso:
+      allowed_groups: [ eng@tidepool.org ]
+      port: 9090
   pomerium:                                  # Single sign on proxy
     enabled: true
   prometheus-operator:                       # Prometheus Operator creates Prometheus instances
@@ -122,7 +132,7 @@ environments:
           cpu: "100m"
       chart:
         path: charts/tidepool/0.1.7
-        ref: no-virtual-services
+        ref: develop
       source: stg                            # Where to get initial secrets from
       enabled: true
       hpa:                                   # Whether to implement horizontal pod scalers for each service
