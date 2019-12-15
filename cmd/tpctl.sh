@@ -160,11 +160,11 @@ function install_gloo() {
   (
     cd gloo
     set -x
-    glooctl install gateway enterprise --license-key $GLOO_LICENSE_KEY -n gloo-system --values $TEMPLATE_DIR/gloo/values.yaml --values $TMP_DIR/gloo-values.yaml --dry-run | separate_files | add_names
+    glooctl install gateway enterprise --license-key $GLOO_LICENSE_KEY -n gloo-system --values $TMP_DIR/gloo-values.yaml --values $TEMPLATE_DIR/gloo/values.yaml --dry-run | separate_files | add_names
     expect_success "Templating failure gloo/gloo-values.yaml.jsonnet"
   )
 
-    glooctl install gateway enterprise --license-key $GLOO_LICENSE_KEY -n gloo-system --values $TEMPLATE_DIR/gloo/values.yaml --values $TMP_DIR/gloo-values.yaml 
+    glooctl install gateway enterprise --license-key $GLOO_LICENSE_KEY -n gloo-system --values $TMP_DIR/gloo-values.yaml --values $TEMPLATE_DIR/gloo/values.yaml 
   expect_success "Gloo installation failure"
   complete "installed gloo"
 }
