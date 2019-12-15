@@ -182,4 +182,4 @@ local values(config) = {
   },
 };
 
-function(config) values(config)
+function(config) { gloo: values(config) }
