@@ -5,7 +5,60 @@ local values(config) = {
     namespace: {
       create: false,
     },
-
+    discovery: {
+      deployment: {
+        floatingUserId: false,
+        image: {
+          pullPolicy: 'IfNotPresent',
+          registry: 'quay.io/solo-io',
+          repository: 'discovery',
+          tag: '1.2.5',
+        },
+        replicas: 1,
+        runAsUser: 10101,
+        stats: false,
+      },
+      enabled: true,
+      fdsMode: '',
+    },
+    gateway: {
+      certGenJob: {
+        enabled: true,
+        image: {
+          pullPolicy: 'IfNotPresent',
+          registry: 'quay.io/solo-io',
+          repository: 'certgen',
+          tag: '1.2.5',
+        },
+        restartPolicy: 'OnFailure',
+        setTtlAfterFinished: true,
+        ttlSecondsAfterFinished: 60,
+      },
+      deployment: {
+        floatingUserId: false,
+        image: {
+          pullPolicy: 'IfNotPresent',
+          registry: 'quay.io/solo-io',
+          repository: 'gateway',
+          tag: '1.2.5',
+        },
+        replicas: 1,
+        runAsUser: 10101,
+        stats: false,
+      },
+      enabled: true,
+      proxyServiceAccount: {
+        disableAutomount: false,
+      },
+      readGatewaysFromAllNamespaces: false,
+      updateValues: true,
+      validation: {
+        alwaysAcceptResources: true,
+        enabled: true,
+        failurePolicy: 'Ignore',
+        secretName: 'gateway-validation-certs',
+      },
+    },
     gatewayProxies: {
       internalGatewayProxy: {
         antiAffinity: false,
