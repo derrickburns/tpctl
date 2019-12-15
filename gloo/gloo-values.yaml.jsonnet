@@ -16,6 +16,7 @@ local values(config) = {
     deployment: {
       image: {
         repository: 'gateway',
+	tag: config.pkgs.gloo.version,
       },
       replicas: 1,
       runAsUser: 10101,
@@ -42,14 +43,19 @@ local values(config) = {
       },
       podTemplate: {
         probes: false,
-        image: {
-          repository: 'gloo-envoy-wrapper',
-          registry: 'quay.io/solo-io',
-          tag: config.pkgs.gloo.version,
-        },
+        disableNetBind: false,
+        floatingUserId: false,
         httpPort: 8080,
         httpsPort: 8443,
-        runAsUser: 10101,
+        image: {
+          pullPolicy: "IfNotPresent",
+          repository: "gloo-ee-envoy-wrapper",
+          tag: "1.0.0-rc5",
+        }
+        probes: false,
+        runAsUser: 0,
+        runUnprivileged: false,
+        tolerations: null,
         extraAnnotations: {
           'linkerd.io/inject': 'enabled',
           'config.linkerd.io/skip-inbound-ports': '8081',
@@ -152,17 +158,22 @@ local values(config) = {
       },
       podTemplate: {
         probes: false,
-        image: {
-          repository: 'gloo-envoy-wrapper',
-          registry: 'quay.io/solo-io',
-          tag: config.pkgs.gloo.version,
-        },
+        disableNetBind: false,
+        floatingUserId: false,
         httpPort: 8080,
         httpsPort: 8443,
-        runAsUser: 10101,
+        image: {
+          pullPolicy: "IfNotPresent",
+          repository: "gloo-ee-envoy-wrapper",
+          tag: "1.0.0-rc5",
+        }
+        probes: false,
+        runAsUser: 0,
+        runUnprivileged: false,
+        tolerations: null,
         extraAnnotations: {
           'linkerd.io/inject': 'enabled',
-          'config.linkerd.io/skip-inbound-ports': 8081,
+          'config.linkerd.io/skip-inbound-ports': '8081',
         },
       },
       service: {
