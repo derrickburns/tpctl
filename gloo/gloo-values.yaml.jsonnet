@@ -1,12 +1,12 @@
 local lib = import '../lib/lib.jsonnet';
 
 local values(config) = {
-  global: {
-    image: {
-      tag: "1.0.0-rc5",
-    },
-  },
   gloo: {
+    global: {
+      image: {
+        tag: "1.0.0-rc5",
+      },
+    },
     namespace: {
       create: false,
     },  
