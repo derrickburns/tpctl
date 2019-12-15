@@ -123,7 +123,6 @@ function install_sumo() {
 
 function install_glooctl {
   start "checking glooctl"
-
   local glooctl_version=$(require_value "pkgs.gloo.version")
   if ! command -v glooctl >/dev/null 2>&1 || [ $(glooctl version -o json | grep Client | yq r - 'Client.version') != ${glooctl_version} ]
   then
@@ -141,36 +140,23 @@ function install_glooctl {
 
 # install gloo
 function install_gloo() {
-  local cluster=$(get_cluster)
-  GLOO_LICENSE_KEY=$(aws secretsmanager get-secret-value --secret-id $cluster/gloo-system/gloo | jq '.SecretString' | yq r - | jq '."gloo-license-key"' |  sed -e 's/"//g' \
-    -e 's/\\n/\
-/g')
-
-  #install_glooctl
+  install_glooctl
   start "installing gloo"
   local config=$(get_config)
   jsonnet --tla-code config="$config" $TEMPLATE_DIR/gloo/gloo-values.yaml.jsonnet | yq r - >$TMP_DIR/gloo-values.yaml
-  cp $TMP_DIR/gloo-values.yaml /tmp
   expect_success "Templating failure gloo/gloo-values.yaml.jsonnet"
 
-  #kubectl delete jobs -n gloo-system gateway-certgen
-  helm repo add glooe http://storage.googleapis.com/gloo-ee-helm
+  kubectl delete jobs -n gloo-system gateway-certgen
 
   rm -rf gloo
   mkdir -p gloo
   (
     cd gloo
-    set -x
-    glooctl uninstall --all
-    kubectl delete validatingwebhookconfigurations.admissionregistration.k8s.io gloo-gateway-validation-webhook-gloo-system
-    helm delete glooe --purge
-    helm install glooe/gloo-ee --name glooe --namespace gloo-system --set-string license_key=$GLOO_LICENSE_KEY -f $TMP_DIR/gloo-values.yaml --dry-run
-    #glooctl install gateway enterprise --license-key $GLOO_LICENSE_KEY -n gloo-system --values $TMP_DIR/gloo-values.yaml --values $TEMPLATE_DIR/gloo/values.yaml --dry-run | separate_files | add_names
+    glooctl install gateway -n gloo-system --values $TMP_DIR/gloo-values.yaml --dry-run | separate_files | add_names
     expect_success "Templating failure gloo/gloo-values.yaml.jsonnet"
   )
 
-    helm install glooe/gloo-ee --name glooe --namespace gloo-system --set-string license_key=$GLOO_LICENSE_KEY -f $TMP_DIR/gloo-values.yaml
-    #glooctl install gateway enterprise --license-key $GLOO_LICENSE_KEY -n gloo-system --values $TMP_DIR/gloo-values.yaml --values $TEMPLATE_DIR/gloo/values.yaml 
+  glooctl install gateway -n gloo-system --values $TMP_DIR/gloo-values.yaml
   expect_success "Gloo installation failure"
   complete "installed gloo"
 }
@@ -708,7 +694,7 @@ function save_changes() {
   if [ -z "$DIFFS" ]
   then
     info "No changes made"
-    #return 
+    return 
   fi
   info "==== BEGIN Changes"
   git diff HEAD
