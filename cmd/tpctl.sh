@@ -6,7 +6,6 @@
 set -o pipefail
 export FLUX_FORWARD_NAMESPACE=flux
 export REVIEWERS="derrickburns pazaan jamesraby"
-export GLOO_LICENSE_KEY=eyJleHAiOjE1Nzg5NDM4MzIsImlhdCI6MTU3NjI2NTQzMiwiayI6InpSVmduUSIsImx0IjoidHJpYWwifQ.4LhDuBKZ9b-3oxTtrbc_KllOoA1amI-eZqHUyr51t94
 
 function envoy {
   glooctl proxy served-config
@@ -125,8 +124,6 @@ function install_sumo() {
 function install_glooctl {
   start "checking glooctl"
 
-  echo "https://nl.solo.io/e2t/c/*W4D5DLs4ZV25kW68r9487zkQJy0/*W23_QMN6SH9sLVdMrlC8QT5CN0/5/f18dQhb0S1Wb2RwFJFTvY5j2pw_gyN68LkBljYw_YW85CsW11sZyf0W8Dc4Hq3qmP2VVWLWR34QGnhMW5DppFq1Fsy4wW73skM98Z1Yl4N4G48hMhHtyDN5dbngwbm-cZW6YCC-r7Vhs5YN4G0PZpYN828W8-00GX6wj-_bW5TYGcW6GLT7lN1x2HNdm2gM0W4VGjTp1QRgMMN8NHFyVjrlDFW607CkN2Q4kbHW8Y_DM17ZFHJjN1kp_kbrxqz9N4LlsBt9ZJdYW3KL0Zd3zYw12VzlwGz1XpqqDW9fbDKj1TRP3DW3rgcJb7qzz9NW3qBsD838ZmwfW4H_qH18jx__dVNBwPh8NzT9hW5vSDwF7v0zk-W2FjZNy5j-J31W5MyMT32M6tNnW57YlTm8yJSVzW41-Sx92PLrDjW2yS8ZW89K-R4W2z3Vxn7zZq7zW20xb503VQZn5W7Ch1s26gLjTLW3KqKsM6tTzY7W4_gLFG6g1m53W83dLG_84rSMgW26lPqD1yFV55W1HnBbb5yxBgRW1_S7-t2Xd29pW9gyk2x2HKP_fW66b5QT2rf5_7W7DThDn411Sp_W8J1_2Z70RxVnW5c3T0h1rJ8BfW6P_9Yj1V2Z07W91lQDD2Bw-SnW7v1QlG9fl2hVf5n2LtT04"
-
   local glooctl_version=$(require_value "pkgs.gloo.version")
   if ! command -v glooctl >/dev/null 2>&1 || [ $(glooctl version -o json | grep Client | yq r - 'Client.version') != ${glooctl_version} ]
   then
@@ -144,23 +141,30 @@ function install_glooctl {
 
 # install gloo
 function install_gloo() {
-  install_glooctl
+  local cluster=$(get_cluster)
+  GLOO_LICENSE_KEY=$(aws secretsmanager get-secret-value --secret-id $cluster/gloo-system/gloo | jq '.SecretString' | yq r - | jq '."gloo-license-key"' |  sed -e 's/"//g' \
+    -e 's/\\n/\
+/g')
+
+  #install_glooctl
   start "installing gloo"
   local config=$(get_config)
   jsonnet --tla-code config="$config" $TEMPLATE_DIR/gloo/gloo-values.yaml.jsonnet | yq r - >$TMP_DIR/gloo-values.yaml
+  cp $TMP_DIR/gloo-values.yaml /tmp
   expect_success "Templating failure gloo/gloo-values.yaml.jsonnet"
 
-  kubectl delete jobs -n gloo-system gateway-certgen
+  #kubectl delete jobs -n gloo-system gateway-certgen
 
   rm -rf gloo
   mkdir -p gloo
   (
     cd gloo
-    glooctl install gateway --license-key $GLOO_LICENSE_KEY -n gloo-system --values $TMP_DIR/gloo-values.yaml --dry-run | separate_files | add_names
+    set -x
+    glooctl install gateway enterprise --license-key $GLOO_LICENSE_KEY -n gloo-system --values $TMP_DIR/gloo-values.yaml --dry-run | separate_files | add_names
     expect_success "Templating failure gloo/gloo-values.yaml.jsonnet"
   )
 
-    glooctl install gateway --license-key $GLOO_LICENSE_KEY -n gloo-system --values $TMP_DIR/gloo-values.yaml 
+    glooctl install gateway enterprise --license-key $GLOO_LICENSE_KEY -n gloo-system --values $TMP_DIR/gloo-values.yaml 
   expect_success "Gloo installation failure"
   complete "installed gloo"
 }
