@@ -53,8 +53,8 @@ local baseGatewayProxy(config) = {
                   endpoint: {
                     address: {
                       socket_address: {
-                        address: 'simplest-collector',
-                        port_value: 9411,
+                        address: lib.getElse(config, 'pkgs.tracing.collector', 'simplest-collector'),
+                        port_value: lib.getElse(config, 'pkgs.tracing.port', 9411),
                       },
                     },
                   },

@@ -81,6 +81,12 @@ pkgs:
     version: 1.0.0
     enabled: true
     namespace: gloo-system                   # namespace to host gateway
+  jaeger:
+    enabled: true
+    #collector: simplest-collector
+    #port: 9411
+  jaeger-operator:
+    enabled: true
   linkerd:
     version: stable-2.6.0
   linkerd-dashboard:
