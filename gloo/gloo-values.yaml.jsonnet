@@ -1,6 +1,9 @@
 local lib = import '../lib/lib.jsonnet';
 
 local values(config) = {
+  rateLimit: {
+    enabled: false
+  },
   gloo: {
     crds: {
       create: true
