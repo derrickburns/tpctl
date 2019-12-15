@@ -51,7 +51,7 @@ local values(config) = {
           pullPolicy: "IfNotPresent",
           repository: "gloo-ee-envoy-wrapper",
           tag: "1.0.0-rc5",
-        }
+        },
         probes: false,
         runAsUser: 0,
         runUnprivileged: false,
@@ -166,7 +166,7 @@ local values(config) = {
           pullPolicy: "IfNotPresent",
           repository: "gloo-ee-envoy-wrapper",
           tag: "1.0.0-rc5",
-        }
+        },
         probes: false,
         runAsUser: 0,
         runUnprivileged: false,
