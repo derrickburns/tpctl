@@ -1389,6 +1389,7 @@ case $cmd in
     check_remote_repo
     setup_tmpdir
     clone_remote
+    set_template_dir
     confirm_matching_cluster
     delete_cluster
     ;;
