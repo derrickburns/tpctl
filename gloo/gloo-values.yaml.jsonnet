@@ -12,6 +12,21 @@ local values(config) = {
     enabled: false,
     fdsMode: 'WHITELIST',
   },
+  gloo: {
+    deployment: {
+      disableUsageStatistics: false,
+      floatingUserId: false,
+      image: {
+        pullPolicy: "IfNotPresent",
+        repository: gloo-ee,
+        tag: 1.0.0-rc5,
+      },
+      replicas: 1,
+      runAsUser: 10101,
+      stats: true,
+      validationPort: 9988,
+      xdsPort: 9977,
+  },
   gateway: {
     deployment: {
       image: {
