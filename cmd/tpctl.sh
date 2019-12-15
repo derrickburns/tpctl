@@ -154,17 +154,23 @@ function install_gloo() {
   expect_success "Templating failure gloo/gloo-values.yaml.jsonnet"
 
   #kubectl delete jobs -n gloo-system gateway-certgen
+  helm repo add glooe http://storage.googleapis.com/gloo-ee-helm
 
   rm -rf gloo
   mkdir -p gloo
   (
     cd gloo
     set -x
-    glooctl install gateway enterprise --license-key $GLOO_LICENSE_KEY -n gloo-system --values $TMP_DIR/gloo-values.yaml --values $TEMPLATE_DIR/gloo/values.yaml --dry-run | separate_files | add_names
+    glooctl uninstall --all
+    kubectl delete validatingwebhookconfigurations.admissionregistration.k8s.io gloo-gateway-validation-webhook-gloo-system
+    helm delete glooe --purge
+    helm install glooe/gloo-ee --name glooe --namespace gloo-system --set-string license_key=$GLOO_LICENSE_KEY -f $TMP_DIR/gloo-values.yaml --dry-run
+    #glooctl install gateway enterprise --license-key $GLOO_LICENSE_KEY -n gloo-system --values $TMP_DIR/gloo-values.yaml --values $TEMPLATE_DIR/gloo/values.yaml --dry-run | separate_files | add_names
     expect_success "Templating failure gloo/gloo-values.yaml.jsonnet"
   )
 
-    glooctl install gateway enterprise --license-key $GLOO_LICENSE_KEY -n gloo-system --values $TMP_DIR/gloo-values.yaml --values $TEMPLATE_DIR/gloo/values.yaml 
+    helm install glooe/gloo-ee --name glooe --namespace gloo-system --set-string license_key=$GLOO_LICENSE_KEY -f $TMP_DIR/gloo-values.yaml
+    #glooctl install gateway enterprise --license-key $GLOO_LICENSE_KEY -n gloo-system --values $TMP_DIR/gloo-values.yaml --values $TEMPLATE_DIR/gloo/values.yaml 
   expect_success "Gloo installation failure"
   complete "installed gloo"
 }
