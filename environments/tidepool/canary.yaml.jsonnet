@@ -62,7 +62,6 @@ local canary(config, env, namespace, svc) = {
     else {},
 
   spec: hpa + {
-    },
     canaryAnalysis: {
       interval: '30s',
       maxWeight: 50,
