@@ -3,7 +3,7 @@ kind: ClusterRole
 metadata:
   creationTimestamp: null
   name: jaeger-operator
-  namespace: observability
+  namespace: tracing
 rules:
 - apiGroups:
   - ""

@@ -1,0 +1,63 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: oc-collector
+  namespace: tracing
+  labels:
+    app: opencensus
+    component: oc-collector
+spec:
+  minReadySeconds: 5
+  progressDeadlineSeconds: 120
+  replicas: 1
+  selector:
+    matchLabels:
+      app: opencensus
+  template:
+    metadata:
+      annotations:
+        prometheus.io/path: "/metrics"
+        prometheus.io/port: "8888"
+        prometheus.io/scrape: "true"
+      labels:
+        app: opencensus
+        component: oc-collector
+    spec:
+      containers:
+      - command:
+          - "/occollector_linux"
+          - "--config=/conf/oc-collector-config.yaml"
+        env:
+        - name: GOGC
+          value: "80"
+        image: omnition/opencensus-collector:0.1.10
+        name: oc-collector
+        resources:
+          limits:
+            cpu: 1
+            memory: 2Gi
+          requests:
+            cpu: 200m
+            memory: 400Mi
+        ports:
+        - containerPort: 55678
+        - containerPort: 9411
+        volumeMounts:
+        - name: oc-collector-config-vol
+          mountPath: /conf
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 13133
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 13133
+      volumes:
+        - configMap:
+            name: oc-collector-conf
+            items:
+              - key: oc-collector-config
+                path: oc-collector-config.yaml
+          name: oc-collector-config-vol

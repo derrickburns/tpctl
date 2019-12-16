@@ -2,11 +2,11 @@ kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: jaeger-operator
-  namespace: observability
+  namespace: tracing
 subjects:
 - kind: ServiceAccount
   name: jaeger-operator
-  namespace: observability
+  namespace: tracing
 roleRef:
   kind: ClusterRole
   name: jaeger-operator
