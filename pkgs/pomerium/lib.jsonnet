@@ -38,10 +38,17 @@ local lib = import '../../lib/lib.jsonnet';
           type: 'external',
         },
       },
-      proxy: {
+      proxy-https: {
         enabled: true,
         labels: {
           protocol: 'https',
+          type: 'external',
+        },
+      },
+      proxy-http: {
+        enabled: true,
+        labels: {
+          protocol: 'http',
           type: 'external',
         },
       },
