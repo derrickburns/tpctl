@@ -2,7 +2,7 @@ local lib = import '../../lib/lib.jsonnet';
 
 local mylib = import 'lib.jsonnet';
 
-local virtualService(config) = {
+local httpsVirtualService(config) = {
   apiVersion: 'gateway.solo.io/v1',
   kind: 'VirtualService',
   metadata: {
@@ -10,11 +10,11 @@ local virtualService(config) = {
       protocol: 'https',
       type: 'external',
     },
-    name: 'proxy',
+    name: 'proxy-https',
     namespace: 'pomerium',
   },
   spec: {
-    displayName: 'proxy',
+    displayName: 'proxy-https',
     sslConfig: {
       secretRef: {
         name: 'pomerium-tls',
@@ -45,4 +45,35 @@ local virtualService(config) = {
   },
 };
 
-function(config, prev) virtualService(config)
+local httpVirtualService(config) = {
+  apiVersion: 'gateway.solo.io/v1',
+  kind: 'VirtualService',
+  metadata: {
+    labels: {
+      protocol: 'http',
+      type: 'external',
+    },
+    name: 'proxy-http',
+    namespace: 'pomerium',
+  },
+  spec: {
+    displayName: 'proxy-http',
+    virtualHost: {
+      domains: mylib.dnsNames(config),
+      routes: [
+        {
+          matchers: [
+            {
+              prefix: '/',
+            },
+          ],
+          redirectAction: {
+            httpsRedirect: true,
+          },
+        },
+      ],
+    },
+  },
+};
+
+function(config, prev) std.manifestYamlStream( [ httpsVirtualService(config), httpVirtualService(config) ] )
