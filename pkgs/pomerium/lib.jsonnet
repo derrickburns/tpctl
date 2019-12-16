@@ -1,7 +1,9 @@
 local lib = import '../../lib/lib.jsonnet';
 
 {
-  dnsNameForName(config, name):: lib.getElse(config.pkgs[name].sso, 'dnsName', '%s.%s' % [ name, config.cluster.metadata.domain ]),
+  dnsNameForName(config, name):: 
+    lib.getElse(config.pkgs[name].sso, 'dnsName', 
+       's.%s' % [ lib.getElse(config.pkgs[name].sso, 'externalName', name), config.cluster.metadata.domain ]),
 
   dnsNames(config):: (
     local pkgs = config.pkgs;
