@@ -4,11 +4,11 @@ local mylib = import 'lib.jsonnet';
 
 local dnsNames(config) = (
   local domain = mylib.rootDomain(config);
-  mylib.dnsNames(config) +
   [
     'authenticate.%s' % domain,
     'authorize.%s' % domain,
-  ]
+  ] +
+  mylib.dnsNames(config)
 );
 
 local certificate(config) = (
