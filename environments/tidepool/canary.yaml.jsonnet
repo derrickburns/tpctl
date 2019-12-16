@@ -57,6 +57,7 @@ local canary(config, env, namespace, svc) = {
         apiVersion: 'autoscaling/v2beta1',
         kind: 'HorizontalPodAutoscaler',
         name: svc,
+      }
     }
     else {},
 
