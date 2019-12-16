@@ -50,11 +50,17 @@ local canary(config, env, namespace, svc) = {
     namespace: namespace,
   },
 
-  spec: {
-    autoscalerRef: {
-      apiVersion: 'autoscaling/v2beta1',
-      kind: 'HorizontalPodAutoscaler',
-      name: svc,
+  local hpa =
+    if lib.getElse(env, 'hpa.enabled', false)
+    then {
+      autoscalerRef: {
+        apiVersion: 'autoscaling/v2beta1',
+        kind: 'HorizontalPodAutoscaler',
+        name: svc,
+    }
+    else {},
+
+  spec: hpa + {
     },
     canaryAnalysis: {
       interval: '30s',
