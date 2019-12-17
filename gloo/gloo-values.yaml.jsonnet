@@ -11,6 +11,8 @@ local baseGatewayProxy(config) = {
     data: null,
   },
   podTemplate: {
+    disableNetBind: false,
+    floatingUserId: false,
     probes: false,
     image: {
       repository: 'gloo-envoy-wrapper',
