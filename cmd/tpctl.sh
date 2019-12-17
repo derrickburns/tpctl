@@ -153,7 +153,6 @@ function install_gloo() {
   (
     cd gloo
     glooctl install gateway -n gloo-system --values $TMP_DIR/gloo-values.yaml --dry-run | separate_files | add_names
-    cat /root/.gloo/debug.log
     expect_success "Templating failure gloo/gloo-values.yaml.jsonnet"
   )
 
