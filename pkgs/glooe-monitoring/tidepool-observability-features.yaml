@@ -3367,6 +3367,7 @@ metadata:
     chart: prometheus-9.5.1
     heritage: Helm
   name: glooe-prometheus-server
+  namespace: gloo-system
 spec:
   accessModes:
     - ReadWriteOnce
