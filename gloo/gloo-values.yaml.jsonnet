@@ -80,6 +80,7 @@ local values(config) = {
     image: {
       pullPolicy: 'IfNotPresent',
       registry: 'quay.io/solo-io',
+      image: config.pkgs.gloo.version,
     },
   },
   settings: {
