@@ -101,12 +101,12 @@ local values(config) = {
   },
   gatewayProxies: {
     internalGatewayProxy: baseGatewayProxy(config) {
-      service: {
+      service+: {
         type: 'ClusterIP',
       },
     },
     gatewayProxy: baseGatewayProxy(config) {
-      service: {
+      service+: {
         type: 'LoadBalancer',
         extraAnnotations: {
           'service.beta.kubernetes.io/aws-load-balancer-proxy-protocol': '*',
