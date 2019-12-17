@@ -73,6 +73,15 @@ local baseGatewayProxy(config) = {
 };
 
 local values(config) = {
+  global: {
+    glooRbac: {
+      create: true,
+    },
+    image: {
+      pullPolicy: 'IfNotPresent',
+      registry: 'quay.io/solo-io',
+    },
+  },
   settings: {
     create: true,
     linkerd: true,
