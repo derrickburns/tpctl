@@ -32,7 +32,7 @@ local baseGatewayProxy(config) = {
   gatewaySettings: {
     disableGeneratedGateways: true,
   },
-  tracing: if lib.getElse(config, 'pkgs.jaeger.enabled', false) then {
+  tracing: if lib.getElse(config, 'pkgs.tracing.enabled', false) then {
     provider: {
       name: 'envoy.zipkin',
       typed_config: {
@@ -69,7 +69,7 @@ local baseGatewayProxy(config) = {
         },
       },
     ],
-  } else {},
+  } else null,
 };
 
 local values(config) = {
@@ -97,7 +97,9 @@ local values(config) = {
     proxyServiceAccount: {},
     upgrade: false,
     validation: {
-      enabled: false,
+      enabled: true,
+      failurePolicy: "Ignore",
+      secretName: "gateway-validation-certs",
       alwaysAcceptResources: true,
     },
   },
