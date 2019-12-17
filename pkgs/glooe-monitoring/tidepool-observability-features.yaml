@@ -3397,6 +3397,7 @@ metadata:
     chart: prometheus-9.5.1
     heritage: Helm
   name: glooe-prometheus-kube-state-metrics
+  namespace: gloo-system
 ---
 # Source: gloo-ee/charts/prometheus/templates/server-serviceaccount.yaml
 apiVersion: v1
@@ -3409,6 +3410,7 @@ metadata:
     chart: prometheus-9.5.1
     heritage: Helm
   name: glooe-prometheus-server
+  namespace: gloo-system
 ---
 # Source: gloo-ee/templates/8-observability-service-account.yaml
 apiVersion: v1
