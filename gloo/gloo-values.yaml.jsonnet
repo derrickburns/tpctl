@@ -99,7 +99,7 @@ local values(config) = {
       alwaysAcceptResources: true,
     },
   },
-  gatewayProxies: {
+  gatewayProxies+: {
     internalGatewayProxy: baseGatewayProxy(config) {
       service+: {
         type: 'ClusterIP',
@@ -108,7 +108,7 @@ local values(config) = {
     gatewayProxy: baseGatewayProxy(config) {
       service+: {
         type: 'LoadBalancer',
-        extraAnnotations: {
+        extraAnnotations+: {
           'service.beta.kubernetes.io/aws-load-balancer-proxy-protocol': '*',
           'external-dns.alpha.kubernetes.io/alias': 'true',
           'external-dns.alpha.kubernetes.io/hostname': lib.dnsNames(config),
