@@ -113,7 +113,7 @@ pkgs:
     apiEndpoint: https://api.us2.sumologic.com/api/v1/
     namespace: sumologic
   thanos:                                    # Thanos aggregates telemetry from all Tidepool clusters
-    enabled: true
+    enabled: false
     bucket: tidepool-thanos                  # Writable S3 bucket in which to aggregate multi-cluster telemetry data
     secret: thanos-objstore-config           # Name of Kubernetes secret in which Thanos config is stored.
   tidebot:
