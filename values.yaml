@@ -89,7 +89,7 @@ pkgs:
   jaeger-operator:                           # The Jaeger K8s Operator
     enabled: true
   linkerd:
-    version: stable-2.6.0
+    version: stable-2.6.1
   linkerd-dashboard:
     enabled: true
     namespace: linkerd
