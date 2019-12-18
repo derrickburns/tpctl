@@ -4017,8 +4017,6 @@ spec:
                 name: glooe-observability-config
             - secretRef:
                 name: glooe-observability-secrets
-      imagePullSecrets:
-        - name: solo-io-readerbot-pull-secret # enabled
 ---
 # Source: gloo-ee/templates/8-observability-rbac.yaml
 # glooRbac.create
