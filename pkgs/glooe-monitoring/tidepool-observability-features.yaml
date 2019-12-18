@@ -3452,7 +3452,6 @@ rules:
     resources:
       - namespaces
       - nodes
-      - persistentvolumeclaims
       - pods
       - services
       - resourcequotas
