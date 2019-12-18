@@ -3347,15 +3347,12 @@ metadata:
     chart: grafana-4.0.1
     release: glooe
     heritage: Helm
-  finalizers:
-    - kubernetes.io/pvc-protection
 spec:
   accessModes:
     - "ReadWriteOnce"
   resources:
     requests:
       storage: "100Mi"
-  storageClassName:
 ---
 # Source: gloo-ee/charts/prometheus/templates/server-pvc.yaml
 apiVersion: v1
