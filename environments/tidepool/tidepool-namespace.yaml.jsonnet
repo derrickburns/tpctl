@@ -1,3 +1,5 @@
+local tracing = import '../../pkgs/tracing/lib.jsonnet';
+
 local gen_namespace(config, namespace) = {
   apiVersion: 'v1',
   kind: 'Namespace',
@@ -9,7 +11,7 @@ local gen_namespace(config, namespace) = {
     annotations: {
       'istio-injection': 'disabled',
       'linkerd.io/inject': 'enabled',
-    },
+    } + tracing.tracingAnnotation(config)
   },
 };
 
