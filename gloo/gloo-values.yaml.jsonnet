@@ -2,7 +2,7 @@ local lib = import '../lib/lib.jsonnet';
 
 local tracing = import '../pkgs/tracing/lib.jsonnet';
 
-local baseGatewayProxy(config) = {
+local baseGatewayProxy(config, name) = {
   stats: true,
   kind: {
     deployment: {
@@ -24,6 +24,7 @@ local baseGatewayProxy(config) = {
     runAsUser: 10101,
     extraAnnotations: {
       'linkerd.io/inject': 'enabled',
+      'configmap.reloader.stakater.com/reload': '%s-envoy-config' % name
     },
   },
   service: {
@@ -90,12 +91,12 @@ local values(config) = {
     },
   },
   gatewayProxies+: {
-    internalGatewayProxy: baseGatewayProxy(config) {
+    internalGatewayProxy: baseGatewayProxy(config, 'internal-gateway-proxy') {
       service+: {
         type: 'ClusterIP',
       },
     },
-    gatewayProxy: baseGatewayProxy(config) {
+    gatewayProxy: baseGatewayProxy(config, 'gateway-proxy') {
       service+: {
         type: 'LoadBalancer',
         extraAnnotations+: {
