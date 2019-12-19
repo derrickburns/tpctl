@@ -156,6 +156,10 @@ function install_gloo() {
     expect_success "Templating failure gloo/gloo-values.yaml.jsonnet"
   )
 
+  if [ "$APPROVE" != "true" ]
+  then
+    confirm "Do you want to update API gateway directly now? "
+  fi
   glooctl install gateway -n gloo-system --values $TMP_DIR/gloo-values.yaml
   expect_success "Gloo installation failure"
   complete "installed gloo"
@@ -888,6 +892,11 @@ function make_mesh() {
   start "installing mesh"
   linkerd version
   info "linkerd check --pre"
+
+  if [ "$APPROVE" != "true" ]
+  then
+    confirm "Do you want to install the mesh directly? "
+  fi
 
   linkerd install config | mykubectl apply -f -
 
