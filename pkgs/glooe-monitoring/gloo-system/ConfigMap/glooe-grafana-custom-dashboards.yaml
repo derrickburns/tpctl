@@ -1,0 +1,1076 @@
+apiVersion: v1
+data:
+  envoy.json: "{\n  \"annotations\": {\n    \"list\": [\n      {\n        \"builtIn\"\
+    : 1,\n        \"datasource\": \"-- Grafana --\",\n        \"enable\": true,\n\
+    \        \"hide\": true,\n        \"iconColor\": \"rgba(0, 211, 255, 1)\",\n \
+    \       \"name\": \"Annotations & Alerts\",\n        \"type\": \"dashboard\"\n\
+    \      }\n    ]\n  },\n  \"editable\": true,\n  \"gnetId\": null,\n  \"graphTooltip\"\
+    : 0,\n  \"id\": 2,\n  \"links\": [],\n  \"panels\": [\n    {\n      \"aliasColors\"\
+    : {},\n      \"bars\": false,\n      \"dashLength\": 10,\n      \"dashes\": false,\n\
+    \      \"fill\": 1,\n      \"gridPos\": {\n        \"h\": 9,\n        \"w\": 12,\n\
+    \        \"x\": 0,\n        \"y\": 0\n      },\n      \"id\": 14,\n      \"legend\"\
+    : {\n        \"avg\": false,\n        \"current\": false,\n        \"max\": false,\n\
+    \        \"min\": false,\n        \"show\": true,\n        \"total\": false,\n\
+    \        \"values\": false\n      },\n      \"lines\": true,\n      \"linewidth\"\
+    : 1,\n      \"links\": [],\n      \"nullPointMode\": \"null\",\n      \"percentage\"\
+    : false,\n      \"pointradius\": 5,\n      \"points\": false,\n      \"renderer\"\
+    : \"flot\",\n      \"seriesOverrides\": [],\n      \"spaceLength\": 10,\n    \
+    \  \"stack\": false,\n      \"steppedLine\": false,\n      \"targets\": [\n  \
+    \      {\n          \"expr\": \"sum(irate(envoy_http_downstream_rq_total[1m]))\"\
+    ,\n          \"format\": \"time_series\",\n          \"intervalFactor\": 1,\n\
+    \          \"legendFormat\": \"requests\",\n          \"refId\": \"A\"\n     \
+    \   }\n      ],\n      \"thresholds\": [],\n      \"timeFrom\": null,\n      \"\
+    timeRegions\": [],\n      \"timeShift\": null,\n      \"title\": \"Requests per\
+    \ Second\",\n      \"tooltip\": {\n        \"shared\": true,\n        \"sort\"\
+    : 0,\n        \"value_type\": \"individual\"\n      },\n      \"type\": \"graph\"\
+    ,\n      \"xaxis\": {\n        \"buckets\": null,\n        \"mode\": \"time\"\
+    ,\n        \"name\": null,\n        \"show\": true,\n        \"values\": []\n\
+    \      },\n      \"yaxes\": [\n        {\n          \"format\": \"short\",\n \
+    \         \"label\": null,\n          \"logBase\": 1,\n          \"max\": null,\n\
+    \          \"min\": null,\n          \"show\": true\n        },\n        {\n \
+    \         \"format\": \"short\",\n          \"label\": null,\n          \"logBase\"\
+    : 1,\n          \"max\": null,\n          \"min\": null,\n          \"show\":\
+    \ true\n        }\n      ],\n      \"yaxis\": {\n        \"align\": false,\n \
+    \       \"alignLevel\": null\n      }\n    },\n    {\n      \"aliasColors\": {\n\
+    \        \"% 2xx\": \"#7eb26d\",\n        \"% 4xx\": \"#eab839\",\n        \"\
+    % 5xx\": \"#bf1b00\"\n      },\n      \"bars\": false,\n      \"dashLength\":\
+    \ 10,\n      \"dashes\": false,\n      \"fill\": 1,\n      \"gridPos\": {\n  \
+    \      \"h\": 9,\n        \"w\": 12,\n        \"x\": 12,\n        \"y\": 0\n \
+    \     },\n      \"id\": 4,\n      \"legend\": {\n        \"avg\": false,\n   \
+    \     \"current\": false,\n        \"max\": false,\n        \"min\": false,\n\
+    \        \"show\": true,\n        \"total\": false,\n        \"values\": false\n\
+    \      },\n      \"lines\": true,\n      \"linewidth\": 1,\n      \"links\": [],\n\
+    \      \"nullPointMode\": \"null\",\n      \"percentage\": false,\n      \"pointradius\"\
+    : 5,\n      \"points\": false,\n      \"renderer\": \"flot\",\n      \"seriesOverrides\"\
+    : [],\n      \"spaceLength\": 10,\n      \"stack\": false,\n      \"steppedLine\"\
+    : false,\n      \"targets\": [\n        {\n          \"expr\": \"sum(irate(envoy_http_downstream_rq_xx{envoy_response_code_class=\\\
+    \"2\\\"}[1m])) / sum(irate(envoy_http_downstream_rq_total[1m]))\",\n         \
+    \ \"format\": \"time_series\",\n          \"intervalFactor\": 1,\n          \"\
+    legendFormat\": \"% 2xx\",\n          \"refId\": \"B\"\n        },\n        {\n\
+    \          \"expr\": \"sum(irate(envoy_http_downstream_rq_xx{envoy_response_code_class=\\\
+    \"4\\\"}[1m])) / sum(irate(envoy_http_downstream_rq_total[1m]))\",\n         \
+    \ \"format\": \"time_series\",\n          \"intervalFactor\": 1,\n          \"\
+    legendFormat\": \"% 4xx\",\n          \"refId\": \"C\"\n        },\n        {\n\
+    \          \"expr\": \"sum(irate(envoy_http_downstream_rq_xx{envoy_response_code_class=\\\
+    \"5\\\"}[1m])) / sum(irate(envoy_http_downstream_rq_total[1m]))\",\n         \
+    \ \"format\": \"time_series\",\n          \"intervalFactor\": 1,\n          \"\
+    legendFormat\": \"% 5xx\",\n          \"refId\": \"A\"\n        }\n      ],\n\
+    \      \"thresholds\": [],\n      \"timeFrom\": null,\n      \"timeRegions\":\
+    \ [],\n      \"timeShift\": null,\n      \"title\": \"Percent Response Code per\
+    \ Second\",\n      \"tooltip\": {\n        \"shared\": true,\n        \"sort\"\
+    : 0,\n        \"value_type\": \"individual\"\n      },\n      \"type\": \"graph\"\
+    ,\n      \"xaxis\": {\n        \"buckets\": null,\n        \"mode\": \"time\"\
+    ,\n        \"name\": null,\n        \"show\": true,\n        \"values\": []\n\
+    \      },\n      \"yaxes\": [\n        {\n          \"format\": \"short\",\n \
+    \         \"label\": null,\n          \"logBase\": 1,\n          \"max\": null,\n\
+    \          \"min\": null,\n          \"show\": true\n        },\n        {\n \
+    \         \"format\": \"short\",\n          \"label\": null,\n          \"logBase\"\
+    : 1,\n          \"max\": null,\n          \"min\": null,\n          \"show\":\
+    \ true\n        }\n      ],\n      \"yaxis\": {\n        \"align\": false,\n \
+    \       \"alignLevel\": null\n      }\n    },\n    {\n      \"aliasColors\": {\n\
+    \        \"2xx\": \"#7eb26d\",\n        \"4xx\": \"#eab839\",\n        \"5xx\"\
+    : \"#bf1b00\"\n      },\n      \"bars\": false,\n      \"dashLength\": 10,\n \
+    \     \"dashes\": false,\n      \"datasource\": \"gloo\",\n      \"fill\": 1,\n\
+    \      \"gridPos\": {\n        \"h\": 9,\n        \"w\": 12,\n        \"x\": 0,\n\
+    \        \"y\": 9\n      },\n      \"id\": 2,\n      \"legend\": {\n        \"\
+    avg\": false,\n        \"current\": false,\n        \"max\": false,\n        \"\
+    min\": false,\n        \"show\": true,\n        \"total\": false,\n        \"\
+    values\": false\n      },\n      \"lines\": true,\n      \"linewidth\": 1,\n \
+    \     \"links\": [],\n      \"nullPointMode\": \"null\",\n      \"percentage\"\
+    : false,\n      \"pointradius\": 5,\n      \"points\": false,\n      \"renderer\"\
+    : \"flot\",\n      \"seriesOverrides\": [],\n      \"spaceLength\": 10,\n    \
+    \  \"stack\": false,\n      \"steppedLine\": false,\n      \"targets\": [\n  \
+    \      {\n          \"expr\": \"sum(irate(envoy_http_downstream_rq_xx{envoy_response_code_class=\\\
+    \"2\\\"}[1m]))\",\n          \"format\": \"time_series\",\n          \"intervalFactor\"\
+    : 1,\n          \"legendFormat\": \"2xx\",\n          \"refId\": \"A\"\n     \
+    \   },\n        {\n          \"expr\": \"sum(irate(envoy_http_downstream_rq_xx{envoy_response_code_class=\\\
+    \"4\\\"}[1m]))\",\n          \"format\": \"time_series\",\n          \"intervalFactor\"\
+    : 1,\n          \"legendFormat\": \"4xx\",\n          \"refId\": \"B\"\n     \
+    \   },\n        {\n          \"expr\": \"sum(irate(envoy_http_downstream_rq_xx{envoy_response_code_class=\\\
+    \"5\\\"}[1m]))\",\n          \"format\": \"time_series\",\n          \"intervalFactor\"\
+    : 1,\n          \"legendFormat\": \"5xx\",\n          \"refId\": \"C\"\n     \
+    \   }\n      ],\n      \"thresholds\": [],\n      \"timeFrom\": null,\n      \"\
+    timeRegions\": [],\n      \"timeShift\": null,\n      \"title\": \"Response Codes\
+    \ per Second\",\n      \"tooltip\": {\n        \"shared\": true,\n        \"sort\"\
+    : 0,\n        \"value_type\": \"individual\"\n      },\n      \"type\": \"graph\"\
+    ,\n      \"xaxis\": {\n        \"buckets\": null,\n        \"mode\": \"time\"\
+    ,\n        \"name\": null,\n        \"show\": true,\n        \"values\": []\n\
+    \      },\n      \"yaxes\": [\n        {\n          \"format\": \"short\",\n \
+    \         \"label\": null,\n          \"logBase\": 1,\n          \"max\": null,\n\
+    \          \"min\": null,\n          \"show\": true\n        },\n        {\n \
+    \         \"format\": \"short\",\n          \"label\": null,\n          \"logBase\"\
+    : 1,\n          \"max\": null,\n          \"min\": null,\n          \"show\":\
+    \ true\n        }\n      ],\n      \"yaxis\": {\n        \"align\": false,\n \
+    \       \"alignLevel\": null\n      }\n    },\n    {\n      \"aliasColors\": {},\n\
+    \      \"bars\": false,\n      \"dashLength\": 10,\n      \"dashes\": false,\n\
+    \      \"datasource\": \"gloo\",\n      \"fill\": 1,\n      \"gridPos\": {\n \
+    \       \"h\": 9,\n        \"w\": 12,\n        \"x\": 12,\n        \"y\": 9\n\
+    \      },\n      \"id\": 12,\n      \"legend\": {\n        \"alignAsTable\": true,\n\
+    \        \"avg\": true,\n        \"current\": false,\n        \"max\": true,\n\
+    \        \"min\": true,\n        \"rightSide\": false,\n        \"show\": true,\n\
+    \        \"total\": false,\n        \"values\": true\n      },\n      \"lines\"\
+    : true,\n      \"linewidth\": 1,\n      \"links\": [],\n      \"nullPointMode\"\
+    : \"null\",\n      \"percentage\": false,\n      \"pointradius\": 5,\n      \"\
+    points\": false,\n      \"renderer\": \"flot\",\n      \"seriesOverrides\": [],\n\
+    \      \"spaceLength\": 10,\n      \"stack\": false,\n      \"steppedLine\": false,\n\
+    \      \"targets\": [\n        {\n          \"expr\": \"sum(rate(envoy_cluster_upstream_rq_time_sum{envoy_cluster_name=~\\\
+    \".*_gloo-system\\\",envoy_cluster_name!~\\\"kube*|gloo*\\\"}[1m])) / sum(rate(envoy_cluster_upstream_rq_time_count{envoy_cluster_name=~\\\
+    \".*_gloo-system\\\",envoy_cluster_name!~\\\"kube*|gloo*\\\"}[1m]))\",\n     \
+    \     \"format\": \"time_series\",\n          \"intervalFactor\": 1,\n       \
+    \   \"legendFormat\": \"average time to upstream\",\n          \"refId\": \"A\"\
+    \n        },\n        {\n          \"expr\": \"sum(rate(envoy_http_downstream_rq_time_sum{envoy_http_conn_manager_prefix!~\\\
+    \"admin|prometheus|async-client\\\"}[1m])) / sum(rate(envoy_http_downstream_rq_time_count{envoy_http_conn_manager_prefix!~\\\
+    \"(admin|prometheus|async-client)\\\"}[1m]))\",\n          \"format\": \"time_series\"\
+    ,\n          \"hide\": false,\n          \"intervalFactor\": 1,\n          \"\
+    legendFormat\": \"average time from downstream\",\n          \"refId\": \"B\"\n\
+    \        }\n      ],\n      \"thresholds\": [],\n      \"timeFrom\": null,\n \
+    \     \"timeRegions\": [],\n      \"timeShift\": null,\n      \"title\": \"Average\
+    \ Request Time\",\n      \"tooltip\": {\n        \"shared\": true,\n        \"\
+    sort\": 0,\n        \"value_type\": \"individual\"\n      },\n      \"type\":\
+    \ \"graph\",\n      \"xaxis\": {\n        \"buckets\": null,\n        \"mode\"\
+    : \"time\",\n        \"name\": null,\n        \"show\": true,\n        \"values\"\
+    : []\n      },\n      \"yaxes\": [\n        {\n          \"format\": \"ms\",\n\
+    \          \"label\": \"\",\n          \"logBase\": 1,\n          \"max\": null,\n\
+    \          \"min\": null,\n          \"show\": true\n        },\n        {\n \
+    \         \"format\": \"short\",\n          \"label\": null,\n          \"logBase\"\
+    : 1,\n          \"max\": null,\n          \"min\": null,\n          \"show\":\
+    \ true\n        }\n      ],\n      \"yaxis\": {\n        \"align\": false,\n \
+    \       \"alignLevel\": null\n      }\n    },\n    {\n      \"aliasColors\": {\n\
+    \        \"P90\": \"#7eb26d\",\n        \"P95\": \"#eab839\",\n        \"P99\"\
+    : \"#6ed0e0\",\n        \"upstream p95\": \"#f4d598\",\n        \"upstream p99\"\
+    : \"#e5a8e2\"\n      },\n      \"bars\": false,\n      \"dashLength\": 10,\n \
+    \     \"dashes\": false,\n      \"fill\": 1,\n      \"gridPos\": {\n        \"\
+    h\": 9,\n        \"w\": 12,\n        \"x\": 0,\n        \"y\": 18\n      },\n\
+    \      \"id\": 16,\n      \"legend\": {\n        \"alignAsTable\": false,\n  \
+    \      \"avg\": false,\n        \"current\": false,\n        \"max\": false,\n\
+    \        \"min\": false,\n        \"show\": true,\n        \"total\": false,\n\
+    \        \"values\": false\n      },\n      \"lines\": true,\n      \"linewidth\"\
+    : 1,\n      \"links\": [],\n      \"nullPointMode\": \"null\",\n      \"percentage\"\
+    : false,\n      \"pointradius\": 5,\n      \"points\": false,\n      \"renderer\"\
+    : \"flot\",\n      \"seriesOverrides\": [],\n      \"spaceLength\": 10,\n    \
+    \  \"stack\": false,\n      \"steppedLine\": false,\n      \"targets\": [\n  \
+    \      {\n          \"expr\": \"histogram_quantile(0.90, sum(rate(envoy_cluster_upstream_rq_time_bucket[1m]))\
+    \ by (le))\",\n          \"format\": \"time_series\",\n          \"intervalFactor\"\
+    : 1,\n          \"legendFormat\": \"P90\",\n          \"refId\": \"C\"\n     \
+    \   },\n        {\n          \"expr\": \"histogram_quantile(0.95, sum(rate(envoy_cluster_upstream_rq_time_bucket[1m]))\
+    \ by (le))\",\n          \"format\": \"time_series\",\n          \"intervalFactor\"\
+    : 1,\n          \"legendFormat\": \"P95\",\n          \"refId\": \"A\"\n     \
+    \   },\n        {\n          \"expr\": \"histogram_quantile(0.99, sum(rate(envoy_cluster_upstream_rq_time_bucket[1m]))\
+    \ by (le))\",\n          \"format\": \"time_series\",\n          \"intervalFactor\"\
+    : 1,\n          \"legendFormat\": \"P99\",\n          \"refId\": \"B\"\n     \
+    \   }\n      ],\n      \"thresholds\": [],\n      \"timeFrom\": null,\n      \"\
+    timeRegions\": [],\n      \"timeShift\": null,\n      \"title\": \"Upstream Request\
+    \ Time Percentiles\",\n      \"tooltip\": {\n        \"shared\": true,\n     \
+    \   \"sort\": 2,\n        \"value_type\": \"individual\"\n      },\n      \"transparent\"\
+    : false,\n      \"type\": \"graph\",\n      \"xaxis\": {\n        \"buckets\"\
+    : null,\n        \"mode\": \"time\",\n        \"name\": null,\n        \"show\"\
+    : true,\n        \"values\": []\n      },\n      \"yaxes\": [\n        {\n   \
+    \       \"format\": \"ms\",\n          \"label\": null,\n          \"logBase\"\
+    : 1,\n          \"max\": null,\n          \"min\": null,\n          \"show\":\
+    \ true\n        },\n        {\n          \"format\": \"short\",\n          \"\
+    label\": null,\n          \"logBase\": 1,\n          \"max\": null,\n        \
+    \  \"min\": null,\n          \"show\": true\n        }\n      ],\n      \"yaxis\"\
+    : {\n        \"align\": false,\n        \"alignLevel\": null\n      }\n    },\n\
+    \    {\n      \"aliasColors\": {\n        \"P90\": \"#7eb26d\",\n        \"P95\"\
+    : \"#eab839\",\n        \"P99\": \"#6ed0e0\"\n      },\n      \"bars\": false,\n\
+    \      \"dashLength\": 10,\n      \"dashes\": false,\n      \"fill\": 1,\n   \
+    \   \"gridPos\": {\n        \"h\": 9,\n        \"w\": 12,\n        \"x\": 12,\n\
+    \        \"y\": 18\n      },\n      \"id\": 18,\n      \"legend\": {\n       \
+    \ \"avg\": false,\n        \"current\": false,\n        \"max\": false,\n    \
+    \    \"min\": false,\n        \"show\": true,\n        \"total\": false,\n   \
+    \     \"values\": false\n      },\n      \"lines\": true,\n      \"linewidth\"\
+    : 1,\n      \"links\": [],\n      \"nullPointMode\": \"null\",\n      \"percentage\"\
+    : false,\n      \"pointradius\": 5,\n      \"points\": false,\n      \"renderer\"\
+    : \"flot\",\n      \"seriesOverrides\": [],\n      \"spaceLength\": 10,\n    \
+    \  \"stack\": false,\n      \"steppedLine\": false,\n      \"targets\": [\n  \
+    \      {\n          \"expr\": \"histogram_quantile(0.90, sum(rate(envoy_http_downstream_rq_time_bucket[1m]))\
+    \ by (le))\",\n          \"format\": \"time_series\",\n          \"intervalFactor\"\
+    : 1,\n          \"legendFormat\": \"P90\",\n          \"refId\": \"A\"\n     \
+    \   },\n        {\n          \"expr\": \"histogram_quantile(0.95, sum(rate(envoy_http_downstream_rq_time_bucket[1m]))\
+    \ by (le))\",\n          \"format\": \"time_series\",\n          \"intervalFactor\"\
+    : 1,\n          \"legendFormat\": \"P95\",\n          \"refId\": \"B\"\n     \
+    \   },\n        {\n          \"expr\": \"histogram_quantile(0.99, sum(rate(envoy_http_downstream_rq_time_bucket[1m]))\
+    \ by (le))\",\n          \"format\": \"time_series\",\n          \"intervalFactor\"\
+    : 1,\n          \"legendFormat\": \"P99\",\n          \"refId\": \"C\"\n     \
+    \   }\n      ],\n      \"thresholds\": [],\n      \"timeFrom\": null,\n      \"\
+    timeRegions\": [],\n      \"timeShift\": null,\n      \"title\": \"Round Trip\
+    \ Time Percentiles\",\n      \"tooltip\": {\n        \"shared\": true,\n     \
+    \   \"sort\": 0,\n        \"value_type\": \"individual\"\n      },\n      \"type\"\
+    : \"graph\",\n      \"xaxis\": {\n        \"buckets\": null,\n        \"mode\"\
+    : \"time\",\n        \"name\": null,\n        \"show\": true,\n        \"values\"\
+    : []\n      },\n      \"yaxes\": [\n        {\n          \"format\": \"ms\",\n\
+    \          \"label\": null,\n          \"logBase\": 1,\n          \"max\": null,\n\
+    \          \"min\": null,\n          \"show\": true\n        },\n        {\n \
+    \         \"format\": \"short\",\n          \"label\": null,\n          \"logBase\"\
+    : 1,\n          \"max\": null,\n          \"min\": null,\n          \"show\":\
+    \ true\n        }\n      ],\n      \"yaxis\": {\n        \"align\": false,\n \
+    \       \"alignLevel\": null\n      }\n    },\n    {\n      \"aliasColors\": {\n\
+    \        \"Denied\": \"#eab839\",\n        \"Error\": \"#bf1b00\",\n        \"\
+    OK\": \"#7eb26d\",\n        \"Total\": \"#6ed0e0\"\n      },\n      \"bars\":\
+    \ false,\n      \"dashLength\": 10,\n      \"dashes\": false,\n      \"fill\"\
+    : 1,\n      \"gridPos\": {\n        \"h\": 9,\n        \"w\": 12,\n        \"\
+    x\": 0,\n        \"y\": 27\n      },\n      \"id\": 20,\n      \"legend\": {\n\
+    \        \"alignAsTable\": false,\n        \"avg\": false,\n        \"current\"\
+    : false,\n        \"max\": false,\n        \"min\": false,\n        \"show\":\
+    \ true,\n        \"total\": false,\n        \"values\": false\n      },\n    \
+    \  \"lines\": true,\n      \"linewidth\": 1,\n      \"links\": [],\n      \"nullPointMode\"\
+    : \"null\",\n      \"percentage\": false,\n      \"pointradius\": 5,\n      \"\
+    points\": false,\n      \"renderer\": \"flot\",\n      \"seriesOverrides\": [],\n\
+    \      \"spaceLength\": 10,\n      \"stack\": false,\n      \"steppedLine\": false,\n\
+    \      \"targets\": [\n        {\n          \"expr\": \"sum(increase(envoy_cluster_ext_authz_ok[1m]))\"\
+    ,\n          \"format\": \"time_series\",\n          \"intervalFactor\": 1,\n\
+    \          \"legendFormat\": \"OK\",\n          \"refId\": \"A\"\n        },\n\
+    \        {\n          \"expr\": \"sum(increase(envoy_cluster_ext_authz_denied[1m]))\"\
+    ,\n          \"format\": \"time_series\",\n          \"intervalFactor\": 1,\n\
+    \          \"legendFormat\": \"Denied\",\n          \"refId\": \"B\"\n       \
+    \ },\n        {\n          \"expr\": \"sum(increase(envoy_cluster_ext_authz_error[1m]))\"\
+    ,\n          \"format\": \"time_series\",\n          \"intervalFactor\": 1,\n\
+    \          \"legendFormat\": \"Error\",\n          \"refId\": \"C\"\n        },\n\
+    \        {\n          \"expr\": \"sum(increase(envoy_cluster_ext_authz_ok[1m]))\
+    \ + sum(increase(envoy_cluster_ext_authz_denied[1m])) + sum(increase(envoy_cluster_ext_authz_error[1m]))\"\
+    ,\n          \"format\": \"time_series\",\n          \"intervalFactor\": 1,\n\
+    \          \"legendFormat\": \"Total\",\n          \"refId\": \"D\"\n        }\n\
+    \      ],\n      \"thresholds\": [],\n      \"timeFrom\": null,\n      \"timeRegions\"\
+    : [],\n      \"timeShift\": null,\n      \"title\": \"External Auth Requests\"\
+    ,\n      \"tooltip\": {\n        \"shared\": true,\n        \"sort\": 0,\n   \
+    \     \"value_type\": \"individual\"\n      },\n      \"type\": \"graph\",\n \
+    \     \"xaxis\": {\n        \"buckets\": null,\n        \"mode\": \"time\",\n\
+    \        \"name\": null,\n        \"show\": true,\n        \"values\": []\n  \
+    \    },\n      \"yaxes\": [\n        {\n          \"format\": \"short\",\n   \
+    \       \"label\": null,\n          \"logBase\": 1,\n          \"max\": null,\n\
+    \          \"min\": null,\n          \"show\": true\n        },\n        {\n \
+    \         \"format\": \"short\",\n          \"label\": null,\n          \"logBase\"\
+    : 1,\n          \"max\": null,\n          \"min\": null,\n          \"show\":\
+    \ true\n        }\n      ],\n      \"yaxis\": {\n        \"align\": false,\n \
+    \       \"alignLevel\": null\n      }\n    }\n  ],\n  \"schemaVersion\": 16,\n\
+    \  \"style\": \"dark\",\n  \"tags\": [],\n  \"templating\": {\n    \"list\": []\n\
+    \  },\n  \"time\": {\n    \"from\": \"now-6h\",\n    \"to\": \"now\"\n  },\n \
+    \ \"timepicker\": {\n    \"refresh_intervals\": [\n      \"5s\",\n      \"10s\"\
+    ,\n      \"30s\",\n      \"1m\",\n      \"5m\",\n      \"15m\",\n      \"30m\"\
+    ,\n      \"1h\",\n      \"2h\",\n      \"1d\"\n    ],\n    \"time_options\": [\n\
+    \      \"5m\",\n      \"15m\",\n      \"1h\",\n      \"6h\",\n      \"12h\",\n\
+    \      \"24h\",\n      \"2d\",\n      \"7d\",\n      \"30d\"\n    ]\n  },\n  \"\
+    timezone\": \"\",\n  \"title\": \"Envoy Statistics\",\n  \"uid\": \"envoy\",\n\
+    \  \"version\": 1\n}"
+  kubernetes.json: "{\n  \"annotations\": {\n    \"list\": [\n      {\n        \"\
+    builtIn\": 1,\n        \"datasource\": \"-- Grafana --\",\n        \"enable\"\
+    : true,\n        \"hide\": true,\n        \"iconColor\": \"rgba(0, 211, 255, 1)\"\
+    ,\n        \"name\": \"Annotations & Alerts\",\n        \"type\": \"dashboard\"\
+    \n      }\n    ]\n  },\n  \"description\": \"Monitors Kubernetes cluster using\
+    \ Prometheus. Shows overall cluster CPU / Memory / Filesystem usage as well as\
+    \ individual pod, containers, systemd services statistics. Uses cAdvisor metrics\
+    \ only.\",\n  \"editable\": true,\n  \"gnetId\": 315,\n  \"graphTooltip\": 0,\n\
+    \  \"iteration\": 1548361690492,\n  \"links\": [],\n  \"panels\": [\n    {\n \
+    \     \"collapsed\": false,\n      \"gridPos\": {\n        \"h\": 1,\n       \
+    \ \"w\": 24,\n        \"x\": 0,\n        \"y\": 0\n      },\n      \"id\": 33,\n\
+    \      \"panels\": [],\n      \"title\": \"Network I/O pressure\",\n      \"type\"\
+    : \"row\"\n    },\n    {\n      \"aliasColors\": {},\n      \"bars\": false,\n\
+    \      \"dashLength\": 10,\n      \"dashes\": false,\n      \"datasource\": \"\
+    gloo\",\n      \"decimals\": 2,\n      \"editable\": true,\n      \"error\": false,\n\
+    \      \"fill\": 1,\n      \"grid\": {},\n      \"gridPos\": {\n        \"h\"\
+    : 5,\n        \"w\": 24,\n        \"x\": 0,\n        \"y\": 1\n      },\n    \
+    \  \"height\": \"200px\",\n      \"id\": 32,\n      \"isNew\": true,\n      \"\
+    legend\": {\n        \"alignAsTable\": false,\n        \"avg\": true,\n      \
+    \  \"current\": true,\n        \"max\": false,\n        \"min\": false,\n    \
+    \    \"rightSide\": false,\n        \"show\": false,\n        \"sideWidth\": 200,\n\
+    \        \"sort\": \"current\",\n        \"sortDesc\": true,\n        \"total\"\
+    : false,\n        \"values\": true\n      },\n      \"lines\": true,\n      \"\
+    linewidth\": 2,\n      \"links\": [],\n      \"nullPointMode\": \"connected\"\
+    ,\n      \"percentage\": false,\n      \"pointradius\": 5,\n      \"points\":\
+    \ false,\n      \"renderer\": \"flot\",\n      \"seriesOverrides\": [],\n    \
+    \  \"spaceLength\": 10,\n      \"stack\": false,\n      \"steppedLine\": false,\n\
+    \      \"targets\": [\n        {\n          \"expr\": \"sum (rate (container_network_receive_bytes_total{kubernetes_io_hostname=~\\\
+    \"^$Node$\\\", namespace=\\\"$Namespace\\\"}[1m]))\",\n          \"format\": \"\
+    time_series\",\n          \"instant\": false,\n          \"interval\": \"10s\"\
+    ,\n          \"intervalFactor\": 1,\n          \"legendFormat\": \"Received\"\
+    ,\n          \"metric\": \"network\",\n          \"refId\": \"A\",\n         \
+    \ \"step\": 10\n        },\n        {\n          \"expr\": \"- sum (rate (container_network_transmit_bytes_total{kubernetes_io_hostname=~\\\
+    \"^$Node$\\\", namespace=\\\"$Namespace\\\"}[1m]))\",\n          \"format\": \"\
+    time_series\",\n          \"instant\": false,\n          \"interval\": \"10s\"\
+    ,\n          \"intervalFactor\": 1,\n          \"legendFormat\": \"Sent\",\n \
+    \         \"metric\": \"network\",\n          \"refId\": \"B\",\n          \"\
+    step\": 10\n        }\n      ],\n      \"thresholds\": [],\n      \"timeFrom\"\
+    : null,\n      \"timeRegions\": [],\n      \"timeShift\": null,\n      \"title\"\
+    : \"Network I/O pressure\",\n      \"tooltip\": {\n        \"msResolution\": false,\n\
+    \        \"shared\": true,\n        \"sort\": 0,\n        \"value_type\": \"cumulative\"\
+    \n      },\n      \"transparent\": false,\n      \"type\": \"graph\",\n      \"\
+    xaxis\": {\n        \"buckets\": null,\n        \"mode\": \"time\",\n        \"\
+    name\": null,\n        \"show\": true,\n        \"values\": []\n      },\n   \
+    \   \"yaxes\": [\n        {\n          \"format\": \"Bps\",\n          \"label\"\
+    : null,\n          \"logBase\": 1,\n          \"max\": null,\n          \"min\"\
+    : null,\n          \"show\": true\n        },\n        {\n          \"format\"\
+    : \"Bps\",\n          \"label\": null,\n          \"logBase\": 1,\n          \"\
+    max\": null,\n          \"min\": null,\n          \"show\": false\n        }\n\
+    \      ],\n      \"yaxis\": {\n        \"align\": false,\n        \"alignLevel\"\
+    : null\n      }\n    },\n    {\n      \"collapsed\": false,\n      \"gridPos\"\
+    : {\n        \"h\": 1,\n        \"w\": 24,\n        \"x\": 0,\n        \"y\":\
+    \ 6\n      },\n      \"id\": 34,\n      \"panels\": [],\n      \"title\": \"Total\
+    \ usage\",\n      \"type\": \"row\"\n    },\n    {\n      \"cacheTimeout\": null,\n\
+    \      \"colorBackground\": false,\n      \"colorValue\": true,\n      \"colors\"\
+    : [\n        \"rgba(50, 172, 45, 0.97)\",\n        \"rgba(237, 129, 40, 0.89)\"\
+    ,\n        \"rgba(245, 54, 54, 0.9)\"\n      ],\n      \"datasource\": \"gloo\"\
+    ,\n      \"editable\": true,\n      \"error\": false,\n      \"format\": \"percent\"\
+    ,\n      \"gauge\": {\n        \"maxValue\": 100,\n        \"minValue\": 0,\n\
+    \        \"show\": true,\n        \"thresholdLabels\": false,\n        \"thresholdMarkers\"\
+    : true\n      },\n      \"gridPos\": {\n        \"h\": 5,\n        \"w\": 8,\n\
+    \        \"x\": 0,\n        \"y\": 7\n      },\n      \"height\": \"180px\",\n\
+    \      \"id\": 4,\n      \"interval\": null,\n      \"isNew\": true,\n      \"\
+    links\": [],\n      \"mappingType\": 1,\n      \"mappingTypes\": [\n        {\n\
+    \          \"name\": \"value to text\",\n          \"value\": 1\n        },\n\
+    \        {\n          \"name\": \"range to text\",\n          \"value\": 2\n \
+    \       }\n      ],\n      \"maxDataPoints\": 100,\n      \"nullPointMode\": \"\
+    connected\",\n      \"nullText\": null,\n      \"postfix\": \"\",\n      \"postfixFontSize\"\
+    : \"50%\",\n      \"prefix\": \"\",\n      \"prefixFontSize\": \"50%\",\n    \
+    \  \"rangeMaps\": [\n        {\n          \"from\": \"null\",\n          \"text\"\
+    : \"N/A\",\n          \"to\": \"null\"\n        }\n      ],\n      \"sparkline\"\
+    : {\n        \"fillColor\": \"rgba(31, 118, 189, 0.18)\",\n        \"full\": false,\n\
+    \        \"lineColor\": \"rgb(31, 120, 193)\",\n        \"show\": false\n    \
+    \  },\n      \"tableColumn\": \"\",\n      \"targets\": [\n        {\n       \
+    \   \"expr\": \"sum (container_memory_working_set_bytes{id=\\\"/\\\",kubernetes_io_hostname=~\\\
+    \"^$Node$\\\"}) / sum (machine_memory_bytes{kubernetes_io_hostname=~\\\"^$Node$\\\
+    \"}) * 100\",\n          \"interval\": \"10s\",\n          \"intervalFactor\"\
+    : 1,\n          \"refId\": \"A\",\n          \"step\": 10\n        }\n      ],\n\
+    \      \"thresholds\": \"65, 90\",\n      \"title\": \"Cluster memory usage\"\
+    ,\n      \"transparent\": false,\n      \"type\": \"singlestat\",\n      \"valueFontSize\"\
+    : \"80%\",\n      \"valueMaps\": [\n        {\n          \"op\": \"=\",\n    \
+    \      \"text\": \"N/A\",\n          \"value\": \"null\"\n        }\n      ],\n\
+    \      \"valueName\": \"current\"\n    },\n    {\n      \"cacheTimeout\": null,\n\
+    \      \"colorBackground\": false,\n      \"colorValue\": true,\n      \"colors\"\
+    : [\n        \"rgba(50, 172, 45, 0.97)\",\n        \"rgba(237, 129, 40, 0.89)\"\
+    ,\n        \"rgba(245, 54, 54, 0.9)\"\n      ],\n      \"datasource\": \"gloo\"\
+    ,\n      \"decimals\": 2,\n      \"editable\": true,\n      \"error\": false,\n\
+    \      \"format\": \"percent\",\n      \"gauge\": {\n        \"maxValue\": 100,\n\
+    \        \"minValue\": 0,\n        \"show\": true,\n        \"thresholdLabels\"\
+    : false,\n        \"thresholdMarkers\": true\n      },\n      \"gridPos\": {\n\
+    \        \"h\": 5,\n        \"w\": 8,\n        \"x\": 8,\n        \"y\": 7\n \
+    \     },\n      \"height\": \"180px\",\n      \"id\": 6,\n      \"interval\":\
+    \ null,\n      \"isNew\": true,\n      \"links\": [],\n      \"mappingType\":\
+    \ 1,\n      \"mappingTypes\": [\n        {\n          \"name\": \"value to text\"\
+    ,\n          \"value\": 1\n        },\n        {\n          \"name\": \"range\
+    \ to text\",\n          \"value\": 2\n        }\n      ],\n      \"maxDataPoints\"\
+    : 100,\n      \"nullPointMode\": \"connected\",\n      \"nullText\": null,\n \
+    \     \"postfix\": \"\",\n      \"postfixFontSize\": \"50%\",\n      \"prefix\"\
+    : \"\",\n      \"prefixFontSize\": \"50%\",\n      \"rangeMaps\": [\n        {\n\
+    \          \"from\": \"null\",\n          \"text\": \"N/A\",\n          \"to\"\
+    : \"null\"\n        }\n      ],\n      \"sparkline\": {\n        \"fillColor\"\
+    : \"rgba(31, 118, 189, 0.18)\",\n        \"full\": false,\n        \"lineColor\"\
+    : \"rgb(31, 120, 193)\",\n        \"show\": false\n      },\n      \"tableColumn\"\
+    : \"\",\n      \"targets\": [\n        {\n          \"expr\": \"sum (rate (container_cpu_usage_seconds_total{id=\\\
+    \"/\\\",kubernetes_io_hostname=~\\\"^$Node$\\\"}[1m])) / sum (machine_cpu_cores{kubernetes_io_hostname=~\\\
+    \"^$Node$\\\"}) * 100\",\n          \"interval\": \"10s\",\n          \"intervalFactor\"\
+    : 1,\n          \"refId\": \"A\",\n          \"step\": 10\n        }\n      ],\n\
+    \      \"thresholds\": \"65, 90\",\n      \"title\": \"Cluster CPU usage (1m avg)\"\
+    ,\n      \"type\": \"singlestat\",\n      \"valueFontSize\": \"80%\",\n      \"\
+    valueMaps\": [\n        {\n          \"op\": \"=\",\n          \"text\": \"N/A\"\
+    ,\n          \"value\": \"null\"\n        }\n      ],\n      \"valueName\": \"\
+    current\"\n    },\n    {\n      \"cacheTimeout\": null,\n      \"colorBackground\"\
+    : false,\n      \"colorValue\": true,\n      \"colors\": [\n        \"rgba(50,\
+    \ 172, 45, 0.97)\",\n        \"rgba(237, 129, 40, 0.89)\",\n        \"rgba(245,\
+    \ 54, 54, 0.9)\"\n      ],\n      \"datasource\": \"gloo\",\n      \"decimals\"\
+    : 2,\n      \"editable\": true,\n      \"error\": false,\n      \"format\": \"\
+    percent\",\n      \"gauge\": {\n        \"maxValue\": 100,\n        \"minValue\"\
+    : 0,\n        \"show\": true,\n        \"thresholdLabels\": false,\n        \"\
+    thresholdMarkers\": true\n      },\n      \"gridPos\": {\n        \"h\": 5,\n\
+    \        \"w\": 8,\n        \"x\": 16,\n        \"y\": 7\n      },\n      \"height\"\
+    : \"180px\",\n      \"id\": 7,\n      \"interval\": null,\n      \"isNew\": true,\n\
+    \      \"links\": [],\n      \"mappingType\": 1,\n      \"mappingTypes\": [\n\
+    \        {\n          \"name\": \"value to text\",\n          \"value\": 1\n \
+    \       },\n        {\n          \"name\": \"range to text\",\n          \"value\"\
+    : 2\n        }\n      ],\n      \"maxDataPoints\": 100,\n      \"nullPointMode\"\
+    : \"connected\",\n      \"nullText\": null,\n      \"postfix\": \"\",\n      \"\
+    postfixFontSize\": \"50%\",\n      \"prefix\": \"\",\n      \"prefixFontSize\"\
+    : \"50%\",\n      \"rangeMaps\": [\n        {\n          \"from\": \"null\",\n\
+    \          \"text\": \"N/A\",\n          \"to\": \"null\"\n        }\n      ],\n\
+    \      \"sparkline\": {\n        \"fillColor\": \"rgba(31, 118, 189, 0.18)\",\n\
+    \        \"full\": false,\n        \"lineColor\": \"rgb(31, 120, 193)\",\n   \
+    \     \"show\": false\n      },\n      \"tableColumn\": \"\",\n      \"targets\"\
+    : [\n        {\n          \"expr\": \"sum (container_fs_usage_bytes{device=~\\\
+    \"^/dev/[sv]d[a-z][1-9]$\\\",id=\\\"/\\\",kubernetes_io_hostname=~\\\"^$Node$\\\
+    \"}) / sum (container_fs_limit_bytes{device=~\\\"^/dev/[sv]d[a-z][1-9]$\\\",id=\\\
+    \"/\\\",kubernetes_io_hostname=~\\\"^$Node$\\\"}) * 100\",\n          \"interval\"\
+    : \"10s\",\n          \"intervalFactor\": 1,\n          \"legendFormat\": \"\"\
+    ,\n          \"metric\": \"\",\n          \"refId\": \"A\",\n          \"step\"\
+    : 10\n        }\n      ],\n      \"thresholds\": \"65, 90\",\n      \"title\"\
+    : \"Cluster filesystem usage\",\n      \"type\": \"singlestat\",\n      \"valueFontSize\"\
+    : \"80%\",\n      \"valueMaps\": [\n        {\n          \"op\": \"=\",\n    \
+    \      \"text\": \"N/A\",\n          \"value\": \"null\"\n        }\n      ],\n\
+    \      \"valueName\": \"current\"\n    },\n    {\n      \"cacheTimeout\": null,\n\
+    \      \"colorBackground\": false,\n      \"colorValue\": false,\n      \"colors\"\
+    : [\n        \"rgba(50, 172, 45, 0.97)\",\n        \"rgba(237, 129, 40, 0.89)\"\
+    ,\n        \"rgba(245, 54, 54, 0.9)\"\n      ],\n      \"datasource\": \"gloo\"\
+    ,\n      \"decimals\": 2,\n      \"editable\": true,\n      \"error\": false,\n\
+    \      \"format\": \"bytes\",\n      \"gauge\": {\n        \"maxValue\": 100,\n\
+    \        \"minValue\": 0,\n        \"show\": false,\n        \"thresholdLabels\"\
+    : false,\n        \"thresholdMarkers\": true\n      },\n      \"gridPos\": {\n\
+    \        \"h\": 3,\n        \"w\": 4,\n        \"x\": 0,\n        \"y\": 12\n\
+    \      },\n      \"height\": \"1px\",\n      \"id\": 9,\n      \"interval\": null,\n\
+    \      \"isNew\": true,\n      \"links\": [],\n      \"mappingType\": 1,\n   \
+    \   \"mappingTypes\": [\n        {\n          \"name\": \"value to text\",\n \
+    \         \"value\": 1\n        },\n        {\n          \"name\": \"range to\
+    \ text\",\n          \"value\": 2\n        }\n      ],\n      \"maxDataPoints\"\
+    : 100,\n      \"nullPointMode\": \"connected\",\n      \"nullText\": null,\n \
+    \     \"postfix\": \"\",\n      \"postfixFontSize\": \"20%\",\n      \"prefix\"\
+    : \"\",\n      \"prefixFontSize\": \"20%\",\n      \"rangeMaps\": [\n        {\n\
+    \          \"from\": \"null\",\n          \"text\": \"N/A\",\n          \"to\"\
+    : \"null\"\n        }\n      ],\n      \"sparkline\": {\n        \"fillColor\"\
+    : \"rgba(31, 118, 189, 0.18)\",\n        \"full\": false,\n        \"lineColor\"\
+    : \"rgb(31, 120, 193)\",\n        \"show\": false\n      },\n      \"tableColumn\"\
+    : \"\",\n      \"targets\": [\n        {\n          \"expr\": \"sum (container_memory_working_set_bytes{id=\\\
+    \"/\\\",kubernetes_io_hostname=~\\\"^$Node$\\\"})\",\n          \"interval\":\
+    \ \"10s\",\n          \"intervalFactor\": 1,\n          \"refId\": \"A\",\n  \
+    \        \"step\": 10\n        }\n      ],\n      \"thresholds\": \"\",\n    \
+    \  \"title\": \"Used\",\n      \"type\": \"singlestat\",\n      \"valueFontSize\"\
+    : \"50%\",\n      \"valueMaps\": [\n        {\n          \"op\": \"=\",\n    \
+    \      \"text\": \"N/A\",\n          \"value\": \"null\"\n        }\n      ],\n\
+    \      \"valueName\": \"current\"\n    },\n    {\n      \"cacheTimeout\": null,\n\
+    \      \"colorBackground\": false,\n      \"colorValue\": false,\n      \"colors\"\
+    : [\n        \"rgba(50, 172, 45, 0.97)\",\n        \"rgba(237, 129, 40, 0.89)\"\
+    ,\n        \"rgba(245, 54, 54, 0.9)\"\n      ],\n      \"datasource\": \"gloo\"\
+    ,\n      \"decimals\": 2,\n      \"editable\": true,\n      \"error\": false,\n\
+    \      \"format\": \"bytes\",\n      \"gauge\": {\n        \"maxValue\": 100,\n\
+    \        \"minValue\": 0,\n        \"show\": false,\n        \"thresholdLabels\"\
+    : false,\n        \"thresholdMarkers\": true\n      },\n      \"gridPos\": {\n\
+    \        \"h\": 3,\n        \"w\": 4,\n        \"x\": 4,\n        \"y\": 12\n\
+    \      },\n      \"height\": \"1px\",\n      \"id\": 10,\n      \"interval\":\
+    \ null,\n      \"isNew\": true,\n      \"links\": [],\n      \"mappingType\":\
+    \ 1,\n      \"mappingTypes\": [\n        {\n          \"name\": \"value to text\"\
+    ,\n          \"value\": 1\n        },\n        {\n          \"name\": \"range\
+    \ to text\",\n          \"value\": 2\n        }\n      ],\n      \"maxDataPoints\"\
+    : 100,\n      \"nullPointMode\": \"connected\",\n      \"nullText\": null,\n \
+    \     \"postfix\": \"\",\n      \"postfixFontSize\": \"50%\",\n      \"prefix\"\
+    : \"\",\n      \"prefixFontSize\": \"50%\",\n      \"rangeMaps\": [\n        {\n\
+    \          \"from\": \"null\",\n          \"text\": \"N/A\",\n          \"to\"\
+    : \"null\"\n        }\n      ],\n      \"sparkline\": {\n        \"fillColor\"\
+    : \"rgba(31, 118, 189, 0.18)\",\n        \"full\": false,\n        \"lineColor\"\
+    : \"rgb(31, 120, 193)\",\n        \"show\": false\n      },\n      \"tableColumn\"\
+    : \"\",\n      \"targets\": [\n        {\n          \"expr\": \"sum (machine_memory_bytes{kubernetes_io_hostname=~\\\
+    \"^$Node$\\\"})\",\n          \"interval\": \"10s\",\n          \"intervalFactor\"\
+    : 1,\n          \"refId\": \"A\",\n          \"step\": 10\n        }\n      ],\n\
+    \      \"thresholds\": \"\",\n      \"title\": \"Total\",\n      \"type\": \"\
+    singlestat\",\n      \"valueFontSize\": \"50%\",\n      \"valueMaps\": [\n   \
+    \     {\n          \"op\": \"=\",\n          \"text\": \"N/A\",\n          \"\
+    value\": \"null\"\n        }\n      ],\n      \"valueName\": \"current\"\n   \
+    \ },\n    {\n      \"cacheTimeout\": null,\n      \"colorBackground\": false,\n\
+    \      \"colorValue\": false,\n      \"colors\": [\n        \"rgba(50, 172, 45,\
+    \ 0.97)\",\n        \"rgba(237, 129, 40, 0.89)\",\n        \"rgba(245, 54, 54,\
+    \ 0.9)\"\n      ],\n      \"datasource\": \"gloo\",\n      \"decimals\": 2,\n\
+    \      \"editable\": true,\n      \"error\": false,\n      \"format\": \"none\"\
+    ,\n      \"gauge\": {\n        \"maxValue\": 100,\n        \"minValue\": 0,\n\
+    \        \"show\": false,\n        \"thresholdLabels\": false,\n        \"thresholdMarkers\"\
+    : true\n      },\n      \"gridPos\": {\n        \"h\": 3,\n        \"w\": 4,\n\
+    \        \"x\": 8,\n        \"y\": 12\n      },\n      \"height\": \"1px\",\n\
+    \      \"id\": 11,\n      \"interval\": null,\n      \"isNew\": true,\n      \"\
+    links\": [],\n      \"mappingType\": 1,\n      \"mappingTypes\": [\n        {\n\
+    \          \"name\": \"value to text\",\n          \"value\": 1\n        },\n\
+    \        {\n          \"name\": \"range to text\",\n          \"value\": 2\n \
+    \       }\n      ],\n      \"maxDataPoints\": 100,\n      \"nullPointMode\": \"\
+    connected\",\n      \"nullText\": null,\n      \"postfix\": \" cores\",\n    \
+    \  \"postfixFontSize\": \"30%\",\n      \"prefix\": \"\",\n      \"prefixFontSize\"\
+    : \"50%\",\n      \"rangeMaps\": [\n        {\n          \"from\": \"null\",\n\
+    \          \"text\": \"N/A\",\n          \"to\": \"null\"\n        }\n      ],\n\
+    \      \"sparkline\": {\n        \"fillColor\": \"rgba(31, 118, 189, 0.18)\",\n\
+    \        \"full\": false,\n        \"lineColor\": \"rgb(31, 120, 193)\",\n   \
+    \     \"show\": false\n      },\n      \"tableColumn\": \"\",\n      \"targets\"\
+    : [\n        {\n          \"expr\": \"sum (rate (container_cpu_usage_seconds_total{id=\\\
+    \"/\\\",kubernetes_io_hostname=~\\\"^$Node$\\\"}[1m]))\",\n          \"interval\"\
+    : \"10s\",\n          \"intervalFactor\": 1,\n          \"refId\": \"A\",\n  \
+    \        \"step\": 10\n        }\n      ],\n      \"thresholds\": \"\",\n    \
+    \  \"title\": \"Used\",\n      \"type\": \"singlestat\",\n      \"valueFontSize\"\
+    : \"50%\",\n      \"valueMaps\": [\n        {\n          \"op\": \"=\",\n    \
+    \      \"text\": \"N/A\",\n          \"value\": \"null\"\n        }\n      ],\n\
+    \      \"valueName\": \"current\"\n    },\n    {\n      \"cacheTimeout\": null,\n\
+    \      \"colorBackground\": false,\n      \"colorValue\": false,\n      \"colors\"\
+    : [\n        \"rgba(50, 172, 45, 0.97)\",\n        \"rgba(237, 129, 40, 0.89)\"\
+    ,\n        \"rgba(245, 54, 54, 0.9)\"\n      ],\n      \"datasource\": \"gloo\"\
+    ,\n      \"decimals\": 2,\n      \"editable\": true,\n      \"error\": false,\n\
+    \      \"format\": \"none\",\n      \"gauge\": {\n        \"maxValue\": 100,\n\
+    \        \"minValue\": 0,\n        \"show\": false,\n        \"thresholdLabels\"\
+    : false,\n        \"thresholdMarkers\": true\n      },\n      \"gridPos\": {\n\
+    \        \"h\": 3,\n        \"w\": 4,\n        \"x\": 12,\n        \"y\": 12\n\
+    \      },\n      \"height\": \"1px\",\n      \"id\": 12,\n      \"interval\":\
+    \ null,\n      \"isNew\": true,\n      \"links\": [],\n      \"mappingType\":\
+    \ 1,\n      \"mappingTypes\": [\n        {\n          \"name\": \"value to text\"\
+    ,\n          \"value\": 1\n        },\n        {\n          \"name\": \"range\
+    \ to text\",\n          \"value\": 2\n        }\n      ],\n      \"maxDataPoints\"\
+    : 100,\n      \"nullPointMode\": \"connected\",\n      \"nullText\": null,\n \
+    \     \"postfix\": \" cores\",\n      \"postfixFontSize\": \"30%\",\n      \"\
+    prefix\": \"\",\n      \"prefixFontSize\": \"50%\",\n      \"rangeMaps\": [\n\
+    \        {\n          \"from\": \"null\",\n          \"text\": \"N/A\",\n    \
+    \      \"to\": \"null\"\n        }\n      ],\n      \"sparkline\": {\n       \
+    \ \"fillColor\": \"rgba(31, 118, 189, 0.18)\",\n        \"full\": false,\n   \
+    \     \"lineColor\": \"rgb(31, 120, 193)\",\n        \"show\": false\n      },\n\
+    \      \"tableColumn\": \"\",\n      \"targets\": [\n        {\n          \"expr\"\
+    : \"sum (machine_cpu_cores{kubernetes_io_hostname=~\\\"^$Node$\\\"})\",\n    \
+    \      \"interval\": \"10s\",\n          \"intervalFactor\": 1,\n          \"\
+    refId\": \"A\",\n          \"step\": 10\n        }\n      ],\n      \"thresholds\"\
+    : \"\",\n      \"title\": \"Total\",\n      \"type\": \"singlestat\",\n      \"\
+    valueFontSize\": \"50%\",\n      \"valueMaps\": [\n        {\n          \"op\"\
+    : \"=\",\n          \"text\": \"N/A\",\n          \"value\": \"null\"\n      \
+    \  }\n      ],\n      \"valueName\": \"current\"\n    },\n    {\n      \"cacheTimeout\"\
+    : null,\n      \"colorBackground\": false,\n      \"colorValue\": false,\n   \
+    \   \"colors\": [\n        \"rgba(50, 172, 45, 0.97)\",\n        \"rgba(237, 129,\
+    \ 40, 0.89)\",\n        \"rgba(245, 54, 54, 0.9)\"\n      ],\n      \"datasource\"\
+    : \"gloo\",\n      \"decimals\": 2,\n      \"editable\": true,\n      \"error\"\
+    : false,\n      \"format\": \"bytes\",\n      \"gauge\": {\n        \"maxValue\"\
+    : 100,\n        \"minValue\": 0,\n        \"show\": false,\n        \"thresholdLabels\"\
+    : false,\n        \"thresholdMarkers\": true\n      },\n      \"gridPos\": {\n\
+    \        \"h\": 3,\n        \"w\": 4,\n        \"x\": 16,\n        \"y\": 12\n\
+    \      },\n      \"height\": \"1px\",\n      \"id\": 13,\n      \"interval\":\
+    \ null,\n      \"isNew\": true,\n      \"links\": [],\n      \"mappingType\":\
+    \ 1,\n      \"mappingTypes\": [\n        {\n          \"name\": \"value to text\"\
+    ,\n          \"value\": 1\n        },\n        {\n          \"name\": \"range\
+    \ to text\",\n          \"value\": 2\n        }\n      ],\n      \"maxDataPoints\"\
+    : 100,\n      \"nullPointMode\": \"connected\",\n      \"nullText\": null,\n \
+    \     \"postfix\": \"\",\n      \"postfixFontSize\": \"50%\",\n      \"prefix\"\
+    : \"\",\n      \"prefixFontSize\": \"50%\",\n      \"rangeMaps\": [\n        {\n\
+    \          \"from\": \"null\",\n          \"text\": \"N/A\",\n          \"to\"\
+    : \"null\"\n        }\n      ],\n      \"sparkline\": {\n        \"fillColor\"\
+    : \"rgba(31, 118, 189, 0.18)\",\n        \"full\": false,\n        \"lineColor\"\
+    : \"rgb(31, 120, 193)\",\n        \"show\": false\n      },\n      \"tableColumn\"\
+    : \"\",\n      \"targets\": [\n        {\n          \"expr\": \"sum (container_fs_usage_bytes{device=~\\\
+    \"^/dev/[sv]d[a-z][1-9]$\\\",id=\\\"/\\\",kubernetes_io_hostname=~\\\"^$Node$\\\
+    \"})\",\n          \"interval\": \"10s\",\n          \"intervalFactor\": 1,\n\
+    \          \"refId\": \"A\",\n          \"step\": 10\n        }\n      ],\n  \
+    \    \"thresholds\": \"\",\n      \"title\": \"Used\",\n      \"type\": \"singlestat\"\
+    ,\n      \"valueFontSize\": \"50%\",\n      \"valueMaps\": [\n        {\n    \
+    \      \"op\": \"=\",\n          \"text\": \"N/A\",\n          \"value\": \"null\"\
+    \n        }\n      ],\n      \"valueName\": \"current\"\n    },\n    {\n     \
+    \ \"cacheTimeout\": null,\n      \"colorBackground\": false,\n      \"colorValue\"\
+    : false,\n      \"colors\": [\n        \"rgba(50, 172, 45, 0.97)\",\n        \"\
+    rgba(237, 129, 40, 0.89)\",\n        \"rgba(245, 54, 54, 0.9)\"\n      ],\n  \
+    \    \"datasource\": \"gloo\",\n      \"decimals\": 2,\n      \"editable\": true,\n\
+    \      \"error\": false,\n      \"format\": \"bytes\",\n      \"gauge\": {\n \
+    \       \"maxValue\": 100,\n        \"minValue\": 0,\n        \"show\": false,\n\
+    \        \"thresholdLabels\": false,\n        \"thresholdMarkers\": true\n   \
+    \   },\n      \"gridPos\": {\n        \"h\": 3,\n        \"w\": 4,\n        \"\
+    x\": 20,\n        \"y\": 12\n      },\n      \"height\": \"1px\",\n      \"id\"\
+    : 14,\n      \"interval\": null,\n      \"isNew\": true,\n      \"links\": [],\n\
+    \      \"mappingType\": 1,\n      \"mappingTypes\": [\n        {\n          \"\
+    name\": \"value to text\",\n          \"value\": 1\n        },\n        {\n  \
+    \        \"name\": \"range to text\",\n          \"value\": 2\n        }\n   \
+    \   ],\n      \"maxDataPoints\": 100,\n      \"nullPointMode\": \"connected\"\
+    ,\n      \"nullText\": null,\n      \"postfix\": \"\",\n      \"postfixFontSize\"\
+    : \"50%\",\n      \"prefix\": \"\",\n      \"prefixFontSize\": \"50%\",\n    \
+    \  \"rangeMaps\": [\n        {\n          \"from\": \"null\",\n          \"text\"\
+    : \"N/A\",\n          \"to\": \"null\"\n        }\n      ],\n      \"sparkline\"\
+    : {\n        \"fillColor\": \"rgba(31, 118, 189, 0.18)\",\n        \"full\": false,\n\
+    \        \"lineColor\": \"rgb(31, 120, 193)\",\n        \"show\": false\n    \
+    \  },\n      \"tableColumn\": \"\",\n      \"targets\": [\n        {\n       \
+    \   \"expr\": \"sum (container_fs_limit_bytes{device=~\\\"^/dev/[sv]d[a-z][1-9]$\\\
+    \",id=\\\"/\\\",kubernetes_io_hostname=~\\\"^$Node$\\\"})\",\n          \"interval\"\
+    : \"10s\",\n          \"intervalFactor\": 1,\n          \"refId\": \"A\",\n  \
+    \        \"step\": 10\n        }\n      ],\n      \"thresholds\": \"\",\n    \
+    \  \"title\": \"Total\",\n      \"type\": \"singlestat\",\n      \"valueFontSize\"\
+    : \"50%\",\n      \"valueMaps\": [\n        {\n          \"op\": \"=\",\n    \
+    \      \"text\": \"N/A\",\n          \"value\": \"null\"\n        }\n      ],\n\
+    \      \"valueName\": \"current\"\n    },\n    {\n      \"collapsed\": false,\n\
+    \      \"gridPos\": {\n        \"h\": 1,\n        \"w\": 24,\n        \"x\": 0,\n\
+    \        \"y\": 15\n      },\n      \"id\": 35,\n      \"panels\": [],\n     \
+    \ \"title\": \"Pods CPU usage\",\n      \"type\": \"row\"\n    },\n    {\n   \
+    \   \"aliasColors\": {},\n      \"bars\": false,\n      \"dashLength\": 10,\n\
+    \      \"dashes\": false,\n      \"datasource\": \"gloo\",\n      \"decimals\"\
+    : 3,\n      \"editable\": true,\n      \"error\": false,\n      \"fill\": 0,\n\
+    \      \"grid\": {},\n      \"gridPos\": {\n        \"h\": 7,\n        \"w\":\
+    \ 24,\n        \"x\": 0,\n        \"y\": 16\n      },\n      \"height\": \"\"\
+    ,\n      \"id\": 17,\n      \"isNew\": true,\n      \"legend\": {\n        \"\
+    alignAsTable\": true,\n        \"avg\": true,\n        \"current\": true,\n  \
+    \      \"max\": false,\n        \"min\": false,\n        \"rightSide\": true,\n\
+    \        \"show\": true,\n        \"sort\": \"current\",\n        \"sortDesc\"\
+    : true,\n        \"total\": false,\n        \"values\": true\n      },\n     \
+    \ \"lines\": true,\n      \"linewidth\": 2,\n      \"links\": [],\n      \"nullPointMode\"\
+    : \"connected\",\n      \"percentage\": false,\n      \"pointradius\": 5,\n  \
+    \    \"points\": false,\n      \"renderer\": \"flot\",\n      \"seriesOverrides\"\
+    : [],\n      \"spaceLength\": 10,\n      \"stack\": false,\n      \"steppedLine\"\
+    : true,\n      \"targets\": [\n        {\n          \"expr\": \"sum (rate (container_cpu_usage_seconds_total{image!=\\\
+    \"\\\",name=~\\\"^k8s_.*\\\",kubernetes_io_hostname=~\\\"^$Node$\\\"}[1m])) by\
+    \ (pod_name)\",\n          \"format\": \"time_series\",\n          \"interval\"\
+    : \"10s\",\n          \"intervalFactor\": 1,\n          \"legendFormat\": \"{{\
+    \ pod_name }}\",\n          \"metric\": \"container_cpu\",\n          \"refId\"\
+    : \"A\",\n          \"step\": 10\n        }\n      ],\n      \"thresholds\": [],\n\
+    \      \"timeFrom\": null,\n      \"timeRegions\": [],\n      \"timeShift\": null,\n\
+    \      \"title\": \"Pods CPU usage (1m avg)\",\n      \"tooltip\": {\n       \
+    \ \"msResolution\": true,\n        \"shared\": true,\n        \"sort\": 2,\n \
+    \       \"value_type\": \"cumulative\"\n      },\n      \"transparent\": false,\n\
+    \      \"type\": \"graph\",\n      \"xaxis\": {\n        \"buckets\": null,\n\
+    \        \"mode\": \"time\",\n        \"name\": null,\n        \"show\": true,\n\
+    \        \"values\": []\n      },\n      \"yaxes\": [\n        {\n          \"\
+    format\": \"none\",\n          \"label\": \"cores\",\n          \"logBase\": 1,\n\
+    \          \"max\": null,\n          \"min\": null,\n          \"show\": true\n\
+    \        },\n        {\n          \"format\": \"short\",\n          \"label\"\
+    : null,\n          \"logBase\": 1,\n          \"max\": null,\n          \"min\"\
+    : null,\n          \"show\": false\n        }\n      ],\n      \"yaxis\": {\n\
+    \        \"align\": false,\n        \"alignLevel\": null\n      }\n    },\n  \
+    \  {\n      \"collapsed\": true,\n      \"gridPos\": {\n        \"h\": 1,\n  \
+    \      \"w\": 24,\n        \"x\": 0,\n        \"y\": 23\n      },\n      \"id\"\
+    : 36,\n      \"panels\": [\n        {\n          \"aliasColors\": {},\n      \
+    \    \"bars\": false,\n          \"datasource\": \"gloo\",\n          \"decimals\"\
+    : 3,\n          \"editable\": true,\n          \"error\": false,\n          \"\
+    fill\": 0,\n          \"grid\": {},\n          \"gridPos\": {\n            \"\
+    h\": 7,\n            \"w\": 24,\n            \"x\": 0,\n            \"y\": 23\n\
+    \          },\n          \"height\": \"\",\n          \"id\": 23,\n          \"\
+    isNew\": true,\n          \"legend\": {\n            \"alignAsTable\": true,\n\
+    \            \"avg\": true,\n            \"current\": true,\n            \"max\"\
+    : false,\n            \"min\": false,\n            \"rightSide\": true,\n    \
+    \        \"show\": true,\n            \"sort\": \"current\",\n            \"sortDesc\"\
+    : true,\n            \"total\": false,\n            \"values\": true\n       \
+    \   },\n          \"lines\": true,\n          \"linewidth\": 2,\n          \"\
+    links\": [],\n          \"nullPointMode\": \"connected\",\n          \"percentage\"\
+    : false,\n          \"pointradius\": 5,\n          \"points\": false,\n      \
+    \    \"renderer\": \"flot\",\n          \"seriesOverrides\": [],\n          \"\
+    stack\": false,\n          \"steppedLine\": true,\n          \"targets\": [\n\
+    \            {\n              \"expr\": \"sum (rate (container_cpu_usage_seconds_total{systemd_service_name!=\\\
+    \"\\\",kubernetes_io_hostname=~\\\"^$Node$\\\"}[1m])) by (systemd_service_name)\"\
+    ,\n              \"hide\": false,\n              \"interval\": \"10s\",\n    \
+    \          \"intervalFactor\": 1,\n              \"legendFormat\": \"{{ systemd_service_name\
+    \ }}\",\n              \"metric\": \"container_cpu\",\n              \"refId\"\
+    : \"A\",\n              \"step\": 10\n            }\n          ],\n          \"\
+    thresholds\": [],\n          \"timeFrom\": null,\n          \"timeShift\": null,\n\
+    \          \"title\": \"System services CPU usage (1m avg)\",\n          \"tooltip\"\
+    : {\n            \"msResolution\": true,\n            \"shared\": true,\n    \
+    \        \"sort\": 2,\n            \"value_type\": \"cumulative\"\n          },\n\
+    \          \"type\": \"graph\",\n          \"xaxis\": {\n            \"show\"\
+    : true\n          },\n          \"yaxes\": [\n            {\n              \"\
+    format\": \"none\",\n              \"label\": \"cores\",\n              \"logBase\"\
+    : 1,\n              \"max\": null,\n              \"min\": null,\n           \
+    \   \"show\": true\n            },\n            {\n              \"format\": \"\
+    short\",\n              \"label\": null,\n              \"logBase\": 1,\n    \
+    \          \"max\": null,\n              \"min\": null,\n              \"show\"\
+    : false\n            }\n          ]\n        }\n      ],\n      \"title\": \"\
+    System services CPU usage\",\n      \"type\": \"row\"\n    },\n    {\n      \"\
+    collapsed\": true,\n      \"gridPos\": {\n        \"h\": 1,\n        \"w\": 24,\n\
+    \        \"x\": 0,\n        \"y\": 24\n      },\n      \"id\": 37,\n      \"panels\"\
+    : [\n        {\n          \"aliasColors\": {},\n          \"bars\": false,\n \
+    \         \"datasource\": \"gloo\",\n          \"decimals\": 3,\n          \"\
+    editable\": true,\n          \"error\": false,\n          \"fill\": 0,\n     \
+    \     \"grid\": {},\n          \"gridPos\": {\n            \"h\": 7,\n       \
+    \     \"w\": 24,\n            \"x\": 0,\n            \"y\": 24\n          },\n\
+    \          \"height\": \"\",\n          \"id\": 24,\n          \"isNew\": true,\n\
+    \          \"legend\": {\n            \"alignAsTable\": true,\n            \"\
+    avg\": true,\n            \"current\": true,\n            \"hideEmpty\": false,\n\
+    \            \"hideZero\": false,\n            \"max\": false,\n            \"\
+    min\": false,\n            \"rightSide\": true,\n            \"show\": true,\n\
+    \            \"sideWidth\": null,\n            \"sort\": \"current\",\n      \
+    \      \"sortDesc\": true,\n            \"total\": false,\n            \"values\"\
+    : true\n          },\n          \"lines\": true,\n          \"linewidth\": 2,\n\
+    \          \"links\": [],\n          \"nullPointMode\": \"connected\",\n     \
+    \     \"percentage\": false,\n          \"pointradius\": 5,\n          \"points\"\
+    : false,\n          \"renderer\": \"flot\",\n          \"seriesOverrides\": [],\n\
+    \          \"stack\": false,\n          \"steppedLine\": true,\n          \"targets\"\
+    : [\n            {\n              \"expr\": \"sum (rate (container_cpu_usage_seconds_total{image!=\\\
+    \"\\\",name=~\\\"^k8s_.*\\\",container_name!=\\\"POD\\\",kubernetes_io_hostname=~\\\
+    \"^$Node$\\\"}[1m])) by (container_name, pod_name)\",\n              \"hide\"\
+    : false,\n              \"interval\": \"10s\",\n              \"intervalFactor\"\
+    : 1,\n              \"legendFormat\": \"pod: {{ pod_name }} | {{ container_name\
+    \ }}\",\n              \"metric\": \"container_cpu\",\n              \"refId\"\
+    : \"A\",\n              \"step\": 10\n            },\n            {\n        \
+    \      \"expr\": \"sum (rate (container_cpu_usage_seconds_total{image!=\\\"\\\"\
+    ,name!~\\\"^k8s_.*\\\",kubernetes_io_hostname=~\\\"^$Node$\\\"}[1m])) by (kubernetes_io_hostname,\
+    \ name, image)\",\n              \"hide\": false,\n              \"interval\"\
+    : \"10s\",\n              \"intervalFactor\": 1,\n              \"legendFormat\"\
+    : \"docker: {{ kubernetes_io_hostname }} | {{ image }} ({{ name }})\",\n     \
+    \         \"metric\": \"container_cpu\",\n              \"refId\": \"B\",\n  \
+    \            \"step\": 10\n            },\n            {\n              \"expr\"\
+    : \"sum (rate (container_cpu_usage_seconds_total{rkt_container_name!=\\\"\\\"\
+    ,kubernetes_io_hostname=~\\\"^$Node$\\\"}[1m])) by (kubernetes_io_hostname, rkt_container_name)\"\
+    ,\n              \"interval\": \"10s\",\n              \"intervalFactor\": 1,\n\
+    \              \"legendFormat\": \"rkt: {{ kubernetes_io_hostname }} | {{ rkt_container_name\
+    \ }}\",\n              \"metric\": \"container_cpu\",\n              \"refId\"\
+    : \"C\",\n              \"step\": 10\n            }\n          ],\n          \"\
+    thresholds\": [],\n          \"timeFrom\": null,\n          \"timeShift\": null,\n\
+    \          \"title\": \"Containers CPU usage (1m avg)\",\n          \"tooltip\"\
+    : {\n            \"msResolution\": true,\n            \"shared\": true,\n    \
+    \        \"sort\": 2,\n            \"value_type\": \"cumulative\"\n          },\n\
+    \          \"type\": \"graph\",\n          \"xaxis\": {\n            \"show\"\
+    : true\n          },\n          \"yaxes\": [\n            {\n              \"\
+    format\": \"none\",\n              \"label\": \"cores\",\n              \"logBase\"\
+    : 1,\n              \"max\": null,\n              \"min\": null,\n           \
+    \   \"show\": true\n            },\n            {\n              \"format\": \"\
+    short\",\n              \"label\": null,\n              \"logBase\": 1,\n    \
+    \          \"max\": null,\n              \"min\": null,\n              \"show\"\
+    : false\n            }\n          ]\n        }\n      ],\n      \"title\": \"\
+    Containers CPU usage\",\n      \"type\": \"row\"\n    },\n    {\n      \"collapsed\"\
+    : true,\n      \"gridPos\": {\n        \"h\": 1,\n        \"w\": 24,\n       \
+    \ \"x\": 0,\n        \"y\": 25\n      },\n      \"id\": 38,\n      \"panels\"\
+    : [\n        {\n          \"aliasColors\": {},\n          \"bars\": false,\n \
+    \         \"datasource\": \"gloo\",\n          \"decimals\": 3,\n          \"\
+    editable\": true,\n          \"error\": false,\n          \"fill\": 0,\n     \
+    \     \"grid\": {},\n          \"gridPos\": {\n            \"h\": 13,\n      \
+    \      \"w\": 24,\n            \"x\": 0,\n            \"y\": 25\n          },\n\
+    \          \"id\": 20,\n          \"isNew\": true,\n          \"legend\": {\n\
+    \            \"alignAsTable\": true,\n            \"avg\": true,\n           \
+    \ \"current\": true,\n            \"max\": false,\n            \"min\": false,\n\
+    \            \"rightSide\": false,\n            \"show\": true,\n            \"\
+    sort\": \"current\",\n            \"sortDesc\": true,\n            \"total\":\
+    \ false,\n            \"values\": true\n          },\n          \"lines\": true,\n\
+    \          \"linewidth\": 2,\n          \"links\": [],\n          \"nullPointMode\"\
+    : \"connected\",\n          \"percentage\": false,\n          \"pointradius\"\
+    : 5,\n          \"points\": false,\n          \"renderer\": \"flot\",\n      \
+    \    \"seriesOverrides\": [],\n          \"stack\": false,\n          \"steppedLine\"\
+    : true,\n          \"targets\": [\n            {\n              \"expr\": \"sum\
+    \ (rate (container_cpu_usage_seconds_total{id!=\\\"/\\\",kubernetes_io_hostname=~\\\
+    \"^$Node$\\\"}[1m])) by (id)\",\n              \"hide\": false,\n            \
+    \  \"interval\": \"10s\",\n              \"intervalFactor\": 1,\n            \
+    \  \"legendFormat\": \"{{ id }}\",\n              \"metric\": \"container_cpu\"\
+    ,\n              \"refId\": \"A\",\n              \"step\": 10\n            }\n\
+    \          ],\n          \"thresholds\": [],\n          \"timeFrom\": null,\n\
+    \          \"timeShift\": null,\n          \"title\": \"All processes CPU usage\
+    \ (1m avg)\",\n          \"tooltip\": {\n            \"msResolution\": true,\n\
+    \            \"shared\": true,\n            \"sort\": 2,\n            \"value_type\"\
+    : \"cumulative\"\n          },\n          \"type\": \"graph\",\n          \"xaxis\"\
+    : {\n            \"show\": true\n          },\n          \"yaxes\": [\n      \
+    \      {\n              \"format\": \"none\",\n              \"label\": \"cores\"\
+    ,\n              \"logBase\": 1,\n              \"max\": null,\n             \
+    \ \"min\": null,\n              \"show\": true\n            },\n            {\n\
+    \              \"format\": \"short\",\n              \"label\": null,\n      \
+    \        \"logBase\": 1,\n              \"max\": null,\n              \"min\"\
+    : null,\n              \"show\": false\n            }\n          ]\n        }\n\
+    \      ],\n      \"repeat\": null,\n      \"title\": \"All processes CPU usage\"\
+    ,\n      \"type\": \"row\"\n    },\n    {\n      \"collapsed\": false,\n     \
+    \ \"gridPos\": {\n        \"h\": 1,\n        \"w\": 24,\n        \"x\": 0,\n \
+    \       \"y\": 26\n      },\n      \"id\": 39,\n      \"panels\": [],\n      \"\
+    title\": \"Pods memory usage\",\n      \"type\": \"row\"\n    },\n    {\n    \
+    \  \"aliasColors\": {},\n      \"bars\": false,\n      \"dashLength\": 10,\n \
+    \     \"dashes\": false,\n      \"datasource\": \"gloo\",\n      \"decimals\"\
+    : 2,\n      \"editable\": true,\n      \"error\": false,\n      \"fill\": 0,\n\
+    \      \"grid\": {},\n      \"gridPos\": {\n        \"h\": 7,\n        \"w\":\
+    \ 24,\n        \"x\": 0,\n        \"y\": 27\n      },\n      \"id\": 25,\n   \
+    \   \"isNew\": true,\n      \"legend\": {\n        \"alignAsTable\": true,\n \
+    \       \"avg\": true,\n        \"current\": true,\n        \"max\": false,\n\
+    \        \"min\": false,\n        \"rightSide\": true,\n        \"show\": true,\n\
+    \        \"sideWidth\": 200,\n        \"sort\": \"current\",\n        \"sortDesc\"\
+    : true,\n        \"total\": false,\n        \"values\": true\n      },\n     \
+    \ \"lines\": true,\n      \"linewidth\": 2,\n      \"links\": [],\n      \"nullPointMode\"\
+    : \"connected\",\n      \"percentage\": false,\n      \"pointradius\": 5,\n  \
+    \    \"points\": false,\n      \"renderer\": \"flot\",\n      \"seriesOverrides\"\
+    : [],\n      \"spaceLength\": 10,\n      \"stack\": false,\n      \"steppedLine\"\
+    : true,\n      \"targets\": [\n        {\n          \"expr\": \"sum (container_memory_working_set_bytes{image!=\\\
+    \"\\\",name=~\\\"^k8s_.*\\\",kubernetes_io_hostname=~\\\"^$Node$\\\"}) by (pod_name)\"\
+    ,\n          \"format\": \"time_series\",\n          \"interval\": \"10s\",\n\
+    \          \"intervalFactor\": 1,\n          \"legendFormat\": \"{{ pod_name }}\"\
+    ,\n          \"metric\": \"container_memory_usage:sort_desc\",\n          \"refId\"\
+    : \"A\",\n          \"step\": 10\n        }\n      ],\n      \"thresholds\": [],\n\
+    \      \"timeFrom\": null,\n      \"timeRegions\": [],\n      \"timeShift\": null,\n\
+    \      \"title\": \"Pods memory usage\",\n      \"tooltip\": {\n        \"msResolution\"\
+    : false,\n        \"shared\": true,\n        \"sort\": 2,\n        \"value_type\"\
+    : \"cumulative\"\n      },\n      \"type\": \"graph\",\n      \"xaxis\": {\n \
+    \       \"buckets\": null,\n        \"mode\": \"time\",\n        \"name\": null,\n\
+    \        \"show\": true,\n        \"values\": []\n      },\n      \"yaxes\": [\n\
+    \        {\n          \"format\": \"bytes\",\n          \"label\": null,\n   \
+    \       \"logBase\": 1,\n          \"max\": null,\n          \"min\": null,\n\
+    \          \"show\": true\n        },\n        {\n          \"format\": \"short\"\
+    ,\n          \"label\": null,\n          \"logBase\": 1,\n          \"max\": null,\n\
+    \          \"min\": null,\n          \"show\": false\n        }\n      ],\n  \
+    \    \"yaxis\": {\n        \"align\": false,\n        \"alignLevel\": null\n \
+    \     }\n    },\n    {\n      \"collapsed\": true,\n      \"gridPos\": {\n   \
+    \     \"h\": 1,\n        \"w\": 24,\n        \"x\": 0,\n        \"y\": 34\n  \
+    \    },\n      \"id\": 40,\n      \"panels\": [\n        {\n          \"aliasColors\"\
+    : {},\n          \"bars\": false,\n          \"datasource\": \"gloo\",\n     \
+    \     \"decimals\": 2,\n          \"editable\": true,\n          \"error\": false,\n\
+    \          \"fill\": 0,\n          \"grid\": {},\n          \"gridPos\": {\n \
+    \           \"h\": 7,\n            \"w\": 24,\n            \"x\": 0,\n       \
+    \     \"y\": 34\n          },\n          \"id\": 26,\n          \"isNew\": true,\n\
+    \          \"legend\": {\n            \"alignAsTable\": true,\n            \"\
+    avg\": true,\n            \"current\": true,\n            \"max\": false,\n  \
+    \          \"min\": false,\n            \"rightSide\": true,\n            \"show\"\
+    : true,\n            \"sideWidth\": 200,\n            \"sort\": \"current\",\n\
+    \            \"sortDesc\": true,\n            \"total\": false,\n            \"\
+    values\": true\n          },\n          \"lines\": true,\n          \"linewidth\"\
+    : 2,\n          \"links\": [],\n          \"nullPointMode\": \"connected\",\n\
+    \          \"percentage\": false,\n          \"pointradius\": 5,\n          \"\
+    points\": false,\n          \"renderer\": \"flot\",\n          \"seriesOverrides\"\
+    : [],\n          \"stack\": false,\n          \"steppedLine\": true,\n       \
+    \   \"targets\": [\n            {\n              \"expr\": \"sum (container_memory_working_set_bytes{systemd_service_name!=\\\
+    \"\\\",kubernetes_io_hostname=~\\\"^$Node$\\\"}) by (systemd_service_name)\",\n\
+    \              \"interval\": \"10s\",\n              \"intervalFactor\": 1,\n\
+    \              \"legendFormat\": \"{{ systemd_service_name }}\",\n           \
+    \   \"metric\": \"container_memory_usage:sort_desc\",\n              \"refId\"\
+    : \"A\",\n              \"step\": 10\n            }\n          ],\n          \"\
+    thresholds\": [],\n          \"timeFrom\": null,\n          \"timeShift\": null,\n\
+    \          \"title\": \"System services memory usage\",\n          \"tooltip\"\
+    : {\n            \"msResolution\": false,\n            \"shared\": true,\n   \
+    \         \"sort\": 2,\n            \"value_type\": \"cumulative\"\n         \
+    \ },\n          \"type\": \"graph\",\n          \"xaxis\": {\n            \"show\"\
+    : true\n          },\n          \"yaxes\": [\n            {\n              \"\
+    format\": \"bytes\",\n              \"label\": null,\n              \"logBase\"\
+    : 1,\n              \"max\": null,\n              \"min\": null,\n           \
+    \   \"show\": true\n            },\n            {\n              \"format\": \"\
+    short\",\n              \"label\": null,\n              \"logBase\": 1,\n    \
+    \          \"max\": null,\n              \"min\": null,\n              \"show\"\
+    : false\n            }\n          ]\n        }\n      ],\n      \"title\": \"\
+    System services memory usage\",\n      \"type\": \"row\"\n    },\n    {\n    \
+    \  \"collapsed\": true,\n      \"gridPos\": {\n        \"h\": 1,\n        \"w\"\
+    : 24,\n        \"x\": 0,\n        \"y\": 35\n      },\n      \"id\": 41,\n   \
+    \   \"panels\": [\n        {\n          \"aliasColors\": {},\n          \"bars\"\
+    : false,\n          \"datasource\": \"gloo\",\n          \"decimals\": 2,\n  \
+    \        \"editable\": true,\n          \"error\": false,\n          \"fill\"\
+    : 0,\n          \"grid\": {},\n          \"gridPos\": {\n            \"h\": 7,\n\
+    \            \"w\": 24,\n            \"x\": 0,\n            \"y\": 35\n      \
+    \    },\n          \"id\": 27,\n          \"isNew\": true,\n          \"legend\"\
+    : {\n            \"alignAsTable\": true,\n            \"avg\": true,\n       \
+    \     \"current\": true,\n            \"max\": false,\n            \"min\": false,\n\
+    \            \"rightSide\": true,\n            \"show\": true,\n            \"\
+    sideWidth\": 200,\n            \"sort\": \"current\",\n            \"sortDesc\"\
+    : true,\n            \"total\": false,\n            \"values\": true\n       \
+    \   },\n          \"lines\": true,\n          \"linewidth\": 2,\n          \"\
+    links\": [],\n          \"nullPointMode\": \"connected\",\n          \"percentage\"\
+    : false,\n          \"pointradius\": 5,\n          \"points\": false,\n      \
+    \    \"renderer\": \"flot\",\n          \"seriesOverrides\": [],\n          \"\
+    stack\": false,\n          \"steppedLine\": true,\n          \"targets\": [\n\
+    \            {\n              \"expr\": \"sum (container_memory_working_set_bytes{image!=\\\
+    \"\\\",name=~\\\"^k8s_.*\\\",container_name!=\\\"POD\\\",kubernetes_io_hostname=~\\\
+    \"^$Node$\\\"}) by (container_name, pod_name)\",\n              \"interval\":\
+    \ \"10s\",\n              \"intervalFactor\": 1,\n              \"legendFormat\"\
+    : \"pod: {{ pod_name }} | {{ container_name }}\",\n              \"metric\": \"\
+    container_memory_usage:sort_desc\",\n              \"refId\": \"A\",\n       \
+    \       \"step\": 10\n            },\n            {\n              \"expr\": \"\
+    sum (container_memory_working_set_bytes{image!=\\\"\\\",name!~\\\"^k8s_.*\\\"\
+    ,kubernetes_io_hostname=~\\\"^$Node$\\\"}) by (kubernetes_io_hostname, name, image)\"\
+    ,\n              \"interval\": \"10s\",\n              \"intervalFactor\": 1,\n\
+    \              \"legendFormat\": \"docker: {{ kubernetes_io_hostname }} | {{ image\
+    \ }} ({{ name }})\",\n              \"metric\": \"container_memory_usage:sort_desc\"\
+    ,\n              \"refId\": \"B\",\n              \"step\": 10\n            },\n\
+    \            {\n              \"expr\": \"sum (container_memory_working_set_bytes{rkt_container_name!=\\\
+    \"\\\",kubernetes_io_hostname=~\\\"^$Node$\\\"}) by (kubernetes_io_hostname, rkt_container_name)\"\
+    ,\n              \"interval\": \"10s\",\n              \"intervalFactor\": 1,\n\
+    \              \"legendFormat\": \"rkt: {{ kubernetes_io_hostname }} | {{ rkt_container_name\
+    \ }}\",\n              \"metric\": \"container_memory_usage:sort_desc\",\n   \
+    \           \"refId\": \"C\",\n              \"step\": 10\n            }\n   \
+    \       ],\n          \"thresholds\": [],\n          \"timeFrom\": null,\n   \
+    \       \"timeShift\": null,\n          \"title\": \"Containers memory usage\"\
+    ,\n          \"tooltip\": {\n            \"msResolution\": false,\n          \
+    \  \"shared\": true,\n            \"sort\": 2,\n            \"value_type\": \"\
+    cumulative\"\n          },\n          \"type\": \"graph\",\n          \"xaxis\"\
+    : {\n            \"show\": true\n          },\n          \"yaxes\": [\n      \
+    \      {\n              \"format\": \"bytes\",\n              \"label\": null,\n\
+    \              \"logBase\": 1,\n              \"max\": null,\n              \"\
+    min\": null,\n              \"show\": true\n            },\n            {\n  \
+    \            \"format\": \"short\",\n              \"label\": null,\n        \
+    \      \"logBase\": 1,\n              \"max\": null,\n              \"min\": null,\n\
+    \              \"show\": false\n            }\n          ]\n        }\n      ],\n\
+    \      \"title\": \"Containers memory usage\",\n      \"type\": \"row\"\n    },\n\
+    \    {\n      \"collapsed\": true,\n      \"gridPos\": {\n        \"h\": 1,\n\
+    \        \"w\": 24,\n        \"x\": 0,\n        \"y\": 36\n      },\n      \"\
+    id\": 42,\n      \"panels\": [\n        {\n          \"aliasColors\": {},\n  \
+    \        \"bars\": false,\n          \"datasource\": \"gloo\",\n          \"decimals\"\
+    : 2,\n          \"editable\": true,\n          \"error\": false,\n          \"\
+    fill\": 0,\n          \"grid\": {},\n          \"gridPos\": {\n            \"\
+    h\": 13,\n            \"w\": 24,\n            \"x\": 0,\n            \"y\": 36\n\
+    \          },\n          \"id\": 28,\n          \"isNew\": true,\n          \"\
+    legend\": {\n            \"alignAsTable\": true,\n            \"avg\": true,\n\
+    \            \"current\": true,\n            \"max\": false,\n            \"min\"\
+    : false,\n            \"rightSide\": false,\n            \"show\": true,\n   \
+    \         \"sideWidth\": 200,\n            \"sort\": \"current\",\n          \
+    \  \"sortDesc\": true,\n            \"total\": false,\n            \"values\"\
+    : true\n          },\n          \"lines\": true,\n          \"linewidth\": 2,\n\
+    \          \"links\": [],\n          \"nullPointMode\": \"connected\",\n     \
+    \     \"percentage\": false,\n          \"pointradius\": 5,\n          \"points\"\
+    : false,\n          \"renderer\": \"flot\",\n          \"seriesOverrides\": [],\n\
+    \          \"stack\": false,\n          \"steppedLine\": true,\n          \"targets\"\
+    : [\n            {\n              \"expr\": \"sum (container_memory_working_set_bytes{id!=\\\
+    \"/\\\",kubernetes_io_hostname=~\\\"^$Node$\\\"}) by (id)\",\n              \"\
+    interval\": \"10s\",\n              \"intervalFactor\": 1,\n              \"legendFormat\"\
+    : \"{{ id }}\",\n              \"metric\": \"container_memory_usage:sort_desc\"\
+    ,\n              \"refId\": \"A\",\n              \"step\": 10\n            }\n\
+    \          ],\n          \"thresholds\": [],\n          \"timeFrom\": null,\n\
+    \          \"timeShift\": null,\n          \"title\": \"All processes memory usage\"\
+    ,\n          \"tooltip\": {\n            \"msResolution\": false,\n          \
+    \  \"shared\": true,\n            \"sort\": 2,\n            \"value_type\": \"\
+    cumulative\"\n          },\n          \"type\": \"graph\",\n          \"xaxis\"\
+    : {\n            \"show\": true\n          },\n          \"yaxes\": [\n      \
+    \      {\n              \"format\": \"bytes\",\n              \"label\": null,\n\
+    \              \"logBase\": 1,\n              \"max\": null,\n              \"\
+    min\": null,\n              \"show\": true\n            },\n            {\n  \
+    \            \"format\": \"short\",\n              \"label\": null,\n        \
+    \      \"logBase\": 1,\n              \"max\": null,\n              \"min\": null,\n\
+    \              \"show\": false\n            }\n          ]\n        }\n      ],\n\
+    \      \"title\": \"All processes memory usage\",\n      \"type\": \"row\"\n \
+    \   },\n    {\n      \"collapsed\": false,\n      \"gridPos\": {\n        \"h\"\
+    : 1,\n        \"w\": 24,\n        \"x\": 0,\n        \"y\": 37\n      },\n   \
+    \   \"id\": 43,\n      \"panels\": [],\n      \"title\": \"Pods network I/O\"\
+    ,\n      \"type\": \"row\"\n    },\n    {\n      \"aliasColors\": {},\n      \"\
+    bars\": false,\n      \"dashLength\": 10,\n      \"dashes\": false,\n      \"\
+    datasource\": \"gloo\",\n      \"decimals\": 2,\n      \"editable\": true,\n \
+    \     \"error\": false,\n      \"fill\": 1,\n      \"grid\": {},\n      \"gridPos\"\
+    : {\n        \"h\": 7,\n        \"w\": 24,\n        \"x\": 0,\n        \"y\":\
+    \ 38\n      },\n      \"id\": 16,\n      \"isNew\": true,\n      \"legend\": {\n\
+    \        \"alignAsTable\": true,\n        \"avg\": true,\n        \"current\"\
+    : true,\n        \"max\": false,\n        \"min\": false,\n        \"rightSide\"\
+    : true,\n        \"show\": true,\n        \"sideWidth\": 200,\n        \"sort\"\
+    : \"current\",\n        \"sortDesc\": true,\n        \"total\": false,\n     \
+    \   \"values\": true\n      },\n      \"lines\": true,\n      \"linewidth\": 2,\n\
+    \      \"links\": [],\n      \"nullPointMode\": \"connected\",\n      \"percentage\"\
+    : false,\n      \"pointradius\": 5,\n      \"points\": false,\n      \"renderer\"\
+    : \"flot\",\n      \"seriesOverrides\": [],\n      \"spaceLength\": 10,\n    \
+    \  \"stack\": false,\n      \"steppedLine\": false,\n      \"targets\": [\n  \
+    \      {\n          \"expr\": \"sum (rate (container_network_receive_bytes_total{image!=\\\
+    \"\\\",name=~\\\"^k8s_.*\\\",kubernetes_io_hostname=~\\\"^$Node$\\\"}[1m])) by\
+    \ (pod_name)\",\n          \"interval\": \"10s\",\n          \"intervalFactor\"\
+    : 1,\n          \"legendFormat\": \"-> {{ pod_name }}\",\n          \"metric\"\
+    : \"network\",\n          \"refId\": \"A\",\n          \"step\": 10\n        },\n\
+    \        {\n          \"expr\": \"- sum (rate (container_network_transmit_bytes_total{image!=\\\
+    \"\\\",name=~\\\"^k8s_.*\\\",kubernetes_io_hostname=~\\\"^$Node$\\\"}[1m])) by\
+    \ (pod_name)\",\n          \"interval\": \"10s\",\n          \"intervalFactor\"\
+    : 1,\n          \"legendFormat\": \"<- {{ pod_name }}\",\n          \"metric\"\
+    : \"network\",\n          \"refId\": \"B\",\n          \"step\": 10\n        }\n\
+    \      ],\n      \"thresholds\": [],\n      \"timeFrom\": null,\n      \"timeRegions\"\
+    : [],\n      \"timeShift\": null,\n      \"title\": \"Pods network I/O (1m avg)\"\
+    ,\n      \"tooltip\": {\n        \"msResolution\": false,\n        \"shared\"\
+    : true,\n        \"sort\": 2,\n        \"value_type\": \"cumulative\"\n      },\n\
+    \      \"type\": \"graph\",\n      \"xaxis\": {\n        \"buckets\": null,\n\
+    \        \"mode\": \"time\",\n        \"name\": null,\n        \"show\": true,\n\
+    \        \"values\": []\n      },\n      \"yaxes\": [\n        {\n          \"\
+    format\": \"Bps\",\n          \"label\": null,\n          \"logBase\": 1,\n  \
+    \        \"max\": null,\n          \"min\": null,\n          \"show\": true\n\
+    \        },\n        {\n          \"format\": \"short\",\n          \"label\"\
+    : null,\n          \"logBase\": 1,\n          \"max\": null,\n          \"min\"\
+    : null,\n          \"show\": false\n        }\n      ],\n      \"yaxis\": {\n\
+    \        \"align\": false,\n        \"alignLevel\": null\n      }\n    },\n  \
+    \  {\n      \"collapsed\": true,\n      \"gridPos\": {\n        \"h\": 1,\n  \
+    \      \"w\": 24,\n        \"x\": 0,\n        \"y\": 45\n      },\n      \"id\"\
+    : 44,\n      \"panels\": [\n        {\n          \"aliasColors\": {},\n      \
+    \    \"bars\": false,\n          \"datasource\": \"gloo\",\n          \"decimals\"\
+    : 2,\n          \"editable\": true,\n          \"error\": false,\n          \"\
+    fill\": 1,\n          \"grid\": {},\n          \"gridPos\": {\n            \"\
+    h\": 7,\n            \"w\": 24,\n            \"x\": 0,\n            \"y\": 45\n\
+    \          },\n          \"id\": 30,\n          \"isNew\": true,\n          \"\
+    legend\": {\n            \"alignAsTable\": true,\n            \"avg\": true,\n\
+    \            \"current\": true,\n            \"max\": false,\n            \"min\"\
+    : false,\n            \"rightSide\": true,\n            \"show\": true,\n    \
+    \        \"sideWidth\": 200,\n            \"sort\": \"current\",\n           \
+    \ \"sortDesc\": true,\n            \"total\": false,\n            \"values\":\
+    \ true\n          },\n          \"lines\": true,\n          \"linewidth\": 2,\n\
+    \          \"links\": [],\n          \"nullPointMode\": \"connected\",\n     \
+    \     \"percentage\": false,\n          \"pointradius\": 5,\n          \"points\"\
+    : false,\n          \"renderer\": \"flot\",\n          \"seriesOverrides\": [],\n\
+    \          \"stack\": false,\n          \"steppedLine\": false,\n          \"\
+    targets\": [\n            {\n              \"expr\": \"sum (rate (container_network_receive_bytes_total{image!=\\\
+    \"\\\",name=~\\\"^k8s_.*\\\",kubernetes_io_hostname=~\\\"^$Node$\\\"}[1m])) by\
+    \ (container_name, pod_name)\",\n              \"hide\": false,\n            \
+    \  \"interval\": \"10s\",\n              \"intervalFactor\": 1,\n            \
+    \  \"legendFormat\": \"-> pod: {{ pod_name }} | {{ container_name }}\",\n    \
+    \          \"metric\": \"network\",\n              \"refId\": \"B\",\n       \
+    \       \"step\": 10\n            },\n            {\n              \"expr\": \"\
+    - sum (rate (container_network_transmit_bytes_total{image!=\\\"\\\",name=~\\\"\
+    ^k8s_.*\\\",kubernetes_io_hostname=~\\\"^$Node$\\\"}[1m])) by (container_name,\
+    \ pod_name)\",\n              \"hide\": false,\n              \"interval\": \"\
+    10s\",\n              \"intervalFactor\": 1,\n              \"legendFormat\":\
+    \ \"<- pod: {{ pod_name }} | {{ container_name }}\",\n              \"metric\"\
+    : \"network\",\n              \"refId\": \"D\",\n              \"step\": 10\n\
+    \            },\n            {\n              \"expr\": \"sum (rate (container_network_receive_bytes_total{image!=\\\
+    \"\\\",name!~\\\"^k8s_.*\\\",kubernetes_io_hostname=~\\\"^$Node$\\\"}[1m])) by\
+    \ (kubernetes_io_hostname, name, image)\",\n              \"hide\": false,\n \
+    \             \"interval\": \"10s\",\n              \"intervalFactor\": 1,\n \
+    \             \"legendFormat\": \"-> docker: {{ kubernetes_io_hostname }} | {{\
+    \ image }} ({{ name }})\",\n              \"metric\": \"network\",\n         \
+    \     \"refId\": \"A\",\n              \"step\": 10\n            },\n        \
+    \    {\n              \"expr\": \"- sum (rate (container_network_transmit_bytes_total{image!=\\\
+    \"\\\",name!~\\\"^k8s_.*\\\",kubernetes_io_hostname=~\\\"^$Node$\\\"}[1m])) by\
+    \ (kubernetes_io_hostname, name, image)\",\n              \"hide\": false,\n \
+    \             \"interval\": \"10s\",\n              \"intervalFactor\": 1,\n \
+    \             \"legendFormat\": \"<- docker: {{ kubernetes_io_hostname }} | {{\
+    \ image }} ({{ name }})\",\n              \"metric\": \"network\",\n         \
+    \     \"refId\": \"C\",\n              \"step\": 10\n            },\n        \
+    \    {\n              \"expr\": \"sum (rate (container_network_transmit_bytes_total{rkt_container_name!=\\\
+    \"\\\",kubernetes_io_hostname=~\\\"^$Node$\\\"}[1m])) by (kubernetes_io_hostname,\
+    \ rkt_container_name)\",\n              \"hide\": false,\n              \"interval\"\
+    : \"10s\",\n              \"intervalFactor\": 1,\n              \"legendFormat\"\
+    : \"-> rkt: {{ kubernetes_io_hostname }} | {{ rkt_container_name }}\",\n     \
+    \         \"metric\": \"network\",\n              \"refId\": \"E\",\n        \
+    \      \"step\": 10\n            },\n            {\n              \"expr\": \"\
+    - sum (rate (container_network_transmit_bytes_total{rkt_container_name!=\\\"\\\
+    \",kubernetes_io_hostname=~\\\"^$Node$\\\"}[1m])) by (kubernetes_io_hostname,\
+    \ rkt_container_name)\",\n              \"hide\": false,\n              \"interval\"\
+    : \"10s\",\n              \"intervalFactor\": 1,\n              \"legendFormat\"\
+    : \"<- rkt: {{ kubernetes_io_hostname }} | {{ rkt_container_name }}\",\n     \
+    \         \"metric\": \"network\",\n              \"refId\": \"F\",\n        \
+    \      \"step\": 10\n            }\n          ],\n          \"thresholds\": [],\n\
+    \          \"timeFrom\": null,\n          \"timeShift\": null,\n          \"title\"\
+    : \"Containers network I/O (1m avg)\",\n          \"tooltip\": {\n           \
+    \ \"msResolution\": false,\n            \"shared\": true,\n            \"sort\"\
+    : 2,\n            \"value_type\": \"cumulative\"\n          },\n          \"type\"\
+    : \"graph\",\n          \"xaxis\": {\n            \"show\": true\n          },\n\
+    \          \"yaxes\": [\n            {\n              \"format\": \"Bps\",\n \
+    \             \"label\": null,\n              \"logBase\": 1,\n              \"\
+    max\": null,\n              \"min\": null,\n              \"show\": true\n   \
+    \         },\n            {\n              \"format\": \"short\",\n          \
+    \    \"label\": null,\n              \"logBase\": 1,\n              \"max\": null,\n\
+    \              \"min\": null,\n              \"show\": false\n            }\n\
+    \          ]\n        }\n      ],\n      \"title\": \"Containers network I/O\"\
+    ,\n      \"type\": \"row\"\n    },\n    {\n      \"collapsed\": true,\n      \"\
+    gridPos\": {\n        \"h\": 1,\n        \"w\": 24,\n        \"x\": 0,\n     \
+    \   \"y\": 46\n      },\n      \"id\": 45,\n      \"panels\": [\n        {\n \
+    \         \"aliasColors\": {},\n          \"bars\": false,\n          \"datasource\"\
+    : \"gloo\",\n          \"decimals\": 2,\n          \"editable\": true,\n     \
+    \     \"error\": false,\n          \"fill\": 1,\n          \"grid\": {},\n   \
+    \       \"gridPos\": {\n            \"h\": 13,\n            \"w\": 24,\n     \
+    \       \"x\": 0,\n            \"y\": 46\n          },\n          \"id\": 29,\n\
+    \          \"isNew\": true,\n          \"legend\": {\n            \"alignAsTable\"\
+    : true,\n            \"avg\": true,\n            \"current\": true,\n        \
+    \    \"max\": false,\n            \"min\": false,\n            \"rightSide\":\
+    \ false,\n            \"show\": true,\n            \"sideWidth\": 200,\n     \
+    \       \"sort\": \"current\",\n            \"sortDesc\": true,\n            \"\
+    total\": false,\n            \"values\": true\n          },\n          \"lines\"\
+    : true,\n          \"linewidth\": 2,\n          \"links\": [],\n          \"nullPointMode\"\
+    : \"connected\",\n          \"percentage\": false,\n          \"pointradius\"\
+    : 5,\n          \"points\": false,\n          \"renderer\": \"flot\",\n      \
+    \    \"seriesOverrides\": [],\n          \"stack\": false,\n          \"steppedLine\"\
+    : false,\n          \"targets\": [\n            {\n              \"expr\": \"\
+    sum (rate (container_network_receive_bytes_total{id!=\\\"/\\\",kubernetes_io_hostname=~\\\
+    \"^$Node$\\\"}[1m])) by (id)\",\n              \"interval\": \"10s\",\n      \
+    \        \"intervalFactor\": 1,\n              \"legendFormat\": \"-> {{ id }}\"\
+    ,\n              \"metric\": \"network\",\n              \"refId\": \"A\",\n \
+    \             \"step\": 10\n            },\n            {\n              \"expr\"\
+    : \"- sum (rate (container_network_transmit_bytes_total{id!=\\\"/\\\",kubernetes_io_hostname=~\\\
+    \"^$Node$\\\"}[1m])) by (id)\",\n              \"interval\": \"10s\",\n      \
+    \        \"intervalFactor\": 1,\n              \"legendFormat\": \"<- {{ id }}\"\
+    ,\n              \"metric\": \"network\",\n              \"refId\": \"B\",\n \
+    \             \"step\": 10\n            }\n          ],\n          \"thresholds\"\
+    : [],\n          \"timeFrom\": null,\n          \"timeShift\": null,\n       \
+    \   \"title\": \"All processes network I/O (1m avg)\",\n          \"tooltip\"\
+    : {\n            \"msResolution\": false,\n            \"shared\": true,\n   \
+    \         \"sort\": 2,\n            \"value_type\": \"cumulative\"\n         \
+    \ },\n          \"type\": \"graph\",\n          \"xaxis\": {\n            \"show\"\
+    : true\n          },\n          \"yaxes\": [\n            {\n              \"\
+    format\": \"Bps\",\n              \"label\": null,\n              \"logBase\"\
+    : 1,\n              \"max\": null,\n              \"min\": null,\n           \
+    \   \"show\": true\n            },\n            {\n              \"format\": \"\
+    short\",\n              \"label\": null,\n              \"logBase\": 1,\n    \
+    \          \"max\": null,\n              \"min\": null,\n              \"show\"\
+    : false\n            }\n          ]\n        }\n      ],\n      \"title\": \"\
+    All processes network I/O\",\n      \"type\": \"row\"\n    }\n  ],\n  \"refresh\"\
+    : \"10s\",\n  \"schemaVersion\": 16,\n  \"style\": \"dark\",\n  \"tags\": [\n\
+    \    \"kubernetes\"\n  ],\n  \"templating\": {\n    \"list\": [\n      {\n   \
+    \     \"allValue\": \".*\",\n        \"current\": {\n          \"tags\": [],\n\
+    \          \"text\": \"All\",\n          \"value\": \"$__all\"\n        },\n \
+    \       \"datasource\": \"gloo\",\n        \"definition\": \"label_values(kubernetes_io_hostname)\"\
+    ,\n        \"hide\": 0,\n        \"includeAll\": true,\n        \"label\": null,\n\
+    \        \"multi\": false,\n        \"name\": \"Node\",\n        \"options\":\
+    \ [],\n        \"query\": \"label_values(kubernetes_io_hostname)\",\n        \"\
+    refresh\": 1,\n        \"regex\": \"\",\n        \"skipUrlSync\": false,\n   \
+    \     \"sort\": 0,\n        \"tagValuesQuery\": \"\",\n        \"tags\": [],\n\
+    \        \"tagsQuery\": \"\",\n        \"type\": \"query\",\n        \"useTags\"\
+    : false\n      },\n      {\n        \"allValue\": null,\n        \"current\":\
+    \ {\n          \"text\": \"gloo-system\",\n          \"value\": \"gloo-system\"\
+    \n        },\n        \"datasource\": \"gloo\",\n        \"definition\": \"label_values(namespace)\"\
+    ,\n        \"hide\": 0,\n        \"includeAll\": false,\n        \"label\": null,\n\
+    \        \"multi\": false,\n        \"name\": \"Namespace\",\n        \"options\"\
+    : [],\n        \"query\": \"label_values(namespace)\",\n        \"refresh\": 1,\n\
+    \        \"regex\": \"\",\n        \"skipUrlSync\": false,\n        \"sort\":\
+    \ 0,\n        \"tagValuesQuery\": \"\",\n        \"tags\": [],\n        \"tagsQuery\"\
+    : \"\",\n        \"type\": \"query\",\n        \"useTags\": false\n      }\n \
+    \   ]\n  },\n  \"time\": {\n    \"from\": \"now-30m\",\n    \"to\": \"now\"\n\
+    \  },\n  \"timepicker\": {\n    \"refresh_intervals\": [\n      \"5s\",\n    \
+    \  \"10s\",\n      \"30s\",\n      \"1m\",\n      \"5m\",\n      \"15m\",\n  \
+    \    \"30m\",\n      \"1h\",\n      \"2h\",\n      \"1d\"\n    ],\n    \"time_options\"\
+    : [\n      \"5m\",\n      \"15m\",\n      \"1h\",\n      \"6h\",\n      \"12h\"\
+    ,\n      \"24h\",\n      \"2d\",\n      \"7d\",\n      \"30d\"\n    ]\n  },\n\
+    \  \"timezone\": \"browser\",\n  \"title\": \"Kubernetes cluster monitoring (via\
+    \ Prometheus)\",\n  \"uid\": \"kubernetes\",\n  \"version\": 1\n}"
+kind: ConfigMap
+metadata:
+  labels:
+    app: gloo
+    chart: glooe-grafana
+    release: glooe
+  name: glooe-grafana-custom-dashboards
+  namespace: gloo-system

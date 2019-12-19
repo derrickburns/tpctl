@@ -1,0 +1,11 @@
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRole
+metadata:
+  labels:
+    app: glooe-prometheus
+    chart: prometheus-9.5.1
+    component: alertmanager
+    heritage: Helm
+    release: glooe
+  name: glooe-glooe-prometheus-alertmanager
+rules: []
