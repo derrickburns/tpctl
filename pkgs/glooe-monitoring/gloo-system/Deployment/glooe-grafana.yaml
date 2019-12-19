@@ -8,7 +8,7 @@ metadata:
     release: glooe
   name: glooe-grafana
   namespace: gloo-system
-  annotation:
+  annotations:
     secret.reloader.stakater.com/reload: "glooe-grafana"
     configmap.reloader.stakater.com/reload: "glooe-grafana,glooe-grafana-custom-dashboards"
 spec:

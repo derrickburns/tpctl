@@ -6,7 +6,7 @@ metadata:
     gloo: observability
   name: observability
   namespace: gloo-system
-  annotation:
+  annotations:
     secret.reloader.stakater.com/reload: "license,glooe-observability-secrets"
     configmap.reloader.stakater.com/reload: "glooe-observability-config"
 spec:
