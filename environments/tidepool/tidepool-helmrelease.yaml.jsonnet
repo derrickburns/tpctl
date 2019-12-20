@@ -45,7 +45,7 @@ local tidepool(config, prev, namespace) = {
   kind: 'HelmRelease',
   metadata: {
     annotations: {
-                   'fluxcd.io/automated': if lib.getElse(env, 'gitops.enabled', "true") == "true" then "true" else "false"
+                   'fluxcd.io/automated': if lib.getElse(env, 'gitops.enabled', true) then "true" else "false"
                  } + filterAnnotations(env, svcs)
                  + prefixAnnotations('repository', svcs),
     name: 'tidepool',
