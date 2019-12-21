@@ -174,6 +174,7 @@ local tidepool(config, prev, namespace) = {
         store: {
           type: 's3',
         },
+        virtualServices: lib.getElse(env, 'virtualServices, {})
       },
 
       gloo: {
