@@ -54,7 +54,7 @@ local tidepool(config, prev, namespace) = {
   local tp = config.environments[namespace].tidepool,
   local common = {
     podAnnotations: {
-      'config.linkerd.io/proxy-cpu-request': '0.2',
+      //'config.linkerd.io/proxy-cpu-request': '0.2',
       'cluster-autoscaler.kubernetes.io/safe-to-evict': 'true',
     },
     resources: {
