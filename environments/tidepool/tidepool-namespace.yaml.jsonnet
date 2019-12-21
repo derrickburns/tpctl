@@ -1,6 +1,8 @@
+local lib = import '../../lib/lib.jsonnet';
+
 local tracing = import '../../pkgs/tracing/lib.jsonnet';
 
-local gen_namespace(config, namespace) = {
+local namespace(config, namespace) = {
   apiVersion: 'v1',
   kind: 'Namespace',
   metadata: {
@@ -9,10 +11,9 @@ local gen_namespace(config, namespace) = {
       'discovery.solo.io/function_discovery': 'disabled',
     },
     annotations: {
-      'istio-injection': 'disabled',
-      'linkerd.io/inject': 'enabled',
+      'linkerd.io/inject': if lib.getElse(config, 'pkgs.linkerd.enabled', false) then "enabled" else "disabled",
     } + tracing.tracingAnnotation(config)
   },
 };
 
-function(config, prev, namespace) gen_namespace(config, namespace)
+function(config, prev, namespace) namespace(config, namespace)
