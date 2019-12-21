@@ -42,6 +42,9 @@ local helmrelease(config) = {
         'secret.reloader.stakater.com/reload': "pomerium",
         'configmap.reloader.stakater.com/reload': "pomerium",
       },
+      podAnnotations: {
+        'linkerd.io/inject': 'enabled',
+      },
       authenticate: {
         idp: {
           serviceAccount: true,
