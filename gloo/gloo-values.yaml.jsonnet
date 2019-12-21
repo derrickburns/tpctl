@@ -22,7 +22,7 @@ local baseGatewayProxy(config) = {
     httpsPort: 8443,
     runAsUser: 10101,
     extraAnnotations: {
-      'linkerd.io/inject': 'enabled',
+      'linkerd.io/inject': if lib.getElse(config, 'pkgs.linkerd.enabled', false) then "enabled" else "disabled",
     },
   },
   service: {

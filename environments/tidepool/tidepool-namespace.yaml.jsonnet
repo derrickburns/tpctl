@@ -2,7 +2,7 @@ local lib = import '../../lib/lib.jsonnet';
 
 local tracing = import '../../pkgs/tracing/lib.jsonnet';
 
-local namespace(config, namespace) = {
+local gen_namespace(config, namespace) = {
   apiVersion: 'v1',
   kind: 'Namespace',
   metadata: {
@@ -16,4 +16,4 @@ local namespace(config, namespace) = {
   },
 };
 
-function(config, prev, namespace) namespace(config, namespace)
+function(config, prev, namespace) gen_namespace(config, namespace)
