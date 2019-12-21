@@ -61,7 +61,7 @@ local pom = import '../pkgs/pomerium/lib.jsonnet';
             },
             redirectAction: true,
           },
-          'http-internal': {
+          'httpinternal': {
             delegateAction: 'tidepool-routes',
             dnsNames: [
               'internal.%s' % name,
