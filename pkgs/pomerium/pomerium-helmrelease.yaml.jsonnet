@@ -13,6 +13,7 @@ local getPolicy(config) = (
       to: 'http://' + lib.getElse(pkg, 'sso.serviceName', x) + '.' + lib.getElse(pkg, 'namespace', x) + '.svc.cluster.local' + suffix ,
       allowed_groups: lib.getElse(pkg, 'sso.allowed_groups', []),
       allowed_users: lib.getElse(pkg, 'sso.allowed_users', []),
+      allow_websockets: true,
     }
     for x in std.objectFields(pkgs)
     if lib.getElse(pkgs[x], 'sso', {}) != {}
