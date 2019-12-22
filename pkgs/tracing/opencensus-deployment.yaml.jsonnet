@@ -105,4 +105,4 @@ local deployment(config) = {
   },
 };
 
-function(config,prev) function deployment(config)
+function(config,prev) deployment(config)
