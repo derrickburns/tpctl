@@ -6,6 +6,7 @@
 set -o pipefail
 export FLUX_FORWARD_NAMESPACE=flux
 export REVIEWERS="derrickburns pazaan jamesraby"
+export SKIP_REVIEW=true  # FIXME should be passed and not hardcoded
 
 function envoy {
   glooctl proxy served-config
@@ -288,7 +289,9 @@ function check_remote_repo() {
 
 # clean up all temporary files
 function cleanup() {
-  git reset
+  if [ -d .git ]; then
+      git reset
+  fi
   if [ -f "$TMP_DIR" ]; then
     cd /
     rm -rf $TMP_DIR
@@ -719,7 +722,10 @@ function save_changes() {
   start "saving changes to config repo"
   git add .
   expect_success "git add failed"
-  git checkout -b $branch
+  if [ "$branch" != "master" ]; then
+    git checkout -b $branch
+    expect_success "git checkout failed"
+  fi
   expect_success "git checkout failed"
   git commit -m "$1"
   expect_success "git commit failed"
@@ -727,6 +733,10 @@ function save_changes() {
   git push origin $branch
   expect_success "git push failed"
   complete "pushed changes to config repo branch $branch"
+  if [ "$SKIP_REVIEW" == true ]; then
+   echo "Skipping review"
+   return
+  fi
   read -p "${GREEN}PR Message? ${RESET} " -r
   local message=$REPLY
   info "Please select PR reviewer: "
@@ -1052,19 +1062,19 @@ function create_repo() {
   set -x
   read -p "${GREEN}repo name?${RESET} " -r
   REMOTE_REPO=$REPLY
-  DATA='{"name":"yolo-test", "private":"true"}'
+  DATA='{"name":"yolo-test", "private":"true", "auto_init": true}'
   D=$(echo $DATA | sed -e "s/yolo-test/$REMOTE_REPO/")
 
   read -p "${GREEN}Is this for an organization? ${RESET}" -r
-  if [[ "$REPLY" =~ (y|Y)* ]]; then
-    read -p $"${GREEN} Name of organization [tidepool-org]?${RESET} " ORG
+  if [[ "$REPLY" =~ (y|Y).* ]]; then
+    read -r -p $"${GREEN} Name of organization [tidepool-org]?${RESET} " ORG
     ORG=${ORG:-tidepool-org}
     REMOTE_REPO=$ORG/$REMOTE_REPO
-    curl https://api.github.com/orgs/$ORG/repos?access_token=${GITHUB_TOKEN} -d "$D"
+    curl "https://api.github.com/orgs/$ORG/repos?access_token=${GITHUB_TOKEN}" -d "$D"
   else
-    read -p $"${GREEN} User name?${RESET} " -r
+    read -p $"${GREEN} Git user name?${RESET} " -r
     REMOTE_REPO=$REPLY/$REMOTE_REPO
-    curl https://api.github.com/user/repos?access_token=${GITHUB_TOKEN} -d "$D"
+    curl "https://api.github.com/user/repos?access_token=${GITHUB_TOKEN}" -d "$D"
   fi
   info "clone repo using: "
   info "git clone git@github.com:${REMOTE_REPO}.git"
@@ -1287,6 +1297,7 @@ case $cmd in
     check_remote_repo
     setup_tmpdir
     clone_remote
+    set_template_dir
     make_cluster
     merge_kubeconfig
     make_users
