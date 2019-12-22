@@ -6,7 +6,6 @@
 set -o pipefail
 export FLUX_FORWARD_NAMESPACE=flux
 export REVIEWERS="derrickburns pazaan jamesraby"
-export SKIP_REVIEW=true  # FIXME should be passed and not hardcoded
 
 function envoy {
   glooctl proxy served-config
@@ -1178,11 +1177,16 @@ fi
 
 APPROVE=false
 CLONE_REMOTE=true
+SKIP_REVIEW=false
 declare -a PARAMS
 while (("$#")); do
   case "$1" in
     -y | --approve)
       APPROVE=true
+      shift 1
+      ;;
+    --skip-review)
+      SKIP_REVIEW=true
       shift 1
       ;;
     -l | --local)
