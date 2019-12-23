@@ -15,6 +15,6 @@ local jaeger(config) = {
 };
 
 function(config, prev) 
-  if lib.getElse(config, 'pkgs.tracing.enabled', false)
+  if lib.getElse(config, 'pkgs.tracing.enabled.off', false)
   then jaeger(config)
   else {}
