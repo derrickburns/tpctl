@@ -11,6 +11,33 @@ local jaeger(config) = {
     ingress: {
       enabled: false
     },
+    storage: {
+      options: {
+        es: {
+          'server-urls': 'https://jaeger-es-http.tracing:9200',
+          tls: {
+            ca: '/es/certificates/ca.crt',
+          },
+        },
+      },
+      secretName: 'jaeger-secret',
+      type: 'elasticsearch',
+    },
+    volumeMounts: [
+      {
+        mountPath: '/es/certificates/',
+        name: 'certificates',
+        readOnly: true,
+      },
+    ],
+    volumes: [
+      {
+        name: 'certificates',
+        secret: {
+          secretName: 'jaeger-es-http-certs-public',
+        },
+      },
+    ],
   },
 };
 
