@@ -16,7 +16,7 @@ local helmrelease(config) = {
     },
     releaseName: 'kubernetes-dashboard',
     values: {
-      ingress {
+      ingress: {
         enabled: false
       },
       enableSkipLogin: "true",
