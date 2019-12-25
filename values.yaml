@@ -53,6 +53,8 @@ pkgs:
     enabled: true
   datadog:                                   # Datadog send telemetry to the hosted Datadog service
     enabled: false
+  elasticsearch-operator:                    # Elasticsearch operator to create elasticsearch instances
+    enabled: false
   external-dns:                              # External DNS maintains DNS aliases to Amazon ELBs
     enabled: true
   external-secrets:                          # External secrets loads persisted secrets from AWS Secrets Manager
@@ -83,11 +85,10 @@ pkgs:
     namespace: gloo-system                   # namespace to host gateway
   jaeger:                                    # An instance of the jaeger system
     enabled: true
-    #name: simplest
-    #namespace: default
-    #port: 9411
   jaeger-operator:                           # The Jaeger K8s Operator
     enabled: true
+  kubernetes-dashboard:                      # Kubernetes dashboard
+    enabled: false
   linkerd:
     version: stable-2.6.1
   linkerd-dashboard:
