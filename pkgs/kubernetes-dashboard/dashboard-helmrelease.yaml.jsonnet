@@ -10,7 +10,7 @@ local helmrelease(config) = {
   },
   spec: {
     chart: {
-      name: 'kubernetes-dashboard'
+      name: 'kubernetes-dashboard',
       repository: 'https://kubernetes-charts.storage.googleapis.com/',
       version: '1.10.1',
     },
