@@ -1366,12 +1366,8 @@ case $cmd in
     check_remote_repo
     setup_tmpdir
     clone_remote
-    local cluster=$(get_cluster)
     mkdir -p external-secrets
-    (
-      cd external-secrets
-      randomize_secrets | external_secret upsert $cluster encoded | separate_files | add_names
-    )
+    randomize_secrets | external_secret upsert $(get_cluster) encoded | (cd external-secrets; separate_files) | add_names
     save_changes "Added random secrets"
     ;;
   migrate_secrets)
@@ -1387,12 +1383,8 @@ case $cmd in
     check_remote_repo
     setup_tmpdir
     clone_remote
-    local cluster=$(get_cluster)
     mkdir -p external-secrets
-    (
-      cd external-secrets
-      external_secret upsert $cluster plaintext | separate_files | add_names
-    )
+    external_secret upsert $(get_cluster) plaintext | (cd external-secrets; separate_files) | add_names
     save_changes "Added plaintext secrets"
     ;;
   install_users)
