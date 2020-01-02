@@ -1105,6 +1105,10 @@ function migrate_secrets() {
   local configmaps=$(get_legacy_values ConfigMap)
   mkdir -p external-secrets
   pushd external-secrets
+  if [ "$APPROVE" != "true" ]
+  then
+    confirm "Do you want to update external secrets? "
+  fi
   echo "$secrets" | external_secret upsert $cluster plaintext | separate_files | add_names
   echo "$configmaps" | separate_files | add_names
   popd
@@ -1367,6 +1371,10 @@ case $cmd in
     setup_tmpdir
     clone_remote
     mkdir -p external-secrets
+    if [ "$APPROVE" != "true" ]
+    then
+      confirm "Do you want to update external secrets? "
+    fi
     randomize_secrets | external_secret upsert $(get_cluster) encoded | (cd external-secrets; separate_files) | add_names
     save_changes "Added random secrets"
     ;;
@@ -1384,6 +1392,10 @@ case $cmd in
     setup_tmpdir
     clone_remote
     mkdir -p external-secrets
+    if [ "$APPROVE" != "true" ]
+    then
+      confirm "Do you want to update external secrets? "
+    fi
     external_secret upsert $(get_cluster) plaintext | (cd external-secrets; separate_files) | add_names
     save_changes "Added plaintext secrets"
     ;;
