@@ -41,6 +41,9 @@ local baseGatewayProxy(config) = {
 
 local values(config) = {
   global: {
+    glooStats: {
+      enabled: true,
+    },
     glooRbac: {
       create: true,
     },
