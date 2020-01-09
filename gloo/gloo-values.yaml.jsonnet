@@ -34,7 +34,7 @@ local baseGatewayProxy(config) = {
   },
   readConfig: true,
   gatewaySettings: {
-    disableGeneratedGateways: true,
+    disableGeneratedGateways: false,
   },
   tracing: tracing.envoy(config),
 };
