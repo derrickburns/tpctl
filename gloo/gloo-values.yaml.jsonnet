@@ -2,7 +2,9 @@ local lib = import '../lib/lib.jsonnet';
 local tracing = import '../pkgs/tracing/lib.jsonnet';
 
 local baseGatewayProxy(config) = {
-  stats: true,
+  stats: {
+    enabled: true,
+  },
   kind: {
     deployment: {
       replicas: 2,
