@@ -51,6 +51,8 @@ pkgs:
     enabled: true
   cluster-autoscaler:                        # Cluster autoscaler scales the nodes in the cluster as needed
     enabled: true
+  common:
+    enabled: true
   datadog:                                   # Datadog send telemetry to the hosted Datadog service
     enabled: false
   elasticsearch-operator:                    # Elasticsearch operator to create elasticsearch instances
