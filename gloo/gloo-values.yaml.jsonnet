@@ -71,7 +71,9 @@ local values(config) = {
       },
       replicas: 1,
       runAsUser: 10101,
-      stats: true,
+      stats: {
+        enabled: true,
+      },
     },
     enabled: true,
     proxyServiceAccount: {},
