@@ -39,6 +39,11 @@ local httpsVirtualService(config) = {
               },
             },
           },
+          options: {
+            upgrades: [
+              { websocket: {} },
+            ]
+          },
         },
       ],
     },
