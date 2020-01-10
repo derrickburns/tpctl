@@ -3,9 +3,6 @@ local tracing = import '../pkgs/tracing/lib.jsonnet';
 local expand = import '../lib/expand.jsonnet';
 
 local baseGatewayProxy(config) = {
-  stats: {
-    enabled: true,
-  },
   kind: {
     deployment: {
       replicas: 2,
