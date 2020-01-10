@@ -48,9 +48,6 @@ local helmrelease(config) = {
           serviceAccount: true,
         },
       },
-      image: {
-        tag: "pomerium:ISS409v1",
-      },
       service: {
         type: 'NodePort',
       },
