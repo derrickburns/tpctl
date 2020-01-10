@@ -18,7 +18,6 @@ local jaeger(config) = {
           'server-urls': 'https://jaeger-es-http.tracing:9200',
           tls: {
             ca: '/es/certificates/ca.crt',
-            'skip-host-verify': true,
           },
         },
       },
