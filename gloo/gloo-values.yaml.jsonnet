@@ -94,6 +94,8 @@ local values(config) = {
         type: 'LoadBalancer',
         extraAnnotations+: {
           'service.beta.kubernetes.io/aws-load-balancer-proxy-protocol': '*',
+          'service.beta.kubernetes.io/aws-load-balancer-backend-protocol': 'tcp',
+          'service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled': 'true',
           'external-dns.alpha.kubernetes.io/alias': 'true',
           'external-dns.alpha.kubernetes.io/hostname': std.join(
             ',',
