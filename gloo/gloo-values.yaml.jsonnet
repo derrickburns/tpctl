@@ -91,7 +91,7 @@ local values(config) = {
         type: 'ClusterIP',
       },
     },
-    externalGatewayProxy: baseGatewayProxy(config) {
+    gatewayProxy: baseGatewayProxy(config) {
       service+: {
         type: 'LoadBalancer',
         extraAnnotations+: {

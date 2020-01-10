@@ -146,22 +146,21 @@ function install_gloo() {
   jsonnet --tla-code config="$config" $TEMPLATE_DIR/gloo/gloo-values.yaml.jsonnet | yq r - >$TMP_DIR/gloo-values.yaml
   expect_success "Templating failure gloo/gloo-values.yaml.jsonnet"
 
-  kubectl delete jobs -n gloo-system gateway-certgen
+  helm repo add gloo https://storage.googleapis.com/solo-public-helm
+  helm repo update
+  helm fetch --untar --untardir $TMP_DIR/gloohelm 'gloo/gloo'
+  helm template $TMP_DIR/gloohelm/gloo --namespace gloo-system  --set crds.create=true -f $TMP_DIR/gloo-values.yaml | 
+	 sed -e 's/---$/\
+---/' > $TMP_DIR/manifests.yaml
+  cat $TMP_DIR/manifests.yaml
+  expect_success "Templating failure gloo helm chart"
 
   rm -rf gloo
   mkdir -p gloo
   (
     cd gloo
-    glooctl install gateway -n gloo-system --values $TMP_DIR/gloo-values.yaml --dry-run | separate_files | add_names
-    expect_success "Templating failure gloo/gloo-values.yaml.jsonnet"
+    cat $TMP_DIR/manifests.yaml | separate_files | add_names
   )
-
-  if [ "$APPROVE" != "true" ]
-  then
-    confirm "Do you want to update API gateway directly now? "
-  fi
-  glooctl install gateway -n gloo-system --values $TMP_DIR/gloo-values.yaml
-  expect_success "Gloo installation failure"
   complete "installed gloo"
 }
 
