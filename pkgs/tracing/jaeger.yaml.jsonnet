@@ -20,6 +20,9 @@ local jaeger(config) = {
           },
         },
       },
+      esIndexCleaner: {
+        enabled: false,
+      },
       secretName: 'jaeger-secret',
       type: 'elasticsearch',
     },
