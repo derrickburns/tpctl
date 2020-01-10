@@ -38,15 +38,15 @@ local httpsVirtualService(config) = {
                 namespace: 'pomerium',
               },
             },
-            options: {
-              upgrades: [
-                {
-                  websocket: {
-                    enabled: true
-                  }
-                },
-              ]
-            },
+          },
+          options: {
+            upgrades: [
+              {
+                websocket: {
+                  enabled: true
+                }
+              },
+            ]
           },
         },
       ],
