@@ -8,6 +8,7 @@ local jaeger(config) = {
     namespace: 'tracing',
   },
   spec: {
+    strategy: "production",
     ingress: {
       enabled: false
     },
@@ -17,11 +18,12 @@ local jaeger(config) = {
           'server-urls': 'https://jaeger-es-http.tracing:9200',
           tls: {
             ca: '/es/certificates/ca.crt',
+            'skip-host-verify': true,
           },
         },
       },
       esIndexCleaner: {
-        enabled: false,
+        enabled: true,
       },
       secretName: 'jaeger-secret',
       type: 'elasticsearch',
