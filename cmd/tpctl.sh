@@ -140,7 +140,6 @@ function install_glooctl {
 
 # install gloo
 function install_gloo() {
-  install_glooctl
   start "installing gloo"
   local config=$(get_config)
   jsonnet --tla-code config="$config" $TEMPLATE_DIR/gloo/gloo-values.yaml.jsonnet | yq r - >$TMP_DIR/gloo-values.yaml
