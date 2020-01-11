@@ -119,6 +119,16 @@ local tidepool(config, prev, namespace) = {
       }, lib.getElse(tp, 'blob', {})]),
 
       data: lib.mergeList([common, {
+        resources: {
+          requests: {
+            memory: '256Mi',
+            cpu: '500m',
+          },
+          limits: {
+            memory: '256Mi',
+            cpu: '1000m',
+          },
+        },
         deployment+: {
           image: lib.getElse(prev, 'spec.values.data.deployment.image', 'tidepool/platform-data:develop-cebea363931570d3930848a21e6a3d07a54f4425'),
           replicas: 3,
