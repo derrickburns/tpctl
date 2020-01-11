@@ -22,7 +22,7 @@ local jaeger(config) = {
         },
       },
       esIndexCleaner: {
-        enabled: true,
+        enabled: false,
       },
       secretName: 'jaeger-secret',
       type: 'elasticsearch',
