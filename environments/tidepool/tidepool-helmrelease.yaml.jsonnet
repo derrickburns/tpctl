@@ -157,12 +157,10 @@ local tidepool(config, prev, namespace) = {
       gatekeeper: lib.mergeList([common, {
         resources: {
           requests: {
-            memory: '64Mi',
-            cpu: '500m',
+            memory: '256Mi',
           },
           limits: {
-            memory: '128Mi',
-            cpu: '1000m',
+            memory: '256Mi',
           },
         },
         deployment+: {
