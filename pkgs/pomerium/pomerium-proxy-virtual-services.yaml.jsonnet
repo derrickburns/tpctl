@@ -71,7 +71,7 @@ local forwardauthVirtualServices(config) = (
       },
     }
     for x in std.objectFields(pkgs)
-    if lib.getElse(pkgs[x], 'sso', {}) != {}
+    if lib.getElse(pkgs[x], 'sso', {}) != {} && lib.getElse(pkgs[x], 'enabled', false)
   ]
 );
 
