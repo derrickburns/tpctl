@@ -8,9 +8,6 @@ local forwardauthVirtualServices(config) = (
     {
       local pkg = pkgs[x],
       local downstreamDNS = mylib.dnsNameForName(config, x),
-      local upstreamPort = lib.getElse(pkg, 'sso.port', 8080),
-      local upstreamName = lib.getElse(pkg, 'sso.serviceName', x),
-      local upstreamNamespace = lib.getElse(pkg, 'namespace', x),
 
       apiVersion: 'gateway.solo.io/v1',
       kind: 'VirtualService',
@@ -45,16 +42,9 @@ local forwardauthVirtualServices(config) = (
                   prefix: '/',
                 },
               ],
-              routeAction: {
-                single: {
-                  kube: {
-                    ref: {
-                      name: upstreamName,
-                      namespace: upstreamNamespace,
-                    },
-                    port: upstreamPort,
-                  },
-                },
+              redirectAction: {
+		hostRedirect: 'forwardauth.%s' % mylib.rootDomain(config),
+                prefixRewrite: '/verify?uri=https://%s/' % downstreamDNS,
               },
               options: {
                 upgrades: [
