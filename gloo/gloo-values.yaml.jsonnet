@@ -75,6 +75,7 @@ local values(config) = {
     },
     enabled: true,
     proxyServiceAccount: {},
+    readGatewaysFromAllNamespaces: true,
     upgrade: false,
     validation: {
       enabled: false,

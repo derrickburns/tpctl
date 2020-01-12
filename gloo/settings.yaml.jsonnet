@@ -26,6 +26,9 @@ local settings(config) = {
       fdsMode: 'WHITELIST',
     },
     discoveryNamespace: 'gloo-system',
+    gateway: {
+      readGatewaysFromAllNamespaces: true,
+    },
     gloo: {
       invalidConfigPolicy: {
         invalidRouteResponseBody: 'Gloo Gateway has invalid configuration. Administrators should run `glooctl check` to find and fix config errors.',
