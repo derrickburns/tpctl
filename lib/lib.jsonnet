@@ -222,6 +222,7 @@
     spec: {
       httpGateway: {
         virtualServiceSelector: gw.selector,
+	virtualServiceNamespaces: [ '*' ],
         options:
           (if $.getElse(gw, 'options.healthCheck', false) then $.healthCheckOption else {})
           + (if $.getElse(gw, 'options.tracing', false) then $.httpConnectionManagerOption else {}),
