@@ -9,7 +9,7 @@ local lib = import '../../lib/lib.jsonnet';
 
   dnsNames(config):: (
     local pkgs = config.pkgs;
-    [ $.dnsNameForName(config, x) for x in std.objectFields(pkgs) if std.objectHas(pkgs[x], 'sso') ]
+    [ $.dnsNameForName(config, x) for x in std.objectFields(pkgs) if std.objectHas(pkgs[x], 'sso') && lib.getElse(pkgs[x], 'enabled', false) ]
   ),
 
   rootDomain(config):: lib.getElse(config, 'pkgs.pomerium.rootDomain', config.cluster.metadata.domain),
