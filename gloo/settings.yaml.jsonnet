@@ -10,17 +10,22 @@ local settings(config) = {
     name: 'default',
     namespace: 'gloo-system',
   },
-  spec: {
+  local extauth = 
+    if lib.getElse(config, 'pkgs.pomerium.enabled', false) &&
+       lib.getElse(config, 'pkgs.pomerium.forwardauth.enabled', false)
+    then {
+      extauth: {
+        extauthzServerRef: {
+          name: 'pomerium-proxy',
+          namespace: 'pomerium',
+        },
+      },
+    } else { },
+  spec: extauth {
     discovery: {
       fdsMode: 'WHITELIST',
     },
     discoveryNamespace: 'gloo-system',
-    extauth: {
-      extauthzServerRef: {
-        name: 'extauth',
-        namespace: 'pomerium',
-      },
-    },
     gloo: {
       invalidConfigPolicy: {
         invalidRouteResponseBody: 'Gloo Gateway has invalid configuration. Administrators should run `glooctl check` to find and fix config errors.',
