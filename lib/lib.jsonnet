@@ -221,11 +221,7 @@
     },
     spec: {
       httpGateway: {
-        virtualServices:
-          std.map(
-            function(v) { name: v.name, namespace: v.namespace },
-            $.virtualServicesForSelector(vss, gw.selector)
-          ),
+        virtualServiceSelector: gw.selector,
         options:
           (if $.getElse(gw, 'options.healthCheck', false) then $.healthCheckOption else {})
           + (if $.getElse(gw, 'options.tracing', false) then $.httpConnectionManagerOption else {}),
