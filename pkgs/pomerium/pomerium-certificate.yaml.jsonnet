@@ -7,6 +7,7 @@ local dnsNames(config) = (
   [
     'authenticate.%s' % domain,
     'authorize.%s' % domain,
+    'forwardauth.%s' % domain,
   ] +
   mylib.dnsNames(config)
 );

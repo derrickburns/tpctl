@@ -52,7 +52,7 @@ local values(config) = {
     },
   },
   settings: {
-    create: true,
+    create: false,
     linkerd: true,
   },
   namespace: {

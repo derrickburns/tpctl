@@ -56,6 +56,9 @@ local helmrelease(config) = {
         existingSecret: 'pomerium',
         policy: getPolicy(config),
       },
+      forwardauth: {
+        enabled: lib.getElse(config, 'pkgs.pomerium.forwardauth.enabled', false),
+      },
       ingress: {
         enabled: false,
       },

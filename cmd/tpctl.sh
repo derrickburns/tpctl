@@ -1,4 +1,4 @@
-#!/bin/bash -i
+#!/bin/bash -ix
 #
 # Configure EKS cluster to run Tidepool services
 #
@@ -146,7 +146,6 @@ function install_gloo() {
   expect_success "Templating failure gloo/gloo-values.yaml.jsonnet"
 
   helm repo add gloo https://storage.googleapis.com/solo-public-helm
-  helm repo update
   helm fetch --untar --untardir $TMP_DIR/gloohelm 'gloo/gloo'
   helm template $TMP_DIR/gloohelm/gloo --namespace gloo-system  --set crds.create=true -f $TMP_DIR/gloo-values.yaml | 
 	 sed -e 's/---$/\
@@ -159,7 +158,9 @@ function install_gloo() {
   (
     cd gloo
     cat $TMP_DIR/manifests.yaml | separate_files | add_names
+    jsonnet --tla-code config="$config" ${TEMPLATE_DIR}/gloo/settings.yaml.jsonnet | yq r - | separate_files | add_names
   )
+
   complete "installed gloo"
 }
 
