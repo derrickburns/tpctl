@@ -38,7 +38,7 @@ local forwardauthRedirectVirtualServices(config) = (
                 {
                   headers: [ {
                     name: "x-tidepool-extauth-request",
-                  ],
+                  } ],
                 },
               ],
               redirectAction: {
