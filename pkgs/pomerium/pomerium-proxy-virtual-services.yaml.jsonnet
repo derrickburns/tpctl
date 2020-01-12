@@ -50,7 +50,7 @@ local forwardauthVirtualServices(config) = (
                   kube: {
                     ref: {
                       name: upstreamName,
-                      namespace: unstreamNamespace,
+                      namespace: upstreamNamespace,
                     },
                     port: upstreamPort,
                   },
