@@ -167,4 +167,4 @@ function(config, prev)
   std.manifestYamlStream([httpVirtualService(config), proxuVirtualService(config)]
   + (if lib.getElse(config, 'pkgs.pomerium.forwardauth.enabled', false)
      then forwardauthVirtualServices(config)
-     else [])`
+     else [])
