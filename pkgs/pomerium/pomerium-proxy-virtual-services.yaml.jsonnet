@@ -2,6 +2,63 @@ local lib = import '../../lib/lib.jsonnet';
 
 local mylib = import 'lib.jsonnet';
 
+// Redirect forward auth requests to the pomerium server.
+// We use the header 'x-tidepool-extauth-request' to identify authorization requests.
+local forwardauthRedirectVirtualServices(config) = (
+  local pkgs = config.pkgs;
+  [
+    {
+      local pkg = pkgs[x],
+      local downstreamDNS = mylib.dnsNameForName(config, x),
+
+      apiVersion: 'gateway.solo.io/v1',
+      kind: 'VirtualService',
+      metadata: {
+        labels: {
+          protocol: 'https',
+          type: 'external',
+        },
+        name: '%s-redirect-https' % x,
+        namespace: 'pomerium',
+      },
+      spec: {
+        displayName: '%s-redirect-https' % x,
+        sslConfig: {
+          secretRef: {
+            name: 'pomerium-tls',
+            namespace: 'pomerium',
+          },
+          sniDomains: [downstreamDNS],
+        },
+        virtualHost: {
+          domains: [downstreamDNS],
+          routes: [
+            {
+              matchers: [
+                {
+                  headers: [ {
+                    name: "x-tidepool-extauth-request",
+                  ],
+                },
+              ],
+              redirectAction: {
+		hostRedirect: 'forwardauth.%s' % mylib.rootDomain(config),
+                prefixRewrite: '/verify?uri=https://%s/' % downstreamDNS,
+              },
+              options: {
+                autoHostRewrite: true,
+              },
+            },
+          ],
+        },
+      },
+    }
+    for x in std.objectFields(pkgs)
+    if lib.getElse(pkgs[x], 'sso', {}) != {} && lib.getElse(pkgs[x], 'enabled', false)
+  ]
+);
+
+// Require authorization via the external authorization service.
 local forwardauthVirtualServices(config) = (
   local pkgs = config.pkgs;
   [
@@ -166,5 +223,6 @@ local httpVirtualService(config) = {
 function(config, prev) 
   std.manifestYamlStream([httpVirtualService(config), proxyVirtualService(config)]
   + (if lib.getElse(config, 'pkgs.pomerium.forwardauth.enabled', false)
-     then forwardauthVirtualServices(config)
-     else []))
+     then forwardauthVirtualServices(config) + forwardauthRedirectVirtualServices(config) 
+     else []
+    ))

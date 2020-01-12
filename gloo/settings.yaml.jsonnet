@@ -1,5 +1,7 @@
 local lib = import '../lib/lib.jsonnet';
 
+// Direct external authorization requests *back* to the proxy after adding the x-tidepool-extauth-request header.
+// Then, a virtual service that selects requests based on that header will rewrite the request as needed and forward it to authorization server.
 local settings(config) = {
   apiVersion: 'gloo.solo.io/v1',
   kind: 'Settings',
@@ -16,8 +18,21 @@ local settings(config) = {
     then {
       extauth: {
         extauthzServerRef: {
-          name: 'pomerium-proxy',
-          namespace: 'pomerium',
+          name: 'gateway-proxy',
+          namespace: 'gloo-system',
+        },
+        httpService: {
+	  request: {
+            allowedHeaders: [
+              'x-pomerium-iap-jwt-assertion', 
+              'x-pomerium-authenticated-user-email', 
+              'x-pomerium-authenticated-user-id', 
+              'x-pomerium-authenticated-user-groups', 
+            ],
+            headersToAdd: {
+              'x-tidepool-extauth-request': "true",
+            },
+          },
         },
       },
     } else { },
