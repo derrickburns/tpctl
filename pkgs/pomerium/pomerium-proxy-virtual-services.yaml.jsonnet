@@ -99,7 +99,12 @@ local forwardauthVirtualServices(config) = (
             {
               matchers: [
                 {
-                  prefix: '/',
+	          headers: [
+                   {
+			name: 'x-tidepool-extauth-request',
+                        invertMatch: true,
+                   }
+                  ],
                 },
               ],
               routeAction: {
