@@ -47,6 +47,7 @@ local forwardauthVirtualServices(config) = (
                 prefixRewrite: '/verify?uri=https://%s/' % downstreamDNS,
               },
               options: {
+                autoHostRewrite: true,
                 upgrades: [
                   {
                     websocket: {
