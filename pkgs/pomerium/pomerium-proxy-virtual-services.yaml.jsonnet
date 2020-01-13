@@ -40,6 +40,9 @@ local forwardauthRedirectVirtualServices(config) = (
                     name: "x-tidepool-extauth-request",
                   } ],
                 },
+                {
+                  prefix: '/',
+                },
               ],
               redirectAction: {
 		hostRedirect: 'forwardauth.%s' % mylib.rootDomain(config),
