@@ -5,6 +5,6 @@ metadata:
   namespace: gloo-system
 spec:
   kube:
-    serviceName: interanl-gateway-proxy
+    serviceName: internal-gateway-proxy
     serviceNamespace: gloo-system
     servicePort: 8080
