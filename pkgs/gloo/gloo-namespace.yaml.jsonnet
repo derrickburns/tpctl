@@ -1,3 +1,5 @@
+local tracing = import '../tracing/lib.jsonnet';
+
 local namespace(config) = {
   apiVersion: 'v1',
   kind: 'Namespace',
@@ -6,6 +8,7 @@ local namespace(config) = {
       app: 'gloo',
     },
     name: 'gloo-system',
+    annotations:  tracing.tracingAnnotation(config)
   },
 };
 
