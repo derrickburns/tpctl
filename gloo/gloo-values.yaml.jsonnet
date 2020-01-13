@@ -1,5 +1,6 @@
 local lib = import '../lib/lib.jsonnet';
 local linkerd = import '../pkgs/linkerd/lib.jsonnet';
+local tracing = import '../pkgs/tracing/lib.jsonnet';
 local expand = import '../lib/expand.jsonnet';
 
 local baseGatewayProxy(config) = {
