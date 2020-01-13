@@ -45,8 +45,27 @@ function cluster_in_context() {
 
 function install_certmanager {
   start "installing cert-manager"
-  kubectl create namespace cert-manager
-  kubectl apply --validate=false -f https://github.com/jetstack/cert-manager/releases/download/v0.11.0/cert-manager.yaml
+  mkdir -p pkgs/certmanager
+  ( 
+    cd pkgs/certmanager
+    wget https://github.com/jetstack/cert-manager/releases/download/v0.11.0/cert-manager.yaml -O $TMP_DIR/certmanager.yaml
+    cat $TMP_DIR/certmanager.yaml | separate_files | add_names
+    find . -print
+
+# We must work around a validation issue with Kuberentes < 1.16 by deleting
+# several fields in the CRDs (https://github.com/jetstack/cert-manager/issues/2197)
+
+    yq d -i global/CustomResourceDefinition/certificaterequests.cert-manager.io.yaml spec.preserveUnknownFields
+    yq d -i global/CustomResourceDefinition/certificates.cert-manager.io.yaml spec.preserveUnknownFields
+    yq d -i global/CustomResourceDefinition/challenges.acme.cert-manager.io.yaml spec.preserveUnknownFields
+    yq d -i global/CustomResourceDefinition/challenges.acme.cert-manager.io.yaml spec.validation.openAPIV3Schema.properties.spec.properties.solver.properties.dns01.properties.webhook.properties.config.x-kubernetes-preserve-unknown-fields
+    yq d -i global/CustomResourceDefinition/clusterissuers.cert-manager.io.yaml spec.preserveUnknownFields
+    yq d -i global/CustomResourceDefinition/clusterissuers.cert-manager.io.yaml spec.validation.openAPIV3Schema.properties.spec.properties.acme.properties.solvers.items.properties.dns01.properties.webhook.properties.config.x-kubernetes-preserve-unknown-fields
+    yq d -i global/CustomResourceDefinition/issuers.cert-manager.io.yaml spec.preserveUnknownFields
+    yq d -i global/CustomResourceDefinition/issuers.cert-manager.io.yaml spec.validation.openAPIV3Schema.properties.spec.properties.acme.properties.solvers.items.properties.dns01.properties.webhook.properties.config.x-kubernetes-preserve-unknown-fields
+    yq d -i global/CustomResourceDefinition/orders.acme.cert-manager.io.yaml spec.preserveUnknownFields
+
+  )
   complete "installed cert-manager"
 }
 
@@ -1301,6 +1320,7 @@ case $cmd in
     set_template_dir
     confirm_matching_cluster
     install_gloo
+    install_certmanager
     make_config
     make_envrc
     save_changes "Added config packages"
