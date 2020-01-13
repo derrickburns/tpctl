@@ -18,7 +18,7 @@ local settings(config) = {
     then {
       extauth: {
         extauthzServerRef: {
-          name: 'gateway-proxy',
+          name: 'internal-gateway-proxy',
           namespace: 'gloo-system',
         },
         httpService: {
