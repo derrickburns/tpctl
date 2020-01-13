@@ -1,0 +1,9 @@
+apiVersion: gloo.solo.io/v1
+kind: Upstream
+metadata: 
+  name: internal-gateway-proxy
+  namespace: gloo-system
+spec:
+  kube:
+    serviceName: interanl-gateway-proxy
+    serviceNamespace: gloo-system
