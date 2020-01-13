@@ -1295,9 +1295,12 @@ case $cmd in
     ;;
   config)
     check_remote_repo
+    expect_github_token
     setup_tmpdir
     clone_remote
     set_template_dir
+    confirm_matching_cluster
+    install_gloo
     make_config
     make_envrc
     save_changes "Added config packages"
