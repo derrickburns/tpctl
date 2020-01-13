@@ -43,6 +43,9 @@ local settings(config) = {
     discoveryNamespace: 'gloo-system',
     gateway: {
       readGatewaysFromAllNamespaces: true,
+      validation: {
+        alwaysAccept: false,
+      },
     },
     gloo: {
       invalidConfigPolicy: {
