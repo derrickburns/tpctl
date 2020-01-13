@@ -1,6 +1,6 @@
 local lib = import '../../lib/lib.jsonnet';
 
-local tracing = import '../../pkgs/tracing/lib.jsonnet';
+local linkerd = import '../../pkgs/linkerd/lib.jsonnet';
 
 local gen_namespace(config, namespace) = {
   apiVersion: 'v1',
@@ -10,9 +10,7 @@ local gen_namespace(config, namespace) = {
     labels: {
       'discovery.solo.io/function_discovery': 'disabled',
     },
-    annotations: {
-      'linkerd.io/inject': if lib.getElse(config, 'pkgs.linkerd.enabled', false) then "enabled" else "disabled",
-    } + tracing.tracingAnnotation(config)
+    annotations: linkerd.annotations(config),
   },
 };
 

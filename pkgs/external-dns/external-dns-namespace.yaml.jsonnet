@@ -1,13 +1,11 @@
-local tracing = import '../tracing/lib.jsonnet';
+local linkerd = import '../linkerd/lib.jsonnet';
 
 local namespace(config) = {
   apiVersion: 'v1',
   kind: 'Namespace',
   metadata: {
-    labels: {
-      app: 'gloo',
-    },
-    name: 'gloo-system',
+    name: 'external-dns',
+    annotations:  linkerd.annotations(config)
   },
 };
 

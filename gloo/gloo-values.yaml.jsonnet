@@ -1,5 +1,5 @@
 local lib = import '../lib/lib.jsonnet';
-local tracing = import '../pkgs/tracing/lib.jsonnet';
+local linkerd = import '../pkgs/linkerd/lib.jsonnet';
 local expand = import '../lib/expand.jsonnet';
 
 local baseGatewayProxy(config) = {
@@ -21,14 +21,11 @@ local baseGatewayProxy(config) = {
     httpPort: 8080,
     httpsPort: 8443,
     runAsUser: 10101,
-    extraAnnotations: {
-      'linkerd.io/inject': if lib.getElse(config, 'pkgs.linkerd.enabled', false) then "enabled" else "disabled",
-    },
+    extraAnnotations: linkerd.annotations(config)
   },
   service: {
     httpPort: 80,
     httpsPort: 443,
-    extraAnnotations:  tracing.tracingAnnotation(config)
   },
   readConfig: true,
   gatewaySettings: {
