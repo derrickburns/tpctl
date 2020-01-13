@@ -28,9 +28,6 @@ local configmap(config) = {
           opencensus: {
             port: 55678,
           },
-          zipkin: {
-            port: 9411,
-          },
         },
       }
     ),
