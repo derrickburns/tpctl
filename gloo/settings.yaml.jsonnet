@@ -44,6 +44,7 @@ local settings(config) = {
     gateway: {
       readGatewaysFromAllNamespaces: true,
       validation: {
+        proxyValidationServerAddr: gloo:9988
         alwaysAccept: false,
       },
     },
