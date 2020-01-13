@@ -150,8 +150,8 @@ function install_gloo() {
   helm template $TMP_DIR/gloohelm/gloo --namespace gloo-system  --set crds.create=true -f $TMP_DIR/gloo-values.yaml | 
 	 sed -e 's/---$/\
 ---/' > $TMP_DIR/manifests.yaml
-  cat $TMP_DIR/manifests.yaml
   expect_success "Templating failure gloo helm chart"
+
 
   rm -rf gloo
   mkdir -p gloo
@@ -159,6 +159,8 @@ function install_gloo() {
     cd gloo
     cat $TMP_DIR/manifests.yaml | separate_files | add_names
     jsonnet --tla-code config="$config" ${TEMPLATE_DIR}/gloo/settings.yaml.jsonnet | yq r - | separate_files | add_names
+    yq w -i gloo-system/Deployment/gateway-proxy.yaml spec.template.spec.containers[0].securityContext.readOnlyRootFilesystem false
+    yq w -i gloo-system/Deployment/internal-gateway-proxy.yaml spec.template.spec.containers[0].securityContext.readOnlyRootFilesystem false
   )
 
   complete "installed gloo"
