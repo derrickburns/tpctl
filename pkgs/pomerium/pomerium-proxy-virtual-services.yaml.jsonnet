@@ -16,7 +16,7 @@ local forwardauthRedirectVirtualServices(config) = (
       metadata: {
         labels: {
           protocol: 'https',
-          type: 'internal',
+          type: 'external',
         },
         name: '%s-redirect-https' % x,
         namespace: 'pomerium',
@@ -35,6 +35,11 @@ local forwardauthRedirectVirtualServices(config) = (
           routes: [
             {
               matchers: [
+                {
+	          headers: [ {
+                    name: "x-tidepool-extauth-request",
+                  } ],
+                },
                 {
                   prefix: '/',
                 },
@@ -96,6 +101,13 @@ local forwardauthVirtualServices(config) = (
           routes: [
             {
               matchers: [
+                {
+                 headers: [
+                   {
+                       name: 'x-tidepool-extauth-request',
+                       invertMatch: true, 
+                   } ]
+                },
                 {
 	          prefix: "/",
                 },

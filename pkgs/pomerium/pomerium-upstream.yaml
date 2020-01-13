@@ -1,10 +1,10 @@
 apiVersion: gloo.solo.io/v1
 kind: Upstream
 metadata: 
-  name: internal-gateway-proxy
+  name: gateway-proxy
   namespace: gloo-system
 spec:
   kube:
-    serviceName: internal-gateway-proxy
+    serviceName: gateway-proxy
     serviceNamespace: gloo-system
     servicePort: 8080
