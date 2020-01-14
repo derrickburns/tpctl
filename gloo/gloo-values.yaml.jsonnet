@@ -78,7 +78,7 @@ local values(config) = {
     readGatewaysFromAllNamespaces: true,
     upgrade: false,
     validation: {
-      enabled: true,
+      enabled: false,
       failurePolicy: "Ignore",
       secretName: "gateway-validation-certs",
       alwaysAcceptResources: true,
