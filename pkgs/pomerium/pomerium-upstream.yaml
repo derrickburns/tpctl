@@ -10,6 +10,6 @@ spec:
     servicePort: 443
   sslConfig:
     secretRef:
-      name: pomerium---tls
+      name: pomerium-tls
       namespace: pomerium
 
