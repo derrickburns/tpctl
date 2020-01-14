@@ -77,7 +77,7 @@ local values(config) = {
     proxyServiceAccount: {},
     readGatewaysFromAllNamespaces: true,
     upgrade: false,
-    validation: 
+    validation:  {
       enabled: lib.getElse(config, 'pkgs.gloo.validation.enabled', false),
       failurePolicy: "Ignore",
       secretName: "gateway-validation-certs",
