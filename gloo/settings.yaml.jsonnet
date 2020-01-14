@@ -22,6 +22,14 @@ local settings(config) = {
           namespace: 'pomerium',
         },
         httpService: {
+          response: {
+            allowedUpstreamHeaders: [
+              'x-pomerium-iap-jwt-assertion', 
+              'x-pomerium-authenticated-user-email', 
+              'x-pomerium-authenticated-user-id', 
+              'x-pomerium-authenticated-user-groups', 
+            ],
+          },
 	  request: {
             allowedHeaders: [
               'x-pomerium-iap-jwt-assertion', 
