@@ -41,13 +41,13 @@ local settings(config) = {
       fdsMode: 'WHITELIST',
     },
     discoveryNamespace: 'gloo-system',
-    gateway: {
+    gateway: if lib.getElse(config, 'pkgs.gloo.validation.enabled', false) {
       readGatewaysFromAllNamespaces: true,
       validation: {
         proxyValidationServerAddr: "gloo:9988",
         alwaysAccept: true,
       },
-    },
+    } else null,
     gloo: {
       invalidConfigPolicy: {
         invalidRouteResponseBody: 'Gloo Gateway has invalid configuration. Administrators should run `glooctl check` to find and fix config errors.',
