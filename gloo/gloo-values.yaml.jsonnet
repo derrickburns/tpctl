@@ -22,7 +22,9 @@ local baseGatewayProxy(config) = {
     httpPort: 8080,
     httpsPort: 8443,
     runAsUser: 10101,
-    extraAnnotations: linkerd.annotations(config)
+    extraAnnotations: linkerd.annotations(config) + {
+      'config.linkerd.io/skip-inbound-ports': 8081
+    }
   },
   service: {
     httpPort: 80,
