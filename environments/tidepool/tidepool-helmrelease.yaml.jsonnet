@@ -269,7 +269,7 @@ local tidepool(config, prev, namespace) = {
 
       linkerd: {
         generate: {
-          serviceProfiles: true,
+          serviceProfiles: lib.getElse(config, 'pkgs.linkerd.enabled', false),
         },
       },
 
