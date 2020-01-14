@@ -33,9 +33,9 @@ local helmrelease(config) = {
   },
   spec: {
     chart: {
-      git: 'git@github.com:pomerium/pomerium-helm',
-      path: '.',
-      ref: 'master',
+      name: 'pomerium',
+      repository: 'https://kubernetes-charts.storage.googleapis.com/',
+      version: '4.2.0',
     },
     releaseName: 'pomerium',
     values: {
