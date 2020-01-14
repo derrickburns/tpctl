@@ -67,6 +67,7 @@ local defaults = {
             protocol: 'https',
             type: 'internal',
           },
+        },
       },
     },
   },
