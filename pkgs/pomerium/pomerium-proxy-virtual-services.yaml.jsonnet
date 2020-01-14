@@ -16,7 +16,7 @@ local forwardauthRedirectVirtualServices(config) = (
       metadata: {
         labels: {
           protocol: 'https',
-          type: 'external',
+          type: 'internal',
         },
         name: '%s-redirect-https' % x,
         namespace: 'pomerium',
@@ -39,17 +39,20 @@ local forwardauthRedirectVirtualServices(config) = (
 	          headers: [ {
                     name: "x-tidepool-extauth-request",
                   } ],
-                },
-                {
                   prefix: '/',
                 },
               ],
-              redirectAction: {
-		hostRedirect: 'forwardauth.%s' % mylib.rootDomain(config),
-                prefixRewrite: '/verify?uri=https://%s/' % downstreamDNS,
+              routeAction: {
+                single: {
+                  upstream: {
+                    name: 'pomerium-proxy',
+                    namespace: 'pomerium',
+                  },
+                }
               },
               options: {
-                autoHostRewrite: true,
+                hostRewrite: 'forwardauth.%s' % mylib.rootDomain(config),
+                prefixRewrite: '/verify?uri=https://%s/' % downstreamDNS,
               },
             },
           ],

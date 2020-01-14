@@ -1,11 +1,11 @@
 apiVersion: gloo.solo.io/v1
 kind: Upstream
 metadata: 
-  name: gateway-proxy
-  namespace: gloo-system
+  name: auth
+  namespace: pomerium
 spec:
   kube:
-    serviceName: gateway-proxy
+    serviceName: internal-gateway-proxy
     serviceNamespace: gloo-system
     servicePort: 443
   sslConfig:

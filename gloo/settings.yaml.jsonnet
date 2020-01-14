@@ -18,8 +18,8 @@ local settings(config) = {
     then {
       extauth: {
         extauthzServerRef: {
-          name: 'gateway-proxy',
-          namespace: 'gloo-system',
+          name: 'auth',
+          namespace: 'pomerium',
         },
         httpService: {
 	  request: {
