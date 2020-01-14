@@ -1,3 +1,5 @@
+local lib = import '../../lib/lib.jsonnet';
+
 local upstream(config) = {
   apiVersion: 'gloo.solo.io/v1',
   kind: 'Upstream',
