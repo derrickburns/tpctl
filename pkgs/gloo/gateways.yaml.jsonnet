@@ -53,6 +53,20 @@ local defaults = {
             type: 'internal',
           },
         },
+        'internal-gateway-proxy-ssl'+: {
+          enabled: true,
+          options+: {
+            accessLogging: true,
+            ssl: true,
+            tracing: true,
+          },
+          proxies: [
+            'internal-gateway-proxy',
+          ],
+          selector: {
+            protocol: 'https',
+            type: 'internal',
+          },
       },
     },
   },
