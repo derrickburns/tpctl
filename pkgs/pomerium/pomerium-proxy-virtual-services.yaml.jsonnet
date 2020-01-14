@@ -178,6 +178,9 @@ local proxyVirtualService(config) = {
             },
           },
           options: {
+            headerManipulation: {
+              requestHeadersToRemove: [ "Origin" ],
+            },
             upgrades: [
               {
                 websocket: {
