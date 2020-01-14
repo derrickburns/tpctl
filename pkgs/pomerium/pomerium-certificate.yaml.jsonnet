@@ -8,7 +8,7 @@ local dnsNames(config) = (
     'authenticate.%s' % domain,
     'authorize.%s' % domain,
   ]
-  + (if lib.getElse('pkgs.pomerium.forwardauth.enabled', false)
+  + (if lib.getElse(config, 'pkgs.pomerium.forwardauth.enabled', false)
       then [ 'forwardauth.%s' % domain ]
       else []
     )
