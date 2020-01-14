@@ -15,21 +15,14 @@ local forwardauthRedirectVirtualServices(config) = (
       kind: 'VirtualService',
       metadata: {
         labels: {
-          protocol: 'https',
+          protocol: 'http',
           type: 'internal',
         },
-        name: '%s-redirect-https' % x,
+        name: '%s-rewrite-http' % x,
         namespace: 'pomerium',
       },
       spec: {
         displayName: '%s-redirect-https' % x,
-        sslConfig: {
-          secretRef: {
-            name: 'pomerium-tls',
-            namespace: 'pomerium',
-          },
-          sniDomains: [downstreamDNS],
-        },
         virtualHost: {
           domains: [downstreamDNS],
           routes: [

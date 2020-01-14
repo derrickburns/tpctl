@@ -7,9 +7,5 @@ spec:
   kube:
     serviceName: internal-gateway-proxy
     serviceNamespace: gloo-system
-    servicePort: 443
-  sslConfig:
-    secretRef:
-      name: pomerium-tls
-      namespace: pomerium
+    servicePort: 80
 
