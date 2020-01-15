@@ -172,6 +172,9 @@ local tidepool(config, prev, namespace) = {
       global: {
         local domain = lib.getElse(config, 'cluster.metadata.domain', 'tidepool.org'),
         logLevel: lib.getElse(config, 'logLevel', 'info'),
+        upstreams: {
+          namespace: 'gloo-system',
+        },
         gateway: {
           default:  {
 	    host: lib.getElse(env, 'gateway.host', '%s.%s' % [  namespace, domain ]),
