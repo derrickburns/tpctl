@@ -157,6 +157,7 @@ pkgs:
   glooe-prometheus-server:
     enabled: false
     namespace: gloo-system
+    storage: 32Gi
     sso:
       allowed_groups:
       - eng@tidepool.org
