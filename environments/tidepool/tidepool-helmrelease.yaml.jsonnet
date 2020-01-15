@@ -158,9 +158,11 @@ local tidepool(config, prev, namespace) = {
         resources: {
           requests: {
             memory: '256Mi',
+            cpu: '500m',
           },
           limits: {
             memory: '256Mi',
+            cpu: '1000m',
           },
         },
         deployment+: {
