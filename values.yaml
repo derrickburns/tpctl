@@ -1,9 +1,6 @@
-logLevel: debug                              # the default log level for all services
-email: derrick@tidepool.org                  # cluster admin email address
-
 aws:
-  accountNumber: 118346523422                # AWS account number
-  iamUsers:                                  # AWS IAM users who will be grants system:master privileges to the cluster
+  accountNumber: 118346523422
+  iamUsers:
   - derrickburns-cli
   - lennartgoedhart
   - lennartgoedhart-cli
@@ -13,29 +10,21 @@ aws:
   - jamesraby
   - haroldbernard-cli
   - haroldbernard
-kubeconfig: "$HOME/.kube/config"             # place to put KUBECONFIG
-
 cluster:
-  metadata:
-    name: test1                              # name of the cluster
-    region: us-west-2                        # AWS region to host the cluster
-    domain: tidepool.org
-  cloudWatch:                                # AWS cloudwatch configuration
-    clusterLogging:                          
-      enableTypes:                           # Types of log messages to persist to CloudWatch
+  cloudWatch:
+    clusterLogging:
+      enableTypes:
       - authenticator
       - api
       - controllerManager
       - scheduler
-  vpc:                                       # Amazon VPC configuration
-    cidr: "10.47.0.0/16"                     # CIDR of AWS VPC
-  nodeGroups: 
-  - instanceType: "m5.large"                 # AWS instance type for workers 
-    desiredCapacity: 4                       # initial capacity of auto scaling group of workers
-    minSize: 1                               # minimum size of auto scaling group of workers
-    maxSize: 10                              # maximum size of auto scaling group of workers
-    name: ng
-    iam:                                     # AWS IAM policies to attach to the nodes in the cluster
+  metadata:
+    domain: tidepool.org
+    name: test1
+    region: us-west-2
+  nodeGroups:
+  - desiredCapacity: 4
+    iam:
       attachPolicyARNs:
       - arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy
       - arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy
@@ -44,52 +33,146 @@ cluster:
         autoScaler: true
         certManager: true
         externalDNS: true
+    instanceType: m5.large
+    maxSize: 10
+    minSize: 1
+    name: ng
+  vpc:
+    cidr: 10.47.0.0/16
+email: derrick@tidepool.org
+environments:
+  qa2:
+    marketo:
+      enabled: false
+    mongodb:
+      enabled: true
+    tidepool:
+      buckets: {}
+      chart:
+        path: charts/tidepool/0.1.7
+        ref: develop
+      deployment:
+        replicas: 2
+      dnsNames:
+      - qa2.tidepool.org
+      enabled: true
+      gitops:
+        blip: glob:release-1.29*
+        default: glob:develop-*
+        export: glob:release-1.4*
+      hpa:
+        enabled: true
+      migrations:
+        resources:
+          limits:
+            cpu: 1000m
+            memory: 256Mi
+          requests:
+            cpu: 500m
+            memory: 256Mi
+      mongodb:
+        enabled: true
+      nosqlclient:
+        enabled: true
+      resources:
+        limits:
+          cpu: 100m
+          memory: 128Mi
+        requests:
+          cpu: 50m
+          memory: 64Mi
+      seagull:
+        resources:
+          limits:
+            cpu: 1000m
+            memory: 256Mi
+          requests:
+            cpu: 500m
+            memory: 256Mi
+      source: stg
+      tidewhisperer:
+        resources:
+          limits:
+            cpu: 1000m
+            memory: 256Mi
+          requests:
+            cpu: 500m
+            memory: 256Mi
+kubeconfig: $HOME/.kube/config
+logLevel: debug
 pkgs:
-  amazon-cloudwatch:                         # AWS CloudWatch logging
+  amazon-cloudwatch:
     enabled: true
-  certmanager:                               # Certmanager issues TLS certificates
+  apiserver-ui:
+    enabled: false
+    namespace: gloo-system
+    sso:
+      allowed_groups:
+      - eng@tidepool.org
+  certmanager:
     enabled: true
-  cluster-autoscaler:                        # Cluster autoscaler scales the nodes in the cluster as needed
+  cluster-autoscaler:
     enabled: true
   common:
     enabled: true
-  datadog:                                   # Datadog send telemetry to the hosted Datadog service
+  datadog:
     enabled: false
-  elasticsearch-operator:                    # Elasticsearch operator to create elasticsearch instances
+  elasticsearch-operator:
     enabled: false
-  external-dns:                              # External DNS maintains DNS aliases to Amazon ELBs
+  external-dns:
     enabled: true
-  external-secrets:                          # External secrets loads persisted secrets from AWS Secrets Manager
+  external-secrets:
     enabled: true
-    poller_interval: "120000"                # Polling interval in microseconds"
-  flux:                                      # Flux provides GitOps
+    poller_interval: "120000"
+  flux:
     enabled: true
-  fluxcloud:                                 # Fluxcloud sends GitOps notifications to Slack
+  fluxcloud:
     enabled: false
-    username: "derrickburns"                 
-    secret: slack                            # Name of secret in which Slack webhook URL is provided
-    #channel: foo                            # Slack channel on which to post notifications
-  fluxrecv:                                  # Event receiver for GitHub and Docker Hub push events
+    secret: slack
+    username: derrickburns
+  fluxrecv:
     enabled: true
-    sidecar: true
     namespace: flux
-    virtualServices: # generates vs, cert, adds to external https gateway
+    sidecar: true
+    virtualServices:
       fluxrecv-https:
-        enabled: true
-        labels:
-          type: external
-          protocol: https
         dnsNames:
         - fluxrecv.tidepool.org
-  gloo:                                      # Gloo provides the API Gateway 
+        enabled: true
+        labels:
+          protocol: https
+          type: external
+  gloo:
+    enabled: true
+    namespace: gloo-system
     version: 1.0.0
+  glooe-monitoring:
+    enabled: false
+    namespace: gloo-system
+    sso:
+      allowed_groups:
+      - eng@tidepool.org
+      port: 80
+      serviceName: glooe-grafana
+  glooe-prometheus-server:
+    enabled: false
+    namespace: gloo-system
+    sso:
+      allowed_groups:
+      - eng@tidepool.org
+      externalName: glooe-metrics
+      port: 80
+  grafana:
+    enabled: false
+    namespace: monitoring
+    sso:
+      allowed_groups:
+      - eng@tidepool.org
+      port: 80
+      serviceName: monitoring-prometheus-operator-grafana
+  jaeger-operator:
     enabled: true
-    namespace: gloo-system                   # namespace to host gateway
-  jaeger:                                    # An instance of the jaeger system
-    enabled: true
-  jaeger-operator:                           # The Jaeger K8s Operator
-    enabled: true
-  kubernetes-dashboard:                      # Kubernetes dashboard
+  kubernetes-dashboard:
     enabled: false
   linkerd:
     version: stable-2.6.1
@@ -97,88 +180,36 @@ pkgs:
     enabled: true
     namespace: linkerd
     sso:
-      allowed_groups: [ eng@tidepool.org ]
-  metrics-server:                            # Metrics server collects Node level metrics and sends to Prometheus
+      allowed_groups:
+      - eng@tidepool.org
+  metrics-server:
     enabled: true
   monitoring-prometheus-oper-prometheus:
     namespace: monitoring
     sso:
-      allowed_groups: [ eng@tidepool.org ]
+      allowed_groups:
+      - eng@tidepool.org
       port: 9090
-  pomerium:                                  # Single sign on proxy
+  pomerium:
     enabled: true
-  prometheus-operator:                       # Prometheus Operator creates Prometheus instances
+  prometheus-operator:
     enabled: true
-  reloader:                                  # Reloader restarts services on secrets/configmap changes
+  reloader:
     enabled: true
-  sumologic:                                 # Sumologic collects metrics and logs and sents to the hosted service
-    enabled: false
+  sumologic:
     apiEndpoint: https://api.us2.sumologic.com/api/v1/
-    namespace: sumologic
-  thanos:                                    # Thanos aggregates telemetry from all Tidepool clusters
     enabled: false
-    bucket: tidepool-thanos                  # Writable S3 bucket in which to aggregate multi-cluster telemetry data
-    secret: thanos-objstore-config           # Name of Kubernetes secret in which Thanos config is stored.
+    namespace: sumologic
+  thanos:
+    bucket: tidepool-thanos
+    enabled: false
+    secret: thanos-objstore-config
   tidebot:
     enabled: false
-
-environments:
-  qa2:
-    marketo:
-      enabled: false
-    mongodb:
-      enabled: true                          # Whether to use an embedded mongodb 
-    tidepool:
-      dnsNames:
-      - qa2.tidepool.org
-      deployment:
-        replicas: 2
-      resources:
-        requests: 
-          memory: "64Mi"
-          cpu: "50m"
-        limits: 
-          memory: "128Mi"
-          cpu: "100m"
-      chart:
-        path: charts/tidepool/0.1.7
-        ref: develop
-      source: stg                            # Where to get initial secrets from
-      enabled: true
-      hpa:                                   # Whether to implement horizontal pod scalers for each service
-        enabled: true
-      nosqlclient:                           # Whether to deploy a nosqlclient to query Mongo data
-        enabled: true
-      mongodb:                  
-        enabled: true
-      gitops:          
-        default: "glob:develop-*"            # Which filter to use for gitops image tags
-        blip: "glob:release-1.29*"
-        export: "glob:release-1.4*"            # Example filter for auth service
-      buckets: {}                            # Which S3 buckets to store/retrieve data to/from
-        #data: tidepool-test-qa2-data        # Name of the writable S3 bucket to store document data to
-        #asset: tidepool-test-qa2-asset      # Name of the readable S3 bucker form which to get email assets
-      migrations:
-        resources: 
-          requests: 
-            memory: '256Mi'
-            cpu: '500m'
-          limits: 
-            memory: '256Mi'
-            cpu: '1000m'
-      seagull:
-        resources: 
-          requests: 
-            memory: '256Mi'
-            cpu: '500m'
-          limits: 
-            memory: '256Mi'
-            cpu: '1000m'
-      tidewhisperer:
-        resources: 
-          requests: 
-            memory: '256Mi'
-            cpu: '500m'
-          limits: 
-            memory: '256Mi'
-            cpu: '1000m'
+  tracing:
+    enabled: false
+    sso:
+      allowed_groups:
+      - eng@tidepool.org
+      port: 16686
+      serviceName: jaeger-query
