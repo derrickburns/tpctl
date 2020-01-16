@@ -1,4 +1,4 @@
-#!/bin/bash -i
+#!/bin/bash -ix
 #
 # Configure EKS cluster to run Tidepool services
 #
@@ -634,6 +634,47 @@ function make_shared_config() {
   complete "created package manifests"
 }
 
+# create values for flux helm chart
+function fluxvalues() {
+  local config=$(get_config)
+
+  start "creating flux values"
+  jsonnet --tla-code config="$config" ${TEMPLATE_DIR}/flux/flux-values.jsonnet | yq r - >$TMP_DIR/flux-values.yaml
+  expect_success "Templating failure flux values"
+  complete 'created flux values'
+
+  start "creating flux values"
+  jsonnet --tla-code config="$config" ${TEMPLATE_DIR}/flux/helm-operator-values.jsonnet | yq r - >$TMP_DIR/helm-operator-values.yaml
+  expect_success "Templating failure helm operator values"
+  complete 'created helm operator values'
+
+  start "updating fluxcd helm repo"
+  helm repo add fluxcd https://charts.fluxcd.io
+  expect_success "Adding fluxcd helm repo"
+  helm repo update
+  expect_success "Updating helm repos"
+  complete 'updated fluxcd helm repo'
+
+  (
+    cd fluxcd
+    start "creating flux manifests"
+    helm fetch --untar --untardir $TMP_DIR/flux 'fluxcd/flux'
+    expect_success "Fetching flux helm chart"
+    helm template $TMP_DIR/flux/flux -f $TMP_DIR/flux-values.yaml -n flux | separate_files | add_names
+    expect_success "Templating failure flux helm chart"
+    complete 'created flux manifests'
+  
+    start "creating flux helm operator manifests"
+    helm fetch --untar --untardir $TMP_DIR/helmoperator 'fluxcd/helm-operator'
+    expect_success "Fetching helm operator helm chart"
+    helm template $TMP_DIR/helmoperator/helm-operator --namespace flux -f $TMP_DIR/helm-operator-values.yaml | separate_files | add_names
+    expect_success "Templating failure flux helm operator chart"
+    complete "created flux helm operator manifests"
+  )
+}
+
+# make K8s manifests for enviroments given config, path, prefix, and environment name
+
 # make EKSCTL manifest file
 function make_cluster_config() {
   local config=$(get_config)
@@ -1128,7 +1169,7 @@ function linkerd_dashboard() {
 
 # show help
 function help() {
-  echo "$0 [-h|--help] (values|edit_values|config|edit_repo|cluster|flux|gloo|regenerate_cert|copy_assets|mesh|migrate_secrets|randomize_secrets|upsert_plaintext_secrets|install_users|deploy_key|delete_cluster|await_deletion|remove_mesh|merge_kubeconfig|gloo_dashboard|linkerd_dashboard|diff|dns|install_certmanager|mongo_template|linkerd_check|sync|peering|vpc|update_kubeconfig|get_secret|list_secrets|delete_secret|external_secrets)*"
+  echo "$0 [-h|--help] (values|edit_values|config|edit_repo|cluster|flux|gloo|regenerate_cert|copy_assets|mesh|migrate_secrets|randomize_secrets|upsert_plaintext_secrets|install_users|deploy_key|delete_cluster|await_deletion|remove_mesh|merge_kubeconfig|gloo_dashboard|linkerd_dashboard|diff|dns|install_certmanager|mongo_template|linkerd_check|sync|peering|vpc|update_kubeconfig|get_secret|list_secrets|delete_secret|external_secrets|fluxvalues)*"
   echo
   echo
   echo "So you want to built a Kubernetes cluster that runs Tidepool. Great!"
@@ -1179,6 +1220,7 @@ function help() {
   echo "envrc - create .envrc file for direnv to change kubecontexts and to set REMOTE_REPO"
   echo "update_kubeconfig - modify context and user for kubeconfig"
   echo "envoy - show envoy config"
+  echo "fluxvalues - generate values for flux helm chart"
 }
 
 if [ $# -eq 0 ]; then
@@ -1550,6 +1592,16 @@ case $cmd in
     setup_tmpdir
     clone_remote
     get_vpc
+    ;;
+  fluxvalues)
+    check_remote_repo
+    setup_tmpdir
+    set_template_dir
+    clone_remote
+    fluxvalues
+    save_changes "Updated fluxvalues"
+    ;;
+  envrc)
     ;;
   envoy)
     envoy

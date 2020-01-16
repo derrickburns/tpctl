@@ -4,7 +4,7 @@ local values(config) = {
 
   createCRD: true,
   helm: {
-    version: "v3",
+    versions: "v3",
   },
 
   prometheus: {
