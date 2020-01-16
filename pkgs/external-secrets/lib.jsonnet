@@ -11,7 +11,7 @@ local lib = import '../../lib/lib.jsonnet';
     spec: {
       backendType: 'secretsManager',
       dataFrom: [
-        '%s/%s' % [config.cluster.metadata.name, namespace],
+        '%s/%s/%s' % [config.cluster.metadata.name, namespace, name],
       ],
     },
   },
