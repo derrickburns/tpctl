@@ -150,9 +150,7 @@ function install_gloo() {
 
   helm repo add gloo https://storage.googleapis.com/solo-public-helm
   helm fetch --untar --untardir $TMP_DIR/gloohelm 'gloo/gloo'
-  helm template gloo $TMP_DIR/gloohelm/gloo --namespace gloo-system   -f $TMP_DIR/gloo-values.yaml --set crds.create=true | 
-	 sed -e 's/---$/\
----/' > $TMP_DIR/manifests.yaml
+  helm template gloo $TMP_DIR/gloohelm/gloo --namespace gloo-system   -f $TMP_DIR/gloo-values.yaml > $TMP_DIR/manifests.yaml
   expect_success "Templating failure gloo helm chart"
 
 
