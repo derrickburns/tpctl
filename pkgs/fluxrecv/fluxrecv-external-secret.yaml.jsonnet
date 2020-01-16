@@ -1,36 +1,6 @@
-local lib = import '../../lib/lib.jsonnet';
+local es = import '../external-secrets/lib.jsonnet';
 
-local externalSecret(config) = (
-  local cluster = config.cluster.metadata.name;
+function(config, prev) (
   local namespace = lib.getElse(config, 'pkgs.fluxrecv.namespace', 'flux');
-  {
-    apiVersion: 'kubernetes-client.io/v1',
-    kind: 'ExternalSecret',
-    metadata: {
-      name: 'fluxrecv-config',
-      namespace: namespace,
-    },
-    secretDescriptor: {
-      backendType: 'secretsManager',
-      data: [
-        {
-          key: '%s/%s/fluxrecv-config' % [cluster, namespace],
-          name: 'fluxrecv.yaml',
-          property: 'fluxrecv.yaml',
-        },
-        {
-          key: '%s/%s/fluxrecv-config' % [cluster, namespace],
-          name: 'github.key',
-          property: 'github.key',
-        },
-        {
-          key: '%s/%s/fluxrecv-config' % [cluster, namespace],
-          name: 'dockerhub.key',
-          property: 'dockerhub.key',
-        },
-      ],
-    },
-  }
-);
-
-function(config, prev) externalSecret(config)
+  es.externalSecret(config, 'fluxrecv-config', namespace)
+)

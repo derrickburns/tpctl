@@ -1,20 +1,3 @@
-local externalSecret(config) = {
-  apiVersion: 'kubernetes-client.io/v1',
-  kind: 'ExternalSecret',
-  metadata: {
-    name: 'slack',
-    namespace: 'flux',
-  },
-  secretDescriptor: {
-    backendType: 'secretsManager',
-    data: [
-      {
-        key: '%s/flux/slack' % config.cluster.metadata.name,
-        name: 'url',
-        property: 'url',
-      },
-    ],
-  },
-};
+local es = import '../external-secrets/lib.jsonnet';
 
-function(config, prev) externalSecret(config)
+function(config, prev) es.externalSecret(config, 'slack', 'flux')
