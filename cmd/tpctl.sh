@@ -48,7 +48,7 @@ function install_certmanager {
   mkdir -p certmanager
   ( 
     cd certmanager
-    curl -sL "https://github.com/jetstack/cert-manager/releases/download/v0.12.0/cert-manager.yaml" | separate_files | add_names
+    curl -sL "https://github.com/jetstack/cert-manager/releases/download/v0.12.0/cert-manager.yaml" | tr -cd '\11\12\15\40-\176' | separate_files | add_names
 
 # We must work around a validation issue with Kuberentes < 1.16 by deleting
 # several fields in the CRDs (https://github.com/jetstack/cert-manager/issues/2197)
@@ -150,7 +150,7 @@ function install_gloo() {
 
   helm repo add gloo https://storage.googleapis.com/solo-public-helm
   helm fetch --untar --untardir $TMP_DIR/gloohelm 'gloo/gloo'
-  helm template gloo $TMP_DIR/gloohelm/gloo --namespace gloo-system  --set crds.create=true -f $TMP_DIR/gloo-values.yaml | 
+  helm template gloo $TMP_DIR/gloohelm/gloo --namespace gloo-system   -f $TMP_DIR/gloo-values.yaml --set crds.create=true | 
 	 sed -e 's/---$/\
 ---/' > $TMP_DIR/manifests.yaml
   expect_success "Templating failure gloo helm chart"
@@ -160,6 +160,7 @@ function install_gloo() {
   mkdir -p gloo
   (
     cd gloo
+    cp -r $TMP_DIR/gloohelm/gloo/crds crds
     cat $TMP_DIR/manifests.yaml | separate_files | add_names
     jsonnet --tla-code config="$config" ${TEMPLATE_DIR}/gloo/settings.yaml.jsonnet | yq r - | separate_files | add_names
     yq w -i gloo-system/Deployment/gateway-proxy.yaml spec.template.spec.containers[0].securityContext.readOnlyRootFilesystem false
