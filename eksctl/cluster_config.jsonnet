@@ -173,7 +173,12 @@ local secretsManagerServiceAccount(config) = {
           Statement: [
             {
               Effect: 'Allow',
-              Action: 'secretsmanager:GetSecretValue',
+              Action: [
+        	"secretsmanager:GetResourcePolicy",
+        	"secretsmanager:GetSecretValue",
+        	"secretsmanager:DescribeSecret",
+        	"secretsmanager:ListSecretVersionIds"
+              ],
               Resource: 'arn:aws:secretsmanager:%s:%s:secret:%s/*' % [this.metadata.region, config.aws.accountNumber, this.metadata.name],
             },
           ],
