@@ -187,7 +187,7 @@
             matchers: [{ prefix: '/' }],
           } + $.route(vs),
         ],
-        options: if vs.labels.type == 'external' then options else null;
+        options: if vs.labels.type == 'external' then options else null,
       },
     },
   },
