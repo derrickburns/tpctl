@@ -128,7 +128,47 @@
       },
     },
 
-  virtualService(vsin, defaultName, defaultNamespace):: {
+  options: {
+    cors: {
+      allowCredentials: true,
+      allowHeaders: [
+        'authorization',
+        'content-type',
+        'x-tidepool-session-token',
+        'x-tidepool-trace-request',
+        'x-tidepool-trace-session',
+      ],
+      allowMethods: [
+        'GET',
+        'POST',
+        'PUT',
+        'PATCH',
+        'DELETE',
+        'OPTIONS',
+      ],
+      allowOriginRegex: [
+        '.*',
+      ],
+      exposeHeaders: [
+        'x-tidepool-session-token',
+        'x-tidepool-trace-request',
+        'x-tidepool-trace-session',
+      ],
+      maxAge: '600s',
+    },
+    headerManipulation: {
+      requestHeadersToAdd: [
+        {
+          header: {
+            key: 'Strict-Transport-Security',
+            value: 'max-age=31536000',
+          },
+        },
+      ],
+    },
+  },
+
+  virtualService(vsin, defaultName, defaultNamespace, options=null):: {
     local vs = $.withNamespace($.withName(vsin, defaultName), defaultNamespace),
     local procotol = vs.labels.protocol,
     apiVersion: 'gateway.solo.io/v1',
@@ -147,6 +187,7 @@
             matchers: [{ prefix: '/' }],
           } + $.route(vs),
         ],
+        options: options,
       },
     },
   },
@@ -222,7 +263,7 @@
     spec: {
       httpGateway: {
         virtualServiceSelector: gw.selector,
-	virtualServiceNamespaces: [ '*' ],
+        virtualServiceNamespaces: ['*'],
         options:
           (if $.getElse(gw, 'options.healthCheck', false) then $.healthCheckOption else {})
           + (if $.getElse(gw, 'options.tracing', false) then $.httpConnectionManagerOption else {}),
@@ -264,7 +305,7 @@
 
   virtualServicesForEnvironment(config, envname):: (
     local vsarray = $.virtualServicesForPkg(envname, config.environments[envname].tidepool);
-    std.map(function(v) $.virtualService(v, v.name, envname), vsarray)
+    std.map(function(v) $.virtualService(v, v.name, envname), vsarray, $.options)
   ),
 
   certificatesForPackage(config, pkgname):: (
