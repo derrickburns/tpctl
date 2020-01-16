@@ -305,7 +305,7 @@
 
   virtualServicesForEnvironment(config, envname):: (
     local vsarray = $.virtualServicesForPkg(envname, config.environments[envname].tidepool);
-    std.map(function(v) $.virtualService(v, v.name, envname), vsarray, $.options)
+    std.map(function(v) $.virtualService(v, v.name, envname, $.options), vsarray)
   ),
 
   certificatesForPackage(config, pkgname):: (
