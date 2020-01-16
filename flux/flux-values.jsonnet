@@ -2,7 +2,7 @@ local lib = import '../lib/lib.jsonnet';
 
 local values(config) = {
   image: {
-    tag: lib.getElse(config, 'pkgs.flux.version', '1.15.0')
+    tag: lib.getElse(config, 'pkgs.flux.version', '1.17.1')
   },
 
   logFormat: 'fmt',
