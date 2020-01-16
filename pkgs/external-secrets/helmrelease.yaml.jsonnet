@@ -1,4 +1,5 @@
 local lib = import '../../lib/lib.jsonnet';
+local linkerd = import '../linkerd/lib.jsonnet';
 
 local helmrelease(config) = {
   apiVersion: 'helm.fluxcd.io/v1',
@@ -21,6 +22,7 @@ local helmrelease(config) = {
       podLabels: {
         'sumologic.com/exclude': 'true',
       },
+      podAnnotations: linkerd.annotations(config),
       serviceAccount: {
         create: false,
         name: 'external-secrets',
