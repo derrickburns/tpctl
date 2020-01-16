@@ -1,4 +1,4 @@
-#!/bin/bash -ix
+#!/bin/bash -i
 #
 # Configure EKS cluster to run Tidepool services
 #
@@ -94,10 +94,6 @@ function make_envrc() {
     echo "kubectx $context" >.envrc
   fi
   echo "export REMOTE_REPO=cluster-$cluster" >>.envrc
-  if [ -d ~/.helm/clusters/$cluster ]
-  then
-    echo "cp ~/.helm/clusters/$cluster/* ~/.helm/" >>.envrc
-  fi
   add_file ".envrc"
   complete "created .envrc"
 }
@@ -154,7 +150,7 @@ function install_gloo() {
 
   helm repo add gloo https://storage.googleapis.com/solo-public-helm
   helm fetch --untar --untardir $TMP_DIR/gloohelm 'gloo/gloo'
-  helm template gloo $TMP_DIR/gloohelm/gloo --namespace gloo-system  --set crds.create=true -f $TMP_DIR/gloo-values.yaml | 
+  helm template gloo $TMP_DIR/gloohelm/gloo --include-crds --namespace gloo-system  --set crds.create=true -f $TMP_DIR/gloo-values.yaml | 
 	 sed -e 's/---$/\
 ---/' > $TMP_DIR/manifests.yaml
   expect_success "Templating failure gloo helm chart"
@@ -446,63 +442,6 @@ function make_assets() {
   done
 }
 
-# retrieve helm home
-function get_helm_home() {
-  echo ${HELM_HOME:-~/.helm}
-}
-
-# make TLS certificate to allow local helm client to access tiller with TLS
-function make_cert() {
-  local cluster=$(get_cluster)
-  local helm_home=$(get_helm_home)
-
-  start "installing helm client cert for cluster $cluster"
-
-  info "retrieving ca.pem from AWS secrets manager"
-  aws secretsmanager get-secret-value --secret-id $cluster/flux/ca.pem | jq '.SecretString' | sed -e 's/"//g' \
-    -e 's/\\n/\
-/g' >$TMP_DIR/ca.pem
-
-  expect_success "failed to retrieve ca.pem from AWS secrets manager"
-
-  info "retrieving ca-key.pem from AWS secrets manager"
-  aws secretsmanager get-secret-value --secret-id $cluster/flux/ca-key.pem | jq '.SecretString' | sed -e 's/"//g' \
-    -e 's/\\n/\
-/g' >$TMP_DIR/ca-key.pem
-
-  expect_success "failed to retrieve ca-key.pem from AWS secrets manager"
-
-  local helm_cluster_home=${helm_home}/clusters/$cluster
-
-  info "creating cert in ${helm_cluster_home}"
-  local tiller_hostname=tiller-deploy.flux
-  local user_name=helm-client
-
-  echo '{"signing":{"default":{"expiry":"43800h","usages":["signing","key encipherment","server auth","client auth"]}}}' >$TMP_DIR/ca-config.json
-  echo '{"CN":"'$user_name'","hosts":[""],"key":{"algo":"rsa","size":4096}}' | cfssl gencert \
-    -config=$TMP_DIR/ca-config.json -ca=$TMP_DIR/ca.pem -ca-key=$TMP_DIR/ca-key.pem \
-    -hostname="$tiller_hostname" - | cfssljson -bare $user_name
-
-  rm -rf $helm_cluster_home
-  mkdir -p $helm_cluster_home
-  mv helm-client.pem $helm_cluster_home/cert.pem
-  add_file $helm_cluster_home/cert.pem
-  mv helm-client-key.pem $helm_cluster_home/key.pem
-  rm helm-client.csr
-  add_file $helm_cluster_home/key.pem
-  cp $TMP_DIR/ca.pem $helm_cluster_home/ca.pem
-  add_file $helm_cluster_home/ca.pem
-  rm -f $helm_home/{cert.pem,key.pem,ca.pem}
-  cp $helm_cluster_home/{cert.pem,key.pem,ca.pem} $helm_home
-
-  if [ "$TILLER_NAMESPACE" != "flux" -o "$HELM_TLS_ENABLE" != "true" ]; then
-    info "you must do this to use helm:"
-    info "export TILLER_NAMESPACE=flux"
-    info "export HELM_TLS_ENABLE=true"
-  fi
-  complete "installed helm client cert for cluster $cluster"
-}
-
 # config availability of GITHUB TOKEN in environment
 function expect_github_token() {
   if [ -z "$GITHUB_TOKEN" ]; then
@@ -655,23 +594,24 @@ function fluxvalues() {
   expect_success "Updating helm repos"
   complete 'updated fluxcd helm repo'
 
-  mkdir -p fluxcd
+  mkdir -p flux
 
   (
-    cd fluxcd
+    cd flux
+    rm -rf .
+
+    kubectl create ns flux --dry-run -o yaml >namespace.yaml
     start "creating flux manifests"
     helm fetch --untar --untardir $TMP_DIR/flux 'fluxcd/flux'
     expect_success "Fetching flux helm chart"
-    export release_namespace=fluxcd
-    helm template --namespace fluxcd  flux $TMP_DIR/flux/flux -f $TMP_DIR/flux-values.yaml | separate_files | add_names
+    helm template --namespace flux --include-crds flux $TMP_DIR/flux/flux -f $TMP_DIR/flux-values.yaml | add_ns flux | separate_files | add_names
     expect_success "Templating failure flux helm chart"
     complete 'created flux manifests'
   
     start "creating flux helm operator manifests"
     helm fetch --untar --untardir $TMP_DIR/helmoperator 'fluxcd/helm-operator'
     expect_success "Fetching helm operator helm chart"
-    export release_namespace=fluxcd
-    helm template --namespace fluxcd helm-operator $TMP_DIR/helmoperator/helm-operator -f $TMP_DIR/helm-operator-values.yaml | separate_files | add_names
+    helm template --namespace flux --include-crds helm-operator $TMP_DIR/helmoperator/helm-operator -f $TMP_DIR/helm-operator-values.yaml | add_ns flux | separate_files | add_names
     expect_success "Templating failure flux helm operator chart"
     complete "created flux helm operator manifests"
   )
@@ -821,39 +761,25 @@ function make_flux() {
   local email=$(get_email)
   start "installing flux into cluster $cluster"
   establish_ssh
-  EKSCTL_EXPERIMENTAL=true unbuffer eksctl enable repo \
-    -f config.yaml --git-url=${GIT_REMOTE_REPO}.git --git-email=$email --git-label=$cluster | tee $TMP_DIR/eksctl.out
-  expect_success "eksctl install flux failed."
-  git pull
+  fluxvalues
+  kubectl apply -R -f flux
+  local key=$(fluxctl --k8s-fwd-ns=flux identity)
+  
+  while [ $? -ne 0 ]
+  do
+    echo "sleep for key"
+    sleep 1
+    key=$(fluxctl --k8s-fwd-ns=fluxcd identity)
+  done
+  make_key "$key"
   complete "installed flux into cluster $cluster"
-}
-
-# save Certificate Authority key and pem into AWS secrets manager
-function save_ca() {
-  start "saving certificate authority TLS pem and key to AWS secrets manager"
-  local cluster=$(get_cluster)
-  local dir=$(cat $TMP_DIR/eksctl.out | grep "Public key infrastructure" | sed -e 's/^.*"\(.*\)".*$/\1/')
-
-  aws secretsmanager describe-secret --secret-id $cluster/flux/ca.pem 2>/dev/null
-  if [ $? -ne 0 ]; then
-    aws secretsmanager create-secret --name $cluster/flux/ca.pem --secret-string "$(cat $dir/ca.pem)"
-    expect_success "failed to create ca.pem to AWS"
-    aws secretsmanager create-secret --name $cluster/flux/ca-key.pem --secret-string "$(cat $dir/ca-key.pem)"
-    expect_success "failed to create ca-key.pem to AWS"
-  else
-    aws secretsmanager update-secret --secret-id $cluster/flux/ca.pem --secret-string "$(cat $dir/ca.pem)"
-    expect_success "failed to update ca.pem to AWS"
-    aws secretsmanager update-secret --secret-id $cluster/flux/ca-key.pem --secret-string "$(cat $dir/ca-key.pem)"
-    expect_success "failed to update ca-key.pem to AWS"
-  fi
-  complete "saved certificate authority TLS pem and key to AWS secrets manager"
 }
 
 # save deploy key to config repo
 function make_key() {
   start "authorizing access to ${GIT_REMOTE_REPO}"
 
-  local key=$(fluxctl --k8s-fwd-ns=flux identity)
+  local key=$1
   local reponame="$(echo $GIT_REMOTE_REPO | cut -d: -f2 | sed -e 's/\.git//')"
   local cluster=$(get_cluster)
 
@@ -884,34 +810,6 @@ function update_gloo_service() {
   else
     info "No gloo service to update"
   fi
-}
-
-# update flux and helm operator manifests
-function update_flux() {
-  start "updating flux and flux-helm-operator manifests"
-  local config=$(get_config)
-
-  if [ -f flux/flux-deployment.yaml ]; then
-    yq r flux/flux-deployment.yaml -j >$TMP_DIR/flux.json
-    yq r flux/helm-operator-deployment.yaml -j >$TMP_DIR/helm.json
-    yq r flux/tiller-dep.yaml -j >$TMP_DIR/tiller.json
-
-    jsonnet --tla-code config="$config" --tla-code-file flux="$TMP_DIR/flux.json" --tla-code-file helm="$TMP_DIR/helm.json" $TEMPLATE_DIR/flux/flux.jsonnet --tla-code-file tiller="$TMP_DIR/tiller.json" >$TMP_DIR/updated.json
-    expect_success "Templating failure flux/flux.jsonnet"
-
-    add_file flux/flux-deployment.yaml
-    yq r $TMP_DIR/updated.json flux >flux/flux-deployment.yaml
-    expect_success "Serialization flux/flux-deployment.yaml"
-
-    add_file flux/helm-operator-deployment.yaml
-    yq r $TMP_DIR/updated.json helm >flux/helm-operator-deployment.yaml
-    expect_success "Serialization flux/helm-operator-deployment.yaml"
-
-    add_file flux/tiller-dep.yaml
-    yq r $TMP_DIR/updated.json tiller >flux/tiller-dep.yaml
-    expect_success "Serialization flux/tiller-dep.yaml"
-  fi
-  complete "updated flux and flux-helm-operator manifests"
 }
 
 function mykubectl() {
@@ -1389,12 +1287,8 @@ case $cmd in
     make_flux
     save_changes "Added flux"
     git pull
-    save_ca
-    make_cert
-    make_key
     make_envrc
-    update_flux
-    save_changes "Updated flux"
+    save_changes "Installed flux"
     ;;
   mesh)
     check_remote_repo
@@ -1417,7 +1311,6 @@ case $cmd in
     check_remote_repo
     setup_tmpdir
     clone_remote
-    make_cert
     ;;
   copy_assets)
     check_remote_repo

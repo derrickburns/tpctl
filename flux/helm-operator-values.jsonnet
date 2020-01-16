@@ -14,6 +14,12 @@ local values(config) = {
     },
   },
 
+  git: {
+    ssh: {
+      secretName: 'flux-git-deploy',
+    },
+  },
+
   annotations: {
     "secret.reloader.stakater.com/reload": "flux-helm-repositories",
   },
