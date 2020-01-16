@@ -1,3 +1,4 @@
+local lib = import '../../lib/lib.jsonnet';
 local es = import '../external-secrets/lib.jsonnet';
 
 function(config, prev) (
