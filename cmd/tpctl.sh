@@ -610,6 +610,10 @@ function fluxvalues() {
     start "creating flux helm operator manifests"
     helm fetch --untar --untardir $TMP_DIR/helmoperator 'fluxcd/helm-operator'
     expect_success "Fetching helm operator helm chart"
+    if [ -d "$TMP_DIR/helmoperator/helm-operator/crds" ]
+    then 
+      cp -r $TMP_DIR/helmoperator/helm-operator/crds crds
+    fi
     helm template helm-operator --namespace flux $TMP_DIR/helmoperator/helm-operator -f $TMP_DIR/helm-operator-values.yaml | add_ns flux | separate_files | add_names
     expect_success "Templating failure flux helm operator chart"
     complete "created flux helm operator manifests"
