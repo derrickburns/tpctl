@@ -7,8 +7,8 @@ local helmrelease(config) = {
     annotations: {
       'fluxcd.io/automated': 'false',
     },
-    name: 'reloader',
-    namespace: 'reloader',
+    name: 'external-secrets',
+    namespace: 'external-secrets',
   },
   spec: {
     chart: {
