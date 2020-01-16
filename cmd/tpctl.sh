@@ -154,7 +154,7 @@ function install_gloo() {
 
   helm repo add gloo https://storage.googleapis.com/solo-public-helm
   helm fetch --untar --untardir $TMP_DIR/gloohelm 'gloo/gloo'
-  helm template $TMP_DIR/gloohelm/gloo --namespace gloo-system  --set crds.create=true -f $TMP_DIR/gloo-values.yaml | 
+  helm template gloo $TMP_DIR/gloohelm/gloo --namespace gloo-system  --set crds.create=true -f $TMP_DIR/gloo-values.yaml | 
 	 sed -e 's/---$/\
 ---/' > $TMP_DIR/manifests.yaml
   expect_success "Templating failure gloo helm chart"
@@ -655,19 +655,23 @@ function fluxvalues() {
   expect_success "Updating helm repos"
   complete 'updated fluxcd helm repo'
 
+  mkdir -p fluxcd
+
   (
     cd fluxcd
     start "creating flux manifests"
     helm fetch --untar --untardir $TMP_DIR/flux 'fluxcd/flux'
     expect_success "Fetching flux helm chart"
-    helm template $TMP_DIR/flux/flux -f $TMP_DIR/flux-values.yaml -n flux | separate_files | add_names
+    export release_namespace=fluxcd
+    helm template --namespace fluxcd  flux $TMP_DIR/flux/flux -f $TMP_DIR/flux-values.yaml | separate_files | add_names
     expect_success "Templating failure flux helm chart"
     complete 'created flux manifests'
   
     start "creating flux helm operator manifests"
     helm fetch --untar --untardir $TMP_DIR/helmoperator 'fluxcd/helm-operator'
     expect_success "Fetching helm operator helm chart"
-    helm template $TMP_DIR/helmoperator/helm-operator --namespace flux -f $TMP_DIR/helm-operator-values.yaml | separate_files | add_names
+    export release_namespace=fluxcd
+    helm template --namespace fluxcd helm-operator $TMP_DIR/helmoperator/helm-operator -f $TMP_DIR/helm-operator-values.yaml | separate_files | add_names
     expect_success "Templating failure flux helm operator chart"
     complete "created flux helm operator manifests"
   )
