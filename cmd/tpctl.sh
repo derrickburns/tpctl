@@ -48,7 +48,7 @@ function install_certmanager {
   mkdir -p certmanager
   ( 
     cd certmanager
-    curl -sL "https://github.com/jetstack/cert-manager/releases/download/v0.12.0/cert-manager.yaml"  | tr -cd '\11\12\15\40-\176' | separate_files | add_names
+    curl -sL "https://github.com/jetstack/cert-manager/releases/download/v0.12.0/cert-manager.yaml" | separate_files | add_names
 
 # We must work around a validation issue with Kuberentes < 1.16 by deleting
 # several fields in the CRDs (https://github.com/jetstack/cert-manager/issues/2197)
