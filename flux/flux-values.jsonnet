@@ -21,7 +21,7 @@ local values(config) = {
   },
 
   syncGarbageCollection: {
-    enable: lib.isTrue(config, 'pkgs.flux.collectGarbage.enabled'),
+    enable: lib.getElse(config, 'pkgs.flux.collectGarbage.enabled', false),
     dry: false,
   },
 
