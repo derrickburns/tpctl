@@ -379,4 +379,4 @@ local tidepool(config, prev, namespace) = {
   },
 };
 
-function(config, prev, namespace) tidepool(expand.expandConfig(config), prev, namespace)
+function(config, prev, namespace) std.manifestYamlStream( [ tidepool(expand.expandConfig(config), prev, namespace) ] )
