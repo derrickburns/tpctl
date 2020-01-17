@@ -766,13 +766,14 @@ function make_flux() {
   establish_ssh
   fluxvalues
   kubectl apply -R -f flux
-  local key=$(fluxctl --k8s-fwd-ns=flux identity)
+  local key=$(fluxctl --k8s-fwd-ns=flux identity 2>${TMP_DIR}/err)
   
-  while [ $? -ne 0 ]
+  while [ -s ${TMP_DIR}/err ]
   do
     echo "sleep for key"
     sleep 1
-    key=$(fluxctl --k8s-fwd-ns=fluxcd identity)
+    rm ${TMP_DIR}/err
+    key=$(fluxctl --k8s-fwd-ns=fluxcd identity 2>$TMP_DIR/err)
   done
   make_key "$key"
   complete "installed flux into cluster $cluster"
