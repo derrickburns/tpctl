@@ -74,8 +74,7 @@ local tidepool(config, prev, namespace) = {
         if lib.isTrue(config, 'pkgs.reloader.enabled')
         then { 'reloader.stakater.com/auto': 'true' }
         else {}
-      }
-    },
+    }
   },
 
   spec: {
