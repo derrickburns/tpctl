@@ -29,7 +29,7 @@ local values(config) = {
 
   annotations+: {
     "secret.reloader.stakater.com/reload": 
-       if lib.isTrue(config, 'pkgs.fluxrecv.sidecar')
+       if lib.isTrue(config, 'pkgs.fluxrecv.enabled') && lib.isTrue(config, 'pkgs.fluxrecv.sidecar')
        then "fluxrecv-config,flux-helm-repositories"
        else "flux-helm-repositories",
   },
