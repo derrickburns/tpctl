@@ -4,7 +4,7 @@ local namespace(config) = {
   apiVersion: 'v1',
   kind: 'Namespace',
   metadata: {
-    name: external-secrets
+    name: 'external-secrets',
     annotations: linkerd.annotations(config)
   },
 };
