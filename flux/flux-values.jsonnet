@@ -35,7 +35,7 @@ local values(config) = {
   },
 
   extraContainers: 
-    if lib.isTrue(config, 'pkgs.fluxrecv.sidecar')
+    if lib.isTrue(config, 'pkgs.fluxrecv.enabled') && lib.isTrue(config, 'pkgs.fluxrecv.sidecar')
     then [{
       name: 'recv',
       image: 'fluxcd/flux-recv:0.2.0',
@@ -52,7 +52,7 @@ local values(config) = {
     else [],
 
   extraVolumes: 
-    if lib.isTrue(config, 'pkgs.fluxrecv.sidecar')
+    if lib.isTrue(config, 'pkgs.fluxrecv.enabled') && lib.isTrue(config, 'pkgs.fluxrecv.sidecar')
     then [{
       name: 'fluxrecv-config',
       secret: {
