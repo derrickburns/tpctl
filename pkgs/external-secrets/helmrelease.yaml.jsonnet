@@ -13,9 +13,9 @@ local helmrelease(config) = {
   },
   spec: {
     chart: {
-      git: 'git@github.com:godaddy/kubernetes-external-secrets',
-      path: 'charts/kubernetes-external-secrets',
-      ref: '3.0.0'
+      repository: 'https://godaddy.github.io/kunernetes-external-secrets/',
+      name: 'kubernetes-external-secrets',
+      version: '3.0.0',
     },
     releaseName: 'external-secrets',
     values: {
