@@ -72,7 +72,7 @@ local tidepool(config, prev, namespace) = {
       replicas: lib.getElse(tp, 'deployment.replicas', 1),
       annotations: 
         if lib.isTrue(config, 'pkgs.reloader.enabled')
-        then { reloader.stakater.com/auto: "true" }
+        then { 'reloader.stakater.com/auto': 'true' }
         else {}
       }
     },
