@@ -28,7 +28,7 @@ local helmrelease(config) = {
         name: 'external-secrets',
       },
       securityContext: {
-        fsGroup: 1000,
+        fsGroup: 65534,
       },
       env: {
         AWS_REGION: config.cluster.metadata.region,
