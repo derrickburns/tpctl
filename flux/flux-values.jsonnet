@@ -21,8 +21,8 @@ local values(config) = {
   },
 
   syncGarbageCollection: {
-    enable: true,
-    dry: null,
+    enabled: true,
+    dry: false,
   },
 
   additionalArgs: if lib.isTrue(config, 'pkgs.fluxcloud.enabled') then ['--connect=ws://fluxcloud'] else [],
