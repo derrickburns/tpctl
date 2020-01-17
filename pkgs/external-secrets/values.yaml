@@ -1,3 +1,0 @@
-      securityContext: {
-        fsGroup: 1000,
-      }
