@@ -572,8 +572,8 @@ function make_shared_config() {
   complete "created package manifests"
 }
 
-# create values for flux helm chart
-function fluxvalues() {
+# create flux and flux helm operator manifests
+function make_flux() {
   local config=$(get_config)
 
   start "creating flux values"
@@ -581,7 +581,7 @@ function fluxvalues() {
   expect_success "Templating failure flux values"
   complete 'created flux values'
 
-  start "creating flux values"
+  start "creating flux helm operator values"
   jsonnet --tla-code config="$config" ${TEMPLATE_DIR}/flux/helm-operator-values.jsonnet | yq r - >$TMP_DIR/helm-operator-values.yaml
   expect_success "Templating failure helm operator values"
   complete 'created helm operator values'
@@ -595,7 +595,6 @@ function fluxvalues() {
 
   rm -rf flux
   mkdir -p flux
-
   (
     cd flux
 
@@ -758,14 +757,21 @@ function expect_cluster_exists() {
   expect_success "cluster $cluster does not exist."
 }
 
-# install flux into cluster
-function make_flux() {
-  local cluster=$(get_cluster)
-  local email=$(get_email)
-  start "installing flux into cluster $cluster"
+# bootstrap flux 
+function bootstrap_flux() {
+  start "bootstrapping flux"
   establish_ssh
-  fluxvalues
+  kubectl delete namespace ${FLUX_FORWARD_NAMESPACE}
+  kubectl create namespace ${FLUX_FORWARD_NAMESPACE}
   kubectl apply -R -f flux
+  install_key
+  complete "bootstrapped flux"
+}
+
+# save deploy key to config repo
+function install_key() {
+  start "authorizing access to ${GIT_REMOTE_REPO}"
+
   local key=$(fluxctl --k8s-fwd-ns=${FLUX_FORWARD_NAMESPACE} identity 2>${TMP_DIR}/err)
   
   while [ -s ${TMP_DIR}/err ]
@@ -776,15 +782,6 @@ function make_flux() {
     rm ${TMP_DIR}/err
     key=$(fluxctl --k8s-fwd-ns=${FLUX_FORWARD_NAMESPACE} identity 2>$TMP_DIR/err)
   done
-  make_key "$key"
-  complete "installed flux into cluster $cluster"
-}
-
-# save deploy key to config repo
-function make_key() {
-  start "authorizing access to ${GIT_REMOTE_REPO}"
-
-  local key=$1
   local reponame="$(echo $GIT_REMOTE_REPO | cut -d: -f2 | sed -e 's/\.git//')"
   local cluster=$(get_cluster)
 
@@ -1076,7 +1073,7 @@ function linkerd_dashboard() {
 
 # show help
 function help() {
-  echo "$0 [-h|--help] (values|edit_values|config|edit_repo|cluster|flux|gloo|regenerate_cert|copy_assets|mesh|migrate_secrets|randomize_secrets|upsert_plaintext_secrets|install_users|deploy_key|delete_cluster|await_deletion|remove_mesh|merge_kubeconfig|gloo_dashboard|linkerd_dashboard|diff|dns|install_certmanager|mongo_template|linkerd_check|sync|peering|vpc|update_kubeconfig|get_secret|list_secrets|delete_secret|external_secrets|fluxvalues)*"
+  echo "$0 [-h|--help] (values|edit_values|config|edit_repo|cluster|flux|gloo|regenerate_cert|copy_assets|mesh|migrate_secrets|randomize_secrets|upsert_plaintext_secrets|install_users|deploy_key|delete_cluster|await_deletion|remove_mesh|merge_kubeconfig|gloo_dashboard|linkerd_dashboard|diff|dns|install_certmanager|mongo_template|linkerd_check|sync|peering|vpc|update_kubeconfig|get_secret|list_secrets|delete_secret|external_secrets|bootstrap)*"
   echo
   echo
   echo "So you want to built a Kubernetes cluster that runs Tidepool. Great!"
@@ -1127,7 +1124,7 @@ function help() {
   echo "envrc - create .envrc file for direnv to change kubecontexts and to set REMOTE_REPO"
   echo "update_kubeconfig - modify context and user for kubeconfig"
   echo "envoy - show envoy config"
-  echo "fluxvalues - generate values for flux helm chart"
+  echo "bootstrap - bootstrap flux"
 }
 
 if [ $# -eq 0 ]; then
@@ -1259,6 +1256,7 @@ case $cmd in
     install_certmanager
     make_config
     make_envrc
+    make_flux
     save_changes "Added config packages"
     ;;
   cluster)
@@ -1366,7 +1364,7 @@ case $cmd in
     setup_tmpdir
     clone_remote
     expect_github_token
-    make_key
+    install_key
     ;;
   delete_cluster)
     check_remote_repo
@@ -1495,13 +1493,14 @@ case $cmd in
     clone_remote
     get_vpc
     ;;
-  fluxvalues)
+  bootstrap)
     check_remote_repo
     setup_tmpdir
     set_template_dir
     clone_remote
-    fluxvalues
-    save_changes "Updated fluxvalues"
+    make_flux
+    save_changes
+    bootstrap_flux
     ;;
   envrc)
     ;;
