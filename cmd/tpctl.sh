@@ -1256,7 +1256,6 @@ case $cmd in
     install_certmanager
     make_config
     make_envrc
-    make_flux
     save_changes "Added config packages"
     ;;
   cluster)
