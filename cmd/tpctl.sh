@@ -593,11 +593,11 @@ function fluxvalues() {
   expect_success "Updating helm repos"
   complete 'updated fluxcd helm repo'
 
+  rm -rf flux
   mkdir -p flux
 
   (
     cd flux
-    rm -rf .
 
     kubectl create ns flux --dry-run -o yaml >namespace.yaml
     start "creating flux manifests"
@@ -770,6 +770,7 @@ function make_flux() {
   
   while [ -s ${TMP_DIR}/err ]
   do
+    cat ${TMP_DIR}/err
     echo "sleep for key"
     sleep 1
     rm ${TMP_DIR}/err
