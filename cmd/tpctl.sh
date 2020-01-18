@@ -11,6 +11,20 @@ function envoy {
   glooctl proxy served-config
 }
 
+function migrate_to_helm3 {
+  kubectl get deployments -n ${FLUX_FORWARD_NAMESPACE} tiller-deploy
+  if [ $? -eq 0 ]
+  then
+    start "migrating to helm3"
+    kubectl scale deployment --replicas=0 -n ${FLUX_FORWARD_NAMESPACE} flux-helm-operator
+    kubectl scale deployment --replicas=0 -n ${FLUX_FORWARD_NAMESPACE} flux
+    kubectl get configmap -n ${FLUX_FORWARD_NAMESPACE} -l "OWNER=TILLER" | awk '{print $1}' | grep -v NAME | cut -d '.' -f1 | uniq | xargs -n1 helm 2to3 -t ${FLUX_FORWARD_NAMESPACE} convert
+    kubectl delete ns ${FLUX_FORWARD_NAMESPACE}
+    complete "Migrated to helm3"
+  fi
+}
+
+
 function get_vpc {
   local cluster=$(get_cluster)
   aws cloudformation describe-stacks --stack-name eksctl-${cluster}-cluster | jq '.Stacks[0].Outputs| .[] | select(.OutputKey | contains("VPC")) | .OutputValue' | sed -e 's/"//g'
@@ -761,7 +775,9 @@ function expect_cluster_exists() {
 function bootstrap_flux() {
   start "bootstrapping flux"
   establish_ssh
-  kubectl delete namespace ${FLUX_FORWARD_NAMESPACE}
+  migrate_to_helm3
+  make_flux
+  save_changes
   kubectl create namespace ${FLUX_FORWARD_NAMESPACE}
   kubectl apply -R -f flux
   install_key
@@ -1497,8 +1513,6 @@ case $cmd in
     setup_tmpdir
     set_template_dir
     clone_remote
-    make_flux
-    save_changes
     bootstrap_flux
     ;;
   envrc)
