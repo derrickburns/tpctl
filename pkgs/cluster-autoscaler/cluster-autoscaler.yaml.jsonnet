@@ -28,9 +28,6 @@ local helmrelease(config) = {
         'ignore-mirror-pods-utilization' : true,
         v: 5,
       },
-      image: {
-        tag: 'v1.16.1',
-      },
       rbac: {
         create: true,
       },
