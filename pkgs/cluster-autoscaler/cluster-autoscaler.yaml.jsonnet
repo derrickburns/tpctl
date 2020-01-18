@@ -1,3 +1,5 @@
+local lib = import '../../lib/lib.jsonnet';
+
 local helmrelease(config) = {
   apiVersion: 'helm.fluxcd.io/v1',
   kind: 'HelmRelease',
@@ -12,7 +14,7 @@ local helmrelease(config) = {
     chart: {
       name: 'cluster-autoscaler',
       repository: 'https://kubernetes-charts.storage.googleapis.com/',
-      version: '6.0.0',
+      version: '6.2.0',
     },
     releaseName: 'cluster-autoscaler',
     values: {
@@ -30,6 +32,9 @@ local helmrelease(config) = {
       },
       rbac: {
         create: true,
+      },
+      serviceMonitor: {
+        enabled: lib.getElse(config, 'pkgs.prometheus-operator.enabled', false)
       },
     },
   },
