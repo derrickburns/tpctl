@@ -1,4 +1,4 @@
-#!/bin/bash -i
+#!/bin/bash -ix
 #
 # Configure EKS cluster to run Tidepool services
 #
@@ -20,10 +20,12 @@ function migrate_to_helm3 {
     kubectl scale deployment --replicas=0 -n ${FLUX_FORWARD_NAMESPACE} flux
     kubectl get configmap -n ${FLUX_FORWARD_NAMESPACE} -l "OWNER=TILLER" | awk '{print $1}' | grep -v NAME | cut -d '.' -f1 | uniq | xargs -n1 helm 2to3 -t ${FLUX_FORWARD_NAMESPACE} convert
     kubectl delete ns ${FLUX_FORWARD_NAMESPACE}
+    kubectl delete deployment -n ${FLUX_FORWARD_NAMESPACE} flux-helm-operator
+    kubectl delete deployment -n ${FLUX_FORWARD_NAMESPACE} tiller-deploy
+    kubectl delete deployment -n ${FLUX_FORWARD_NAMESPACE} flux-memcached
     complete "Migrated to helm3"
   fi
 }
-
 
 function get_vpc {
   local cluster=$(get_cluster)
@@ -777,7 +779,6 @@ function bootstrap_flux() {
   establish_ssh
   migrate_to_helm3
   make_flux
-  save_changes
   kubectl create namespace ${FLUX_FORWARD_NAMESPACE}
   kubectl apply -R -f flux
   install_key
@@ -1514,6 +1515,7 @@ case $cmd in
     set_template_dir
     clone_remote
     bootstrap_flux
+    save_changes "Updated flux"
     ;;
   envrc)
     ;;

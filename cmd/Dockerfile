@@ -42,6 +42,7 @@ RUN curl -sL -o /usr/local/bin/glooctl https://github.com/solo-io/gloo/releases/
 RUN curl -sL /usr/local/bin/hub https://github.com/github/hub/releases/download/v2.13.0/hub-linux-amd64-2.13.0.tgz | tar xz -C /tmp && \
     mv /tmp/hub-linux-amd64-2.13.0/bin/hub /usr/local/bin
 RUN ln -s /usr/bin/python3 /usr/local/bin/python3 && chmod +x /usr/local/bin/*
+RUN /usr/local/bin/helm plugin install https://github.com/helm/helm-2to3
 COPY add_ns /usr/local/bin/add_ns
 COPY separate_files /usr/local/bin/separate_files
 COPY external_secret /usr/local/bin/external_secret
