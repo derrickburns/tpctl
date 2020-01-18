@@ -79,7 +79,7 @@ local tidepool(config, prev, namespace) = {
 
   spec: {
     rollback: {
-      enable: true,
+      enable: false,
       force: true,
     },
     chart: {
