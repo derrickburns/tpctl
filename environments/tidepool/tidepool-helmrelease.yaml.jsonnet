@@ -329,6 +329,7 @@ local tidepool(config, prev, namespace) = {
       }, lib.getElse(tp, 'seagull', {})]),
 
       shoreline: lib.mergeList([common, {
+        priorityClassName: "high-priority",
         deployment+: {
           image: lib.getElse(prev, 'spec.values.shoreline.deployment.image', 'tidepool/shoreline:develop-51f927083ba5bad0271add644728e02902d3b785'),
         },
