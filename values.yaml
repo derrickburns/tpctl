@@ -49,7 +49,7 @@ environments:
     tidepool:
       buckets: {}
       chart:
-        path: charts/tidepool/0.1.7
+        path: charts/tidepool
         ref: develop
       deployment:
         replicas: 2

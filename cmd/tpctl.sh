@@ -369,7 +369,7 @@ function set_chart_dir() {
     git clone $(repo_with_token https://github.com/tidepool-org/development)
     cd development
     git checkout develop
-    CHART_DIR=$(pwd)/charts/tidepool/0.1.7
+    CHART_DIR=$(pwd)/charts/tidepool
     popd >/dev/null 2>&1
     complete "cloned development tools"
   fi

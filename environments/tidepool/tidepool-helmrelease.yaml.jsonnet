@@ -82,10 +82,16 @@ local tidepool(config, prev, namespace) = {
       enable: true,
       force: true,
     },
-    chart: {
-      git: 'git@github.com:tidepool-org/development',
-      path: lib.getElse(tp, 'chart.path', 'charts/tidepool/0.1.7'),
-      ref: lib.getElse(tp, 'chart.ref', 'develop'),
+    chart:
+      if std.objectHas(tp, 'chart.version') then {
+        repository: lib.getElse(tp.chart, 'repository', 'https://raw.githubusercontent.com/tidepool-org/tidepool-helm/master/'),
+        name: lib.getElse(tp.chart, 'name', 'tidepool'),
+        version: tp.chart.version
+      } else  {
+        git: lib.getElse(tp, 'chart.git', 'git@github.com:tidepool-org/development'),
+        path: lib.getElse(tp, 'chart.path', 'charts/tidepool'),
+        ref: lib.getElse(tp, 'chart.ref', 'develop'),
+      },
     },
     releaseName: 'tidepool-%s' % namespace,
     values: {
