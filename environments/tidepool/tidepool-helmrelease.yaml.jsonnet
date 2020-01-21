@@ -82,7 +82,7 @@ local tidepool(config, prev, namespace) = {
       enable: true,
       force: true,
     },
-    chart: if std.objectHas(tp, 'chart.version') then {
+    chart: if std.objectHas(tp, 'chart') && std.objectHas(tp.chart, 'version') then {
       repository: lib.getElse(tp.chart, 'repository', 'https://raw.githubusercontent.com/tidepool-org/tidepool-helm/master/'),
       name: lib.getElse(tp.chart, 'name', 'tidepool'),
       version: tp.chart.version
