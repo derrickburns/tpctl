@@ -2,7 +2,7 @@ local helmrelease(config, namespace) = {
   "apiVersion": "helm.fluxcd.io/v1",
   "kind": "HelmRelease",
   "metadata": {
-    "name": "mongo"
+    "name": "mongo",
     "namespace": namespace,
   },
   "spec": {
