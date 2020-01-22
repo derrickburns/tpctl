@@ -1,4 +1,4 @@
-local helmrelease(config, namespace) {
+local helmrelease(config, namespace) = {
   "apiVersion": "helm.fluxcd.io/v1",
   "kind": "HelmRelease",
   "metadata": {
