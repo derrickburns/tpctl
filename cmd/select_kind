@@ -12,5 +12,5 @@ input = yaml.safe_load_all(sys.stdin)
 
 for value in input:
     if value != None and "kind" in value and value["kind"] == sys.argv[1]:
-        print("selected")
+        print('---')
         yaml.dump(value, stream=sys.stdout, encoding='utf-8')

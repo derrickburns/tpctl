@@ -273,7 +273,7 @@ function add_names() {
 
 # report renaming of file in config repo
 function rename_file() {
-  echo "${GREEN}[√] renaming ${1} ${2}${RESET}"
+  >&2 echo "${GREEN}[√] renaming ${1} ${2}${RESET}"
 }
 
 # conform action, else exit
@@ -358,20 +358,6 @@ function set_template_dir() {
     export TEMPLATE_DIR=$(pwd)/tpctl
     popd >/dev/null 2>&1
     complete "cloned quickstart"
-  fi
-}
-
-# clone development repo, exports CHART_DIR
-function set_chart_dir() {
-  if [[ ! -d $CHART_DIR ]]; then
-    start "cloning development tools"
-    pushd $TMP_DIR >/dev/null 2>&1
-    git clone $(repo_with_token https://github.com/tidepool-org/development)
-    cd development
-    git checkout develop
-    CHART_DIR=$(pwd)/charts/tidepool
-    popd >/dev/null 2>&1
-    complete "cloned development tools"
   fi
 }
 
@@ -733,7 +719,7 @@ function save_changes() {
   git add .
   expect_success "git add failed"
   if [ "$branch" != "master" ]; then
-    git checkout -b $branch
+    >&2 git checkout -b $branch
     expect_success "git checkout failed"
   fi
   expect_success "git checkout failed"
@@ -907,8 +893,8 @@ function get_legacy_values() {
   local cluster=$(get_cluster)
   local env
   for env in $(get_environments); do
-    local source=$(yq r values.yaml environments.${env}.tidepool.source)
-    if [ "$source" == "null" -o "$source" == "" ]; then
+    local source=$(yq r values.yaml environments.${env}.tidepool.secrets.source)
+    if [ "$source" == "null" -o "$source" == "" -o "$source" == "random" ]; then
       continue
     fi
     if [ "$source" == "dev" -o "$source" == "stg" -o "$source" == "int" -o "$source" == "prd" ]; then
@@ -992,20 +978,40 @@ function edit_values() {
   fi
 }
 
+# clone development repo, exports CHART_DIR
+function set_chart_dir() {
+  if [[ ! -d $CHART_DIR ]]; then
+    start "cloning development tools"
+    pushd $TMP_DIR >/dev/null 2>&1
+    git clone $(repo_with_token https://github.com/tidepool-org/development)
+    cd development
+    >&2 git checkout chartreorg
+    CHART_DIR=$(pwd)/charts/tidepool
+    popd >/dev/null 2>&1
+    complete "cloned development tools"
+  fi
+}
+
 # generate random secrets
 function randomize_secrets() {
+  operation=$1
   set_chart_dir
+  local cluster=$(get_cluster)
   local env
   for env in $(get_environments); do
-    local file
-    for file in $(find $CHART_DIR -name \*secret.yaml -print); do
-      helm template --namespace $env --set global.secret.generated=true $CHART_DIR -f $CHART_DIR/values.yaml -x $file >$TMP_DIR/x
-      grep "kind" $TMP_DIR/x >/dev/null 2>&1
-      if [ $? -eq 0 ]; then
+    local source=$(yq r values.yaml environments.${env}.tidepool.secrets.source)
+    if [ "$source" == "random" ]; then
+      helm template --namespace $env --set gloo.enabled=false --set global.secret.generated=true $CHART_DIR -f $CHART_DIR/values.yaml | select_kind Secret >$TMP_DIR/x
+      if [ "$operation" == "view" ]
+      then
         cat $TMP_DIR/x
+      else
+	pushd external-secrets
+	external_secret ${operation} $cluster encoded <$TMP_DIR/x | separate_files | add_names
+	popd
       fi
       rm $TMP_DIR/x
-    done
+    fi
   done
 }
 
@@ -1077,9 +1083,11 @@ function migrate_secrets() {
   pushd external-secrets
   if [ "$APPROVE" != "true" ]
   then
-    confirm "Do you want to update external secrets? "
+    operation="dryrun"
+  else
+    operation="upsert"
   fi
-  echo "$secrets" | external_secret upsert $cluster plaintext | separate_files | add_names
+  echo "$secrets" | external_secret $operation $cluster plaintext | separate_files | add_names
   echo "$configmaps" | separate_files | add_names
   popd
 }
@@ -1124,7 +1132,7 @@ function help() {
   echo "edit_values - open editor to edit values.yaml file"
   echo "copy_assets - copy S3 assets to new bucket"
   echo "migrate_secrets - migrate secrets from legacy GitHub repo to AWS secrets manager"
-  echo "randomize_secrets - generate random secrets and persist into AWS secrets manager"
+  echo "generate_secrets - generate secrets used within tidepool environments persist into AWS secrets manager"
   echo "upsert_plaintext_secrets - read STDIN for plaintext K8s secrets"
   echo "install_users - add system:master USERS to K8s cluster"
   echo "deploy_key - copy deploy key from Flux to GitHub config repo"
@@ -1335,16 +1343,17 @@ case $cmd in
     check_remote_repo
     make_assets
     ;;
-  randomize_secrets)
+  generate_secrets)
     check_remote_repo
     setup_tmpdir
     clone_remote
     mkdir -p external-secrets
     if [ "$APPROVE" != "true" ]
     then
-      confirm "Do you want to update external secrets? "
+      randomize_secrets dryrun
+    else
+      randomize_secrets upsert
     fi
-    randomize_secrets | external_secret upsert $(get_cluster) encoded | (cd external-secrets; separate_files) | add_names
     save_changes "Added random secrets"
     ;;
   migrate_secrets)
