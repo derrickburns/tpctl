@@ -32,4 +32,4 @@ local secret(config) = {
 };
 
 function(config, prev) 
-  if lib.isTrue(config, 'pkgs.prometheus-operator.enabled') secret(config) else {}
+  if lib.isTrue(config, 'pkgs.prometheus-operator.enabled') then secret(config) else {}
