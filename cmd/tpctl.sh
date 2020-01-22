@@ -487,6 +487,14 @@ function update_kubeconfig() {
   complete "updated kubeconfig"
 }
 
+function update_service_accounts() {
+  local cluster=$(get_cluster)
+  start "updating service accounts"
+  eksctl create iamserviceaccount -f config.yaml --approve
+  expect_success "eksctl create service account failed."
+  complete "updated service accounts"
+}
+
 # create EKS cluster using config.yaml file, add kubeconfig to config repo
 function make_cluster() {
   local cluster=$(get_cluster)
@@ -1120,7 +1128,7 @@ function linkerd_dashboard() {
 
 # show help
 function help() {
-  echo "$0 [-h|--help] (values|edit_values|config|edit_repo|cluster|flux|gloo|regenerate_cert|make_buckets|mesh|migrate_secrets|randomize_secrets|upsert_plaintext_secrets|install_users|deploy_key|delete_cluster|await_deletion|remove_mesh|merge_kubeconfig|gloo_dashboard|linkerd_dashboard|diff|dns|install_certmanager|mongo_template|linkerd_check|sync|peering|vpc|update_kubeconfig|get_secret|list_secrets|delete_secret|external_secrets|bootstrap)*"
+  echo "$0 [-h|--help] (values|edit_values|config|edit_repo|cluster|flux|gloo|regenerate_cert|make_buckets|mesh|migrate_secrets|randomize_secrets|upsert_plaintext_secrets|install_users|deploy_key|delete_cluster|await_deletion|remove_mesh|merge_kubeconfig|gloo_dashboard|linkerd_dashboard|diff|dns|install_certmanager|mongo_template|linkerd_check|sync|peering|vpc|update_kubeconfig|get_secret|list_secrets|delete_secret|external_secrets|bootstrap|service_accounts)*"
   echo
   echo
   echo "So you want to built a Kubernetes cluster that runs Tidepool. Great!"
@@ -1172,6 +1180,7 @@ function help() {
   echo "update_kubeconfig - modify context and user for kubeconfig"
   echo "envoy - show envoy config"
   echo "bootstrap - bootstrap flux"
+  echo "service_accounts - create service accounts"
 }
 
 if [ $# -eq 0 ]; then
@@ -1547,6 +1556,11 @@ case $cmd in
     clone_remote
     bootstrap_flux
     save_changes "Updated flux"
+    ;;
+  service_accounts)
+    check_remote_repo
+    clone_remote
+    update_service_accounts
     ;;
   envrc)
     ;;
