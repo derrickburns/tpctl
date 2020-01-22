@@ -1,3 +1,5 @@
+local lib = import '../../lib/lib.jsonnet';
+
 local secret(config) = {
   apiVersion: 'v1',
   kind: 'Secret',
@@ -29,4 +31,5 @@ local secret(config) = {
   },
 };
 
-function(config, prev) secret(config)
+function(config, prev) 
+  if lib.isTrue(config, 'pkgs.prometheus-operator.enabled') secret(config) else {}
