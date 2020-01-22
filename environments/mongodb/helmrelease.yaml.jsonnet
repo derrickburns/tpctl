@@ -13,7 +13,8 @@ local helmrelease(config, namespace) = {
     },
     "values": {
       mongodb: {
-        seed: true,
+        seed: false,
+        persistent: false,
       },
     },
   },
