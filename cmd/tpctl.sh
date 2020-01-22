@@ -430,16 +430,38 @@ function get_bucket() {
   fi
 }
 
-# create Tidepool assets bucket
-function make_assets() {
+# create Tidepool bucket and populate asset bucket if empty
+function make_buckets() {
   local env
   for env in $(get_environments); do
-    local bucket=$(get_bucket $env asset)
-    start "creating asset bucket $bucket"
-    aws s3 mb s3://$bucket
-    info "copying  dev assets into $bucket"
-    aws s3 cp s3://tidepool-dev-asset s3://$bucket
-    complete "created asset bucket $bucket"
+    local create=$(yq r values.yaml environments.${env}.tidepool.buckets.create | sed -e "/^  .*/d" -e s/:.*//)
+    if [ "$create" == "true" ]
+    then
+      local asset_bucket=$(get_bucket $env asset)
+      aws s3 ls s3://$asset_bucket >/dev/null 2>&1
+      if [ $? -ne 0 ]
+      then
+        start "creating asset bucket $asset_bucket"
+        aws s3 mb s3://$asset_bucket
+	expect_success "Cannot create asset bucket"
+        complete "created asset bucket $asset_bucket"
+
+        start "copying dev assets into $asset_bucket"
+        aws s3 cp s3://tidepool-dev-asset s3://$asset_bucket
+	expect_success "Cannot cp dev assets to asset bucket"
+        complete "created asset bucket $asset_bucket"
+      fi
+
+      local data_bucket=$(get_bucket $env data)
+      aws s3 ls s3://$data_bucket >/dev/null 2>&1
+      if [ $? -ne 0 ]
+      then
+        start "creating data bucket $data_bucket"
+        aws s3 mb s3://$data_bucket
+	expect_success "Cannot create data bucket"
+        complete "created data bucket $data_bucket"
+      fi
+    fi
   done
 }
 
@@ -1098,7 +1120,7 @@ function linkerd_dashboard() {
 
 # show help
 function help() {
-  echo "$0 [-h|--help] (values|edit_values|config|edit_repo|cluster|flux|gloo|regenerate_cert|copy_assets|mesh|migrate_secrets|randomize_secrets|upsert_plaintext_secrets|install_users|deploy_key|delete_cluster|await_deletion|remove_mesh|merge_kubeconfig|gloo_dashboard|linkerd_dashboard|diff|dns|install_certmanager|mongo_template|linkerd_check|sync|peering|vpc|update_kubeconfig|get_secret|list_secrets|delete_secret|external_secrets|bootstrap)*"
+  echo "$0 [-h|--help] (values|edit_values|config|edit_repo|cluster|flux|gloo|regenerate_cert|make_buckets|mesh|migrate_secrets|randomize_secrets|upsert_plaintext_secrets|install_users|deploy_key|delete_cluster|await_deletion|remove_mesh|merge_kubeconfig|gloo_dashboard|linkerd_dashboard|diff|dns|install_certmanager|mongo_template|linkerd_check|sync|peering|vpc|update_kubeconfig|get_secret|list_secrets|delete_secret|external_secrets|bootstrap)*"
   echo
   echo
   echo "So you want to built a Kubernetes cluster that runs Tidepool. Great!"
@@ -1130,7 +1152,7 @@ function help() {
   echo "edit_repo - open shell with config repo in current directory.  Exit shell to commit changes."
   echo "regenerate_cert - regenerate client certs for Helm to access Tiller"
   echo "edit_values - open editor to edit values.yaml file"
-  echo "copy_assets - copy S3 assets to new bucket"
+  echo "make_buckets - create S3 buckets if needed and copy assets if don't exist"
   echo "migrate_secrets - migrate secrets from legacy GitHub repo to AWS secrets manager"
   echo "generate_secrets - generate secrets used within tidepool environments persist into AWS secrets manager"
   echo "upsert_plaintext_secrets - read STDIN for plaintext K8s secrets"
@@ -1339,9 +1361,9 @@ case $cmd in
     setup_tmpdir
     clone_remote
     ;;
-  copy_assets)
+  make_buckets)
     check_remote_repo
-    make_assets
+    make_buckets
     ;;
   generate_secrets)
     check_remote_repo
