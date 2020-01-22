@@ -10,8 +10,13 @@ local helmrelease(config, namespace) = {
       "git": "git@github.com:tidepool-org/development",
       "path": "charts/mongo",
       "ref": "develop"
-    }
-  }
+    },
+    "values": {
+      mongodb: {
+        seed: true,
+      },
+    },
+  },
 };
 
 function(config, prev, namespace) helmrelease(config, namespace)
