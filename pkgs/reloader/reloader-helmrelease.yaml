@@ -10,7 +10,7 @@ spec:
   releaseName: reloader
   chart:
     repository: 'https://stakater.github.io/stakater-charts'
-    path: reloader
+    name: reloader
     version: 'v0.0.51'
   values: 
     reloader:
