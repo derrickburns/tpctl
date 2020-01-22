@@ -16,9 +16,9 @@ local helmrelease(config, prev) = {
 
   spec+: lib.merge({
     chart+: {
-      git: 'git@github.com:tidepool-org/slack-tidebot',
-      path: 'deploy',
-      ref: 'master',
+      repository: "https://raw.githubusercontent.com/tidepool-org/tidepool-helm/master/",
+      name: 'tidebot',
+      version: '0.1.0',
     },
     releaseName: 'tidebot',
     values+: {
