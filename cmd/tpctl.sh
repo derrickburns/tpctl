@@ -61,10 +61,13 @@ function cluster_in_context() {
 
 function install_certmanager {
   start "installing cert-manager"
+  local version=$(default_value "pkgs.certmanager.version" "v0.12.0")
+  rm -rf certmanager
   mkdir -p certmanager
   ( 
     cd certmanager
-    curl -sL "https://github.com/jetstack/cert-manager/releases/download/v0.12.0/cert-manager.yaml" | tr -cd '\11\12\15\40-\176' | separate_files | add_names
+    curl -sL "https://github.com/jetstack/cert-manager/releases/download/${version}/cert-manager.yaml" | tr -cd '\11\12\15\40-\176' | separate_files | add_names
+    expect_success "Failed to download certmanager version ${version}"
 
 # We must work around a validation issue with Kuberentes < 1.16 by deleting
 # several fields in the CRDs (https://github.com/jetstack/cert-manager/issues/2197)
@@ -377,6 +380,16 @@ function clone_secret_map() {
 function get_config() {
   yq r values.yaml -j
 }
+
+# retrieve value from values file, or return the second argument if the value is not found
+function default_value() {
+  local val=$(yq r values.yaml -j $1 | sed -e 's/"//g' -e "s/'//g")
+  if [ $? -ne 0 -o "$val" == "null" -o "$val" == "" ]; then
+    echo $2
+  fi
+  echo $val
+}
+
 
 # retrieve value from values file, or exit if it is not available
 function require_value() {
