@@ -9,9 +9,6 @@ RUN apt update -y && apt upgrade -y && \
 RUN locale-gen en_US.UTF-8
 RUN curl -sL https://github.com/google/jsonnet/releases/download/v0.14.0/jsonnet-bin-v0.14.0-linux.tar.gz | tar xz -C /tmp && \ 
     mv /tmp/jsonnet /usr/local/bin
-RUN curl -sL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get && \
-    bash get_helm.sh && \
-    rm get_helm.sh
 RUN curl -sL "https://get.helm.sh/helm-v3.0.2-linux-amd64.tar.gz" | tar xz -C /tmp && mv /tmp/linux-amd64/helm /usr/local/bin
 RUN curl -sL "https://github.com/weaveworks/eksctl/releases/download/latest_release/eksctl_Linux_amd64.tar.gz" | tar xz -C /tmp && \
     mv /tmp/eksctl /usr/local/bin
