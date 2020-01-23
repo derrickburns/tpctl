@@ -368,8 +368,9 @@ function default_value() {
   local val=$(yq r values.yaml -j $1 | sed -e 's/"//g' -e "s/'//g")
   if [ $? -ne 0 -o "$val" == "null" -o "$val" == "" ]; then
     echo $2
+  else
+    echo $val
   fi
-  echo $val
 }
 
 
@@ -1192,6 +1193,10 @@ while (("$#")); do
       ;;
     --skip-review)
       SKIP_REVIEW=true
+      shift 1
+      ;;
+    -x)
+      set -x
       shift 1
       ;;
     -l | --local)
