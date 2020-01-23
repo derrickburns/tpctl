@@ -20,33 +20,33 @@ local helmrelease(config) = {
         useSecret: false,
       },
       configuration: {
-        provider: "aws",
+        provider: 'aws',
         backupStorageLocation: {
-          name: "aws",
-          bucket: "k8s-backup-%s' % config.cluster.metadata.name,
+          name: 'aws',
+          bucket: 'k8s-backup-%s' % config.cluster.metadata.name,
           config: {
             region: config.cluster.metadata.region,
           },
-        }
+        },
         logLevel: config.logLevel,
         volumeSnapshotLocation: {
-           name: "velero.io/aws",
-           config: {
-              region: config.cluster.metadata.region,
-           },
+          name: 'velero.io/aws',
+          config: {
+            region: config.cluster.metadata.region,
+          },
         },
         image: {
-          repositoru: "velero/velero",
-          pullPolicy: "IfNotPresent",
+          repositoru: 'velero/velero',
+          pullPolicy: 'IfNotPresent',
         },
-        initContainers: [ {
-          name: "velero-plugin-for-aws",
-          image: "velero/velero-plugin-for-aws:v1.0.0",
-          volumeMounts: [ {
-            mountPath: "/target",
-            name: "plugins",
-           } ],
-        } ],
+        initContainers: [{
+          name: 'velero-plugin-for-aws',
+          image: 'velero/velero-plugin-for-aws:v1.0.0',
+          volumeMounts: [{
+            mountPath: '/target',
+            name: 'plugins',
+          }],
+        }],
       },
 
       metrics: {
