@@ -117,6 +117,8 @@ pkgs:
     enabled: true
   datadog:
     enabled: false
+  dnsutil:
+    enabled: false
   elasticsearch-operator:
     enabled: false
   external-dns:
@@ -214,3 +216,5 @@ pkgs:
       - eng@tidepool.org
       port: 16686
       serviceName: jaeger-query
+  velero:
+    enabled: false
