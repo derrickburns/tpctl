@@ -125,28 +125,6 @@ function cluster_in_repo() {
   yq r kubeconfig.yaml -j current-context | sed -e 's/"//g' -e "s/'//g"
 }
 
-function get_sumo_accessID() {
-  echo $1 | jq '.accessID' | sed -e 's/"//g'
-}
-
-function get_sumo_accessKey() {
-  echo $1 | jq '.accessKey' | sed -e 's/"//g'
-}
-
-function install_sumo() {
-  start "installing sumo"
-  local config=$(get_config)
-  local cluster=$(get_cluster)
-  local namespace=$(require_value "pkgs.sumologic.namespace")
-  local apiEndpoint=$(require_value "pkgs.sumologic.apiEndpoint")
-  local sumoSecret=$(aws secretsmanager get-secret-value --secret-id $cluster/$namespace/sumologic | jq '.SecretString | fromjson')
-  local accessID=$(get_sumo_accessID $sumoSecret)
-  local accessKey=$(get_sumo_accessKey $sumoSecret)
-  curl -s https://raw.githubusercontent.com/SumoLogic/sumologic-kubernetes-collection/master/deploy/docker/setup/setup.sh |
-    bash -s - -k $cluster -n $namespace -d false $apiEndpoint $accessID $accessKey >pkgs/sumologic/sumologic.yaml
-  complete "installed sumo"
-}
-
 function install_glooctl {
   start "checking glooctl"
   local glooctl_version=$(require_value "pkgs.gloo.version")
@@ -1166,7 +1144,6 @@ function help() {
   echo "gloo    - install gloo"
   echo "mesh    - install service mesh"
   echo "flux    - install flux GitOps controller, Tiller server, client certs for Helm to access Tiller, and deploy key into GitHub"
-  echo "sumo    - install sumologic collector"
   echo
   echo "If you run into trouble or have specific needs, check out these commands:"
   echo
@@ -1495,12 +1472,6 @@ case $cmd in
     setup_tmpdir
     clone_remote
     diff_config
-    ;;
-  sumo)
-    check_remote_repo
-    setup_tmpdir
-    clone_remote
-    install_sumo
     ;;
   dns)
     check_remote_repo

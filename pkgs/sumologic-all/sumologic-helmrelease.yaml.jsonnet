@@ -17,6 +17,13 @@ local helmrelease(config) = {
     releaseName: 'collection',
 
     'prometheus-operator' : {
+       prometheus: {
+         prometheusSpec: {
+           externalLabels: {
+             cluster: config.cluster.metadata.name,
+           },
+         },
+       },
        enabled: false,
     },
 
