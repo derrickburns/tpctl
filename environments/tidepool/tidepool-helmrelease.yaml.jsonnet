@@ -384,4 +384,4 @@ local tidepool(config, prev, namespace) = {
   },
 };
 
-function(config, prev, namespace) std.manifestYamlDoc( tidepool(expand.expandConfig(config), prev, namespace) )
+function(config, prev, namespace) tidepool(expand.expandConfig(config), prev, namespace)
