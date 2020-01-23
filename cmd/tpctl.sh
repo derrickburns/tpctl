@@ -60,29 +60,33 @@ function cluster_in_context() {
 }
 
 function install_certmanager {
-  start "installing cert-manager"
-  local version=$(default_value "pkgs.certmanager.version" "v0.12.0")
+  local enabled=$(default_value "pkgs.certmanager.enabled" "false")
   rm -rf certmanager
-  mkdir -p certmanager
-  ( 
-    cd certmanager
-    curl -sL "https://github.com/jetstack/cert-manager/releases/download/${version}/cert-manager.yaml" | tr -cd '\11\12\15\40-\176' | separate_files | add_names
-    expect_success "Failed to download certmanager version ${version}"
-
-# We must work around a validation issue with Kuberentes < 1.16 by deleting
-# several fields in the CRDs (https://github.com/jetstack/cert-manager/issues/2197)
-
-    yq d -i global/CustomResourceDefinition/certificaterequests.cert-manager.io.yaml spec.preserveUnknownFields
-    yq d -i global/CustomResourceDefinition/certificates.cert-manager.io.yaml spec.preserveUnknownFields
-    yq d -i global/CustomResourceDefinition/challenges.acme.cert-manager.io.yaml spec.preserveUnknownFields
-    yq d -i global/CustomResourceDefinition/challenges.acme.cert-manager.io.yaml spec.validation.openAPIV3Schema.properties.spec.properties.solver.properties.dns01.properties.webhook.properties.config.x-kubernetes-preserve-unknown-fields
-    yq d -i global/CustomResourceDefinition/clusterissuers.cert-manager.io.yaml spec.preserveUnknownFields
-    yq d -i global/CustomResourceDefinition/clusterissuers.cert-manager.io.yaml spec.validation.openAPIV3Schema.properties.spec.properties.acme.properties.solvers.items.properties.dns01.properties.webhook.properties.config.x-kubernetes-preserve-unknown-fields
-    yq d -i global/CustomResourceDefinition/issuers.cert-manager.io.yaml spec.preserveUnknownFields
-    yq d -i global/CustomResourceDefinition/issuers.cert-manager.io.yaml spec.validation.openAPIV3Schema.properties.spec.properties.acme.properties.solvers.items.properties.dns01.properties.webhook.properties.config.x-kubernetes-preserve-unknown-fields
-    yq d -i global/CustomResourceDefinition/orders.acme.cert-manager.io.yaml spec.preserveUnknownFields
-  )
-  complete "installed cert-manager"
+  if [ "$enabled" == "true" ]
+  then
+    start "installing cert-manager"
+    local version=$(default_value "pkgs.certmanager.version" "v0.12.0")
+    mkdir -p certmanager
+    ( 
+      cd certmanager
+      curl -sL "https://github.com/jetstack/cert-manager/releases/download/${version}/cert-manager.yaml" | tr -cd '\11\12\15\40-\176' | separate_files | add_names
+      expect_success "Failed to download certmanager version ${version}"
+  
+  # We must work around a validation issue with Kuberentes < 1.16 by deleting
+  # several fields in the CRDs (https://github.com/jetstack/cert-manager/issues/2197)
+  
+      yq d -i global/CustomResourceDefinition/certificaterequests.cert-manager.io.yaml spec.preserveUnknownFields
+      yq d -i global/CustomResourceDefinition/certificates.cert-manager.io.yaml spec.preserveUnknownFields
+      yq d -i global/CustomResourceDefinition/challenges.acme.cert-manager.io.yaml spec.preserveUnknownFields
+      yq d -i global/CustomResourceDefinition/challenges.acme.cert-manager.io.yaml spec.validation.openAPIV3Schema.properties.spec.properties.solver.properties.dns01.properties.webhook.properties.config.x-kubernetes-preserve-unknown-fields
+      yq d -i global/CustomResourceDefinition/clusterissuers.cert-manager.io.yaml spec.preserveUnknownFields
+      yq d -i global/CustomResourceDefinition/clusterissuers.cert-manager.io.yaml spec.validation.openAPIV3Schema.properties.spec.properties.acme.properties.solvers.items.properties.dns01.properties.webhook.properties.config.x-kubernetes-preserve-unknown-fields
+      yq d -i global/CustomResourceDefinition/issuers.cert-manager.io.yaml spec.preserveUnknownFields
+      yq d -i global/CustomResourceDefinition/issuers.cert-manager.io.yaml spec.validation.openAPIV3Schema.properties.spec.properties.acme.properties.solvers.items.properties.dns01.properties.webhook.properties.config.x-kubernetes-preserve-unknown-fields
+      yq d -i global/CustomResourceDefinition/orders.acme.cert-manager.io.yaml spec.preserveUnknownFields
+    )
+    complete "installed cert-manager"
+  fi
 }
 
 function mongo_template {
