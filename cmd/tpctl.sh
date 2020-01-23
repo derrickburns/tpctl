@@ -1128,7 +1128,7 @@ function linkerd_dashboard() {
 
 # show help
 function help() {
-  echo "$0 [-h|--help] (values|edit_values|config|edit_repo|cluster|flux|gloo|regenerate_cert|make_buckets|mesh|migrate_secrets|randomize_secrets|upsert_plaintext_secrets|install_users|deploy_key|delete_cluster|await_deletion|remove_mesh|merge_kubeconfig|gloo_dashboard|linkerd_dashboard|diff|dns|install_certmanager|mongo_template|linkerd_check|sync|peering|vpc|update_kubeconfig|get_secret|list_secrets|delete_secret|external_secrets|bootstrap|service_accounts)*"
+  echo "$0 [-h|--help] (values|edit_values|config|edit_repo|cluster|flux|gloo|make_buckets|mesh|migrate_secrets|randomize_secrets|upsert_plaintext_secrets|install_users|deploy_key|delete_cluster|await_deletion|remove_mesh|merge_kubeconfig|gloo_dashboard|linkerd_dashboard|diff|dns|mongo_template|linkerd_check|sync|peering|vpc|update_kubeconfig|get_secret|list_secrets|delete_secret|external_secrets|bootstrap|service_accounts)*"
   echo
   echo
   echo "So you want to built a Kubernetes cluster that runs Tidepool. Great!"
@@ -1158,7 +1158,6 @@ function help() {
   echo "sync - Cause flux to sync with the config repo."
   echo "peering - List peering relationships"
   echo "edit_repo - open shell with config repo in current directory.  Exit shell to commit changes."
-  echo "regenerate_cert - regenerate client certs for Helm to access Tiller"
   echo "edit_values - open editor to edit values.yaml file"
   echo "make_buckets - create S3 buckets if needed and copy assets if don't exist"
   echo "migrate_secrets - migrate secrets from legacy GitHub repo to AWS secrets manager"
@@ -1169,7 +1168,6 @@ function help() {
   echo "delete_cluster - initiate deletion of the AWS EKS cluster"
   echo "await_deletion - await completion of deletion of gthe AWS EKS cluster"
   echo "merge_kubeconfig - copy the KUBECONFIG into the local $KUBECONFIG file"
-  echo "install_certmanager - install cert-manager"
   echo "gloo_dashboard - open the Gloo dashboard"
   echo "dns - update the DNS aliases served"
   echo "linkerd_dashboard - open the Linkerd dashboard"
@@ -1365,11 +1363,6 @@ case $cmd in
     make_config
     save_changes "Edited values. Updated config."
     ;;
-  regenerate_cert)
-    check_remote_repo
-    setup_tmpdir
-    clone_remote
-    ;;
   make_buckets)
     check_remote_repo
     make_buckets
@@ -1499,13 +1492,6 @@ case $cmd in
     set_template_dir
     update_gloo_service
     save_changes "Updated dns entries"
-    ;;
-  install_certmanager)
-    check_remote_repo
-    setup_tmpdir
-    clone_remote
-    install_certmanager
-    save_changes "Installed cert manager"
     ;;
   mongo_template)
     mongo_template
