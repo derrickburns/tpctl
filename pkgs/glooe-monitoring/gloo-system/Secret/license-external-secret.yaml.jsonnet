@@ -13,7 +13,7 @@ local license(config) = {
     backendType: 'secretsManager',
     data: [
       {
-        key: 'qa1/gloo-system/license',
+        key: '%s/gloo-system/license' % config.cluster.metadata.name,
         name: 'license-key',
         property: 'license-key',
       },
