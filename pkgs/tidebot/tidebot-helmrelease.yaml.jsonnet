@@ -18,7 +18,7 @@ local helmrelease(config, prev) = {
     chart+: {
       repository: "https://raw.githubusercontent.com/tidepool-org/tidepool-helm/master/",
       name: 'tidebot',
-      version: '0.1.0',
+      version: '0.2.0',
     },
     releaseName: 'tidebot',
     values+: {
