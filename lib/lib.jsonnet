@@ -103,7 +103,7 @@
   } else {},
 
   route(vs)::
-    if std.objectHas(vs, 'redirectAction') then {
+    if std.objectHas(vs, 'redirect') then {
       redirectAction: {
         httpsRedirect: true,
       },

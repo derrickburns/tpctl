@@ -59,10 +59,9 @@ local pom = import '../pkgs/pomerium/lib.jsonnet';
               protocol: 'http',
               type: 'external',
             },
-            redirectAction: true,
+            redirect: true,
           },
-          'http-internal': {
-            delegateAction: 'tidepool-routes',
+          'httpInternal': {
             dnsNames: [
               'internal.%s' % name,
             ],
@@ -73,7 +72,6 @@ local pom = import '../pkgs/pomerium/lib.jsonnet';
             },
           },
           https: {
-            delegateAction: 'tidepool-routes',
             dnsNames: dnsNames,
             enabled: true,
             labels: {
