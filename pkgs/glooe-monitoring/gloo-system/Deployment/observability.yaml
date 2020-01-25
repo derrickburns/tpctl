@@ -37,7 +37,7 @@ spec:
             name: glooe-observability-config
         - secretRef:
             name: glooe-observability-secrets
-        image: quay.io/solo-io/observability-ee:1.0.0-rc7
+        image: quay.io/solo-io/observability-ee:1.2.2
         imagePullPolicy: IfNotPresent
         name: observability
         volumeMounts:
