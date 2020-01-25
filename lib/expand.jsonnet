@@ -53,6 +53,7 @@ local pom = import '../pkgs/pomerium/lib.jsonnet';
       tidepool+: {
         routeTable: {
           name: 'tidepool-routes',
+        },
         virtualServices: {
           http: {
             dnsNames: dnsNames,
