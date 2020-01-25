@@ -196,7 +196,7 @@ local tidepool(config, prev, namespace) = {
         store: {
           type: 's3',
         },
-        virtualServices: lib.getElse(env, 'virtualServices', {}) + { enabled: true },
+        virtualServices: lib.getElse(env, 'virtualServices', {}) + { enabled: false },
         linkerd: {
           serviceProfiles: {
             enabled: lib.getElse(config, 'pkgs.linkerd.enabled', false),
