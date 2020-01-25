@@ -731,14 +731,15 @@ function save_changes() {
   info "==== BEGIN Changes"
   git diff --cached HEAD
   info "==== END Changes"
+  local proposed="tpctl-$(date '+%Y-%m-%d-%H-%M-%S')"
   local branch
   if [ "$APPROVE" != "true" ]
   then
     confirm "Do you want to save these changes? "
-    read -p "${GREEN}Branch name?${RESET} " -r
-    branch=$REPLY
+    read -p "${GREEN}Branch name [$proposed]?${RESET} "
+    branch=${REPLY:-$proposed}
   else
-    branch="tpctl-"+$(date "%Y%m%d%H%M%S")
+    branch=$proposed
   fi
   establish_ssh
   start "saving changes to config repo"
