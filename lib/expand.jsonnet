@@ -65,6 +65,7 @@ local pom = import '../pkgs/pomerium/lib.jsonnet';
             dnsNames: [
               'internal.%s' % name,
             ],
+            delegateAction: true,
             enabled: true,
             labels: {
               protocol: 'http',
@@ -74,6 +75,7 @@ local pom = import '../pkgs/pomerium/lib.jsonnet';
           https: {
             dnsNames: dnsNames,
             enabled: true,
+            delegateAction: true,
             labels: {
               protocol: 'https',
               type: 'external',
