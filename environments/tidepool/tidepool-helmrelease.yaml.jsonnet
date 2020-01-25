@@ -98,15 +98,6 @@ local tidepool(config, prev, namespace) = {
         deployment+: {
           image: lib.getElse(prev, 'spec.values.auth.deployment.image', 'tidepool/platform-auth:develop-cebea363931570d3930848a21e6a3d07a54f4425'),
         },
-        resources: {
-          requests: {
-            memory: '50Mi',
-            cpu: '50m',
-          },
-          limits: {
-            memory: '75Mi',
-            cpu: '1000m',
-          },
       }, lib.getElse(tp, 'auth', {})]),
 
       blip: lib.mergeList([common, {

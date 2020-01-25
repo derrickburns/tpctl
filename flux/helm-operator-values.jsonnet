@@ -37,6 +37,13 @@ local values(config) = {
   },
 
   logReleaseDiffs: true,
+
+  resources: {
+    requests: {
+      cpu: '75m',
+      memory: '325Mi',
+    },
+  },
 };
 
 function(config) values(config)

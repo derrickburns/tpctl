@@ -61,6 +61,13 @@ local values(config) = {
       },
     }]
     else [],
+
+  resources: {
+    requests: {
+      cpu: '75m',
+      memory: '128Mi',
+    },
+  },
 };
 
 function(config) values(config)

@@ -302,6 +302,10 @@ local defaultClusterConfig = {
   },
 };
 
+local serviceAccounts(config) =
+  secretsManagerServiceAccount(config) +
+  tidepoolServiceAccounts(config);
+
 local all(config) =
   defaultClusterConfig
   {
@@ -316,7 +320,6 @@ local all(config) =
     iam+: lib.getElse(config, 'cluster.iam', {}),
   } +
   withAnnotatedNodeGroups(config) +
-  secretsManagerServiceAccount(config) +
-  tidepoolServiceAccounts(config);
+  serviceAccounts(config);
 
 function(config) all(config)
