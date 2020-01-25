@@ -204,8 +204,6 @@ local tidepool(config, prev, namespace) = {
         },
       },
 
-      },
-
       gloo: {
         enabled: false,
       },
