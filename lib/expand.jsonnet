@@ -51,6 +51,8 @@ local pom = import '../pkgs/pomerium/lib.jsonnet';
     local dnsNames = lib.getElse(env, 'tidepool.dnsNames', []);
     env {
       tidepool+: {
+        routeTable: {
+          name: 'tidepool-routes',
         virtualServices: {
           http: {
             dnsNames: dnsNames,
@@ -65,7 +67,7 @@ local pom = import '../pkgs/pomerium/lib.jsonnet';
             dnsNames: [
               'internal.%s' % name,
             ],
-            delegateAction: true,
+            delegateAction: 'tidepool-routes',
             enabled: true,
             labels: {
               protocol: 'http',
@@ -75,7 +77,7 @@ local pom = import '../pkgs/pomerium/lib.jsonnet';
           https: {
             dnsNames: dnsNames,
             enabled: true,
-            delegateAction: true,
+            delegateAction: 'tidepool-routes',
             labels: {
               protocol: 'https',
               type: 'external',
