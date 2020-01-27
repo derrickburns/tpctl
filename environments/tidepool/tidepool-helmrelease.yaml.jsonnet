@@ -203,7 +203,7 @@ local tidepool(config, prev, namespace) = {
             labels: {
               protocol: 'http',
               type: 'internal',
-              namespace: lib.getElse(env, 'namespace', name),
+              namespace: lib.getElse(env, 'namespace', namespace),
             },
           },
           http: {
