@@ -61,18 +61,17 @@ local pom = import '../pkgs/pomerium/lib.jsonnet';
             labels: {
               protocol: 'http',
               type: 'external',
+              namespace: lib.getElse(env, 'namespace', name),
             },
             redirect: true,
           },
           'httpInternal': {
-            dnsNames: [
-              'internal.%s' % name,
-            ],
-            delegateAction: 'tidepool-routes',
-            enabled: true,
+            dnsNames: dnsNames,
+            enabled: false,
             labels: {
               protocol: 'http',
               type: 'internal',
+              namespace: lib.getElse(env, 'namespace', name),
             },
           },
           https: {
@@ -82,6 +81,7 @@ local pom = import '../pkgs/pomerium/lib.jsonnet';
             labels: {
               protocol: 'https',
               type: 'external',
+              namespace: lib.getElse(env, 'namespace', name),
             },
           },
         },
