@@ -179,22 +179,12 @@ local tidepool(config, prev, namespace) = {
         },
       }, lib.getElse(tp, 'gatekeeper', {})]),
 
-      global: {
-        local domain = lib.getElse(config, 'cluster.metadata.domain', 'tidepool.org'),
-        logLevel: lib.getElse(config, 'logLevel', 'info'),
-        upstreams: {
+      glooingress: {
+        discovery: {
           namespace: 'gloo-system',
         },
         gateway: {
-          enabled: false,
-          default:  {
-	    host: lib.getElse(env, 'gateway.host', '%s.%s' % [  namespace, domain ]),
-            protocol: lib.getElse(env, 'gateway.protocol', 'https'),
-            domain: lib.getElse(env, 'gateway.domain', domain),
-          }
-        },
-        store: {
-          type: 's3',
+          false
         },
         virtualServices: {
           'httpInternal': {
@@ -213,10 +203,19 @@ local tidepool(config, prev, namespace) = {
             enabled: false
           },
         },
-        linkerd: {
-          serviceProfiles: {
-            enabled: lib.getElse(config, 'pkgs.linkerd.enabled', false),
-          },
+      },
+      global: {
+        local domain = lib.getElse(config, 'cluster.metadata.domain', 'tidepool.org'),
+        logLevel: lib.getElse(config, 'logLevel', 'info'),
+        gateway: {
+          default:  {
+	    host: lib.getElse(env, 'gateway.host', '%s.%s' % [  namespace, domain ]),
+            protocol: lib.getElse(env, 'gateway.protocol', 'https'),
+            domain: lib.getElse(env, 'gateway.domain', domain),
+          }
+        },
+        store: {
+          type: 's3',
         },
       },
 
@@ -290,6 +289,11 @@ local tidepool(config, prev, namespace) = {
           image: lib.getElse(prev, 'spec.values.jellyfish.deployment.image', 'tidepool/jellyfish:mongo-database-a8b117f07c277dfae78a6b5f270f84cd661b3b8d'),
         },
       }, lib.getElse(tp, 'jellyfish', {})]),
+
+      linkerdsupport: {
+        serviceProfiles: {
+          enabled: lib.getElse(config, 'pkgs.linkerd.enabled', false),
+      },
 
       messageapi: lib.mergeList([common, {
         deployment+: {
