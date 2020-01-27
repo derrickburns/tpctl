@@ -198,7 +198,7 @@ local tidepool(config, prev, namespace) = {
         },
         virtualServices: {
           'httpInternal': {
-            dnsNames: dnsNames,
+            dnsNames: lib.getElse(env, 'tidepool.dnsNames', []),
             enabled: true,
             labels: {
               protocol: 'http',
