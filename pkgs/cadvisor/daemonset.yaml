@@ -17,6 +17,10 @@ spec:
       serviceAccountName: cadvisor
       containers:
       - name: cadvisor
+        args:
+        - --v=4
+        - --storage=prometheus
+        - --prometheus-address=http://prometheus-monitoring-prometheus-oper-prometheus-0.monitoring.svc.cluster.local:9090
         image: k8s.gcr.io/cadvisor:v0.30.2
         securityContext:
           privileged: true
