@@ -294,6 +294,7 @@ local tidepool(config, prev, namespace) = {
       linkerdsupport: {
         serviceProfiles: {
           enabled: lib.getElse(config, 'pkgs.linkerd.enabled', false),
+        },
       },
 
       messageapi: lib.mergeList([common, {
