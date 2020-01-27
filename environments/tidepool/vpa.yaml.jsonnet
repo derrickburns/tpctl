@@ -2,11 +2,12 @@ local lib = import '../../lib/lib.jsonnet';
 
 local expand = import '../../lib/expand.jsonnet';
 
-local vpa(name) = {
+local vpa(name,namespace) = {
   apiVersion: 'autoscaling.k8s.io/v1beta2',
   kind: 'VerticalPodAutoscaler',
   metadata: {
     name: name,
+    namespace: namespace,
   },
   spec: {
     targetRef: {
@@ -44,7 +45,7 @@ local svcs = [
 
 local vpas(config, namespace) = (
   local env = config.environments[namespace].tidepool;
-  [ vpa(svc) for svc in svcs if lib.getElse(env, svc + '.vpa.enabled', lib.getElse(env, 'vpa.enabled', false) ) ]
+  [ vpa(svc,namespace) for svc in svcs if lib.getElse(env, svc + '.vpa.enabled', lib.getElse(env, 'vpa.enabled', false) ) ]
 );
 
 function(config, prev, namespace) std.manifestYamlStream( vpas(config,  namespace))
