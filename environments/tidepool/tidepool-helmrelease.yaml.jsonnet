@@ -180,11 +180,12 @@ local tidepool(config, prev, namespace) = {
       }, lib.getElse(tp, 'gatekeeper', {})]),
 
       glooingress: {
+        enabled: true,
         discovery: {
           namespace: 'gloo-system',
         },
         gateway: {
-          false
+          enabled: false,
         },
         virtualServices: {
           'httpInternal': {
