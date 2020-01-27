@@ -185,18 +185,13 @@ local tidepool(config, prev, namespace) = {
           namespace: 'gloo-system',
         },
         gateway: {
-          gatewayProxy: {
-            enabled: false,
-          },
-          internalGatewayProxy: {
-            enabled: false,
-          },
-          gatewayProxySsl: {
-            enabled: false,
-          },
+          proxy: {
+            name: "internal-gateway-proxy",
+            namespace: "gloo-system",
+         },
         },
         virtualServices: {
-          'httpInternal': {
+          'http': {
             dnsNames: lib.getElse(tp, 'dnsNames', []),
             enabled: true,
             labels: {
@@ -204,9 +199,6 @@ local tidepool(config, prev, namespace) = {
               type: 'internal',
               namespace: lib.getElse(env, 'namespace', namespace),
             },
-          },
-          http: {
-            enabled: false
           },
           https: {
             enabled: false
