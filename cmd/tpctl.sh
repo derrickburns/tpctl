@@ -11,6 +11,15 @@ function envoy {
   glooctl proxy served-config
 }
 
+function vpa {
+  (
+    cd $TMP_DIR
+    git clone https://github.com/kubernetes/autoscaler.git
+    cd autoscaler/vertical-pod-autoscaler
+    ./hack/vpa-up.sh
+  )
+}
+
 function migrate_to_helm3 {
   kubectl get deployments -n ${FLUX_FORWARD_NAMESPACE} tiller-deploy
   if [ $? -eq 0 ]
@@ -1125,7 +1134,7 @@ function linkerd_dashboard() {
 
 # show help
 function help() {
-  echo "$0 [-h|--help] (values|edit_values|config|edit_repo|cluster|flux|gloo|make_buckets|mesh|migrate_secrets|randomize_secrets|upsert_plaintext_secrets|install_users|deploy_key|delete_cluster|await_deletion|remove_mesh|merge_kubeconfig|gloo_dashboard|linkerd_dashboard|diff|dns|mongo_template|linkerd_check|sync|peering|vpc|update_kubeconfig|get_secret|list_secrets|delete_secret|external_secrets|bootstrap|service_accounts)*"
+  echo "$0 [-h|--help] (values|edit_values|config|edit_repo|cluster|flux|gloo|make_buckets|mesh|migrate_secrets|randomize_secrets|upsert_plaintext_secrets|install_users|deploy_key|delete_cluster|await_deletion|remove_mesh|merge_kubeconfig|gloo_dashboard|linkerd_dashboard|diff|dns|mongo_template|linkerd_check|sync|peering|vpc|update_kubeconfig|get_secret|list_secrets|delete_secret|external_secrets|bootstrap|service_accounts|vpa)*"
   echo
   echo
   echo "So you want to built a Kubernetes cluster that runs Tidepool. Great!"
@@ -1175,6 +1184,8 @@ function help() {
   echo "envoy - show envoy config"
   echo "bootstrap - bootstrap flux"
   echo "service_accounts - create service accounts"
+  echo "vpa - install vpa"
+  echo "cadvisor - install cadvisor"
 }
 
 if [ $# -eq 0 ]; then
@@ -1546,6 +1557,16 @@ case $cmd in
     ;;
   envoy)
     envoy
+    ;;
+  cadvisor)
+    check_remote_repo
+    setup_tmpdir
+    cadvisor
+    ;;
+  vpa)
+    check_remote_repo
+    setup_tmpdir
+    vpa
     ;;
   *)
     panic "unknown command: $param"

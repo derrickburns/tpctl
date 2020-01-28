@@ -179,14 +179,36 @@ local tidepool(config, prev, namespace) = {
         },
       }, lib.getElse(tp, 'gatekeeper', {})]),
 
-      global: {
-        local domain = lib.getElse(config, 'cluster.metadata.domain', 'tidepool.org'),
-        logLevel: lib.getElse(config, 'logLevel', 'info'),
-        upstreams: {
+      glooingress: {
+        enabled: true,
+        discovery: {
           namespace: 'gloo-system',
         },
         gateway: {
-          enabled: false,
+          proxy: {
+            name: "internal-gateway-proxy",
+            namespace: "gloo-system",
+         },
+        },
+        virtualServices: {
+          'http': {
+            dnsNames: lib.getElse(tp, 'dnsNames', []),
+            enabled: true,
+            labels: {
+              protocol: 'http',
+              type: 'internal',
+              namespace: lib.getElse(env, 'namespace', namespace),
+            },
+          },
+          https: {
+            enabled: false
+          },
+        },
+      },
+      global: {
+        local domain = lib.getElse(config, 'cluster.metadata.domain', 'tidepool.org'),
+        logLevel: lib.getElse(config, 'logLevel', 'info'),
+        gateway: {
           default:  {
 	    host: lib.getElse(env, 'gateway.host', '%s.%s' % [  namespace, domain ]),
             protocol: lib.getElse(env, 'gateway.protocol', 'https'),
@@ -195,12 +217,6 @@ local tidepool(config, prev, namespace) = {
         },
         store: {
           type: 's3',
-        },
-        virtualServices: lib.getElse(env, 'virtualServices', {}) + { enabled: false },
-        linkerd: {
-          serviceProfiles: {
-            enabled: lib.getElse(config, 'pkgs.linkerd.enabled', false),
-          },
         },
       },
 
@@ -274,6 +290,12 @@ local tidepool(config, prev, namespace) = {
           image: lib.getElse(prev, 'spec.values.jellyfish.deployment.image', 'tidepool/jellyfish:mongo-database-a8b117f07c277dfae78a6b5f270f84cd661b3b8d'),
         },
       }, lib.getElse(tp, 'jellyfish', {})]),
+
+      linkerdsupport: {
+        serviceProfiles: {
+          enabled: lib.getElse(config, 'pkgs.linkerd.enabled', false),
+        },
+      },
 
       messageapi: lib.mergeList([common, {
         deployment+: {
