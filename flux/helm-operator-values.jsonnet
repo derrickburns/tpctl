@@ -33,7 +33,7 @@ local values(config) = {
 
   image: {
     repository: 'docker.io/fluxcd/helm-operator',
-    tag: 'v1.0.0-rc8',
+    tag: '1.0.0-rc8',
   },
 
   logReleaseDiffs: true,
