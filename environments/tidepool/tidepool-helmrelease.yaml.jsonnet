@@ -184,12 +184,6 @@ local tidepool(config, prev, namespace) = {
         discovery: {
           namespace: 'gloo-system',
         },
-        gateway: {
-          proxy: {
-            name: "internal-gateway-proxy",
-            namespace: "gloo-system",
-         },
-        },
         virtualServices: {
           'http': {
             name: "http-internal",
@@ -210,12 +204,17 @@ local tidepool(config, prev, namespace) = {
         local domain = lib.getElse(config, 'cluster.metadata.domain', 'tidepool.org'),
         logLevel: lib.getElse(config, 'logLevel', 'info'),
         gateway: {
+          proxy: {
+            name: "internal-gateway-proxy",
+            namespace: "gloo-system",
+          },
           default:  {
 	    host: lib.getElse(env, 'gateway.host', '%s.%s' % [  namespace, domain ]),
             protocol: lib.getElse(env, 'gateway.protocol', 'https'),
             domain: lib.getElse(env, 'gateway.domain', domain),
           }
         },
+        maxTimeout: lib.getElse(env, 'maxTimeout', '120s'),
         store: {
           type: 's3',
         },
