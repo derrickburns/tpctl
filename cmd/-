@@ -951,13 +951,13 @@ function make_users() {
   local aws_region=$(get_region)
   local account=$(get_aws_account)
 
-  start "updating system masters"
+  start "upsating system masters"
   declare -A users
   local user
   for user in $(get_iam_users); do
     local arn=arn:aws:iam::${account}:user/${user}
     users[$arn]=true
-    eksctl get iamidentitymapping --region=$aws_region --arn=$arn --cluster=$cluster >/dev/null 2>&1
+    eksctl get iamidentitymapping --region=$aws_region --arn=$arn --cluster=$cluster 
     if [ $? -ne 0 ]
     then
       eksctl create iamidentitymapping --region=$aws_region --arn=$arn --group=$group --cluster=$cluster --username=$user
@@ -970,13 +970,13 @@ function make_users() {
     fi
   done
 
-  for arn in $(eksctl get iamidentitymapping --cluster $cluster | grep user | cut -f1)
+  for user in $(eksctl get iamidentitymapping --cluster $cluster | grep user | cut -f1)
   do
-    if [ -z "${users[$arn]}" ]
+    if [ -z "${users[$user]}" ]
     then
       eksctl delete  iamidentitymapping --region=$aws_region --arn=$arn --cluster=$cluster --all
       expect_success "Could not delete $arn from cluster $cluster in region $aws_region"
-      info "removed $arn from authorized users in cluster $cluster in region $aws_region"
+      info "removed $user from authorized users in cluster $cluster in region $aws_region"
     fi
   done
 
