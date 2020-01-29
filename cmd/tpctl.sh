@@ -322,6 +322,7 @@ function setup_tmpdir() {
 }
 
 function repo_with_token() {
+  expect_github_token
   local repo=$1
   echo $repo | sed -e "s#https://#https://$GITHUB_TOKEN@#"
 }
@@ -811,6 +812,8 @@ function bootstrap_flux() {
 function install_key() {
   start "authorizing access to ${GIT_REMOTE_REPO}"
 
+  expect_github_token
+
   local key=$(fluxctl --k8s-fwd-ns=${FLUX_FORWARD_NAMESPACE} identity 2>${TMP_DIR}/err)
   
   while [ -s ${TMP_DIR}/err ]
@@ -1070,6 +1073,7 @@ function remove_mesh() {
 }
 
 function create_repo() {
+  expect_github_token
   set -x
   read -p "${GREEN}repo name?${RESET} " -r
   REMOTE_REPO=$REPLY
