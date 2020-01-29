@@ -85,6 +85,9 @@ local pom = import '../pkgs/pomerium/lib.jsonnet';
                 },
               },
             },
+            options: {
+              timeout: lib.getElse(env, 'tidepool.maxTimeout', '120s'),
+            },
             labels: {
               protocol: 'https',
               type: 'external',
