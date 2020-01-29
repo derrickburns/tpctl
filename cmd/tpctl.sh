@@ -74,7 +74,7 @@ function install_certmanager {
   if [ "$enabled" == "true" ]
   then
     start "installing cert-manager"
-    local version=$(default_value "pkgs.certmanager.version" "v0.12.0")
+    local version=$(default_value "pkgs.certmanager.version" "v0.13.0")
     mkdir -p certmanager
     ( 
       cd certmanager
