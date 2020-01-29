@@ -168,7 +168,7 @@
     },
   },
 
-  virtualService(vsin, defaultName, defaultNamespace, options=null):: {
+  virtualService(vsin, defaultName, defaultNamespace, options={}):: {
     local vs = $.withNamespace($.withName(vsin, defaultName), defaultNamespace),
     local procotol = vs.labels.protocol,
     apiVersion: 'gateway.solo.io/v1',
