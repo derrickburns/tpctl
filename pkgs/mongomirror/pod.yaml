@@ -45,4 +45,4 @@ spec:
       secretName: mongomirror
   - name: bookmark
     persistentVolumeClaim:
-      claimName: myclaim
+      claimName: bookmark
