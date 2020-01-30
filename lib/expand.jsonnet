@@ -74,6 +74,7 @@ local pom = import '../pkgs/pomerium/lib.jsonnet';
           https: {
             dnsNames: dnsNames,
             enabled: true,
+            timeout: lib.getElse(env, 'tidepool.maxTimeout', '120s'),
             routeAction: {
               single: {
                 kube: {
@@ -84,9 +85,6 @@ local pom = import '../pkgs/pomerium/lib.jsonnet';
                   port: 80,
                 },
               },
-            },
-            options: {
-              timeout: lib.getElse(env, 'tidepool.maxTimeout', '120s'),
             },
             labels: {
               protocol: 'https',

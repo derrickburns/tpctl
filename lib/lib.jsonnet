@@ -115,6 +115,7 @@
     } else if std.objectHas(vs, 'routeAction') then {
       routeAction: vs.routeAction,
     } else {
+      options: if std.objectHas(vs, 'timeout') then { timeout: vs.timeout, }, else {},
       routeAction: {
         single: {
           kube: {
@@ -186,8 +187,9 @@
           {
             matchers: [{ prefix: '/' }],
           } + $.route(vs),
+            options: 
         ],
-        options: $.getElse(vs, 'options', {}) + (if vs.labels.type == 'external' && vs.labels.protocol == 'https' then options else {}),
+        options: if vs.labels.type == 'external' && vs.labels.protocol == 'https' then options else {},
       },
     },
   },
