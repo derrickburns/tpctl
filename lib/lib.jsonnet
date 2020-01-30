@@ -187,7 +187,6 @@
           {
             matchers: [{ prefix: '/' }],
           } + $.route(vs),
-            options: 
         ],
         options: if vs.labels.type == 'external' && vs.labels.protocol == 'https' then options else {},
       },
