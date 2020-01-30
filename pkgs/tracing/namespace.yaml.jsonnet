@@ -5,7 +5,6 @@ local namespace(config) = {
   kind: 'Namespace',
   metadata: {
     name: 'tracing',
-    annotations: linkerd.annotations(config)
   },
 };
 
