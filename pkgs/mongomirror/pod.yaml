@@ -32,10 +32,17 @@ spec:
     - name: foo
       mountPath: "/etc/ssl/certs"
       readOnly: true
+    - mountPath: "/bookmark"
+      name: bookmark
     command: ["mongomirror"]
-    args: [ "--host", "$(HOST)", "--ssl", "--destination", "$(DESTINATION)", "--destinationUsername", "$(DESTINATION_USERNAME)", "--destinationPassword", "$(DESTINATION_PASSWORD)", "--sslCAFile", "/etc/ssl/certs/ca.crt", "--drop" ]
+    ports:
+    - containerPort: 8080
+    args: [ "--host", "$(HOST)", "--ssl", "--destination", "$(DESTINATION)", "--destinationUsername", "$(DESTINATION_USERNAME)", "--destinationPassword", "$(DESTINATION_PASSWORD)", "--sslCAFile", "/etc/ssl/certs/ca.crt", "--drop", "--httpStatusPort", "8080", "--bookmarkFile", "/bookmark/mongomirror.timestamp" ]
   restartPolicy: Always
   volumes:
   - name: mongomirror
     secret:
       secretName: mongomirror
+  - name: bookmark
+    persistentVolumeClaim:
+      claimName: myclaim
