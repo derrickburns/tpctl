@@ -115,7 +115,7 @@
     } else if std.objectHas(vs, 'routeAction') then {
       routeAction: vs.routeAction,
     } else {
-      options: if std.objectHas(vs, 'timeout') then { timeout: vs.timeout, }, else {},
+      options: if std.objectHas(vs, 'timeout') then { timeout: vs.timeout, } else {},
       routeAction: {
         single: {
           kube: {
