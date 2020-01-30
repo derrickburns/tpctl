@@ -29,7 +29,7 @@ spec:
     image: tidepool/mongomirror:latest
     name: mongomirror
     volumeMounts:
-    - name: foo
+    - name: certs
       mountPath: "/etc/ssl/certs"
       readOnly: true
     - mountPath: "/bookmark"
@@ -40,7 +40,7 @@ spec:
     args: [ "--host", "$(HOST)", "--ssl", "--destination", "$(DESTINATION)", "--destinationUsername", "$(DESTINATION_USERNAME)", "--destinationPassword", "$(DESTINATION_PASSWORD)", "--sslCAFile", "/etc/ssl/certs/ca.crt", "--drop", "--httpStatusPort", "8080", "--bookmarkFile", "/bookmark/mongomirror.timestamp" ]
   restartPolicy: Always
   volumes:
-  - name: mongomirror
+  - name: certs
     secret:
       secretName: mongomirror
   - name: bookmark
