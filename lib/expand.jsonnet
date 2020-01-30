@@ -62,15 +62,6 @@ local pom = import '../pkgs/pomerium/lib.jsonnet';
             },
             redirect: true,
           },
-          'httpInternal': {
-            dnsNames: dnsNames,
-            enabled: false,
-            labels: {
-              protocol: 'http',
-              type: 'internal',
-              namespace: lib.getElse(env, 'namespace', name),
-            },
-          },
           https: {
             dnsNames: dnsNames,
             enabled: true,
