@@ -238,7 +238,7 @@ local annotatedNodegroup(config, ng, clusterName) =
 
 local withAnnotatedNodeGroups(config) = {
   nodeGroups: [annotatedNodegroup(config, ng, config.cluster.metadata.name) for ng in lib.getElse(config, 'cluster.nodeGroups', [])],
-  managedNodeGroups: [annotatedNodegroup(config, ng, config.cluster.metadata.name) for ng in lib.getElse(config, 'cluster.managedNnodeGroups'. [])],
+  managedNodeGroups: [annotatedNodegroup(config, ng, config.cluster.metadata.name) for ng in lib.getElse(config, 'cluster.managedNodeGroups', [])],
 };
 
 local exampleConfig = {
