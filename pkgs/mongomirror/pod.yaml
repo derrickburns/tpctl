@@ -1,0 +1,41 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: mongomirror
+  namespace: mongomirror
+spec:
+  containers:
+  - env:
+    - name: HOST
+      valueFrom:
+        secretKeyRef:
+          name: mongomirror
+          key: HOST
+    - name: DESTINATION
+      valueFrom:
+        secretKeyRef:
+          name: mongomirror
+          key: DESTINATION
+    - name: DESTINATION_USERNAME
+      valueFrom:
+        secretKeyRef:
+          name: mongomirror
+          key: DESTINATION_USERNAME
+    - name: DESTINATION_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: mongomirror
+          key: DESTINATION_PASSWORD
+    image: tidepool/mongomirror:latest
+    name: mongomirror
+    volumeMounts:
+    - name: foo
+      mountPath: "/etc/ssl/certs"
+      readOnly: true
+    command: ["mongomirror"]
+    args: [ "--host", "$(HOST)", "--ssl", "--destination", "$(DESTINATION)", "--destinationUsername", "$(DESTINATION_USERNAME)", "--destinationPassword", "$(DESTINATION_PASSWORD)", "--sslCAFile", "/etc/ssl/certs/ca.crt", "--drop" ]
+  restartPolicy: Always
+  volumes:
+  - name: mongomirror
+    secret:
+      secretName: mongomirror
