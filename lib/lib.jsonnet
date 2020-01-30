@@ -113,6 +113,7 @@
         name: vs.delegateAction,
       },
     } else if std.objectHas(vs, 'routeAction') then {
+      options: if std.objectHas(vs, 'timeout') then { timeout: vs.timeout, } else {},
       routeAction: vs.routeAction,
     } else {
       options: if std.objectHas(vs, 'timeout') then { timeout: vs.timeout, } else {},
