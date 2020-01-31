@@ -4,10 +4,10 @@ local tracing = import '../pkgs/tracing/lib.jsonnet';
 local pom = import '../pkgs/pomerium/lib.jsonnet';
 local expand = import '../lib/expand.jsonnet';
 
-local baseGatewayProxy(config) = {
+local baseGatewayProxy(config, name) = {
   kind: {
     deployment: {
-      replicas: 2,
+      replicas: lib.getElse(config, 'pkgs.gloo.proxies.' + name + '.replicas', 2),
     },
   },
   configMap: {
@@ -86,7 +86,7 @@ local values(config) = {
     },
   },
   gatewayProxies+: {
-    pomeriumGatewayProxy: baseGatewayProxy(config) {
+    pomeriumGatewayProxy: baseGatewayProxy(config, 'pomeriumGatewayProxy') {
       service+: {
         type: 'LoadBalancer',
         extraAnnotations+: {
@@ -103,12 +103,12 @@ local values(config) = {
         },
       },
     },
-    internalGatewayProxy: baseGatewayProxy(config) {
+    internalGatewayProxy: baseGatewayProxy(config, 'internalGatewayProxy') {
       service+: {
         type: 'ClusterIP',
       },
     },
-    gatewayProxy: baseGatewayProxy(config) {
+    gatewayProxy: baseGatewayProxy(config, 'gatewayProxy') {
       service+: {
         type: 'LoadBalancer',
         extraAnnotations+: {
