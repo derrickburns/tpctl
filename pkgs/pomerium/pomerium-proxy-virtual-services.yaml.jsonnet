@@ -146,7 +146,7 @@ local proxyVirtualService(config) = {
   metadata: {
     labels: {
       protocol: 'https',
-      type: 'external',
+      type: 'pomerium',
     },
     name: 'proxy-https',
     namespace: 'pomerium',
@@ -201,7 +201,7 @@ local httpVirtualService(config) = {
   metadata: {
     labels: {
       protocol: 'http',
-      type: 'external',
+      type: 'pomerium',
     },
     name: 'proxy-http',
     namespace: 'pomerium',

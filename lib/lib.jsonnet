@@ -201,9 +201,9 @@
     [$.gateway($.withNamespace(gw, gloo.namespace), vss) for gw in gws]
   ),
 
-  dnsNames(config):: (
+  dnsNames(config, selector={ type: 'external'}):: (
     local vss = $.virtualServices(config);
-    local externalVss = $.virtualServicesForSelector(vss, { type: 'external' });
+    local externalVss = $.virtualServicesForSelector(vss, selector);
     std.uniq(std.sort(std.flattenArrays(std.map(function(vs) $.getElse(vs, 'dnsNames', []), externalVss))))
   ),
 

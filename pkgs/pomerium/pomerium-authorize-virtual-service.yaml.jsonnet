@@ -9,7 +9,7 @@ local virtualService(config) = {
   metadata: {
     labels: {
       protocol: 'https',
-      type: 'external',
+      type: 'pomerium',
     },
     name: 'authorize',
     namespace: 'pomerium',
