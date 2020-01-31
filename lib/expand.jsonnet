@@ -35,7 +35,7 @@ local pom = import '../pkgs/pomerium/lib.jsonnet';
             [name]: {
               enabled: true,
               labels: {
-                type: 'external',
+                type: 'pomerium',
                 protocol: 'https',
               },
               dnsNames: [dnsName],
