@@ -85,6 +85,23 @@ local values(config) = {
     },
   },
   gatewayProxies+: {
+    pomeriumGatewayProxy: baseGatewayProxy(config) {
+      service+: {
+        type: 'LoadBalancer',
+        extraAnnotations+: {
+          'service.beta.kubernetes.io/aws-load-balancer-proxy-protocol': '*',
+          'service.beta.kubernetes.io/aws-load-balancer-backend-protocol': 'tcp',
+          'service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled': 'true',
+          'external-dns.alpha.kubernetes.io/alias': 'true',
+          'external-dns.alpha.kubernetes.io/hostname': std.join(
+            ',',
+            [ '*.%s' % config.cluster.metadata.domain ]
+            + lib.dnsNames(expand.expandConfig(config), { type: 'pomerium' } )
+          ),
+          'service.beta.kubernetes.io/aws-load-balancer-additional-resource-tags': 'cluster:%s' % config.cluster.metadata.name,
+        },
+      },
+    },
     internalGatewayProxy: baseGatewayProxy(config) {
       service+: {
         type: 'ClusterIP',
@@ -101,7 +118,7 @@ local values(config) = {
           'external-dns.alpha.kubernetes.io/hostname': std.join(
             ',',
             [ '*.%s' % config.cluster.metadata.domain ]
-            + lib.dnsNames(expand.expandConfig(config))
+            + lib.dnsNames(expand.expandConfig(config), { type: 'external' } )
           ),
           'service.beta.kubernetes.io/aws-load-balancer-additional-resource-tags': 'cluster:%s' % config.cluster.metadata.name,
         },
