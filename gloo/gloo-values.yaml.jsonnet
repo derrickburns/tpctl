@@ -1,6 +1,7 @@
 local lib = import '../lib/lib.jsonnet';
 local linkerd = import '../pkgs/linkerd/lib.jsonnet';
 local tracing = import '../pkgs/tracing/lib.jsonnet';
+local pom = import '../pkgs/pomerium/lib.jsonnet';
 local expand = import '../lib/expand.jsonnet';
 
 local baseGatewayProxy(config) = {
@@ -96,6 +97,7 @@ local values(config) = {
           'external-dns.alpha.kubernetes.io/hostname': std.join(
             ',',
             lib.dnsNames(expand.expandConfig(config), { type: 'pomerium' } )
+            + pom.dnsNames(expand.expandConfig(config))
           ),
           'service.beta.kubernetes.io/aws-load-balancer-additional-resource-tags': 'cluster:%s' % config.cluster.metadata.name,
         },
