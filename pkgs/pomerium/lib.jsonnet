@@ -25,7 +25,7 @@ local lib = import '../../lib/lib.jsonnet';
         enabled: true,
         labels: {
           protocol: 'https',
-          type: 'external',
+          type: 'pomerium',
         },
       },
       authorize: {
@@ -35,21 +35,21 @@ local lib = import '../../lib/lib.jsonnet';
         enabled: true,
         labels: {
           protocol: 'https',
-          type: 'external',
+          type: 'pomerium',
         },
       },
       'proxy-https': {
         enabled: true,
         labels: {
           protocol: 'https',
-          type: 'external',
+          type: 'pomerium',
         },
       },
       'proxy-http': {
         enabled: true,
         labels: {
           protocol: 'http',
-          type: 'external',
+          type: 'pomerium',
         },
       },
     },
