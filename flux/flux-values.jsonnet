@@ -28,7 +28,7 @@ local values(config) = {
   additionalArgs: if lib.isTrue(config, 'pkgs.fluxcloud.enabled') then ['--connect=ws://fluxcloud'] else [],
 
   annotations+: {
-    "reloader.stakater.com/auto: "true",
+    "reloader.stakater.com/auto": "true",
   },
 
   extraContainers: 
