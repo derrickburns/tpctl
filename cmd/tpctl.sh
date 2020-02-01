@@ -1375,8 +1375,6 @@ case $cmd in
     make_flux
     make_envrc
     save_changes "Added flux"
-    git pull
-    save_changes "Installed flux"
     ;;
   mesh)
     check_remote_repo
