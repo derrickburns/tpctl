@@ -31,7 +31,7 @@ local deployment(config) =
           containers: [
             {
               name: 'recv',
-              image: 'fluxcd/flux-recv:0.2.0',
+              image: 'fluxcd/flux-recv:%s' % lib.getElse(config, 'pkgs.fluxrecv.version', '0.3.0'),
               imagePullPolicy: 'IfNotPresent',
               args: ['--config=/etc/fluxrecv/fluxrecv.yaml'],
               ports: [{
