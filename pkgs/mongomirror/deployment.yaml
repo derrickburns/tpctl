@@ -41,12 +41,12 @@ spec:
         name: mongomirror
         volumeMounts:
         - name: certs
-          mountPath: "/etc/ssl/certs"
+          mountPath: "/tmp/certs"
           readOnly: true
         command: ["/mongomirror/bin/mongomirror"]
         ports:
         - containerPort: 8080
-        args: [ "--host", "$(HOST)", "--ssl", "--destination", "$(DESTINATION)", "--destinationUsername", "$(DESTINATION_USERNAME)", "--destinationPassword", "$(DESTINATION_PASSWORD)", "--sslCAFile", "/etc/ssl/certs/ca.crt", "--drop", "--httpStatusPort", "8080", "--bookmarkFile", "/bookmark/mongomirror.timestamp" ]
+        args: [ "--host", "$(HOST)", "--ssl", "--destination", "$(DESTINATION)", "--destinationUsername", "$(DESTINATION_USERNAME)", "--destinationPassword", "$(DESTINATION_PASSWORD)", "--sslCAFile", "/tmp/certs/ca.crt", "--drop", "--httpStatusPort", "8080", "--bookmarkFile", "/bookmark/mongomirror.timestamp" ]
       restartPolicy: Always
       volumes:
       - name: certs
