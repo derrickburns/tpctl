@@ -43,9 +43,7 @@ spec:
         - name: certs
           mountPath: "/etc/ssl/certs"
           readOnly: true
-        - mountPath: "/bookmark"
-          name: bookmark
-        command: ["mongomirror"]
+        command: ["/mongomirror/bin/mongomirror"]
         ports:
         - containerPort: 8080
         args: [ "--host", "$(HOST)", "--ssl", "--destination", "$(DESTINATION)", "--destinationUsername", "$(DESTINATION_USERNAME)", "--destinationPassword", "$(DESTINATION_PASSWORD)", "--sslCAFile", "/etc/ssl/certs/ca.crt", "--drop", "--httpStatusPort", "8080", "--bookmarkFile", "/bookmark/mongomirror.timestamp" ]
@@ -54,6 +52,3 @@ spec:
       - name: certs
         secret:
           secretName: mongomirror
-      - name: bookmark
-        persistentVolumeClaim:
-          claimName: bookmark
