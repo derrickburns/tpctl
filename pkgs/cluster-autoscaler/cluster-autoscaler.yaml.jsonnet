@@ -23,11 +23,9 @@ local helmrelease(config) = {
       },
       awsRegion: config.cluster.metadata.region,
       extraArgs: {
-        'scale-down-utilization-threshold': 0.7,
+        'scale-down-utilization-threshold': 0.5,
         'skip-nodes-with-local-storage': false,
         'skip-nodes-with-system-pods' : false,
-        'ignore-daemonsets-utilization' : true,
-        'ignore-mirror-pods-utilization' : true,
         v: 5,
       },
       rbac: {
