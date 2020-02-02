@@ -14,6 +14,9 @@ local prometheus(config) = {
       region: config.cluster.metadata.region,
     },
     podMonitorSelector: {
+      matchLabels: {
+        purpose: 'support',
+      },
     },
     podMonitorNamespaceSelector: {
     },
@@ -24,7 +27,11 @@ local prometheus(config) = {
     },
     serviceAccountName: 'prometheus',
     serviceMonitorNamespaceSelector: {},
-    serviceMonitorSelector: {},
+    serviceMonitorSelector: {
+      matchLabels: {
+        purpose: 'support',
+      },
+    },
     thanos: {
       objectStorageConfig: {
         key: 'thanos.yaml',

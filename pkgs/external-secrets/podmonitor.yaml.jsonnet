@@ -4,6 +4,9 @@ local podmonitor(config) = {
   apiVersion: 'monitoring.coreos.com/v1',
   kind: 'PodMonitor',
   metadata: {
+    labels: {
+      purpose: "support",
+    },
     name: 'external-secrets',
     namespace: 'external-secrets',
   },

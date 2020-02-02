@@ -4,6 +4,9 @@ local podMonitor(config) = {
       apiVersion: 'monitoring.coreos.com/v1',
       kind: 'PodMonitor',
       metadata: {
+        labels: {
+          purpose: "support",
+        },
         name: 'gloo-gateway-proxies',
         namespace: 'gloo-system',
       },

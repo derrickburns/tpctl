@@ -4,6 +4,9 @@ local servicemonitor(config) = {
   apiVersion: 'monitoring.coreos.com/v1',
   kind: 'ServiceMonitor',
   metadata: {
+    labels: {
+      purpose: "support",
+    },
     name: 'certmanager',
   },
   spec: {
