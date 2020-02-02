@@ -32,13 +32,13 @@ local prometheus(config) = {
         purpose: 'support',
       },
     },
-    thanos: {
+    thanos: if lib.isTrue(config, 'pkgs.thanos.enabled') then {
       objectStorageConfig: {
         key: 'thanos.yaml',
         name: config.pkgs.thanos.secret,
       },
       version: 'v0.5.0',
-    },
+    } else {},
   },
 };
 
