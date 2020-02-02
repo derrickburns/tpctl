@@ -14,7 +14,7 @@ local values(config) = {
   },
 
   prometheus: {
-    enabled: lib.isTrue(config, 'pkgs.prometheus-operator.enabled')
+    enabled: lib.isTrue(config, 'pkgs.prometheus-operator.enabled'),
     serviceMonitor: {
       create: lib.isTrue(config, 'pkgs.prometheus-operator.enabled'),
     },
