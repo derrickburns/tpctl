@@ -14,9 +14,9 @@ local values(config) = {
   },
 
   prometheus: {
-    enabled: true,
+    enabled: lib.isTrue(config, 'pkgs.prometheus-operator.enabled')
     serviceMonitor: {
-      create: true,
+      create: lib.isTrue(config, 'pkgs.prometheus-operator.enabled'),
     },
   },
 
@@ -26,10 +26,6 @@ local values(config) = {
   },
 
   additionalArgs: if lib.isTrue(config, 'pkgs.fluxcloud.enabled') then ['--connect=ws://fluxcloud'] else [],
-
-  annotations+: {
-    "reloader.stakater.com/auto": "true",
-  },
 
   extraContainers: 
     if lib.isTrue(config, 'pkgs.fluxrecv.enabled') && lib.isTrue(config, 'pkgs.fluxrecv.sidecar')
