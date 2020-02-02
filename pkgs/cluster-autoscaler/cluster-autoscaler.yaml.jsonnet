@@ -32,7 +32,7 @@ local helmrelease(config) = {
         create: true,
       },
       serviceMonitor: {
-        enabled: lib.getElse(config, 'pkgs.prometheus-operator.enabled', false)
+        enabled: lib.getElse(config, 'pkgs.prometheus.enabled', false)
       },
     },
   },

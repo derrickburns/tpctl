@@ -24,6 +24,6 @@ local podmonitor(config) = {
 };
 
 function(config, prev) 
-  if lib.getElse(config, 'pkgs.prometheus-operator.enabled', false)
+  if lib.getElse(config, 'pkgs.prometheus.enabled', false)
   then podmonitor(config)
   else {}
