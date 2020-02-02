@@ -18,7 +18,7 @@ local servicemonitor(config) = {
         component: 'oc-collector',
       },
     },
-    namespaceSelectpr: {
+    namespaceSelector: {
       matchNames: [ "tracing" ],
     },
   },
