@@ -14,12 +14,11 @@ local prometheus(config) = {
       region: config.cluster.metadata.region,
     },
     externalUrl: 'http://prometheus.monitoring',
-    podMonitorSelecton: {
-      matchLabels: {
-        purpose: 'support',
-      },
+    podMonitorSelector: {
+      matchLabels: {}
     },
     podMonitorNamespaceSelector: {
+      matchLabels: {}
     },
     resources: {
       requests: {
@@ -27,11 +26,11 @@ local prometheus(config) = {
       },
     },
     serviceAccountName: 'prometheus',
-    serviceMonitorNamespaceSelector: {},
+    serviceMonitorNamespaceSelector: {
+      matchLabels: {}
+    },
     serviceMonitorSelector: {
-      matchLabels: {
-        purpose: 'support',
-      },
+      matchLabels: {}
     },
     thanos: if lib.isTrue(config, 'pkgs.thanos.enabled') then {
       objectStorageConfig: {
