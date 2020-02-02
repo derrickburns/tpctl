@@ -18,7 +18,7 @@ local prometheus(config) = {
       },
     },
     serviceAccountName: 'prometheus',
-    serviceMonitorNamespaceSelector: {}
+    serviceMonitorNamespaceSelector: {},
     serviceMonitorSelector: {},
     thanos: {
       objectStorageConfig: {
