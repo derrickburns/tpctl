@@ -19,6 +19,9 @@ local podmonitor(config) = {
         'app.kubernetes.io/instance' : 'external-secrets',
       },
     },
+    namespaceSelector: {
+      matchNames: [ "external-secrets" ],
+    },
   },
 };
 

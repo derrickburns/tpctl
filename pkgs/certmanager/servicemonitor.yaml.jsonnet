@@ -17,6 +17,9 @@ local servicemonitor(config) = {
         app: 'cert-manager',
       },
     },
+    namespaceSelector: {
+      matchNames: [ 'cert-manager' ],
+    },
   },
 };
 
