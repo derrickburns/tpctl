@@ -14,24 +14,6 @@ local Helmrelease(config) = {
       version: '8.5.13',
     },
     values+: {
-      prometheus+: {
-        prometheusSpec+: {
-          externalLabels: {
-            cluster: config.cluster.metadata.name,
-            region: config.cluster.metadata.region,
-          },
-          serviceMonitorNamespaceSelector: {  // allows the operator to find target conf from multiple namespaces
-            any: true,
-          },
-          thanos: {  // add Thanos Sidecar
-            tag: 'v0.3.1',
-            objectStorageConfig: {  // blob storage configuration to upload metrics
-              key: 'thanos.yaml',
-              name: config.pkgs.thanos.secret,
-            },
-          },
-        },
-      },
       grafana: lib.getElse(config, 'pkgs.prometheus-operator.grafana', {}),
       alertmanager: lib.getElse(config, 'pkgs.prometheus-operator.alertmanager', {}),
     },
