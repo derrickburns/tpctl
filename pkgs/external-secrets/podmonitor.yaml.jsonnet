@@ -8,7 +8,6 @@ local podmonitor(config) = {
     namespace: 'external-secrets',
   },
   spec: {
-    jobLabel: 'external-secrets',
     podMetricsEndpoints: [
       {
         targetPort: 3001,

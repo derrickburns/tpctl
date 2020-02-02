@@ -14,7 +14,6 @@ local podMonitor(config) = {
             port: 'metrics',
           },
         ],
-        jobLabel: 'gloo',
         namespaceSelector: {
           matchNames: [
             'gloo-system',

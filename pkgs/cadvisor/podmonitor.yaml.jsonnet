@@ -8,7 +8,6 @@ local podmonitor(config) = {
     namespace: 'cadvisor',
   },
   spec: {
-    jobLabel: 'kubernetes-cadvisor', // ????
     podMetricsEndpoints: [
       {
         interval: '5s',
