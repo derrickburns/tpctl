@@ -5,6 +5,7 @@ local prometheus(config) = {
   kind: 'Prometheus',
   metadata: {
     name: 'prometheus',
+    namespace: 'monitoring',
   },
   spec: {
     enableAdminAPI: false,
