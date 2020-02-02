@@ -1,14 +1,14 @@
 local lib = import "../../lib/lib.jsonnet";
 
-local serviceMonitor(config) = {
+local podMonitor(config) = {
       apiVersion: 'monitoring.coreos.com/v1',
-      kind: 'ServiceMonitor',
+      kind: 'PodMonitor',
       metadata: {
         name: 'gloo-gateway-proxies',
         namespace: 'gloo-system',
       },
       spec: {
-        endpoints: [
+        podMetricsEndpoints: [
           {
             path: '/metrics',
             port: 'metrics',
@@ -31,6 +31,6 @@ local serviceMonitor(config) = {
 
 function(config,prev) 
  if lib.getElse(config, 'pkgs.prometheus.enabled', false)
- then serviceMonitor(config)
+ then podMonitor(config)
  else {}
 
