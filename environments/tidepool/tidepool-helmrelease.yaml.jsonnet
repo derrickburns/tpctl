@@ -194,6 +194,11 @@ local tidepool(config, prev, namespace) = {
               type: 'internal',
               namespace: lib.getElse(env, 'namespace', namespace),
             },
+            options: {
+              stats: {
+                virtualClusters: lib.getElse(env,'virtualClusters', []),
+              },
+            },
           },
           https: {
             enabled: false

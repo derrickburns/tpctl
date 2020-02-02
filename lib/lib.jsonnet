@@ -132,45 +132,49 @@
 
   options: {
     cors: {
-      allowCredentials: true,
-      allowHeaders: [
-        'authorization',
-        'content-type',
-        'x-tidepool-session-token',
-        'x-tidepool-trace-request',
-        'x-tidepool-trace-session',
-      ],
-      allowMethods: [
-        'GET',
-        'POST',
-        'PUT',
-        'PATCH',
-        'DELETE',
-        'OPTIONS',
-      ],
-      allowOriginRegex: [
-        '.*',
-      ],
-      exposeHeaders: [
-        'x-tidepool-session-token',
-        'x-tidepool-trace-request',
-        'x-tidepool-trace-session',
-      ],
-      maxAge: '600s',
+      cors: {
+        allowCredentials: true,
+        allowHeaders: [
+          'authorization',
+          'content-type',
+          'x-tidepool-session-token',
+          'x-tidepool-trace-request',
+          'x-tidepool-trace-session',
+        ],
+        allowMethods: [
+          'GET',
+          'POST',
+          'PUT',
+          'PATCH',
+          'DELETE',
+          'OPTIONS',
+        ],
+        allowOriginRegex: [
+          '.*',
+        ],
+        exposeHeaders: [
+          'x-tidepool-session-token',
+          'x-tidepool-trace-request',
+          'x-tidepool-trace-session',
+        ],
+        maxAge: '600s',
+      },
     },
-    headerManipulation: {
-      requestHeadersToAdd: [
-        {
-          header: {
-            key: 'Strict-Transport-Security',
-            value: 'max-age=31536000',
+    hsts: {
+      headerManipulation: {
+        requestHeadersToAdd: [
+          {
+            header: {
+              key: 'Strict-Transport-Security',
+              value: 'max-age=31536000',
+            },
           },
-        },
-      ],
+        ],
+      },
     },
   },
 
-  virtualService(vsin, defaultName, defaultNamespace, options={}):: {
+  virtualService(vsin, defaultName, defaultNamespace):: {
     local vs = $.withNamespace($.withName(vsin, defaultName), defaultNamespace),
     local procotol = vs.labels.protocol,
     apiVersion: 'gateway.solo.io/v1',
@@ -189,7 +193,9 @@
             matchers: [{ prefix: '/' }],
           } + $.route(vs),
         ],
-        options: if vs.labels.type == 'external' && vs.labels.protocol == 'https' then options else {},
+        options: lib.getElse(vs, 'options', {})
+          + (if $.isTrue(vs, 'cors.enabled') then $.options.cors else {})
+          + (if $.isTrue(vs, 'hsts.enabled') then $.options.hsts else {})
       },
     },
   },
@@ -311,7 +317,7 @@
 
   virtualServicesForEnvironment(config, envname):: (
     local vsarray = $.virtualServicesForPkg(envname, config.environments[envname].tidepool);
-    std.map(function(v) $.virtualService(v, v.name, envname, $.options), vsarray)
+    std.map(function(v) $.virtualService(v, v.name, envname), vsarray)
   ),
 
   certificatesForPackage(config, pkgname):: (

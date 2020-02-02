@@ -60,12 +60,28 @@ local pom = import '../pkgs/pomerium/lib.jsonnet';
               type: 'external',
               namespace: lib.getElse(env, 'namespace', name),
             },
+            options: {
+              stats: {
+                virtualClusters: lib.getElse(env, 'virtualClusters', []),
+              },
+            },
             redirect: true,
           },
           https: {
             dnsNames: dnsNames,
             enabled: true,
             timeout: lib.getElse(env, 'tidepool.maxTimeout', '120s'),
+            hsts: {
+              enabled: true,
+            },
+            cors: {
+              enabled: true,
+            },
+            options: {
+              stats: {
+                virtualClusters: lib.getElse(env, 'virtualClusters', []),
+              },
+            },
             routeAction: {
               single: {
                 kube: {
