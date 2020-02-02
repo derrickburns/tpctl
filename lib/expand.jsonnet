@@ -62,7 +62,7 @@ local pom = import '../pkgs/pomerium/lib.jsonnet';
             },
             options: {
               stats: {
-                virtualClusters: lib.getElse(env, 'virtualClusters', []),
+                virtualClusters: lib.getElse(env, 'tidepool.virtualClusters', []),
               },
             },
             redirect: true,
@@ -79,7 +79,7 @@ local pom = import '../pkgs/pomerium/lib.jsonnet';
             },
             options: {
               stats: {
-                virtualClusters: lib.getElse(env, 'virtualClusters', []),
+                virtualClusters: lib.getElse(env, 'tidepool.virtualClusters', []),
               },
             },
             routeAction: {
