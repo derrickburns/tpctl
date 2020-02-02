@@ -19,4 +19,4 @@ local servicemonitor(config) = {
   },
 };
 
-function(config) servicemonitor(config)
+function(config, prev) servicemonitor(config)
