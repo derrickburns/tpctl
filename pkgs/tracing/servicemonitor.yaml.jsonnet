@@ -7,7 +7,7 @@ local servicemonitor(config) = {
   spec: {
     endpoints: [
       {
-        port: 8888,
+        targetPort: 8888,
       },
     ],
     selector: {
