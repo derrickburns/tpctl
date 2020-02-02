@@ -1,6 +1,6 @@
 local lib = import '../../lib/lib.jsonnet';
 
-local servicemonitor(config) = {
+local podmonitor(config) = {
   apiVersion: 'monitoring.coreos.com/v1',
   kind: 'PodMonitor',
   metadata: {
@@ -29,5 +29,5 @@ local servicemonitor(config) = {
 
 function(config, prev) 
   if lib.isTrue(config, 'pkgs.prometheus.enabled')
-  then servicemonitor(config)
+  then podmonitor(config)
   else {}
