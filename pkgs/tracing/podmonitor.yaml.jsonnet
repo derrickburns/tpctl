@@ -8,7 +8,7 @@ local servicemonitor(config) = {
   spec: {
     podMetricsEndpoints: [
       {
-        targetPort: 8888,
+        port: 'admin-http',
       },
     ],
     selector: {
