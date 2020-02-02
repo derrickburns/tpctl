@@ -13,6 +13,10 @@ local prometheus(config) = {
       cluster: config.cluster.metadata.name,
       region: config.cluster.metadata.region,
     },
+    podMonitorSelector: {
+    },
+    podMonitorNamespaceSelector: {
+    },
     resources: {
       requests: {
         memory: '400Mi',
