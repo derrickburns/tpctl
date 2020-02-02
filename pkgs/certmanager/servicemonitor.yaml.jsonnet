@@ -4,24 +4,23 @@ local servicemonitor(config) = {
   apiVersion: 'monitoring.coreos.com/v1',
   kind: 'ServiceMonitor',
   metadata: {
-    name: 'tracing',
+    name: 'certmanager',
   },
   spec: {
     endpoints: [
       {
-        targetPort: 8888,
+        targetPort: 9402,
       },
     ],
     selector: {
       matchLabels: {
-        app: 'opencesus',
-        component: 'oc-collector',
+        app: 'cert-manager',
       },
     },
   },
 };
 
-function(config, prev)
+function(config, prev) 
   if lib.isTrue(config, 'pkgs.prometheus.enabled')
   then servicemonitor(config)
   else {}
