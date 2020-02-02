@@ -14,7 +14,7 @@ local prometheus(config) = {
       region: config.cluster.metadata.region,
     },
     externalUrl: 'http://prometheus.monitoring',
-    podMonitorSelecton {
+    podMonitorSelecton: {
       matchLabels: {
         purpose: 'support',
       },
