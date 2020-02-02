@@ -13,7 +13,8 @@ local prometheus(config) = {
       cluster: config.cluster.metadata.name,
       region: config.cluster.metadata.region,
     },
-    podMonitorSelector: {
+    externalUrl: 'http://prometheus.monitoring',
+    podMonitorSelecton {
       matchLabels: {
         purpose: 'support',
       },
