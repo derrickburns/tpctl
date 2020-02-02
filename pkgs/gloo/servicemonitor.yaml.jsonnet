@@ -4,10 +4,7 @@ local serviceMonitor(config) = {
       apiVersion: 'monitoring.coreos.com/v1',
       kind: 'ServiceMonitor',
       metadata: {
-        labels: {
-          release: 'monitoring-prometheus-operator',
-        },
-        name: 'gloo-servicemonitor',
+        name: 'gloo-gateway-proxies',
         namespace: 'gloo-system',
       },
       spec: {
@@ -26,7 +23,7 @@ local serviceMonitor(config) = {
         selector: {
           matchLabels: {
             'gateway-proxy': 'live',
-            'gateway-proxy-id': 'gateway-proxy',
+            gloo: 'gateway-proxy', 
           },
         },
       },
