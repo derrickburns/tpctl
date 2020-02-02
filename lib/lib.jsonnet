@@ -193,7 +193,7 @@
             matchers: [{ prefix: '/' }],
           } + $.route(vs),
         ],
-        options: lib.getElse(vs, 'options', {})
+        options: $.getElse(vs, 'options', {})
           + (if $.isTrue(vs, 'cors.enabled') then $.options.cors else {})
           + (if $.isTrue(vs, 'hsts.enabled') then $.options.hsts else {})
       },
