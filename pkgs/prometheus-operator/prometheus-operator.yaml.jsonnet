@@ -11,7 +11,7 @@ local Helmrelease(config) = {
     chart: {
       repository: 'https://kubernetes-charts.storage.googleapis.com/',
       name: 'prometheus-operator',
-      version: '8.5.13',
+      version: '8.7.0',
     },
     values+: {
       grafana: lib.getElse(config, 'pkgs.prometheus-operator.grafana', {}),
