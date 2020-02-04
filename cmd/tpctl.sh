@@ -887,6 +887,17 @@ function install_mesh_client {
   fi
 }
 
+function make_mesh_with_helm {
+  step certificate create identity.linkerd.cluster.local ca.crt ca.key --profile root-ca --no-password --insecure
+  step certificate create identity.linkerd.cluster.local issuer.crt issuer.key --ca ca.crt --ca-key ca.key --profile intermediate-ca --not-after 8760h --no-password --insecure
+  helm install \
+  --set-file global.identityTrustAnchorsPEM=ca.crt \
+  --set-file identity.issuer.tls.crtPEM=issuer.crt \
+  --set-file identity.issuer.tls.keyPEM=issuer.key \
+  --set identity.issuer.crtExpiry=$(date -d '+8760 hour' +"%Y-%m-%dT%H:%M:%SZ") \
+  charts/linkerd2
+}
+
 # create service mesh
 # do NOT add linkerd to GitOps because upgrade path is can be complex
 function make_mesh() {
@@ -1381,7 +1392,7 @@ case $cmd in
     setup_tmpdir
     clone_remote
     confirm_matching_cluster
-    make_mesh
+    make_mesh_with_helm
     save_changes "Added linkerd mesh"
     ;;
   edit_values)

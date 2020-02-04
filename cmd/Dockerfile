@@ -28,6 +28,7 @@ RUN curl -sL -o /usr/local/bin/linkerd https://github.com/linkerd/linkerd2/relea
 RUN curl -sL -o /usr/local/bin/glooctl https://github.com/solo-io/gloo/releases/download/v1.3.2/glooctl-linux-amd64
 RUN curl -sL /usr/local/bin/hub https://github.com/github/hub/releases/download/v2.13.0/hub-linux-amd64-2.13.0.tgz | tar xz -C /tmp && \
     mv /tmp/hub-linux-amd64-2.13.0/bin/hub /usr/local/bin
+RUN curl -sL "https://github.com/smallstep/cli/releases/download/v0.14.0-rc.3/step_0.14.0-rc.3_linux_amd64.tar.gz" | tar -xz -C /tmp && mv /tmp/step*/bin/step /usr/local/bin
 RUN ln -s /usr/bin/python3 /usr/local/bin/python3 && chmod +x /usr/local/bin/*
 RUN /usr/local/bin/helm plugin install https://github.com/helm/helm-2to3
 COPY select_kind /usr/local/bin/select_kind
