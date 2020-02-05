@@ -6,6 +6,9 @@ local namespace(config) = {
   metadata: {
     name: 'external-secrets',
     annotations: linkerd.annotations(config)
+    labels: {
+      'discovery.solo.io/function_discovery' : 'disable',
+    },
   },
 };
 
