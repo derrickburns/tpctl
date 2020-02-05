@@ -20,9 +20,6 @@ local lib = import 'lib.jsonnet';
   // flatten a map after adding name and namespace fields
   virtualServicesToList(map, ns):: std.filter(function(x) lib.getElse(x, 'enabled', false), lib.values(lib.addName(lib.addNamespace(map, ns)))),
 
-  // We are awaiting a change in Gloo to allow Gateways to select virtual services
-  // across namespaces using labels. For now, we simulate that behavior here.
-  //
   virtualServicesForSelector(vss, selector)::
     std.filter(function(x) lib.matches(x.labels, selector), vss),
 
@@ -50,7 +47,9 @@ local lib = import 'lib.jsonnet';
     [$.domainFrom(name, port, default) for name in lib.getElse(vs, 'dnsNames', [])]
   ),
 
-  sslConfig(vs):: if lib.getElse(vs, 'labels.protocol', 'http') == 'https' then {
+  isHttps(vs):: lib.getElse(vs, 'labels.protocol', 'http') == 'https',
+
+  sslConfig(vs):: if $.isHttps(vs) then {
     sslConfig: {
       secretRef: {
         name: $.certificateSecretName(vs.name),
@@ -88,7 +87,7 @@ local lib = import 'lib.jsonnet';
       },
     },
 
-  options: {
+  virtualHostOptions: {
     cors: {
       cors: {
         allowCredentials: true,
@@ -152,8 +151,8 @@ local lib = import 'lib.jsonnet';
           } + $.route(vs),
         ],
         options: lib.getElse(vs, 'options', {})
-          + (if lib.isTrue(vs, 'cors.enabled') then $.options.cors else {})
-          + (if lib.isTrue(vs, 'hsts.enabled') then $.options.hsts else {})
+          + (if lib.isTrue(vs, 'cors.enabled') then $.virtualHostOptions.cors else {})
+          + (if lib.isTrue(vs, 'hsts.enabled') then $.virtualHostOptions.hsts else {})
       },
     },
   },
@@ -292,7 +291,7 @@ local lib = import 'lib.jsonnet';
 
   certificate(config, vsin, defaultName, defaultNamespace):: (
     local vs = lib.withNamespace(lib.withName(vsin, defaultName), defaultNamespace);
-    if lib.getElse(config, 'pkgs.certmanager.enabled', false) && lib.getElse(vsin, 'labels.protocol', 'http') == 'https'
+    if lib.getElse(config, 'pkgs.certmanager.enabled', false) && $.isHttps(vsin)
     then {
       apiVersion: 'cert-manager.io/v1alpha2',
       kind: 'Certificate',
