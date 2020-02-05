@@ -1,4 +1,4 @@
-local lib = import '../lib/lib.jsonnet';
+local lib = import '../../lib/lib.jsonnet';
 
 // Direct external authorization requests *back* to the proxy after adding the x-tidepool-extauth-request header.
 // Then, a virtual service that selects requests based on that header will rewrite the request as needed and forward it to authorization server.
@@ -12,7 +12,7 @@ local settings(config) = {
     name: 'default',
     namespace: 'gloo-system',
   },
-  local extauth = 
+  local extauth =
     if lib.getElse(config, 'pkgs.pomerium.enabled', false) &&
        lib.getElse(config, 'pkgs.pomerium.forwardauth.enabled', false)
     then {
@@ -24,26 +24,26 @@ local settings(config) = {
         httpService: {
           response: {
             allowedUpstreamHeaders: [
-              'x-pomerium-iap-jwt-assertion', 
-              'x-pomerium-authenticated-user-email', 
-              'x-pomerium-authenticated-user-id', 
-              'x-pomerium-authenticated-user-groups', 
+              'x-pomerium-iap-jwt-assertion',
+              'x-pomerium-authenticated-user-email',
+              'x-pomerium-authenticated-user-id',
+              'x-pomerium-authenticated-user-groups',
             ],
           },
-	  request: {
+          request: {
             allowedHeaders: [
-              'x-pomerium-iap-jwt-assertion', 
-              'x-pomerium-authenticated-user-email', 
-              'x-pomerium-authenticated-user-id', 
-              'x-pomerium-authenticated-user-groups', 
+              'x-pomerium-iap-jwt-assertion',
+              'x-pomerium-authenticated-user-email',
+              'x-pomerium-authenticated-user-id',
+              'x-pomerium-authenticated-user-groups',
             ],
             headersToAdd: {
-              'x-tidepool-extauth-request': "true",
+              'x-tidepool-extauth-request': 'true',
             },
           },
         },
       },
-    } else { },
+    } else {},
   spec: extauth {
     discovery: {
       fdsMode: 'WHITELIST',
@@ -52,7 +52,7 @@ local settings(config) = {
     gateway: if lib.getElse(config, 'pkgs.gloo.validation.enabled', false) then {
       readGatewaysFromAllNamespaces: true,
       validation: {
-        proxyValidationServerAddr: "gloo:9988",
+        proxyValidationServerAddr: 'gloo:9988',
         alwaysAccept: true,
       },
     } else null,
@@ -71,4 +71,4 @@ local settings(config) = {
   },
 };
 
-function(config) settings(config)
+function(config,prev) settings(config)

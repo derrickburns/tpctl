@@ -135,32 +135,6 @@ function install_glooctl {
   fi
 }
 
-# install gloo
-function install_gloo() {
-  start "installing gloo"
-  local config=$(get_config)
-  jsonnet --tla-code config="$config" $TEMPLATE_DIR/gloo/gloo-values.yaml.jsonnet | yq r - >$TMP_DIR/gloo-values.yaml
-  expect_success "Templating failure gloo/gloo-values.yaml.jsonnet"
-
-  helm repo add gloo https://storage.googleapis.com/solo-public-helm
-  helm fetch --untar --untardir $TMP_DIR/gloohelm 'gloo/gloo'
-  helm template gloo $TMP_DIR/gloohelm/gloo --namespace gloo-system   -f $TMP_DIR/gloo-values.yaml > $TMP_DIR/manifests.yaml
-  expect_success "Templating failure gloo helm chart"
-
-  rm -rf gloo
-  mkdir -p gloo
-  (
-    cd gloo
-    cp -r $TMP_DIR/gloohelm/gloo/crds crds
-    cat $TMP_DIR/manifests.yaml | separate_files | add_names
-    jsonnet --tla-code config="$config" ${TEMPLATE_DIR}/gloo/settings.yaml.jsonnet | yq r - | separate_files | add_names
-    yq w -i gloo-system/Deployment/gateway-proxy.yaml spec.template.spec.containers[0].securityContext.readOnlyRootFilesystem false
-    yq w -i gloo-system/Deployment/internal-gateway-proxy.yaml spec.template.spec.containers[0].securityContext.readOnlyRootFilesystem false
-  )
-
-  complete "installed gloo"
-}
-
 function confirm_matching_cluster() {
   local in_context=$(cluster_in_context)
   local in_repo=$(cluster_in_repo)
@@ -594,77 +568,13 @@ function make_shared_config() {
   start "creating package manifests"
   local config=$(get_config)
   cp -r pkgs $TMP_DIR 
+  rm -rf flux gloo
   rm -rf pkgs
   local dir
   for dir in $(enabled_pkgs $TEMPLATE_DIR/pkgs pkgs); do
     template_files "$config" $TEMPLATE_DIR/pkgs/$dir $TEMPLATE_DIR/
   done
   complete "created package manifests"
-}
-
-function update_fluxcd_repo() {
-  start "updating fluxcd helm repo"
-  helm repo add fluxcd https://charts.fluxcd.io
-  expect_success "Adding fluxcd helm repo"
-  helm repo update
-  expect_success "Updating helm repos"
-  complete 'updated fluxcd helm repo'
-
-}
-
-# create flux manifests
-function create_flux() {
-  local config=$(get_config)
-
-  update_fluxcd_repo
-
-  start "creating flux values"
-  jsonnet --tla-code config="$config" ${TEMPLATE_DIR}/flux/flux-values.jsonnet | yq r - >$TMP_DIR/flux-values.yaml
-  expect_success "Templating failure flux values"
-  complete 'created flux values'
-
-  rm -rf flux
-  mkdir -p flux
-  (
-    cd flux
-
-    kubectl create ns flux --dry-run -o yaml >namespace.yaml
-    start "creating flux manifests"
-    helm fetch --untar --untardir $TMP_DIR/flux 'fluxcd/flux'
-    expect_success "Fetching flux helm chart"
-    helm template flux --namespace flux $TMP_DIR/flux/flux -f $TMP_DIR/flux-values.yaml | add_ns flux | separate_files | add_names
-    expect_success "Templating failure flux helm chart"
-    complete 'created flux manifests'
-  )
-}
-
-# create helm operator manifests
-function create_helm_operator() {
-  local config=$(get_config)
-
-  update_fluxcd_repo
-
-  start "creating flux helm operator values"
-  jsonnet --tla-code config="$config" ${TEMPLATE_DIR}/flux/helm-operator-values.jsonnet | yq r - >$TMP_DIR/helm-operator-values.yaml
-  expect_success "Templating failure helm operator values"
-  complete 'created helm operator values'
-
-  rm -rf helm-operator
-  mkdir -p helm-operator
-  (
-    cd helm-operator
-
-    start "creating flux helm operator manifests"
-    helm fetch --untar --untardir $TMP_DIR/helmoperator 'fluxcd/helm-operator'
-    expect_success "Fetching helm operator helm chart"
-    if [ -d "$TMP_DIR/helmoperator/helm-operator/crds" ]
-    then 
-      cp -r $TMP_DIR/helmoperator/helm-operator/crds crds
-    fi
-    helm template helm-operator --namespace flux $TMP_DIR/helmoperator/helm-operator -f $TMP_DIR/helm-operator-values.yaml | add_ns flux | separate_files | add_names
-    expect_success "Templating failure flux helm operator chart"
-    complete "created flux helm operator manifests"
-  )
 }
 
 # make K8s manifests for enviroments given config, path, prefix, and environment name
@@ -806,14 +716,37 @@ function expect_cluster_exists() {
   expect_success "cluster $cluster does not exist."
 }
 
+function install_helmrelease() {
+  local file=$1
+  local args=$2
+  start "bootstrapping $file"
+  local hr=$(yq r $file -j)
+  local values=$(echo "$hr" | jq .spec.values)
+  local chart=$(echo "$hr" | jq .spec.chart.repository | sed -e 's/"//g')
+  local version=$(echo "$hr" | jq .spec.chart.version | sed -e 's/"//g')
+  local name=$(echo "$hr" | jq .spec.chart.name | sed -e 's/"//g')
+  local namespace=$(echo "$hr" | jq .metadata.namespace | sed -e 's/"//g')
+  kubectl create namespace $namespace 2>/dev/null
+
+  helm repo add $name $chart
+  helm repo update
+  helm upgrade -i $name $name/$name --namespace ${namespace} --version $version -f <(echo "$values") $2 >$TMP_DIR/out 2>&1
+  if [ $? -ne 0 ]
+  then
+    cat $TMP_DIR/out
+    panic "helm upgrade failed"
+  fi
+
+  complete "bootstrapped $file"
+}
+
 # bootstrap flux 
 function bootstrap_flux() {
   start "bootstrapping flux"
   establish_ssh
-  create_flux
-  kubectl create namespace ${FLUX_FORWARD_NAMESPACE}
-  kubectl apply -R -f flux
+  install_helmrelease pkgs/flux/flux-helmrelease.yaml ""
   install_key
+  install_helmrelease pkgs/flux/helm-operator-helmrelease.yaml "--set helm.versions=v3"
   complete "bootstrapped flux"
 }
 
@@ -906,6 +839,9 @@ function make_mesh_with_helm {
 # do NOT add linkerd to GitOps because upgrade path is can be complex
 function make_mesh() {
   install_mesh_client
+  linkerd install --ignore-cluster | kubectl delete -f -
+  kubectl delete clusterrole linkerd-linkerd-web-check
+  kubectl delete clusterrolebinding linkerd-linkerd-web-check
   linkerd check --pre
   expect_success "Failed linkerd pre-check."
   start "installing mesh"
@@ -1134,10 +1070,6 @@ function gloo_dashboard() {
   open -a "Google Chrome" http://localhost:8081
 }
 
-function remove_gloo() {
-  glooctl install gateway --dry-run | mykubectl delete -f -
-}
-
 # await deletion of a CloudFormation template that represents a cluster before returning
 function await_deletion() {
   local cluster=$(get_cluster)
@@ -1354,7 +1286,6 @@ case $cmd in
     clone_remote
     set_template_dir
     confirm_matching_cluster
-    install_gloo
     install_certmanager
     make_config
     make_envrc
@@ -1370,28 +1301,6 @@ case $cmd in
     make_users
     make_envrc
     save_changes "Added cluster and users"
-    ;;
-  gloo)
-    check_remote_repo
-    expect_github_token
-    setup_tmpdir
-    clone_remote
-    set_template_dir
-    confirm_matching_cluster
-    install_gloo
-    save_changes "Installed gloo"
-    ;;
-  flux)
-    check_remote_repo
-    expect_github_token
-    setup_tmpdir
-    clone_remote
-    set_template_dir
-    confirm_matching_cluster
-    create_flux
-    create_helm_operator
-    make_envrc
-    save_changes "Added flux"
     ;;
   mesh)
     check_remote_repo
@@ -1499,13 +1408,6 @@ case $cmd in
     clone_remote
     merge_kubeconfig
     ;;
-  remove_gloo)
-    check_remote_repo
-    setup_tmpdir
-    clone_remote
-    confirm_matching_cluster
-    remove_gloo
-    ;;
   gloo_dashboard)
     check_remote_repo
     setup_tmpdir
@@ -1573,8 +1475,9 @@ case $cmd in
     setup_tmpdir
     set_template_dir
     clone_remote
+    make_shared_config
     bootstrap_flux
-    save_changes "Updated flux"
+    confirm_matching_cluster
     ;;
   service_accounts)
     check_remote_repo

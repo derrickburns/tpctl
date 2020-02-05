@@ -43,6 +43,26 @@
   matches(labels, selector)::
     std.foldl(function(a, b) a && b, [$.getElse(labels, x, false) == selector[x] for x in std.objectFields(selector)], true),
 
+  helmrelease(name, namespace, repo, version):: {
+    apiVersion: 'helm.fluxcd.io/v1',
+    kind: 'HelmRelease',
+    metadata: {
+      annotations: {
+        'fluxcd.io/automated': 'false',
+      },
+      name: name,
+      namespace: namespace,
+    },
+    spec+: {
+      chart: {
+        name: name,
+        repository: repo,
+        version: version,
+      },
+      releaseName: name,
+    },
+  },
+
   service(config, pkg):: {
     apiVersion: 'v1',
     kind: 'Service',

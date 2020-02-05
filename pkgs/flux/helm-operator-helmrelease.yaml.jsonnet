@@ -1,6 +1,6 @@
-local lib = import '../lib/lib.jsonnet';
+local lib = import '../../lib/lib.jsonnet';
 
-local values(config) = {
+local genvalues(config) = {
 
   createCRD: true,
   helm: {
@@ -36,7 +36,7 @@ local values(config) = {
     tag: '1.0.0-rc8',
   },
 
-  logReleaseDiffs: true,
+  logReleaseDiffs: false,
 
   resources: {
     requests: {
@@ -46,4 +46,5 @@ local values(config) = {
   },
 };
 
-function(config) values(config)
+function(config, prev)
+  lib.helmrelease('helm-operator', 'flux', 'https://charts.fluxcd.io', '0.6.0') { spec+: { values: genvalues(config) } }

@@ -1,8 +1,12 @@
-local lib = import '../lib/lib.jsonnet';
+local lib = import '../../lib/lib.jsonnet';
 
-local values(config) = {
+local genvalues(config) = {
   image: {
     tag: lib.getElse(config, 'pkgs.flux.version', '1.17.1')
+  },
+
+  helm: {
+    versions: "v3"
   },
 
   logFormat: 'fmt',
@@ -14,9 +18,9 @@ local values(config) = {
   },
 
   prometheus: {
-    enabled: lib.isTrue(config, 'pkgs.prometheus-operator.enabled'),
+    enabled: lib.isTrue(config, 'pkgs.prometheus.enabled'),
     serviceMonitor: {
-      create: lib.isTrue(config, 'pkgs.prometheus-operator.enabled'),
+      create: lib.isTrue(config, 'pkgs.prometheus.enabled'),
     },
   },
 
@@ -63,4 +67,4 @@ local values(config) = {
   },
 };
 
-function(config) values(config)
+function(config, prev) lib.helmrelease('flux', 'flux', 'https://charts.fluxcd.io', '1.1.0') + { spec+: { values: genvalues(config) } }

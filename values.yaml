@@ -134,7 +134,7 @@ pkgs:
   fluxrecv:
     enabled: true
     namespace: flux
-    sidecar: true
+    sidecar: false
     virtualServices:
       fluxrecv-https:
         dnsNames:

@@ -110,4 +110,4 @@ local defaults = {
 };
 
 
-function(config,prev) std.manifestYamlStream(gloo.gateways(lib.merge(defaults, expand.expandConfig(config))))
+function(config, prev) std.manifestYamlStream(gloo.gateways(lib.merge(defaults, expand.expandConfig(config))))
