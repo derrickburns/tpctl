@@ -20,22 +20,6 @@ function vpa {
   )
 }
 
-function migrate_to_helm3 {
-  kubectl get deployments -n ${FLUX_FORWARD_NAMESPACE} tiller-deploy
-  if [ $? -eq 0 ]
-  then
-    start "migrating to helm3"
-    kubectl scale deployment --replicas=0 -n ${FLUX_FORWARD_NAMESPACE} flux-helm-operator
-    kubectl scale deployment --replicas=0 -n ${FLUX_FORWARD_NAMESPACE} flux
-    kubectl get configmap -n ${FLUX_FORWARD_NAMESPACE} -l "OWNER=TILLER" | awk '{print $1}' | grep -v NAME | cut -d '.' -f1 | uniq | xargs -n1 helm 2to3 -t ${FLUX_FORWARD_NAMESPACE} convert
-    kubectl delete ns ${FLUX_FORWARD_NAMESPACE}
-    kubectl delete deployment -n ${FLUX_FORWARD_NAMESPACE} flux-helm-operator
-    kubectl delete deployment -n ${FLUX_FORWARD_NAMESPACE} tiller-deploy
-    kubectl delete deployment -n ${FLUX_FORWARD_NAMESPACE} flux-memcached
-    complete "Migrated to helm3"
-  fi
-}
-
 function get_vpc {
   local cluster=$(get_cluster)
   aws cloudformation describe-stacks --stack-name eksctl-${cluster}-cluster | jq '.Stacks[0].Outputs| .[] | select(.OutputKey | contains("VPC")) | .OutputValue' | sed -e 's/"//g'
@@ -618,26 +602,26 @@ function make_shared_config() {
   complete "created package manifests"
 }
 
-# create flux and flux helm operator manifests
-function make_flux() {
-  local config=$(get_config)
-
-  start "creating flux values"
-  jsonnet --tla-code config="$config" ${TEMPLATE_DIR}/flux/flux-values.jsonnet | yq r - >$TMP_DIR/flux-values.yaml
-  expect_success "Templating failure flux values"
-  complete 'created flux values'
-
-  start "creating flux helm operator values"
-  jsonnet --tla-code config="$config" ${TEMPLATE_DIR}/flux/helm-operator-values.jsonnet | yq r - >$TMP_DIR/helm-operator-values.yaml
-  expect_success "Templating failure helm operator values"
-  complete 'created helm operator values'
-
+function update_fluxcd_repo() {
   start "updating fluxcd helm repo"
   helm repo add fluxcd https://charts.fluxcd.io
   expect_success "Adding fluxcd helm repo"
   helm repo update
   expect_success "Updating helm repos"
   complete 'updated fluxcd helm repo'
+
+}
+
+# create flux manifests
+function create_flux() {
+  local config=$(get_config)
+
+  update_fluxcd_repo
+
+  start "creating flux values"
+  jsonnet --tla-code config="$config" ${TEMPLATE_DIR}/flux/flux-values.jsonnet | yq r - >$TMP_DIR/flux-values.yaml
+  expect_success "Templating failure flux values"
+  complete 'created flux values'
 
   rm -rf flux
   mkdir -p flux
@@ -651,7 +635,25 @@ function make_flux() {
     helm template flux --namespace flux $TMP_DIR/flux/flux -f $TMP_DIR/flux-values.yaml | add_ns flux | separate_files | add_names
     expect_success "Templating failure flux helm chart"
     complete 'created flux manifests'
-  
+  )
+}
+
+# create helm operator manifests
+function create_helm_operator() {
+  local config=$(get_config)
+
+  update_fluxcd_repo
+
+  start "creating flux helm operator values"
+  jsonnet --tla-code config="$config" ${TEMPLATE_DIR}/flux/helm-operator-values.jsonnet | yq r - >$TMP_DIR/helm-operator-values.yaml
+  expect_success "Templating failure helm operator values"
+  complete 'created helm operator values'
+
+  rm -rf helm-operator
+  mkdir -p helm-operator
+  (
+    cd helm-operator
+
     start "creating flux helm operator manifests"
     helm fetch --untar --untardir $TMP_DIR/helmoperator 'fluxcd/helm-operator'
     expect_success "Fetching helm operator helm chart"
@@ -808,8 +810,7 @@ function expect_cluster_exists() {
 function bootstrap_flux() {
   start "bootstrapping flux"
   establish_ssh
-  migrate_to_helm3
-  make_flux
+  create_flux
   kubectl create namespace ${FLUX_FORWARD_NAMESPACE}
   kubectl apply -R -f flux
   install_key
@@ -1387,7 +1388,8 @@ case $cmd in
     clone_remote
     set_template_dir
     confirm_matching_cluster
-    make_flux
+    create_flux
+    create_helm_operator
     make_envrc
     save_changes "Added flux"
     ;;
