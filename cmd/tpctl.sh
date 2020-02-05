@@ -436,38 +436,46 @@ function get_bucket() {
   fi
 }
 
-# create Tidepool bucket and populate asset bucket if empty
+# create asset bucket and populate it, if the bucket does not already exist
+function make_asset_bucket() {
+  local env=$1
+  local create=$(yq r values.yaml environments.${env}.tidepool.buckets.create | sed -e "/^  .*/d" -e s/:.*//)
+  local asset_bucket=$(get_bucket $env asset)
+  aws s3 ls s3://$asset_bucket >/dev/null 2>&1
+  if [ $? -ne 0 ]
+  then
+    start "creating asset bucket $asset_bucket"
+    aws s3 mb s3://$asset_bucket
+	expect_success "Cannot create asset bucket"
+    complete "created asset bucket $asset_bucket"
+
+    start "copying dev assets into $asset_bucket"
+    aws s3 cp s3://tidepool-dev-asset s3://$asset_bucket
+	expect_success "Cannot cp dev assets to asset bucket"
+    complete "created asset bucket $asset_bucket"
+  fi
+}
+
+# create data bucket if it does not exist
+function make_data_bucket() {
+  local env=$1
+  local data_bucket=$(get_bucket $env data)
+  aws s3 ls s3://$data_bucket >/dev/null 2>&1
+  if [ $? -ne 0 ]
+  then
+    start "creating data bucket $data_bucket"
+    aws s3 mb s3://$data_bucket
+	expect_success "Cannot create data bucket"
+    complete "created data bucket $data_bucket"
+  fi
+}
+
+# create Tidepool asset and data buckets
 function make_buckets() {
   local env
   for env in $(get_environments); do
-    local create=$(yq r values.yaml environments.${env}.tidepool.buckets.create | sed -e "/^  .*/d" -e s/:.*//)
-    if [ "$create" == "true" ]
-    then
-      local asset_bucket=$(get_bucket $env asset)
-      aws s3 ls s3://$asset_bucket >/dev/null 2>&1
-      if [ $? -ne 0 ]
-      then
-        start "creating asset bucket $asset_bucket"
-        aws s3 mb s3://$asset_bucket
-	expect_success "Cannot create asset bucket"
-        complete "created asset bucket $asset_bucket"
-
-        start "copying dev assets into $asset_bucket"
-        aws s3 cp s3://tidepool-dev-asset s3://$asset_bucket
-	expect_success "Cannot cp dev assets to asset bucket"
-        complete "created asset bucket $asset_bucket"
-      fi
-
-      local data_bucket=$(get_bucket $env data)
-      aws s3 ls s3://$data_bucket >/dev/null 2>&1
-      if [ $? -ne 0 ]
-      then
-        start "creating data bucket $data_bucket"
-        aws s3 mb s3://$data_bucket
-	expect_success "Cannot create data bucket"
-        complete "created data bucket $data_bucket"
-      fi
-    fi
+    make_asset_bucket $env
+    make_data_bucket $env
   done
 }
 
