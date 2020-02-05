@@ -496,6 +496,7 @@ function update_kubeconfig() {
 function update_service_accounts() {
   local cluster=$(get_cluster)
   start "updating service accounts"
+  eksctl delete iamserviceaccount -f config.yaml --approve
   eksctl create iamserviceaccount -f config.yaml --approve
   expect_success "eksctl create service account failed."
   complete "updated service accounts"
