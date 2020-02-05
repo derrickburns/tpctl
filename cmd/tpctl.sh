@@ -163,7 +163,6 @@ function install_gloo() {
   helm template gloo $TMP_DIR/gloohelm/gloo --namespace gloo-system   -f $TMP_DIR/gloo-values.yaml > $TMP_DIR/manifests.yaml
   expect_success "Templating failure gloo helm chart"
 
-
   rm -rf gloo
   mkdir -p gloo
   (
@@ -849,22 +848,6 @@ EOF
   complete "authorized access to ${GIT_REMOTE_REPO}"
 }
 
-function update_gloo_service() {
-  local glooServiceFile=gloo/gloo-system/Service/gateway-proxy.yaml
-  if [ -f $glooServiceFile ]; then
-    start "updating gloo service"
-    local config=$(get_config)
-    local prev=$TMP_DIR/svc.json
-    yq r $glooServiceFile -j >$prev
-    jsonnet --tla-code config="$config" --tla-code-file prev=$prev $TEMPLATE_DIR/gloo/svc.jsonnet | yq r -  >$glooServiceFile
-    expect_success "Templating failure $TEMPLATE_DIR/gloo/svc.jsonnet"
-    add_file $glooServiceFile
-    complete "updated gloo service"
-  else
-    info "No gloo service to update"
-  fi
-}
-
 function mykubectl() {
   KUBECONFIG=~/.kube/config kubectl $@
 }
@@ -975,7 +958,8 @@ function get_legacy_values() {
   done
 }
 
-# create k8s system master users
+
+# create k8s system master users [IDEMPOTENT]
 function make_users() {
   local group=system:masters
   local cluster=$(get_cluster)
@@ -1412,7 +1396,7 @@ case $cmd in
     setup_tmpdir
     clone_remote
     confirm_matching_cluster
-    make_mesh_with_helm
+    make_mesh
     save_changes "Added linkerd mesh"
     ;;
   edit_values)
@@ -1539,14 +1523,6 @@ case $cmd in
     setup_tmpdir
     clone_remote
     diff_config
-    ;;
-  dns)
-    check_remote_repo
-    setup_tmpdir
-    clone_remote
-    set_template_dir
-    update_gloo_service
-    save_changes "Updated dns entries"
     ;;
   mongo_template)
     mongo_template
