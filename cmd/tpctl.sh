@@ -889,6 +889,7 @@ function install_mesh_client {
 
 function make_mesh_with_helm {
   local linkerd_version=$(require_value "pkgs.linkerd.version")
+  install_mesh_client
   step certificate create identity.linkerd.cluster.local $TMP_DIR/ca.crt $TMP_DIR/ca.key --profile root-ca --no-password --insecure
   step certificate create identity.linkerd.cluster.local $TMP_DIR/issuer.crt $TMP_DIR/issuer.key --ca $TMP_DIR/ca.crt --ca-key $TMP_DIR/ca.key --profile intermediate-ca --not-after 8760h --no-password --insecure
   if [[ ${linkerd_version} =~ "edge" ]]
