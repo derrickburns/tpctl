@@ -2,20 +2,17 @@ local lib = import 'lib.jsonnet';
 
 local pom = import '../pkgs/pomerium/lib.jsonnet';
 
+local tp = import '../environments/tidepool/lib.jsonnet';
+
 {
   expandConfig(config)::
     config
     + (if std.objectHas(config, 'environments')
-       then { environments: $.expandEnvironments(config) }
+       then { environments: tp.expandEnvironments(config) }
        else {})
     + (if std.objectHas(config, 'pkgs')
        then { pkgs: $.expandPackages(config) }
        else {}),
-
-  expandEnvironments(config):: (
-    local expandEnvironment = function(name, env) $.expandConfigEnvironment(config, name, env);
-    std.mapWithKey(expandEnvironment, config.environments)
-  ),
 
   expandPackages(config):: (
     local expandPackage = function(name, pkg) $.expandConfigPackage(config, name, pkg);
@@ -45,62 +42,5 @@ local pom = import '../pkgs/pomerium/lib.jsonnet';
         else {}
       )
     )
-  ),
-
-  expandConfigEnvironment(config, name, env):: (
-    local dnsNames = lib.getElse(env, 'tidepool.dnsNames', []);
-    env {
-      tidepool+: {
-        virtualServices: {
-          http: {
-            dnsNames: dnsNames,
-            enabled: true,
-            labels: {
-              protocol: 'http',
-              type: 'external',
-              namespace: lib.getElse(env, 'namespace', name),
-            },
-            options: {
-              stats: {
-                virtualClusters: lib.getElse(env, 'tidepool.virtualClusters', []),
-              },
-            },
-            redirect: true,
-          },
-          https: {
-            dnsNames: dnsNames,
-            enabled: true,
-            timeout: lib.getElse(env, 'tidepool.maxTimeout', '120s'),
-            hsts: {
-              enabled: true,
-            },
-            cors: {
-              enabled: true,
-            },
-            options: {
-              stats: {
-                virtualClusters: lib.getElse(env, 'tidepool.virtualClusters', []),
-              },
-            },
-            routeAction: {
-              single: {
-                kube: {
-                  ref: {
-                    name: 'internal-gateway-proxy',
-                    namespace: 'gloo-system',
-                  },
-                  port: 80,
-                },
-              },
-            },
-            labels: {
-              protocol: 'https',
-              type: 'external',
-              namespace: lib.getElse(env, 'namespace', name),
-            },
-          },
-        },
-      },
-    }
   ),
 }

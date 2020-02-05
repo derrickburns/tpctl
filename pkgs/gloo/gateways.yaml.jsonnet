@@ -1,5 +1,7 @@
 local lib = import '../../lib/lib.jsonnet';
 
+local gloo = import '../../lib/gloo.jsonnet';
+
 local expand = import '../../lib/expand.jsonnet';
 
 local defaults = {
@@ -108,4 +110,4 @@ local defaults = {
 };
 
 
-function(config,prev) std.manifestYamlStream(lib.gateways(lib.merge(defaults, expand.expandConfig(config))))
+function(config,prev) std.manifestYamlStream(gloo.gateways(lib.merge(defaults, expand.expandConfig(config))))

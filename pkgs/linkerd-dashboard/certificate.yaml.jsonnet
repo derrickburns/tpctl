@@ -1,4 +1,4 @@
-local lib = import '../../lib/lib.jsonnet';
+local gloo = import '../../lib/gloo.jsonnet';
 
 function(config, prev) 
-  std.manifestYamlStream(lib.certificatesForPackage(config, "linkerd-dashboard"))
+  std.manifestYamlStream(gloo.certificatesForPackage(config, "linkerd-dashboard"))
