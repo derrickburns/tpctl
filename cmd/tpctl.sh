@@ -888,14 +888,23 @@ function install_mesh_client {
 }
 
 function make_mesh_with_helm {
-  step certificate create identity.linkerd.cluster.local ca.crt ca.key --profile root-ca --no-password --insecure
-  step certificate create identity.linkerd.cluster.local issuer.crt issuer.key --ca ca.crt --ca-key ca.key --profile intermediate-ca --not-after 8760h --no-password --insecure
-  helm install \
-  --set-file global.identityTrustAnchorsPEM=ca.crt \
-  --set-file identity.issuer.tls.crtPEM=issuer.crt \
-  --set-file identity.issuer.tls.keyPEM=issuer.key \
+  step certificate create identity.linkerd.cluster.local $TMP_DIR/ca.crt $TMP_DIR/ca.key --profile root-ca --no-password --insecure
+  step certificate create identity.linkerd.cluster.local $TMP_DIR/issuer.crt $TMP_DIR/issuer.key --ca $TMP_DIR/ca.crt --ca-key $TMP_DIR/ca.key --profile intermediate-ca --not-after 8760h --no-password --insecure
+  if [[ ${linkerd_version} =~ "edge" ]]
+  then
+    helm repo add linkerd https://helm.linkerd.io/stable
+  else
+    helm repo add linkerd https://helm.linkerd.io/edge
+  fi
+  helm repo update
+  kubectl create namespace linkerd
+  kubectl annotate namespace linkerd linkerd.io/admission-webhooks=disabled
+  helm upgrade -i linkerd --namespace linkerd --set installNamespace=false \
+  --set-file global.identityTrustAnchorsPEM=$TMP_DIR/ca.crt \
+  --set-file identity.issuer.tls.crtPEM=$TMP_DIR/issuer.crt \
+  --set-file identity.issuer.tls.keyPEM=$TMP_DIR/issuer.key \
   --set identity.issuer.crtExpiry=$(date -d '+8760 hour' +"%Y-%m-%dT%H:%M:%SZ") \
-  charts/linkerd2
+  linkerd/linkerd2
 }
 
 # create service mesh
