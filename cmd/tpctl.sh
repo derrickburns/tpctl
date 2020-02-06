@@ -718,10 +718,9 @@ function expect_cluster_exists() {
 
 function install_helmrelease() {
   local file=$1
-  local args=$2
   start "bootstrapping $file"
   local hr=$(yq r $file -j)
-  local values=$(echo "$hr" | jq .spec.values)
+  local values=$(echo "$hr" | jq .spec.values | yq r -)
   local chart=$(echo "$hr" | jq .spec.chart.repository | sed -e 's/"//g')
   local version=$(echo "$hr" | jq .spec.chart.version | sed -e 's/"//g')
   local name=$(echo "$hr" | jq .spec.chart.name | sed -e 's/"//g')
@@ -730,7 +729,7 @@ function install_helmrelease() {
 
   helm repo add $name $chart
   helm repo update
-  helm upgrade -i $name $name/$name --namespace ${namespace} --version $version -f <(echo "$values") $2 >$TMP_DIR/out 2>&1
+  helm upgrade -i $name $name/$name --namespace ${namespace} --version $version -f <(echo $values) >$TMP_DIR/out 2>&1
   if [ $? -ne 0 ]
   then
     cat $TMP_DIR/out
@@ -744,9 +743,9 @@ function install_helmrelease() {
 function bootstrap_flux() {
   start "bootstrapping flux"
   establish_ssh
-  install_helmrelease pkgs/flux/flux-helmrelease.yaml ""
+  install_helmrelease pkgs/flux/flux-helmrelease.yaml
   install_key
-  install_helmrelease pkgs/flux/helm-operator-helmrelease.yaml "--set helm.versions=v3"
+  install_helmrelease pkgs/flux/helm-operator-helmrelease.yaml
   complete "bootstrapped flux"
 }
 
