@@ -2,7 +2,7 @@ local lib = import '../../lib/lib.jsonnet';
 
 local genvalues(config) = {
   image: {
-    tag: lib.getElse(config, 'pkgs.flux.version', '1.17.1')
+    tag: lib.getElse(config, 'pkgs.flux.version', '1.18.0')
   },
 
   helm: {
