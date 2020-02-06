@@ -2,7 +2,7 @@ local lib = import '../../lib/lib.jsonnet';
 
 local genvalues(config) = {
 
-  createCRD: true,
+  createCRD: false,
   helm: {
     versions: "v3",
   },
