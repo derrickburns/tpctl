@@ -146,7 +146,7 @@ pkgs:
   gloo:
     enabled: true
     namespace: gloo-system
-    version: 1.0.0
+    version: 1.3.3
   glooe-monitoring:
     enabled: false
     namespace: gloo-system
@@ -177,13 +177,14 @@ pkgs:
   kubernetes-dashboard:
     enabled: false
   linkerd:
-    version: stable-2.6.1
-  linkerd-dashboard:
+    version: stable-2.7.0
+  linkerd-web:
     enabled: true
     namespace: linkerd
     sso:
       allowed_groups:
       - eng@tidepool.org
+      port: 8084
   metrics-server:
     enabled: true
   monitoring-prometheus-oper-prometheus:
