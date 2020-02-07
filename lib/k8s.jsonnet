@@ -1,5 +1,5 @@
 {
-  helmrelease(name, namespace, version, repo='https://kubernetes-charts.storage.googleapis.com/') {
+  helmrelease(name, namespace, version, repo='https://kubernetes-charts.storage.googleapis.com'):: {
     apiVersion: 'helm.fluxcd.io/v1',
     kind: 'HelmRelease',
     metadata: {
