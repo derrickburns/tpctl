@@ -22,10 +22,10 @@ RUN curl -sL -o /usr/local/bin/aws-iam-authenticator https://amazon-eks.s3-us-we
     curl -sL -o aws-iam-authenticator.sha256 https://amazon-eks.s3-us-west-2.amazonaws.com/1.14.6/2019-08-22/bin/linux/amd64/aws-iam-authenticator.sha256 && \
     openssl sha1 -sha256 /usr/local/bin/aws-iam-authenticator && \
     rm ./aws-iam-authenticator.sha256
-RUN curl -sL -o /usr/local/bin/fluxctl https://github.com/fluxcd/flux/releases/download/1.17.1/fluxctl_linux_amd64
+RUN curl -sL -o /usr/local/bin/fluxctl https://github.com/fluxcd/flux/releases/download/1.18.0/fluxctl_linux_amd64
 RUN mv ~/.local/bin/* /usr/local/bin
-RUN curl -sL -o /usr/local/bin/linkerd https://github.com/linkerd/linkerd2/releases/download/stable-2.6.1/linkerd2-cli-stable-2.6.1-linux 
-RUN curl -sL -o /usr/local/bin/glooctl https://github.com/solo-io/gloo/releases/download/v1.3.2/glooctl-linux-amd64
+RUN curl -sL -o /usr/local/bin/linkerd https://github.com/linkerd/linkerd2/releases/download/stable-2.7.0/linkerd2-cli-stable-2.7.0-linux 
+RUN curl -sL -o /usr/local/bin/glooctl https://github.com/solo-io/gloo/releases/download/v1.3.3/glooctl-linux-amd64
 RUN curl -sL /usr/local/bin/hub https://github.com/github/hub/releases/download/v2.13.0/hub-linux-amd64-2.13.0.tgz | tar xz -C /tmp && \
     mv /tmp/hub-linux-amd64-2.13.0/bin/hub /usr/local/bin
 RUN curl -sL "https://github.com/smallstep/cli/releases/download/v0.14.0-rc.3/step_0.14.0-rc.3_linux_amd64.tar.gz" | tar -xz -C /tmp && mv /tmp/step*/bin/step /usr/local/bin

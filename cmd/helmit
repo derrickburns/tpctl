@@ -1,9 +1,4 @@
 #!/bin/bash
-#
-# Usage: helmit $file
-#
-# Uses helm 3.X to install the Flux HelmRelease source contained in the file
-#
 file=$1
 hr=$(yq r $file -j)
 values=$(echo "$hr" | jq .spec.values | yq r - >/tmp/foobar)
@@ -12,7 +7,9 @@ version=$(echo "$hr" | jq .spec.chart.version | sed -e 's/"//g')
 name=$(echo "$hr" | jq .spec.chart.name | sed -e 's/"//g')
 namespace=$(echo "$hr" | jq .metadata.namespace | sed -e 's/"//g')
 kubectl create namespace $namespace 2>/dev/null
+echo "$hr" | jq .spec.values | yq r - >/tmp/${name}-${namespace}.yaml
+
 
 helm repo add $name $chart
 helm repo update
-helm upgrade -i $name $name/$name --namespace ${namespace} --version $version -f <(echo "$hr" | jq .spec.values | yq r - >/tmp/foobar)
+helm upgrade -i --force  $name $name/$name --namespace ${namespace} --version $version -f /tmp/${name}-${namespace}.yaml
