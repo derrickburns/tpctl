@@ -1,4 +1,4 @@
-local lib = import '../../lib.jsonnet';
+local lib = import '../../lib/lib.jsonnet';
 
 local elasticsearch(config) = {
   apiVersion: 'elasticsearch.k8s.elastic.co/v1beta1',
@@ -29,7 +29,7 @@ local elasticsearch(config) = {
               ],
               resources: {
                 requests: {
-                  storage: lib.getElse('pkgs.elasticsearch.storage', '5Gi'),
+                  storage: lib.getElse('pkgs.tracing.storage', '5Gi'),
                 },
               },
               storageClassName: 'gp2-expanding',
