@@ -16,7 +16,7 @@ function(config, prev) {
       targetPort: 8080,
     }],
     selector: {
-      app: if lib.getElse(config, 'pkgs.fluxrecv.sidecar', false) then 'flux' else 'fluxrecv',
+      name: if lib.getElse(config, 'pkgs.fluxrecv.sidecar', false) then 'flux' else 'fluxrecv',
     },
   },
 }
