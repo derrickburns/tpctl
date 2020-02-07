@@ -188,7 +188,7 @@ local secretsManagerServiceAccount(config) = {
           labels: {
             'aws-usage': 'secrets-management',
           },
-          name: 'kubernetes-external-secrets',
+          name: 'external-secrets',
           namespace: 'external-secrets',
         },
       },
