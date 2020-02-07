@@ -1,19 +1,31 @@
-local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 local linkerd = import '../linkerd/lib.jsonnet';
 
-local helmrelease(config) = k8s.helmrelease('kubernetes-external-secrets', 'external-secrets', '3.1.0', 'https://godaddy.github.io/kubernetes-external-secrets/') {
-  spec+: {
+local helmrelease(config) = {
+  apiVersion: 'helm.fluxcd.io/v1',
+  kind: 'HelmRelease',
+  metadata: {
+    annotations: {
+      'fluxcd.io/automated': 'false',
+    },
+    name: 'external-secrets',
+    namespace: 'external-secrets',
+  },
+  spec: {
+    chart: {
+      repository: 'https://godaddy.github.io/kubernetes-external-secrets/',
+      name: 'kubernetes-external-secrets',
+      version: '3.0.0',
+    },
+    releaseName: 'external-secrets',
     values: {
-      rbac: {
-        create: true, 
-      },
       podLabels: {
         'sumologic.com/exclude': 'true',
       },
+      podAnnotations: linkerd.annotations(config),
       serviceAccount: {
         create: false,
-        name: 'kubernetes-external-secrets',
+        name: 'external-secrets',
       },
       securityContext: {
         fsGroup: 65534,
@@ -21,8 +33,8 @@ local helmrelease(config) = k8s.helmrelease('kubernetes-external-secrets', 'exte
       env: {
         AWS_REGION: config.cluster.metadata.region,
         LOG_LEVEL: config.logLevel,
-        POLLER_INTERVAL_MILLISECONDS: lib.getElse(config.pkgs['external-secrets'], 'poller_interval', '120000'),
-      },
+	POLLER_INTERVAL_MILLISECONDS: lib.getElse(config.pkgs['external-secrets'], 'poller_interval', '120000'),
+      }
     },
   },
 };
