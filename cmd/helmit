@@ -1,0 +1,13 @@
+#!/bin/bash
+file=$1
+hr=$(yq r $file -j)
+values=$(echo "$hr" | jq .spec.values | yq r - >/tmp/foobar)
+chart=$(echo "$hr" | jq .spec.chart.repository | sed -e 's/"//g')
+version=$(echo "$hr" | jq .spec.chart.version | sed -e 's/"//g')
+name=$(echo "$hr" | jq .spec.chart.name | sed -e 's/"//g')
+namespace=$(echo "$hr" | jq .metadata.namespace | sed -e 's/"//g')
+kubectl create namespace $namespace 2>/dev/null
+
+helm repo add $name $chart
+helm repo update
+helm upgrade -i $name $name/$name --namespace ${namespace} --version $version -f <(echo "$hr" | jq .spec.values | yq r - >/tmp/foobar)
