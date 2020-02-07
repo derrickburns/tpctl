@@ -1,20 +1,7 @@
-local helmrelease(config) = {
-  apiVersion: 'helm.fluxcd.io/v1',
-  kind: 'HelmRelease',
-  metadata: {
-    annotations: {
-      'fluxcd.io/automated': 'false',
-    },
-    name: 'external-dns',
-    namespace: 'external-dns',
-  },
-  spec: {
-    chart: {
-      name: 'external-dns',
-      repository: 'https://kubernetes-charts.storage.googleapis.com/',
-      version: '2.6.1',
-    },
-    releaseName: 'external-dns',
+local k8s = import '../../lib/k8s.jsonnet';
+
+local helmrelease(config) = k8s.helmrelease('external-dns', 'external-dns', '2.6.1') {
+  spec+: {
     values: {
       aws: {
         region: config.cluster.metadata.region,

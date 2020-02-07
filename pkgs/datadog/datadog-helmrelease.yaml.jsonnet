@@ -1,20 +1,7 @@
-local helmrelease(config) = {
-  apiVersion: 'helm.fluxcd.io/v1',
-  kind: 'HelmRelease',
-  metadata: {
-    annotations: {
-      'fluxcd.io/automated': 'false',
-    },
-    name: 'datadog-agent',
-    namespace: 'datadog',
-  },
-  spec: {
-    chart: {
-      name: 'datadog',
-      repository: 'https://kubernetes-charts.storage.googleapis.com/',
-      version: '1.31.11',
-    },
-    releaseName: 'datadog',
+local k8s = import '../../lib/k8s.jsonnet';
+
+local helmrelease(config) = k8s.helmrelease('datadog-agent', 'datadog', '1.31.11') {
+  spec+: {
     values: {
       clusterAgent: {
         enabled: true,

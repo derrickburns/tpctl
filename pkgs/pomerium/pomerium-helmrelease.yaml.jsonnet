@@ -1,5 +1,5 @@
+local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
-
 local mylib = import 'lib.jsonnet';
 
 local getPolicy(config) = (
@@ -10,7 +10,7 @@ local getPolicy(config) = (
       local port = lib.getElse(pkg, 'sso.port', 8080),
       local suffix = if port == 80 then '' else ':%s' % port,
       from: 'https://' + mylib.dnsNameForName(config, x),
-      to: 'http://' + lib.getElse(pkg, 'sso.serviceName', x) + '.' + lib.getElse(pkg, 'namespace', x) + '.svc.cluster.local' + suffix ,
+      to: 'http://' + lib.getElse(pkg, 'sso.serviceName', x) + '.' + lib.getElse(pkg, 'namespace', x) + '.svc.cluster.local' + suffix,
       allowed_groups: lib.getElse(pkg, 'sso.allowed_groups', []),
       allowed_users: lib.getElse(pkg, 'sso.allowed_users', []),
       allow_websockets: true,
@@ -20,28 +20,13 @@ local getPolicy(config) = (
   ]
 );
 
-local helmrelease(config) = {
+local helmrelease(config) = k8s.helmrelease('pomerium', 'pomerium', '4.2.0') {
   local domain = lib.rootDomain(config),
-  apiVersion: 'helm.fluxcd.io/v1',
-  kind: 'HelmRelease',
-  metadata: {
-    annotations: {
-      'fluxcd.io/automated': 'false',
-    },
-    name: 'pomerium',
-    namespace: 'pomerium',
-  },
-  spec: {
-    chart: {
-      name: 'pomerium',
-      repository: 'https://kubernetes-charts.storage.googleapis.com/',
-      version: '4.2.0',
-    },
-    releaseName: 'pomerium',
+  spec+: {
     values: {
       annotations: {
-        'secret.reloader.stakater.com/reload': "pomerium",
-        'configmap.reloader.stakater.com/reload': "pomerium",
+        'secret.reloader.stakater.com/reload': 'pomerium',
+        'configmap.reloader.stakater.com/reload': 'pomerium',
       },
       authenticate: {
         idp: {

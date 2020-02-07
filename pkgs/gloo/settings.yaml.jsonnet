@@ -71,4 +71,4 @@ local settings(config) = {
   },
 };
 
-function(config,prev) settings(config)
+function(config, prev) settings(config)

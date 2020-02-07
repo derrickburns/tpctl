@@ -22,7 +22,7 @@ local servicemonitor(config) = {
       },
     },
     namespaceSelector: {
-      matchNames: [ "tracing" ],
+      matchNames: ['tracing'],
     },
   },
 };

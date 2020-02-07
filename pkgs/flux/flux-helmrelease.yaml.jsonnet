@@ -1,12 +1,13 @@
+local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
 local genvalues(config) = {
   image: {
-    tag: lib.getElse(config, 'pkgs.flux.version', '1.18.0')
+    tag: lib.getElse(config, 'pkgs.flux.version', '1.18.0'),
   },
 
   helm: {
-    versions: "v3"
+    versions: 'v3',
   },
 
   logFormat: 'fmt',
@@ -31,7 +32,7 @@ local genvalues(config) = {
 
   additionalArgs: if lib.isTrue(config, 'pkgs.fluxcloud.enabled') then ['--connect=ws://fluxcloud'] else [],
 
-  extraContainers: 
+  extraContainers:
     if lib.isTrue(config, 'pkgs.fluxrecv.enabled') && lib.isTrue(config, 'pkgs.fluxrecv.sidecar')
     then [{
       name: 'recv',
@@ -48,7 +49,7 @@ local genvalues(config) = {
     }]
     else [],
 
-  extraVolumes: 
+  extraVolumes:
     if lib.isTrue(config, 'pkgs.fluxrecv.enabled') && lib.isTrue(config, 'pkgs.fluxrecv.sidecar')
     then [{
       name: 'fluxrecv-config',
@@ -67,4 +68,4 @@ local genvalues(config) = {
   },
 };
 
-function(config, prev) lib.helmrelease('flux', 'flux', 'https://charts.fluxcd.io', '1.1.0') + { spec+: { values: genvalues(config) } }
+function(config, prev) k8s.helmrelease('flux', 'flux', '1.1.0', 'https://charts.fluxcd.io') + { spec+: { values: genvalues(config) } }

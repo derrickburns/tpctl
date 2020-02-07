@@ -6,7 +6,7 @@ local namespace(config) = {
   metadata: {
     name: 'external-secrets',
     labels: {
-      'discovery.solo.io/function_discovery' : 'disabled',
+      'discovery.solo.io/function_discovery': 'disabled',
     },
   },
 };

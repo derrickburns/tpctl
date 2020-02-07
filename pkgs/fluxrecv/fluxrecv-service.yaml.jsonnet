@@ -4,8 +4,8 @@ function(config, prev) {
   apiVersion: 'v1',
   kind: 'Service',
   metadata: {
-    name: "fluxrecv",
-    namespace: lib.namespace(config, "flux"),
+    name: 'fluxrecv',
+    namespace: lib.namespace(config, 'flux'),
   },
   spec: {
     type: 'ClusterIP',
@@ -16,7 +16,7 @@ function(config, prev) {
       targetPort: 8080,
     }],
     selector: {
-      "app": if lib.getElse(config, 'pkgs.fluxrecv.sidecar', false) then  "flux" else "fluxrecv",
+      app: if lib.getElse(config, 'pkgs.fluxrecv.sidecar', false) then 'flux' else 'fluxrecv',
     },
   },
 }

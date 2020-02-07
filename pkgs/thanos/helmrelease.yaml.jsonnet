@@ -1,22 +1,8 @@
 local lib = import '../../lib/lib.jsonnet';
+local lib = import '../../lib/k8s.jsonnet';
 
-local helmrelease(config) = {
-  apiVersion: 'helm.fluxcd.io/v1',
-  kind: 'HelmRelease',
-  metadata: {
-    annotations: {
-      'fluxcd.io/automated': 'false',
-    },
-    name: 'thanos',
-    namespace: 'monitoring',
-  },
-  spec: {
-    chart: {
-      name: 'thanos',
-      repository: 'https://kubernetes-charts.banzaicloud.com',
-      version: '0.3.12',
-    },
-    releaseName: 'thanos',
+local helmrelease(config) = k8s.helmrelease('thanos', 'monitoring', '0.3.12', 'https://kubernetes-charts.banzaicloud.com') {
+  spec+: {
     values: {
       bucket: {
         logLevel: lib.getElse(config, 'loglevel', 'info'),

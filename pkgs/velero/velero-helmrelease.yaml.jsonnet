@@ -1,20 +1,7 @@
-local helmrelease(config) = {
-  apiVersion: 'helm.fluxcd.io/v1',
-  kind: 'HelmRelease',
-  metadata: {
-    annotations: {
-      'fluxcd.io/automated': 'false',
-    },
-    name: 'velero',
-    namespace: 'velero',
-  },
-  spec: {
-    chart: {
-      name: 'velero',
-      repository: 'https://vmware-tanzu.github.io/helm-charts',
-      version: '2.8.1',
-    },
-    releaseName: 'velero',
+local k8s = import '../../lib/k8s.jsonnet';
+
+local helmrelease(config) = k8s.helmrelease('velero', 'velero', '2.8.1', 'https://vmware-tanzu.github.io/helm-charts') {
+  spec+: {
     values: {
       credentials: {
         useSecret: false,

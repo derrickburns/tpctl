@@ -5,7 +5,7 @@ local servicemonitor(config) = {
   kind: 'ServiceMonitor',
   metadata: {
     labels: {
-      purpose: "support",
+      purpose: 'support',
     },
     name: 'certmanager',
   },
@@ -21,12 +21,12 @@ local servicemonitor(config) = {
       },
     },
     namespaceSelector: {
-      matchNames: [ 'cert-manager' ],
+      matchNames: ['cert-manager'],
     },
   },
 };
 
-function(config, prev) 
+function(config, prev)
   if lib.isTrue(config, 'pkgs.prometheus.enabled')
   then servicemonitor(config)
   else {}

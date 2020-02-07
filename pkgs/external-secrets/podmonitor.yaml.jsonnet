@@ -1,11 +1,11 @@
-local lib = import "../../lib/lib.jsonnet";
+local lib = import '../../lib/lib.jsonnet';
 
 local podmonitor(config) = {
   apiVersion: 'monitoring.coreos.com/v1',
   kind: 'PodMonitor',
   metadata: {
     labels: {
-      purpose: "support",
+      purpose: 'support',
     },
     name: 'external-secrets',
     namespace: 'external-secrets',
@@ -18,16 +18,16 @@ local podmonitor(config) = {
     ],
     selector: {
       matchLabels: {
-        'app.kubernetes.io/instance' : 'external-secrets',
+        'app.kubernetes.io/instance': 'external-secrets',
       },
     },
     namespaceSelector: {
-      matchNames: [ "external-secrets" ],
+      matchNames: ['external-secrets'],
     },
   },
 };
 
-function(config, prev) 
+function(config, prev)
   if lib.getElse(config, 'pkgs.prometheus.enabled', false)
   then podmonitor(config)
   else {}

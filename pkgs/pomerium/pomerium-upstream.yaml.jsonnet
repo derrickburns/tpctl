@@ -16,7 +16,7 @@ local upstream(config) = {
   },
 };
 
-function(config,prev) 
-  if lib.getElse(config, 'pkgs.pomerium.forwardauth.enabled', false) 
+function(config, prev)
+  if lib.getElse(config, 'pkgs.pomerium.forwardauth.enabled', false)
   then upstream(config)
   else {}

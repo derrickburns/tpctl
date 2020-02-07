@@ -1,20 +1,7 @@
-local helmrelease(config) = {
-  apiVersion: 'helm.fluxcd.io/v1',
-  kind: 'HelmRelease',
-  metadata: {
-    annotations: {
-      'fluxcd.io/automated': 'true',
-    },
-    name: 'sumologic-fluentd',
-    namespace: 'sumologic',
-  },
-  spec: {
-    chart: {
-      name: 'sumologic-fluentd',
-      repository: 'https://kubernetes-charts.storage.googleapis.com/',
-      version: '1.1.1',
-    },
-    releaseName: 'sumologic-fluentd',
+local k8s = import '../../lib/k8s.jsonnet';
+
+local helmrelease(config) = k8s.helmrelease('sumologic-fluentd', 'sumologic', '1.1.1') {
+  spec+: {
     values: {
       rbac: {
         create: true,

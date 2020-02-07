@@ -5,7 +5,7 @@ local namespace(config) = {
   kind: 'Namespace',
   metadata: {
     annotations: {
-      'linkerd.io/inject': if lib.getElse(config, 'pkgs.linkerd.enabled', false) then "enabled" else "disabled",
+      'linkerd.io/inject': if lib.getElse(config, 'pkgs.linkerd.enabled', false) then 'enabled' else 'disabled',
     },
     name: 'reloader',
   },

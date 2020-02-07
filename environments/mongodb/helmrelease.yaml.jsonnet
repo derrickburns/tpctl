@@ -1,3 +1,5 @@
+local k8s=import '../../../lib/k8s.jsonnet';
+
 local helmrelease(config, namespace) = {
   "apiVersion": "helm.fluxcd.io/v1",
   "kind": "HelmRelease",

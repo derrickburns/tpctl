@@ -1,4 +1,4 @@
-local lib = import "../../lib/lib.jsonnet";
+local lib = import '../../lib/lib.jsonnet';
 
 local prometheus(config) = {
   apiVersion: 'monitoring.coreos.com/v1',
@@ -15,10 +15,10 @@ local prometheus(config) = {
     },
     externalUrl: 'http://prometheus.monitoring',
     podMonitorSelector: {
-      matchLabels: {}
+      matchLabels: {},
     },
     podMonitorNamespaceSelector: {
-      matchLabels: {}
+      matchLabels: {},
     },
     resources: {
       requests: {
@@ -27,10 +27,10 @@ local prometheus(config) = {
     },
     serviceAccountName: 'prometheus',
     serviceMonitorNamespaceSelector: {
-      matchLabels: {}
+      matchLabels: {},
     },
     serviceMonitorSelector: {
-      matchLabels: {}
+      matchLabels: {},
     },
     thanos: if lib.isTrue(config, 'pkgs.thanos.enabled') then {
       objectStorageConfig: {

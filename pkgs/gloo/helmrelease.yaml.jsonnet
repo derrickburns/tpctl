@@ -1,5 +1,6 @@
 local expand = import '../../lib/expand.jsonnet';
 local gloo = import '../../lib/gloo.jsonnet';
+local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 local linkerd = import '../linkerd/lib.jsonnet';
 local pom = import '../pomerium/lib.jsonnet';
@@ -129,7 +130,7 @@ local genvalues(config) = {
 };
 
 function(config, prev)
-  lib.helmrelease('gloo', 'gloo-system', 'https://storage.googleapis.com/solo-public-helm', '1.3.3') {
+  k8s.helmrelease('gloo', 'gloo-system', '1.3.3', 'https://storage.googleapis.com/solo-public-helm') {
     spec+: {
       values: genvalues(config),
     },

@@ -5,7 +5,7 @@ local namespace(config) = {
   kind: 'Namespace',
   metadata: {
     name: 'pomerium',
-    annotations: linkerd.annotations(config)
+    annotations: linkerd.annotations(config),
   },
 };
 

@@ -31,5 +31,5 @@ local secret(config) = {
   },
 };
 
-function(config, prev) 
+function(config, prev)
   if lib.isTrue(config, 'pkgs.prometheus.enabled') then secret(config) else {}

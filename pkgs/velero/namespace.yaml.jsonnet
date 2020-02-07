@@ -5,7 +5,7 @@ local namespace(config) = {
   kind: 'Namespace',
   metadata: {
     name: 'velero',
-    annotations:  linkerd.annotations(config)
+    annotations: linkerd.annotations(config),
   },
 };
 

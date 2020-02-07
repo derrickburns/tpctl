@@ -1,4 +1,4 @@
-local lib = import "../../lib/lib.jsonnet";
+local lib = import '../../lib/lib.jsonnet';
 
 local jaeger(config) = {
   apiVersion: 'jaegertracing.io/v1',
@@ -8,9 +8,9 @@ local jaeger(config) = {
     namespace: 'tracing',
   },
   spec: {
-    strategy: "production",
+    strategy: 'production',
     ingress: {
-      enabled: false
+      enabled: false,
     },
     storage: {
       options: {
@@ -45,7 +45,7 @@ local jaeger(config) = {
   },
 };
 
-function(config, prev) 
+function(config, prev)
   if lib.getElse(config, 'pkgs.tracing.enabled', false)
   then jaeger(config)
   else {}

@@ -23,12 +23,12 @@ local servicemonitor(config) = {
       },
     },
     namespaceSelector: {
-      matchNames: [ 'tracing' ]
+      matchNames: ['tracing'],
     },
   },
 };
 
-function(config, prev) 
+function(config, prev)
   if lib.isTrue(config, 'pkgs.prometheus.enabled')
   then servicemonitor(config)
   else {}

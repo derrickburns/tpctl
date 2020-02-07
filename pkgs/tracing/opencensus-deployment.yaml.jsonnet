@@ -23,7 +23,7 @@ local deployment(config) = {
     template: {
       metadata: {
         annotations: {
-          'linkerd.io/inject': if lib.getElse(config, 'pkgs.linkerd.enabled', false) then "enabled" else "disabled",
+          'linkerd.io/inject': if lib.getElse(config, 'pkgs.linkerd.enabled', false) then 'enabled' else 'disabled',
           'prometheus.io/path': '/metrics',
           'prometheus.io/port': '8888',
           'prometheus.io/scrape': 'true',
@@ -105,4 +105,4 @@ local deployment(config) = {
   },
 };
 
-function(config,prev) deployment(config)
+function(config, prev) deployment(config)

@@ -29,9 +29,9 @@ local forwardauthRedirectVirtualServices(config) = (
             {
               matchers: [
                 {
-	          headers: [ {
-                    name: "x-tidepool-extauth-request",
-                  } ],
+                  headers: [{
+                    name: 'x-tidepool-extauth-request',
+                  }],
                   prefix: '/',
                 },
               ],
@@ -41,7 +41,7 @@ local forwardauthRedirectVirtualServices(config) = (
                     name: 'pomerium-proxy',
                     namespace: 'pomerium',
                   },
-                }
+                },
               },
               options: {
                 hostRewrite: 'forwardauth.%s' % mylib.rootDomain(config),
@@ -91,19 +91,19 @@ local forwardauthVirtualServices(config) = (
           domains: [downstreamDNS],
           options: {
             extauth: {
-              customAuth: { }
+              customAuth: {},
             },
           },
           routes: [
             {
               matchers: [
                 {
-                 headers: [ {
-                     name: 'x-tidepool-extauth-request',
-                     invertMatch: true, 
-                   } ],
-	         prefix: "/",
-                }
+                  headers: [{
+                    name: 'x-tidepool-extauth-request',
+                    invertMatch: true,
+                  }],
+                  prefix: '/',
+                },
               ],
               routeAction: {
                 single: {
@@ -179,7 +179,7 @@ local proxyVirtualService(config) = {
           },
           options: {
             headerManipulation: {
-              requestHeadersToRemove: [ "Origin" ],
+              requestHeadersToRemove: ['Origin'],
             },
             upgrades: [
               {
@@ -226,9 +226,10 @@ local httpVirtualService(config) = {
   },
 };
 
-function(config, prev) 
+function(config, prev)
   std.manifestYamlStream([httpVirtualService(config), proxyVirtualService(config)]
-  + (if lib.getElse(config, 'pkgs.pomerium.forwardauth.enabled', false)
-     then forwardauthVirtualServices(config) + forwardauthRedirectVirtualServices(config) 
-     else []
-    ))
+                         + (
+                           if lib.getElse(config, 'pkgs.pomerium.forwardauth.enabled', false)
+                           then forwardauthVirtualServices(config) + forwardauthRedirectVirtualServices(config)
+                           else []
+                         ))

@@ -1,10 +1,11 @@
+local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
 local genvalues(config) = {
 
   createCRD: false,
   helm: {
-    versions: "v3",
+    versions: 'v3',
   },
 
   prometheus: {
@@ -21,7 +22,7 @@ local genvalues(config) = {
   },
 
   annotations: {
-    "secret.reloader.stakater.com/reload": "flux-helm-repositories",
+    'secret.reloader.stakater.com/reload': 'flux-helm-repositories',
   },
 
   configureRepositories: {
@@ -47,4 +48,4 @@ local genvalues(config) = {
 };
 
 function(config, prev)
-  lib.helmrelease('helm-operator', 'flux', 'https://charts.fluxcd.io', '0.6.0') { spec+: { values: genvalues(config) } }
+  k8s.helmrelease('helm-operator', 'flux', '0.6.0', 'https://charts.fluxcd.io') { spec+: { values: genvalues(config) } }
