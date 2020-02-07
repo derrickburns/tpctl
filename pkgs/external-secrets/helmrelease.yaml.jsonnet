@@ -13,7 +13,7 @@ local helmrelease(config) = k8s.helmrelease('kubernetes-external-secrets', 'exte
       },
       serviceAccount: {
         create: false,
-        name: 'external-secrets',
+        name: 'kubernetes-kexternal-secrets',
       },
       securityContext: {
         fsGroup: 65534,
