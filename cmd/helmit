@@ -1,4 +1,9 @@
 #!/bin/bash
+#
+# Usage: helmit $file
+#
+# Uses helm 3.X to install the Flux HelmRelease source contained in the file
+#
 file=$1
 hr=$(yq r $file -j)
 values=$(echo "$hr" | jq .spec.values | yq r - >/tmp/foobar)
