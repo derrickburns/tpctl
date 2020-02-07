@@ -1,9 +1,0 @@
-sudo: false
-
-language: bash
-
-services:
-  - docker
-
-script:
-  - ./artifact.sh
