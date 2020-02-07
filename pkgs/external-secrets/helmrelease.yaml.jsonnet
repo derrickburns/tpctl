@@ -2,7 +2,7 @@ local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 local linkerd = import '../linkerd/lib.jsonnet';
 
-local helmrelease(config) = k8s.helmrelease('kubernetes-external-secrets', 'external-secrets', '3.0.0', 'https://godaddy.github.io/kubernetes-external-secrets/') {
+local helmrelease(config) = k8s.helmrelease('kubernetes-external-secrets', 'external-secrets', '3.1.0', 'https://godaddy.github.io/kubernetes-external-secrets/') {
   spec+: {
     values: {
       podLabels: {
