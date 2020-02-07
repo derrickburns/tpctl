@@ -29,7 +29,7 @@ local elasticsearch(config) = {
               ],
               resources: {
                 requests: {
-                  storage: lib.getElse('pkgs.tracing.storage', '5Gi'),
+                  storage: lib.getElse(config, 'pkgs.tracing.storage', '5Gi'),
                 },
               },
               storageClassName: 'gp2-expanding',
