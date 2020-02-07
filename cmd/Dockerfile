@@ -31,6 +31,7 @@ RUN curl -sL /usr/local/bin/hub https://github.com/github/hub/releases/download/
 RUN curl -sL "https://github.com/smallstep/cli/releases/download/v0.14.0-rc.3/step_0.14.0-rc.3_linux_amd64.tar.gz" | tar -xz -C /tmp && mv /tmp/step*/bin/step /usr/local/bin
 RUN ln -s /usr/bin/python3 /usr/local/bin/python3 && chmod +x /usr/local/bin/*
 RUN /usr/local/bin/helm plugin install https://github.com/helm/helm-2to3
+COPY helmit /usr/local/bin/helmit
 COPY select_kind /usr/local/bin/select_kind
 COPY add_ns /usr/local/bin/add_ns
 COPY separate_files /usr/local/bin/separate_files
