@@ -8,7 +8,6 @@ local helmrelease(config) = k8s.helmrelease('kubernetes-external-secrets', 'exte
       podLabels: {
         'sumologic.com/exclude': 'true',
       },
-      podAnnotations: linkerd.annotations(config),
       serviceAccount: {
         create: false,
         name: 'external-secrets',
