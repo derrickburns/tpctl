@@ -50,7 +50,7 @@ local deployment(config) =
               secret: {
                 secretName: (if lib.isTrue(config, 'pkgs.fluxrecv.sidecar')
      			     then 'fluxrecv-config'
-     			     else 'fluxrecv-config-separate')
+     			     else 'fluxrecv-config-separate'),
                 defaultMode: std.parseOctal('0400'),
               },
             },
