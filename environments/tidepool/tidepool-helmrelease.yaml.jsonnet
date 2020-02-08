@@ -16,8 +16,20 @@ local filterAnnotations(env, svcs) = {
   for svc in svcs
 };
 
-local tidepool(config, prev, namespace) = {
-  local env = config.environments[namespace].tidepool,
+local shadowNames(names) = std.map( function (x) "%s-shadow" % x, names);
+
+local tpFor(config, name) = lib.getElse(config, 'environments.' + name, '.tidepool');
+
+local genDnsNames(config, name) = (
+  local me = tpFor(config, name),
+  local sender = lib.getElse(me, 'shadow.sender', null),
+  if lib.isTrue(me, 'shadow.enabled') && sender != null
+  then shadowNames(lib.getElse(tpFor(config, sender), 'dnsNames', []))
+  else lib.getElse(me, 'dnsNames', [])
+);
+
+local helmrelease(config, prev, namespace) = {
+  local env = tpFor(config, namespace), 
 
   local svcs = [
     'auth',
@@ -51,7 +63,6 @@ local tidepool(config, prev, namespace) = {
     name: 'tidepool',
     namespace: namespace,
   },
-  local tp = config.environments[namespace].tidepool,
   local common = {
     podAnnotations: {
       //'config.linkerd.io/proxy-cpu-request': '0.2',
@@ -59,48 +70,47 @@ local tidepool(config, prev, namespace) = {
     },
     resources: {
       requests: {
-        memory: lib.getElse(tp, 'resources.requests.memory', '64Mi'),
-        cpu: lib.getElse(tp, 'resources.requests.cpu', '50m'),
+        memory: lib.getElse(env, 'resources.requests.memory', '64Mi'),
+        cpu: lib.getElse(env, 'resources.requests.cpu', '50m'),
       },
       limits: {
-        memory: lib.getElse(tp, 'resources.limits.memory', '128Mi'),
-        cpu: lib.getElse(tp, 'resources.limits.cpu', '100m'),
+        memory: lib.getElse(env, 'resources.limits.memory', '128Mi'),
       },
     },
-    hpa: lib.getElse(tp, 'hpa', { enabled: false }),
+    hpa: lib.getElse(env, 'hpa', { enabled: false }),
     deployment+: {
-      replicas: lib.getElse(tp, 'deployment.replicas', 1),
+      replicas: lib.getElse(env, 'deployment.replicas', 1),
     }
   },
 
-  spec: {
+spec: {
     rollback: {
       enable: true,
       force: true,
     },
-    chart: if std.objectHas(tp, 'chart') && std.objectHas(tp.chart, 'version') then {
-      repository: lib.getElse(tp.chart, 'repository', 'https://raw.githubusercontent.com/tidepool-org/tidepool-helm/master/'),
-      name: lib.getElse(tp.chart, 'name', 'tidepool'),
-      version: tp.chart.version
+    chart: if std.objectHas(env, 'chart') && std.objectHas(env.chart, 'version') then {
+      repository: lib.getElse(env.chart, 'repository', 'https://raw.githubusercontent.com/tidepool-org/tidepool-helm/master/'),
+      name: lib.getElse(env.chart, 'name', 'tidepool'),
+      version: env.chart.version
     } else  {
-      git: lib.getElse(tp, 'chart.git', 'git@github.com:tidepool-org/development'),
-      path: lib.getElse(tp, 'chart.path', 'charts/tidepool'),
-      ref: lib.getElse(tp, 'chart.ref', 'develop'),
+      git: lib.getElse(env, 'chart.git', 'git@github.com:tidepool-org/development'),
+      path: lib.getElse(env, 'chart.path', 'charts/tidepool'),
+      ref: lib.getElse(env, 'chart.ref', 'develop'),
     },
     releaseName: 'tidepool-%s' % namespace,
     values: {
 
       auth: lib.mergeList([ common, {
         deployment+: {
-          image: lib.getElse(prev, 'spec.values.auth.deployment.image', 'tidepool/platform-auth:develop-cebea363931570d3930848a21e6a3d07a54f4425'),
+          image: lib.getElse(prev, 'spec.values.auth.deployment.image', 'tidepool/platform-auth:master-8c8d9b39182b9edd9bafd987f50b254470840a8d'),
         },
-      }, lib.getElse(tp, 'auth', {})]),
+      }, lib.getElse(env, 'auth', {})]),
 
       blip: lib.mergeList([common, {
         deployment+: {
-          image: lib.getElse(prev, 'spec.values.blip.deployment.image', 'tidepool/blip:release-1.23.0-264f7ad48eb7d8099b00dce07fa8576f7068d0a0'),
+          image: lib.getElse(prev, 'spec.values.blip.deployment.image', 'tidepool/blip:master-47c8b1b3f298583684fe323ab170dfe7cc968902'),
         },
-      }, lib.getElse(tp, 'blip', {})]),
+	      }, lib.getElse(env, 'blip', {})]),
 
       blob: lib.mergeList([common, {
         serviceAccount: {
@@ -113,14 +123,14 @@ local tidepool(config, prev, namespace) = {
           env: {
             store: {
               s3: {
-                bucket: lib.getElse(tp, 'buckets.data', dataBucket(config, namespace)),
+                bucket: lib.getElse(env, 'buckets.data', dataBucket(config, namespace)),
               },
             },
             type: 's3',
           },
-          image: lib.getElse(prev, 'spec.values.blob.deployment.image', 'tidepool/platform-blob:develop-cebea363931570d3930848a21e6a3d07a54f4425'),
+          image: lib.getElse(prev, 'spec.values.blob.deployment.image', 'tidepool/platform-blob:master-8c8d9b39182b9edd9bafd987f50b254470840a8d'),
         },
-      }, lib.getElse(tp, 'blob', {})]),
+      }, lib.getElse(env, 'blob', {})]),
 
       data: lib.mergeList([common, {
         resources: {
@@ -130,16 +140,15 @@ local tidepool(config, prev, namespace) = {
           },
           limits: {
             memory: '256Mi',
-            cpu: '1000m',
           },
         },
         deployment+: {
-          image: lib.getElse(prev, 'spec.values.data.deployment.image', 'tidepool/platform-data:develop-cebea363931570d3930848a21e6a3d07a54f4425'),
+          image: lib.getElse(prev, 'spec.values.data.deployment.image', 'tidepool/platform-data:master-8c8d9b39182b9edd9bafd987f50b254470840a8d'),
           replicas: 3,
         },
-      }, lib.getElse(tp, 'data', {})]),
+      }, lib.getElse(env, 'data', {})]),
 
-      dexcom: lib.getElse(tp, 'dexcom', {}),
+      dexcom: lib.getElse(env, 'dexcom', {}),
 
       export: lib.mergeList([common, {
         resources: {
@@ -149,14 +158,13 @@ local tidepool(config, prev, namespace) = {
           },
           limits: {
             memory: '256Mi',
-            cpu: '1000m',
           },
         },
         deployment+: {
           replicas: 3,
-          image: lib.getElse(prev, 'spec.values.export.deployment.image', 'tidepool/export:develop-ddc5f311a4bdc2adae1b423f13e047ff1828d65c'),
+          image: lib.getElse(prev, 'spec.values.export.deployment.image', 'tidepool/export:release-1.4.0-133dc134dce5c287e26caafbdb6871e69fc10150'),
         },
-      }, lib.getElse(tp, 'export', {})]),
+      }, lib.getElse(env, 'export', {})]),
 
       gatekeeper: lib.mergeList([common, {
         resources: {
@@ -166,14 +174,13 @@ local tidepool(config, prev, namespace) = {
           },
           limits: {
             memory: '256Mi',
-            cpu: '1000m',
           },
         },
         deployment+: {
           replicas: 2,
-          image: lib.getElse(prev, 'spec.values.gatekeeper.deployment.image', 'tidepool/gatekeeper:develop-6a0e3e6d83552ce378b21d76354973dcb95c9fa1'),
+          image: lib.getElse(prev, 'spec.values.gatekeeper.deployment.image', 'tidepool/gatekeeper:master-03ab418230def26a638664bfbfd0a49736c96aa3'),
         },
-      }, lib.getElse(tp, 'gatekeeper', {})]),
+      }, lib.getElse(env, 'gatekeeper', {})]),
 
       glooingress: {
         enabled: true,
@@ -183,12 +190,12 @@ local tidepool(config, prev, namespace) = {
         virtualServices: {
           'http': {
             name: "http-internal",
-            dnsNames: lib.getElse(tp, 'dnsNames', []),
+            dnsNames: genDnsNames(config, namespace),
             enabled: true,
             labels: {
               protocol: 'http',
               type: 'internal',
-              namespace: lib.getElse(env, 'namespace', namespace),
+              namespace: namespace,
             },
             options: {
               stats: {
@@ -227,9 +234,9 @@ local tidepool(config, prev, namespace) = {
 
       highwater: lib.mergeList([common, {
         deployment+: {
-          image: lib.getElse(prev, 'spec.values.highwater.deployment.image', 'tidepool/highwater:develop-cb0ef1425b29f0a37c10e975876804f3ccfb1348'),
+          image: lib.getElse(prev, 'spec.values.highwater.deployment.image', 'tidepool/highwater:master-8db30b8b1e4ca759e8377de4a09dd9a6f6a5ce88'),
         },
-      }, lib.getElse(tp, 'highwater', {})]),
+      }, lib.getElse(env, 'highwater', {})]),
 
       hydrophone: lib.mergeList([common, {
         serviceAccount: {
@@ -242,14 +249,14 @@ local tidepool(config, prev, namespace) = {
           env: {
             store: {
               s3: {
-                bucket: lib.getElse(tp, 'buckets.asset', assetBucket(config, namespace)),
+                bucket: lib.getElse(env, 'buckets.asset', assetBucket(config, namespace)),
               },
             },
             type: 's3',
           },
-          image: lib.getElse(prev, 'spec.values.hydrophone.deployment.image', 'tidepool/hydrophone:develop-0683c6ba2c75ffd21ac01cd577acfeaf5cd0ef8f'),
+          image: lib.getElse(prev, 'spec.values.hydrophone.deployment.image', 'tidepool/hydrophone:master-8537584fb9633995c36e2df333e9709f94b30095'),
         },
-      }, lib.getElse(tp, 'hydrophone', {})]),
+      }, lib.getElse(env, 'hydrophone', {})]),
 
       image: lib.mergeList([common, {
         serviceAccount: {
@@ -262,14 +269,14 @@ local tidepool(config, prev, namespace) = {
           env: {
             store: {
               s3: {
-                bucket: lib.getElse(tp, 'buckets.data', dataBucket(config, namespace)),
+                bucket: lib.getElse(env, 'buckets.data', dataBucket(config, namespace)),
               },
             },
             type: 's3',
           },
-          image: lib.getElse(prev, 'spec.values.image.deployment.image', 'tidepool/platform-image:develop-cebea363931570d3930848a21e6a3d07a54f4425'),
+          image: lib.getElse(prev, 'spec.values.image.deployment.image', 'tidepool/platform-image:master-8c8d9b39182b9edd9bafd987f50b254470840a8d'),
         },
-      }, lib.getElse(tp, 'image', {})]),
+      }, lib.getElse(env, 'image', {})]),
 
       jellyfish: lib.mergeList([common, {
         serviceAccount: {
@@ -283,14 +290,14 @@ local tidepool(config, prev, namespace) = {
           env: {
             store: {
               s3: {
-                bucket: lib.getElse(tp, 'buckets.data', dataBucket(config, namespace)),
+                bucket: lib.getElse(env, 'buckets.data', dataBucket(config, namespace)),
               },
             },
             type: 's3',
           },
-          image: lib.getElse(prev, 'spec.values.jellyfish.deployment.image', 'tidepool/jellyfish:mongo-database-a8b117f07c277dfae78a6b5f270f84cd661b3b8d'),
+          image: lib.getElse(prev, 'spec.values.jellyfish.deployment.image', 'tidepool/jellyfish:master-737f1009a70fd3856e08c9b858ab86752a181b1d'),
         },
-      }, lib.getElse(tp, 'jellyfish', {})]),
+      }, lib.getElse(env, 'jellyfish', {})]),
 
       linkerdsupport: {
         serviceProfiles: {
@@ -300,9 +307,9 @@ local tidepool(config, prev, namespace) = {
 
       messageapi: lib.mergeList([common, {
         deployment+: {
-          image: lib.getElse(prev, 'spec.values.messageapi.deployment.image', 'tidepool/message-api:develop-48e4e55d3119bd94c25fa7f01be79be85a860528'),
+          image: lib.getElse(prev, 'spec.values.messageapi.deployment.image', 'tidepool/message-api:master-73e5dc0b12f03bc0ec1428cde45520317dbf4688'),
         },
-      }, lib.getElse(tp, 'messageapi', {})]),
+      }, lib.getElse(env, 'messageapi', {})]),
 
       migrations: lib.mergeList([common, {
         resources: {
@@ -312,13 +319,12 @@ local tidepool(config, prev, namespace) = {
           },
           limits: {
             memory: '256Mi',
-            cpu: '1000m',
           },
         },
         deployment+: {
-          image: lib.getElse(prev, 'spec.values.migrations.deployment.image', 'tidepool/platform-migrations:develop-cebea363931570d3930848a21e6a3d07a54f4425'),
+          image: lib.getElse(prev, 'spec.values.migrations.deployment.image', 'tidepool/platform-migrations:master-8c8d9b39182b9edd9bafd987f50b254470840a8d'),
         },
-      }, lib.getElse(tp, 'migrations', {})]),
+      }, lib.getElse(env, 'migrations', {})]),
 
       mongodb: {
         enabled: env.mongodb.enabled,
@@ -330,9 +336,9 @@ local tidepool(config, prev, namespace) = {
 
       notification: lib.mergeList([common, {
         deployment+: {
-          image: lib.getElse(prev, 'spec.values.notification.deployment.image', 'tidepool/platform-notification:develop-cebea363931570d3930848a21e6a3d07a54f4425'),
+          image: lib.getElse(prev, 'spec.values.notification.deployment.image', 'tidepool/platform-notification:master-8c8d9b39182b9edd9bafd987f50b254470840a8d'),
         },
-      }, lib.getElse(tp, 'notification', {})]),
+      }, lib.getElse(env, 'notification', {})]),
 
       seagull: lib.mergeList([common, {
         resources: {
@@ -342,26 +348,25 @@ local tidepool(config, prev, namespace) = {
           },
           limits: {
             memory: '256Mi',
-            cpu: '1000m',
           },
         },
         deployment+: {
-          image: lib.getElse(prev, 'spec.values.seagull.deployment.image', 'tidepool/seagull:develop-f5b583382cc468657710b15836eafad778817f7c'),
+          image: lib.getElse(prev, 'spec.values.seagull.deployment.image', 'tidepool/seagull:master-0ac202bfccc0994d264b5fe9fcc06d2a56c55977'),
         },
-      }, lib.getElse(tp, 'seagull', {})]),
+      }, lib.getElse(env, 'seagull', {})]),
 
       shoreline: lib.mergeList([common, {
         priorityClassName: "high-priority",
         deployment+: {
-          image: lib.getElse(prev, 'spec.values.shoreline.deployment.image', 'tidepool/shoreline:develop-51f927083ba5bad0271add644728e02902d3b785'),
+          image: lib.getElse(prev, 'spec.values.shoreline.deployment.image', 'tidepool/shoreline:master-66e766fffb4058781a24740b6a809bb12e2d08a9'),
         },
-      }, lib.getElse(tp, 'shoreline', {})]),
+      }, lib.getElse(env, 'shoreline', {})]),
 
       task: lib.mergeList([common, {
         deployment+: {
-          image: lib.getElse(prev, 'spec.values.task.deployment.image', 'tidepool/platform-task:develop-cebea363931570d3930848a21e6a3d07a54f4425'),
+          image: lib.getElse(prev, 'spec.values.task.deployment.image', 'tidepool/platform-task:master-8c8d9b39182b9edd9bafd987f50b254470840a8d'),
         },
-      }, lib.getElse(tp, 'task', {})]),
+      }, lib.getElse(env, 'task', {})]),
 
       tidepool: {
         namespace: {
@@ -377,29 +382,28 @@ local tidepool(config, prev, namespace) = {
           },
           limits: {
             memory: '256Mi',
-            cpu: '1000m',
           },
         },
         deployment+: {
           replicas: 3,
-          image: lib.getElse(prev, 'spec.values.tidewhisperer.deployment.image', 'tidepool/tide-whisperer:develop-3d9d8e6b3417c70679ec43420f2a5e4a69cf9098'),
+          image: lib.getElse(prev, 'spec.values.tidewhisperer.deployment.image', 'tidepool/tide-whisperer:master-d64636a94823ceb329ade5ff8e0a7716a5108fef'),
         },
-      }, lib.getElse(tp, 'tidewhisperer', {})]),
+      }, lib.getElse(env, 'tidewhisperer', {})]),
 
       tools: lib.mergeList([common, {
         deployment+: {
-          image: lib.getElse(prev, 'spec.values.tools.deployment.image', 'tidepool/platform-tools:develop-cebea363931570d3930848a21e6a3d07a54f4425'),
+          image: lib.getElse(prev, 'spec.values.tools.deployment.image', 'tidepool/platform-tools:master-8c8d9b39182b9edd9bafd987f50b254470840a8d'),
         },
-      }, lib.getElse(tp, 'tools', {})]),
+      }, lib.getElse(env, 'tools', {})]),
 
       user: lib.mergeList([common, {
         deployment+: {
-          image: lib.getElse(prev, 'spec.values.user.deployment.image', 'tidepool/platform-user:develop-cebea363931570d3930848a21e6a3d07a54f4425'),
+          image: lib.getElse(prev, 'spec.values.user.deployment.image', 'tidepool/platform-user:master-8c8d9b39182b9edd9bafd987f50b254470840a8d'),
         },
-      }, lib.getElse(tp, 'users', {})]),
+      }, lib.getElse(env, 'users', {})]),
 
     },
   },
 };
 
-function(config, prev, namespace) tidepool(expand.expandConfig(config), prev, namespace)
+function(config, prev, namespace) helmrelease(expand.expandConfig(config), prev, namespace)
