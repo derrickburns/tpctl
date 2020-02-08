@@ -5,7 +5,7 @@ local lib = import '../../lib/lib.jsonnet';
 
   tpFor(config, name):: lib.getElse(config, 'environments.' + name + '.tidepool', null),
 
-  isShadow(env):: lib.isTrue(env, 'shadow.enabled') && lib.getElse(env, 'shadow.sender', null) != null,
+  isShadow(env):: lib.isTrue(env, 'shadow.enabled') && (lib.getElse(env, 'shadow.sender', null) != null),
 
   genDnsNames(config, name):: (
     local me = $.tpFor(config, name);
