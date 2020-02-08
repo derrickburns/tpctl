@@ -18,7 +18,7 @@ local filterAnnotations(env, svcs) = {
 
 local shadowNames(names) = std.map( function (x) "%s-shadow" % x, names);
 
-local tpFor(config, name) = lib.getElse(config, 'environments.' + name, '.tidepool');
+local tpFor(config, name) = lib.getElse(config, 'environments.' + name + '.tidepool', null);
 
 local genDnsNames(config, name) = (
   local me = tpFor(config, name);
