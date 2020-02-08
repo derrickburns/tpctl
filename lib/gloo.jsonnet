@@ -291,7 +291,9 @@ local lib = import 'lib.jsonnet';
 
   certificate(config, vsin, defaultName, defaultNamespace):: (
     local vs = lib.withNamespace(lib.withName(vsin, defaultName), defaultNamespace);
-    if lib.getElse(config, 'pkgs.certmanager.enabled', false) && $.isHttps(vsin)
+    if lib.getElse(config, 'pkgs.certmanager.enabled', false)
+       && $.isHttps(vs)
+       && std.length(vs.dnsNames) > 0
     then {
       apiVersion: 'cert-manager.io/v1alpha2',
       kind: 'Certificate',
