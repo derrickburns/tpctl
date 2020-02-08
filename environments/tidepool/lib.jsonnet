@@ -11,7 +11,7 @@ local lib = import '../../lib/lib.jsonnet';
     local me = $.tpFor(config, name);
     local sender = lib.getElse(me, 'shadow.sender', null);
     if $.isShadow(me)
-    then $.shadowNames(lib.getElse(tpFor(config, sender), 'dnsNames', []))
+    then $.shadowNames(lib.getElse($.tpFor(config, sender), 'dnsNames', []))
     else lib.getElse(me, 'dnsNames', [])
   ),
 
