@@ -17,7 +17,7 @@ local filterAnnotations(env, svcs) = {
 };
 
 local helmrelease(config, prev, namespace) = {
-  local env = tpFor(config, namespace), 
+  local env = mylib.tpFor(config, namespace), 
 
   local svcs = [
     'auth',
