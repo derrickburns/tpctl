@@ -23,7 +23,7 @@ local tpFor(config, name) = lib.getElse(config, 'environments.' + name + '.tidep
 local genDnsNames(config, name) = (
   local me = tpFor(config, name);
   local sender = lib.getElse(me, 'shadow.sender', null);
-  if lib.isTrue(me, 'shadow.enabled') 
+  if lib.isTrue(me, 'shadow.enabled') && (sender != null)
   then shadowNames(lib.getElse(tpFor(config, sender), 'dnsNames', []))
   else lib.getElse(me, 'dnsNames', [])
 );
