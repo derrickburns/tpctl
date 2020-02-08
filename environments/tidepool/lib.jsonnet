@@ -27,7 +27,7 @@ local lib = import '../../lib/lib.jsonnet';
         virtualServices: {
           http: {
             dnsNames: dnsNames,
-            enabled: ! $.isShadow(env),
+            enabled: if $.isShadow($.tpFor(config, name)) then false else true,
             labels: {
               protocol: 'http',
               type: 'external',
@@ -42,7 +42,7 @@ local lib = import '../../lib/lib.jsonnet';
           },
           https: {
             dnsNames: dnsNames,
-            enabled: ! $.isShadow(env),
+            enabled: if $.isShadow($.tpFor(config, name)) then false else true,
             timeout: lib.getElse(env, 'tidepool.maxTimeout', '120s'),
             hsts: {
               enabled: true,
