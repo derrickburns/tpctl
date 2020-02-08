@@ -1,6 +1,6 @@
 local lib = import '../../lib/lib.jsonnet';
-
 local expand = import '../../lib/expand.jsonnet';
+local mylib = import 'lib.jsonnet';
 
 local dataBucket(config, namespace) = 'tidepool-%s-%s-data' % [config.cluster.metadata.name, namespace];
 local assetBucket(config, namespace) = 'tidepool-%s-%s-asset' % [config.cluster.metadata.name, namespace];
@@ -15,18 +15,6 @@ local filterAnnotations(env, svcs) = {
   ['fluxcd.io/tag.%s' % svc]: lib.getElse(env, 'gitops.%s' % svc, default)
   for svc in svcs
 };
-
-local shadowNames(names) = std.map( function (x) "%s-shadow" % x, names);
-
-local tpFor(config, name) = lib.getElse(config, 'environments.' + name + '.tidepool', null);
-
-local genDnsNames(config, name) = (
-  local me = tpFor(config, name);
-  local sender = lib.getElse(me, 'shadow.sender', null);
-  if lib.isTrue(me, 'shadow.enabled') && (sender != null)
-  then shadowNames(lib.getElse(tpFor(config, sender), 'dnsNames', []))
-  else lib.getElse(me, 'dnsNames', [])
-);
 
 local helmrelease(config, prev, namespace) = {
   local env = tpFor(config, namespace), 
@@ -190,7 +178,7 @@ spec: {
         virtualServices: {
           'http': {
             name: "http-internal",
-            dnsNames: genDnsNames(config, namespace),
+            dnsNames: mylib.genDnsNames(config, namespace),
             enabled: true,
             labels: {
               protocol: 'http',

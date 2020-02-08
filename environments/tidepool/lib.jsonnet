@@ -1,6 +1,20 @@
 local lib = import '../../lib/lib.jsonnet';
 
 {
+  shadowNames(names):: std.map( function (x) "%s-shadow" % x, names),
+
+  tpFor(config, name):: lib.getElse(config, 'environments.' + name + '.tidepool', null),
+
+  isShadow(env):: lib.isTrue(env, 'shadow.enabled') && lib.getElse(env, 'shadow.sender', null) != null,
+
+  genDnsNames(config, name):: (
+    local me = $.tpFor(config, name);
+    local sender = lib.getElse(me, 'shadow.sender', null);
+    if $.isShadow(me)
+    then $.shadowNames(lib.getElse(tpFor(config, sender), 'dnsNames', []))
+    else lib.getElse(me, 'dnsNames', [])
+  ),
+
   expandEnvironments(config):: (
     local expandEnvironment = function(name, env) $.expandConfigEnvironment(config, name, env);
     std.mapWithKey(expandEnvironment, config.environments)
@@ -13,11 +27,11 @@ local lib = import '../../lib/lib.jsonnet';
         virtualServices: {
           http: {
             dnsNames: dnsNames,
-            enabled: true,
+            enabled: ! $.isShadow(env),
             labels: {
               protocol: 'http',
               type: 'external',
-              namespace: lib.getElse(env, 'namespace', name),
+              namespace: name,
             },
             options: {
               stats: {
@@ -28,7 +42,7 @@ local lib = import '../../lib/lib.jsonnet';
           },
           https: {
             dnsNames: dnsNames,
-            enabled: true,
+            enabled: ! $.isShadow(env),
             timeout: lib.getElse(env, 'tidepool.maxTimeout', '120s'),
             hsts: {
               enabled: true,
