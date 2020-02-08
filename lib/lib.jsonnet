@@ -118,7 +118,7 @@
 
   isEq(x, path, y):: $.get(x, path) == y,
 
-  isTrue(x, path):: $.isEq(x, path, true),
+  isTrue(x, path):: $.isEq(x, path, true) || $.isEq(x, path, "true"),
 
   mergeList(list):: std.foldl($.merge, list, {}),
 
