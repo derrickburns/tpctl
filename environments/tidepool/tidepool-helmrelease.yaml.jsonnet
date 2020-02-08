@@ -327,11 +327,11 @@ spec: {
       }, lib.getElse(env, 'migrations', {})]),
 
       mongodb: {
-        enabled: env.mongodb.enabled,
+        enabled: lib.isTrue(env, 'mongodb.enable'),
       },
 
       nosqlclient: {
-        enabled: env.nosqlclient.enabled,
+        enabled: lib.isTrue(env, 'nosqlclient.enabled'),
       },
 
       notification: lib.mergeList([common, {
