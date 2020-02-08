@@ -21,8 +21,8 @@ local shadowNames(names) = std.map( function (x) "%s-shadow" % x, names);
 local tpFor(config, name) = lib.getElse(config, 'environments.' + name, '.tidepool');
 
 local genDnsNames(config, name) = (
-  local me = tpFor(config, name),
-  local sender = lib.getElse(me, 'shadow.sender', null),
+  local me = tpFor(config, name);
+  local sender = lib.getElse(me, 'shadow.sender', null);
   if lib.isTrue(me, 'shadow.enabled') && sender != null
   then shadowNames(lib.getElse(tpFor(config, sender), 'dnsNames', []))
   else lib.getElse(me, 'dnsNames', [])
