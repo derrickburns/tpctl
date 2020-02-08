@@ -9,7 +9,7 @@ local lib = import 'lib.jsonnet';
 
   // provide array of virtual service maps for array of packages
   virtualServicesForPkgs(pkgs)::
-    std.flattenArrays(lib.values(std.mapWithKey($.virtualServicesForPkg, pkgs))),
+    std.filter( function(x) lib.isTrue(x, 'enabled'), std.flattenArrays(lib.values(std.mapWithKey($.virtualServicesForPkg, pkgs)))),
 
   // provide array of virtual service maps for package
   // use the name of the package as the namespace if the namespace is not explicitly declared
