@@ -11,6 +11,10 @@ function envoy {
   glooctl proxy served-config
 }
 
+function createAlias {
+	aws kms create-alias --alias-name alias/kubernetes-qa1  --target-key-id arn:aws:kms:us-west-2:118346523422:key/30380c58-0b21-43a5-81ab-f4b8ae40db34
+}
+
 function vpa {
   (
     cd $TMP_DIR

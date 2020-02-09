@@ -73,6 +73,39 @@ local fluentdRole = metadata('fluentd', 'amazon-cloudwatch') + {
   ],
 };
 
+local fluxServiceAccount(config) = {
+  local this = self,
+  iam+: {
+    serviceAccounts+: [
+      {
+        attachPolicy: {
+          Statement: [
+            {
+              Action: [
+                'kms:Encrypt',
+                'kms:Decrypt',
+                'kms:ReEncrypt*',
+                'kms:GenerateDataKey*',
+                'kms:DescribeKey',
+              ],
+              Effect: 'Allow',
+              Resource: 'arn:aws:kms:%s:%s:alias/kubernetes-%s' % [ this.metadata.region, config.aws.accountNumber, this.metadata.name ],
+            },
+          ],
+          Version: '2012-10-17',
+        },
+        metadata: {
+          labels: {
+            'aws-usage': 'KMS',
+          },
+          name: 'flux',
+          namespace: 'flux',
+        },
+      },
+    ],
+  },
+};
+
 local externalDNSRole = {
   attachPolicy: {
     Statement: [
@@ -174,10 +207,10 @@ local secretsManagerServiceAccount(config) = {
             {
               Effect: 'Allow',
               Action: [
-        	"secretsmanager:GetResourcePolicy",
-        	"secretsmanager:GetSecretValue",
-        	"secretsmanager:DescribeSecret",
-        	"secretsmanager:ListSecretVersionIds"
+                'secretsmanager:GetResourcePolicy',
+                'secretsmanager:GetSecretValue',
+                'secretsmanager:DescribeSecret',
+                'secretsmanager:ListSecretVersionIds',
               ],
               Resource: 'arn:aws:secretsmanager:%s:%s:secret:%s/*' % [this.metadata.region, config.aws.accountNumber, this.metadata.name],
             },
@@ -304,7 +337,8 @@ local defaultClusterConfig = {
 
 local serviceAccounts(config) =
   secretsManagerServiceAccount(config) +
-  tidepoolServiceAccounts(config);
+  tidepoolServiceAccounts(config) +
+  fluxServiceAccount(config);
 
 local all(config) =
   defaultClusterConfig
