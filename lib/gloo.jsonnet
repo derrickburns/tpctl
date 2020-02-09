@@ -15,7 +15,8 @@ local lib = import 'lib.jsonnet';
   // use the name of the package as the namespace if the namespace is not explicitly declared
   // use the key of the virtual service object as the name of the virtual service
   virtualServicesForPkg(name, pkg)::
-    std.filter(function(x) lib.isTrue(x, 'enabled'), lib.pruneList($.virtualServicesToList(lib.getElse(pkg, 'virtualServices', {}), lib.getElse(pkg, 'namespace', name)))),
+    std.filter(function(x) lib.isTrue(x, 'enabled'), 
+      lib.pruneList($.virtualServicesToList(lib.getElse(pkg, 'virtualServices', {}), lib.getElse(pkg, 'namespace', name)))),
 
   // flatten a map after adding name and namespace fields
   virtualServicesToList(map, ns):: std.filter(function(x) lib.getElse(x, 'enabled', false), lib.values(lib.addName(lib.addNamespace(map, ns)))),
@@ -58,6 +59,12 @@ local lib = import 'lib.jsonnet';
       sniDomains: lib.getElse(vs, 'dnsNames', []),
     },
   } else {},
+
+  routeOptions(vs):: vs.routeOptions,
+
+  routes(vs):: [
+    { matchers: [{ prefix: '/' }] } + $.route(vs) + $.routeOptions(vs)
+  ],
 
   route(vs)::
     if std.objectHas(vs, 'redirect') then {
@@ -131,9 +138,18 @@ local lib = import 'lib.jsonnet';
     },
   },
 
+  virtualHostOptions(vs):: options: lib.getElse(vs, 'virtualHostOptions', {})
+    + (if lib.isTrue(vs, 'cors.enabled') then $.virtualHostOptions.cors else {})
+    + (if lib.isTrue(vs, 'hsts.enabled') then $.virtualHostOptions.hsts else {}),
+
+  virtualHost(vs):: {
+    domains: $.domains(vs),
+    routes: $.routes(vs),
+    options: $.virtualHostOptions(vs),
+  },
+
   virtualService(vsin, defaultName, defaultNamespace):: {
     local vs = lib.withNamespace(lib.withName(vsin, defaultName), defaultNamespace),
-    local procotol = vs.labels.protocol,
     apiVersion: 'gateway.solo.io/v1',
     kind: 'VirtualService',
     metadata: {
@@ -143,17 +159,7 @@ local lib = import 'lib.jsonnet';
     },
     spec: $.sslConfig(vs) + {
       displayName: lib.kebabCase(vs.name),
-      virtualHost: {
-        domains: $.domains(vs),
-        routes: [
-          {
-            matchers: [{ prefix: '/' }],
-          } + $.route(vs),
-        ],
-        options: lib.getElse(vs, 'options', {})
-          + (if lib.isTrue(vs, 'cors.enabled') then $.virtualHostOptions.cors else {})
-          + (if lib.isTrue(vs, 'hsts.enabled') then $.virtualHostOptions.hsts else {})
-      },
+      virtualHost: $.virtualHost(vs),
     },
   },
 
