@@ -7,6 +7,8 @@ local lib = import '../../lib/lib.jsonnet';
 
   isShadow(env):: lib.isTrue(env, 'shadow.enabled') && (lib.getElse(env, 'shadow.sender', null) != null),
 
+  hasShadow(env):: lib.isTrue(env, 'shadow.enabled') && (lib.getElse(env, 'shadow.receiver', null) != null),
+
   genDnsNames(config, name):: (
     local me = $.tpFor(config, name);
     local sender = lib.getElse(me, 'shadow.sender', null);
@@ -20,6 +22,11 @@ local lib = import '../../lib/lib.jsonnet';
     std.mapWithKey(expandEnvironment, config.environments)
   ),
 
+  internalGatewayUpstream: {
+    name: 'gloo-system-internal-gateway-proxy-80',
+    namespace: 'gloo-system',
+  },
+
   expandConfigEnvironment(config, name, env):: (
     local dnsNames = lib.getElse(env, 'tidepool.dnsNames', []);
     env {
@@ -27,13 +34,13 @@ local lib = import '../../lib/lib.jsonnet';
         virtualServices: {
           http: {
             dnsNames: dnsNames,
-            enabled: if $.isShadow($.tpFor(config, name)) then false else true,
+            enabled: ! $.isShadow($.tpFor(config, name)),
             labels: {
               protocol: 'http',
               type: 'external',
               namespace: name,
             },
-            options: {
+            virtualHostOptions: {
               stats: {
                 virtualClusters: lib.getElse(env, 'tidepool.virtualClusters', []),
               },
@@ -42,7 +49,7 @@ local lib = import '../../lib/lib.jsonnet';
           },
           https: {
             dnsNames: dnsNames,
-            enabled: if $.isShadow($.tpFor(config, name)) then false else true,
+            enabled: ! $.isShadow($.tpFor(config, name)),
             timeout: lib.getElse(env, 'tidepool.maxTimeout', '120s'),
             hsts: {
               enabled: true,
@@ -50,20 +57,20 @@ local lib = import '../../lib/lib.jsonnet';
             cors: {
               enabled: true,
             },
-            options: {
+            virtualHostOptions: {
               stats: {
                 virtualClusters: lib.getElse(env, 'tidepool.virtualClusters', []),
               },
             },
+            routeOptions: if $.hasShadow($.tpFor(config, name)) then {
+              shadowing: {
+                upstream: $.internalGatewayUpstream,
+                percentage: 100.0,
+              },
+            } else {},
             routeAction: {
               single: {
-                kube: {
-                  ref: {
-                    name: 'internal-gateway-proxy',
-                    namespace: 'gloo-system',
-                  },
-                  port: 80,
-                },
+                upstream: $.internalGatewayUpstream,
               },
             },
             labels: {
