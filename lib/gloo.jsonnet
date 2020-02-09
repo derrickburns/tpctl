@@ -138,7 +138,7 @@ local lib = import 'lib.jsonnet';
     },
   },
 
-  virtualHostOptions(vs):: options: lib.getElse(vs, 'virtualHostOptions', {})
+  virtualHostOptions(vs):: lib.getElse(vs, 'virtualHostOptions', {})
     + (if lib.isTrue(vs, 'cors.enabled') then $.staticVirtualHostOptions.cors else {})
     + (if lib.isTrue(vs, 'hsts.enabled') then $.staticVirtualHostOptions.hsts else {}),
 
