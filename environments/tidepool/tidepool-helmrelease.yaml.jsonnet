@@ -185,7 +185,7 @@ spec: {
               type: 'internal',
               namespace: namespace,
             },
-            virtualHostOptions: {
+            options: {
               stats: {
                 virtualClusters: lib.getElse(env,'virtualClusters', []),
               },
