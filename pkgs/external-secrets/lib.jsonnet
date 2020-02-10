@@ -1,7 +1,7 @@
 local lib = import '../../lib/lib.jsonnet';
 
 {
-  externalSecret(config, name, namespace):: {
+  externalSecret(config, name, namespace):: if lib.getElse(config, 'pkgs.external-secrets.enabled', false) {
     apiVersion: 'kubernetes-client.io/v1',
     kind: 'ExternalSecret',
     metadata: {
@@ -14,5 +14,5 @@ local lib = import '../../lib/lib.jsonnet';
         '%s/%s/%s' % [config.cluster.metadata.name, namespace, name],
       ],
     },
-  },
+  } else {}, 
 }
