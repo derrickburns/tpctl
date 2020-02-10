@@ -72,4 +72,4 @@ local genvalues(config) = {
   },
 };
 
-function(config, prev) k8s.helmrelease('flux', 'flux', '1.1.0', 'https://charts.fluxcd.io') + { spec+: { values: genvalues(config) } }
+function(config, prev) k8s.helmrelease('flux', 'flux', '1.2.0', 'https://charts.fluxcd.io') + { spec+: { values: genvalues(config) } }
