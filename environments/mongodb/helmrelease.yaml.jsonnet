@@ -11,7 +11,7 @@ local helmrelease(config, namespace) = {
     "chart": {
       "git": "git@github.com:tidepool-org/development",
       "path": "charts/mongo",
-      "ref": "develop"
+      "ref": "master"
     },
     "values": {
       mongodb: {

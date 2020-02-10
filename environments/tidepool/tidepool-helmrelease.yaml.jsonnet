@@ -83,7 +83,7 @@ spec: {
     } else  {
       git: lib.getElse(env, 'chart.git', 'git@github.com:tidepool-org/development'),
       path: lib.getElse(env, 'chart.path', 'charts/tidepool'),
-      ref: lib.getElse(env, 'chart.ref', 'develop'),
+      ref: lib.getElse(env, 'chart.ref', 'master'),
     },
     releaseName: 'tidepool-%s' % namespace,
     values: {
