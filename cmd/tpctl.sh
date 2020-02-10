@@ -22,6 +22,11 @@ function create_key {
   local region=$(get_region)
   local account=$(get_aws_account)
 
+  cat <<! >>values.yaml
+  keys:
+    arn: $arn
+!
+
   cat <<EOF >>.sops.yaml
 creation_rules:
         - kms: arn:aws:kms:${region}:${account}:${alias}
@@ -400,6 +405,11 @@ function get_region() {
 # retrieve email address of cluster admin
 function get_email() {
   require_value "email"
+}
+
+# retrieve AWS KMS Master key ARN
+function get_key() {
+  require_value "keys.arn"
 }
 
 # retrieve AWS account number
