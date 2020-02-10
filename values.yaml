@@ -123,7 +123,7 @@ pkgs:
   external-dns:
     enabled: true
   external-secrets:
-    enabled: true
+    enabled: false
     poller_interval: "120000"
   flux:
     enabled: true

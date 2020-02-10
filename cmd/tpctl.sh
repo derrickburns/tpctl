@@ -12,11 +12,21 @@ function envoy {
 }
 
 function create_key {
+  start "creating kms key"
   local cluster=$(get_cluster)
   key=$(aws kms create-key --tags TagKey=cluster,TagValue=$cluster --description "Key for cluster $cluster")
   arn=$(echo $key | yq r - -j | jq '.KeyMetadata.Arn' | sed -e 's/"//g')
-  #aws kms delete-alias --alias-name alias/kubernetes-$cluster
-  aws kms create-alias --alias-name alias/kubernetes-$cluster --target-key-id $arn
+  alias="alias/kubernetes-$cluster"
+  #aws kms delete-alias --alias-name $alias
+  aws kms create-alias --alias-name $alias --target-key-id $arn
+  local region=$(get_region)
+  local account=$(get_aws_account)
+
+  cat <<EOF >>.sops.yaml
+creation_rules:
+        - kms: arn:aws:kms:${region}:${account}:${alias}
+EOF
+  complete "created kms key"
 }
 
 function move_secrets {
@@ -1516,7 +1526,11 @@ case $cmd in
     vpa
     ;;
   create_key)
+    check_remote_repo
+    setup_tmpdir
+    clone_remote
     create_key
+    save_changes "Added kms key"
     ;;
   move_secrets)
     check_remote_repo
