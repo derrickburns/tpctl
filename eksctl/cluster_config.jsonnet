@@ -93,7 +93,7 @@ local fluxServiceAccount(config) = {
                 'kms:DescribeKey',
               ],
               Effect: 'Allow',
-              Resource: 'arn:aws:kms:%s:%s:alias/kubernetes-%s' % [ this.metadata.region, config.aws.accountNumber, this.metadata.name ],
+              Resource: config.keys.arn,
             },
           ],
           Version: '2012-10-17',
