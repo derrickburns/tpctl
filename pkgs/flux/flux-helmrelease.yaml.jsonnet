@@ -12,6 +12,10 @@ local genvalues(config) = {
 
   logFormat: 'fmt',
 
+  sops: {
+    enabled: true,
+  },
+
   git: {
     label: config.cluster.metadata.name,
     email: config.email,
