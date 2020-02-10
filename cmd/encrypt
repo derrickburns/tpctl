@@ -1,0 +1,2 @@
+#!/bin/bash
+sops --encrypt --encrypted-regex '^(data|stringData)$' $1
