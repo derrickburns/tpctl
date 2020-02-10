@@ -82,14 +82,7 @@ local fluxServiceAccount(config) = {
           Statement: [
             {
               Action: [
-                'kms:Encrypt',
                 'kms:Decrypt',
-		'kms:ReEncryptFrom',
-		'kms:ReEncryptTo',
-                'kms:GenerateDataKey',
-		'kms:GenerateDataKeyPair',
-                'kms:GenerateDataKeyPairWithoutPlaintext',
-                'kms:GenerateDataKeyWithoutPlaintext',
                 'kms:DescribeKey',
               ],
               Effect: 'Allow',
