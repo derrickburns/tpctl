@@ -30,6 +30,7 @@ EOF
 }
 
 function move_secrets {
+  start "moving secrets from external secrets"
   local cluster=$(get_cluster)
   local region=$(get_region)
   local account=$(get_aws_account)
@@ -44,6 +45,7 @@ function move_secrets {
     kubectl get secret -n $namespace $name -o yaml | yq d - metadata.ownerReferences | yq d - metadata.creationTimestamp | yq d - metadata.resourceVersion | yq d - metadata.selfLink | yq d - metadata.uid >$file
     sops -i --encrypt --encrypted-regex '^(data|stringData)$' $file
   done <<< "$list"
+  complete "moved secrets from external secrets"
 }
 
 function vpa {
