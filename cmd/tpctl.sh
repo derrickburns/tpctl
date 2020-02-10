@@ -635,7 +635,7 @@ function environment_template_files() {
     local dir=environments/$env/$(dirname $filename)
     local file=$(basename $filename)
     mkdir -p $dir
-    if [ "${file: -8}" == ".jsonnet" ]; then
+    if [ "${file: -13}" == ".yaml.jsonnet" ]; then
       local out=$dir/${file%.jsonnet}
       local prev=$TMP_DIR/$dir/${file%.jsonnet}
       add_file $out
