@@ -11,8 +11,29 @@ function envoy {
   glooctl proxy served-config
 }
 
-function createAlias {
-	aws kms create-alias --alias-name alias/kubernetes-qa1  --target-key-id arn:aws:kms:us-west-2:118346523422:key/30380c58-0b21-43a5-81ab-f4b8ae40db34
+function create_key {
+  local cluster=$(get_cluster)
+  key=$(aws kms create-key --tags TagKey=cluster,TagValue=$cluster --description "Key for cluster $cluster")
+  arn=$(echo $key | yq r - -j | jq '.KeyMetadata.Arn' | sed -e 's/"//g')
+  #aws kms delete-alias --alias-name alias/kubernetes-$cluster
+  aws kms create-alias --alias-name alias/kubernetes-$cluster --target-key-id $arn
+}
+
+function move_secrets {
+  local cluster=$(get_cluster)
+  local region=$(get_region)
+  local account=$(get_aws_account)
+  list=$(kubectl get externalsecrets --all-namespaces | grep SUCCESS  | cut -c 1-41)
+  export SOPS_KMS_ARN="arn:aws:kms:${region}:${account}:alias/kubernetes-${cluster}"
+
+  while IFS= read -r line; do
+    namespace=$(echo $line | cut -f1 -d\ )
+    name=$(echo $line | cut -f2 -d\ )
+    mkdir -p secrets/${namespace}
+    file="secrets/${namespace}/${name}-secret.yaml"
+    kubectl get secret -n $namespace $name -o yaml | yq d - metadata.ownerReferences | yq d - metadata.creationTimestamp | yq d - metadata.resourceVersion | yq d - metadata.selfLink | yq d - metadata.uid >$file
+    sops -e -i $file
+  done <<< "$list"
 }
 
 function vpa {
@@ -1096,7 +1117,7 @@ function linkerd_dashboard() {
 
 # show help
 function help() {
-  echo "$0 [-h|--help] (values|edit_values|config|edit_repo|cluster|flux|gloo|make_buckets|mesh|migrate_secrets|randomize_secrets|upsert_plaintext_secrets|install_users|deploy_key|delete_cluster|await_deletion|remove_mesh|merge_kubeconfig|gloo_dashboard|linkerd_dashboard|diff|dns|mongo_template|linkerd_check|sync|peering|vpc|update_kubeconfig|get_secret|list_secrets|delete_secret|external_secrets|bootstrap|service_accounts|vpa)*"
+  echo "$0 [-h|--help] (values|edit_values|config|edit_repo|cluster|flux|gloo|make_buckets|mesh|migrate_secrets|randomize_secrets|upsert_plaintext_secrets|install_users|deploy_key|delete_cluster|await_deletion|remove_mesh|merge_kubeconfig|gloo_dashboard|linkerd_dashboard|diff|dns|mongo_template|linkerd_check|sync|peering|vpc|update_kubeconfig|get_secret|list_secrets|delete_secret|external_secrets|bootstrap|service_accounts|vpa|move_secrets|create_key)*"
   echo
   echo
   echo "So you want to built a Kubernetes cluster that runs Tidepool. Great!"
@@ -1146,6 +1167,8 @@ function help() {
   echo "envoy - show envoy config"
   echo "bootstrap - bootstrap flux"
   echo "service_accounts - create service accounts"
+  echo "move_secrets - migrate secrets from external secrets to sops"
+  echo "create_key - create a new Amazon KMS key for the cluster"
   echo "vpa - install vpa"
   echo "cadvisor - install cadvisor"
 }
@@ -1491,6 +1514,16 @@ case $cmd in
     check_remote_repo
     setup_tmpdir
     vpa
+    ;;
+  create_key)
+    create_key
+    ;;
+  move_secrets)
+    check_remote_repo
+    setup_tmpdir
+    clone_remote
+    move_secrets
+    save_changes "Added encrypted secrets"
     ;;
   *)
     panic "unknown command: $param"
