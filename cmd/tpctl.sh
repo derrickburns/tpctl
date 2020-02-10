@@ -755,7 +755,7 @@ function expect_cluster_exists() {
 function install_helmrelease() {
   local file=$1
   start "bootstrapping $file"
-  helmit $file >/${TMP_DIR}/out 2>&1
+  helmit $file >${TMP_DIR}/out 2>&1
   if [ $? -ne 0 ]
   then
     cat $TMP_DIR/out
