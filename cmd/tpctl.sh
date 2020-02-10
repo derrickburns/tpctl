@@ -579,20 +579,11 @@ function template_files() {
       add_file $filename
       cp $fullpath $filename
     elif [ "${filename: -13}" == ".yaml.jsonnet" ]; then
-      add_file ${filename%.jsonnet}
-      local prev=$TMP_DIR/${filename%.jsonnet}
-      local out=$TMP_DIR/${filename%.jsonnet}.json
-      if [ -f $prev ]; then
-        yq r $prev -j >$out
-	if [ $? -ne -0 ]
-	then
-          echo "{}" >$out
-	fi
-      else
-        mkdir -p $(dirname $out)
-        echo "{}" >$out
-      fi
-      jsonnet --tla-code-file prev=$out --tla-code config="$config" $fullpath | yq r - >${filename%.jsonnet}
+      local newname=${filename%.jsonnet}
+      add_file ${newname}
+      local prev=$TMP_DIR/${newname}.json
+      as_yaml_else "$TMP_DIR/${newname}" "$prev" "{}"
+      jsonnet --tla-code-file prev=$prev --tla-code config="$config" $fullpath | yq r - >${newname}
       expect_success "Templating failure $filename"
     fi
   done
@@ -624,6 +615,22 @@ function make_cluster_config() {
   complete "created eksctl manifest"
 }
 
+function as_yaml_else {
+  local source=$1
+  local dest=$2
+  local default=$3
+  mkdir -p $(dirname $dest)
+  if [ -f $source ]; then
+    yq r $source -j >${dest}
+    if [ $? -ne 0 ]
+    then
+      echo "$default" >${dest}
+    fi
+  else
+    echo "$default" >${dest}
+  fi
+}
+
 # make K8s manifests for enviroments given config, path, prefix, and environment name
 function environment_template_files() {
   local config=$1
@@ -636,22 +643,14 @@ function environment_template_files() {
     local file=$(basename $filename)
     mkdir -p $dir
     if [ "${file: -13}" == ".yaml.jsonnet" ]; then
-      local out=$dir/${file%.jsonnet}
-      local prev=$TMP_DIR/$dir/${file%.jsonnet}
-      add_file $out
-      if [ -f $prev ]; then
-        yq r $prev -j >$TMP_DIR/${file%.jsonnet}
-	if [ $? -ne -0 ]
-	then
-          echo "{}" >$TMP_DIR/${file%.jsonnet}
-	fi
-      else
-        mkdir -p $(dirname  $TMP_DIR/${file%.jsonnet})
-        echo "{}" >$TMP_DIR/${file%.jsonnet}
-      fi
-      jsonnet --tla-code-file prev=$TMP_DIR/${file%.jsonnet} --tla-code config="$config" --tla-str namespace=$env $fullpath | yq r - >$dir/${file%.jsonnet}
+      local newbasename=${file%.jsonnet}
+      local out=$dir/${newbasename}
+      local prev=${TMP_DIR}/${newbasename}
+      add_file ${out}
+      as_yaml_else "${TMP_DIR}/${dir}/${newbasename}" "${prev}" "{}"
+      jsonnet --tla-code-file prev=${prev} --tla-code config="$config" --tla-str namespace=$env $fullpath | yq r - >${out}
       expect_success "Templating failure $dir/$filename"
-      rm $TMP_DIR/${file%.jsonnet}
+      rm ${prev}
     fi
   done
 }
