@@ -35,6 +35,7 @@ COPY helmit /usr/local/bin/helmit
 COPY select_kind /usr/local/bin/select_kind
 COPY add_ns /usr/local/bin/add_ns
 COPY separate_files /usr/local/bin/separate_files
+COPY separate_by_namespace /usr/local/bin/separate_by_namespace
 COPY external_secret /usr/local/bin/external_secret
 COPY tpctl.sh /root/tpctl
 RUN cd /root/workdir

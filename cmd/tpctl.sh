@@ -46,7 +46,7 @@ function move_secrets {
     namespace=$(echo $line | cut -f1 -d\ )
     name=$(echo $line | cut -f2 -d\ )
     mkdir -p secrets/${namespace}
-    file="secrets/${namespace}/${name}-secret.yaml"
+    file="secrets/${namespace}/${name}.yaml"
     kubectl get secret -n $namespace $name -o yaml | yq d - metadata.ownerReferences | yq d - metadata.creationTimestamp | yq d - metadata.resourceVersion | yq d - metadata.selfLink | yq d - metadata.uid >$file
     sops -i --encrypt $file
   done <<< "$list"
@@ -1034,7 +1034,6 @@ function set_chart_dir() {
     pushd $TMP_DIR >/dev/null 2>&1
     git clone $(repo_with_token https://github.com/tidepool-org/development)
     cd development
-    >&2 git checkout chartreorg
     CHART_DIR=$(pwd)/charts/tidepool
     popd >/dev/null 2>&1
     complete "cloned development tools"
@@ -1047,19 +1046,15 @@ function randomize_secrets() {
   set_chart_dir
   local cluster=$(get_cluster)
   local env
+  mkdir -p secrets
   for env in $(get_environments); do
     local source=$(yq r values.yaml environments.${env}.tidepool.secrets.source)
     if [ "$source" == "random" ]; then
-      helm template --namespace $env --set gloo.enabled=false --set global.secret.generated=true $CHART_DIR -f $CHART_DIR/values.yaml | select_kind Secret >$TMP_DIR/x
-      if [ "$operation" == "view" ]
-      then
-        cat $TMP_DIR/x
-      else
-	pushd external-secrets
-	external_secret ${operation} $cluster encoded <$TMP_DIR/x | separate_files | add_names
-	popd
-      fi
-      rm $TMP_DIR/x
+      helm template --namespace $env --set gloo.enabled=false --set global.secret.generated=true $CHART_DIR -f $CHART_DIR/values.yaml | select_kind Secret >$TMP_DIR/x.yaml
+      pushd secrets
+      sops --encrypt $TMP_DIR/x.yaml | separate_by_namespace | add_names
+      popd
+      rm $TMP_DIR/x.yaml
     fi
   done
 }
@@ -1144,7 +1139,7 @@ function linkerd_dashboard() {
 
 # show help
 function help() {
-  echo "$0 [-h|--help] (values|edit_values|config|edit_repo|cluster|flux|gloo|make_buckets|mesh|migrate_secrets|randomize_secrets|upsert_plaintext_secrets|install_users|deploy_key|delete_cluster|await_deletion|remove_mesh|merge_kubeconfig|gloo_dashboard|linkerd_dashboard|diff|dns|mongo_template|linkerd_check|sync|peering|vpc|update_kubeconfig|get_secret|list_secrets|delete_secret|external_secrets|bootstrap|service_accounts|vpa|move_secrets|create_key)*"
+  echo "$0 [-h|--help] (values|edit_values|config|edit_repo|cluster|flux|gloo|make_buckets|mesh|migrate_secrets|generate_secrets|upsert_plaintext_secrets|install_users|deploy_key|delete_cluster|await_deletion|remove_mesh|merge_kubeconfig|gloo_dashboard|linkerd_dashboard|diff|dns|mongo_template|linkerd_check|sync|peering|vpc|update_kubeconfig|get_secret|list_secrets|delete_secret|external_secrets|bootstrap|service_accounts|vpa|move_secrets|create_key)*"
   echo
   echo
   echo "So you want to built a Kubernetes cluster that runs Tidepool. Great!"
@@ -1370,13 +1365,7 @@ case $cmd in
     check_remote_repo
     setup_tmpdir
     clone_remote
-    mkdir -p external-secrets
-    if [ "$APPROVE" != "true" ]
-    then
-      randomize_secrets dryrun
-    else
-      randomize_secrets upsert
-    fi
+    randomize_secrets
     save_changes "Added random secrets"
     ;;
   migrate_secrets)
