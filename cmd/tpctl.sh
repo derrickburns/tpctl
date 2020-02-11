@@ -29,7 +29,7 @@ function create_key {
   cat  >.sops.yaml  <<EOF
   creation_rules:
      - kms: arn:aws:kms:${region}:${account}:${alias}
-       encrypted_secrets: '^(data|stringData)$'
+       encrypted_regex: '^(data|stringData)$'
        pgp: $pgp
 EOF
   complete "created kms key"
