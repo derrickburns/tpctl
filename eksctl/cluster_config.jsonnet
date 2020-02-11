@@ -86,7 +86,7 @@ local fluxServiceAccount(config) = {
                 'kms:DescribeKey',
               ],
               Effect: 'Allow',
-              Resource: config.sops.keys.arn,
+              Resource: config.pkgs.sops.keys.arn,
             },
           ],
           Version: '2012-10-17',
