@@ -1115,31 +1115,13 @@ function await_deletion() {
   complete "cluster $cluster deleted"
 }
 
-# migrate secrets from legacy GitHub repo to AWS secrets manager
-function migrate_secrets() {
-  local cluster=$(get_cluster)
-  local secrets=$(get_legacy_values Secret)
-  local configmaps=$(get_legacy_values ConfigMap)
-  mkdir -p external-secrets
-  pushd external-secrets
-  if [ "$APPROVE" != "true" ]
-  then
-    operation="dryrun"
-  else
-    operation="upsert"
-  fi
-  echo "$secrets" | external_secret $operation $cluster plaintext | separate_files | add_names
-  echo "$configmaps" | separate_files | add_names
-  popd
-}
-
 function linkerd_dashboard() {
   linkerd dashboard --port 0 &
 }
 
 # show help
 function help() {
-  echo "$0 [-h|--help] (values|edit_values|config|edit_repo|cluster|flux|gloo|make_buckets|mesh|migrate_secrets|generate_secrets|upsert_plaintext_secrets|install_users|deploy_key|delete_cluster|await_deletion|remove_mesh|merge_kubeconfig|gloo_dashboard|linkerd_dashboard|diff|dns|mongo_template|linkerd_check|sync|peering|vpc|update_kubeconfig|get_secret|list_secrets|delete_secret|external_secrets|bootstrap|service_accounts|vpa|move_secrets|create_key)*"
+  echo "$0 [-h|--help] (values|edit_values|config|edit_repo|cluster|flux|gloo|make_buckets|mesh|generate_secrets|upsert_plaintext_secrets|install_users|deploy_key|delete_cluster|await_deletion|remove_mesh|merge_kubeconfig|gloo_dashboard|linkerd_dashboard|diff|dns|mongo_template|linkerd_check|sync|peering|vpc|update_kubeconfig|get_secret|list_secrets|delete_secret|bootstrap|service_accounts|vpa|move_secrets|create_key)*"
   echo
   echo
   echo "So you want to built a Kubernetes cluster that runs Tidepool. Great!"
@@ -1170,7 +1152,6 @@ function help() {
   echo "edit_repo - open shell with config repo in current directory.  Exit shell to commit changes."
   echo "edit_values - open editor to edit values.yaml file"
   echo "make_buckets - create S3 buckets if needed and copy assets if don't exist"
-  echo "migrate_secrets - migrate secrets from legacy GitHub repo to AWS secrets manager"
   echo "generate_secrets - generate secrets used within tidepool environments persist into AWS secrets manager"
   echo "upsert_plaintext_secrets - read STDIN for plaintext K8s secrets"
   echo "install_users - add system:master USERS to K8s cluster"
@@ -1241,11 +1222,6 @@ while (("$#")); do
   esac
 done
 
-function external_secrets() {
-  local cluster=$(get_cluster)
-  kubectl get externalsecrets --all-namespaces -o yaml | yq r - -j | jq '.items[] | .secretDescriptor.data[] | .key' | sort | uniq
-}
-
 function delete_secret() {
   local cluster=$(get_cluster)
   aws secretsmanager delete-secret --secret-id $cluster/$1/$2
@@ -1288,9 +1264,6 @@ case $cmd in
     setup_tmpdir
     clone_remote
     delete_secret "$@"
-    ;;
-  external_secrets)
-    external_secrets
     ;;
   get_secret)
     check_remote_repo
@@ -1376,18 +1349,6 @@ case $cmd in
     establish_ssh
     migrate_secrets
     save_changes "Added migrated secrets"
-    ;;
-  upsert_plaintext_secrets)
-    check_remote_repo
-    setup_tmpdir
-    clone_remote
-    mkdir -p external-secrets
-    if [ "$APPROVE" != "true" ]
-    then
-      confirm "Do you want to update external secrets? "
-    fi
-    external_secret upsert $(get_cluster) plaintext | (cd external-secrets; separate_files) | add_names
-    save_changes "Added plaintext secrets"
     ;;
   install_users)
     check_remote_repo
