@@ -35,24 +35,6 @@ EOF
   complete "created kms key"
 }
 
-function move_secrets {
-  start "moving secrets from external secrets"
-  local cluster=$(get_cluster)
-  local region=$(get_region)
-  local account=$(get_aws_account)
-  list=$(kubectl get externalsecrets --all-namespaces | grep -v "NAMESPACE" |  cut -c 1-41)
-
-  while IFS= read -r line; do
-    namespace=$(echo $line | cut -f1 -d\ )
-    name=$(echo $line | cut -f2 -d\ )
-    mkdir -p secrets/${namespace}
-    file="secrets/${namespace}/${name}.yaml"
-    kubectl get secret -n $namespace $name -o yaml | yq d - metadata.ownerReferences | yq d - metadata.creationTimestamp | yq d - metadata.resourceVersion | yq d - metadata.selfLink | yq d - metadata.uid >$file
-    sops -i --encrypt $file
-  done <<< "$list"
-  complete "moved secrets from external secrets"
-}
-
 function vpa {
   (
     cd $TMP_DIR
@@ -122,25 +104,6 @@ function install_certmanager {
     )
     complete "installed cert-manager"
   fi
-}
-
-function mongo_template {
-  cat <<! 
-apiVersion: v1
-data:
-  Addresses:
-  Database: tidepool
-  OptParams:
-  Password:
-  Scheme: mongodb
-  Tls: "true"
-  Username:
-kind: Secret
-metadata:
-  name: mongo
-  namespace: qa1
-type: Opaque
-!
 }
 
 function make_envrc() {
@@ -1115,13 +1078,9 @@ function await_deletion() {
   complete "cluster $cluster deleted"
 }
 
-function linkerd_dashboard() {
-  linkerd dashboard --port 0 &
-}
-
 # show help
 function help() {
-  echo "$0 [-h|--help] (values|edit_values|config|edit_repo|cluster|flux|gloo|make_buckets|mesh|generate_secrets|upsert_plaintext_secrets|install_users|deploy_key|delete_cluster|await_deletion|remove_mesh|merge_kubeconfig|gloo_dashboard|linkerd_dashboard|diff|dns|mongo_template|linkerd_check|sync|peering|vpc|update_kubeconfig|get_secret|list_secrets|delete_secret|bootstrap|service_accounts|vpa|move_secrets|create_key)*"
+  echo "$0 [-h|--help] (values|edit_values|config|edit_repo|cluster|flux|make_buckets|mesh|generate_secrets|upsert_plaintext_secrets|install_users|deploy_key|delete_cluster|await_deletion|remove_mesh|merge_kubeconfig|gloo_dashboard|diff|linkerd_check|sync|peering|vpc|update_kubeconfig|service_accounts|vpa|create_key)*"
   echo
   echo
   echo "So you want to built a Kubernetes cluster that runs Tidepool. Great!"
@@ -1129,9 +1088,8 @@ function help() {
   echo "Second, create/edit a configuration file with $0 values."
   echo "Third, gerenate the rest of the configuration with $0 config."
   echo "Fourth, generate the actual AWS EKS cluster with $0 cluster."
-  echo "Fifth, install gloo with $0 gloo."
-  echo "Sixth, install a service mesh (to encrypt inter-service traffic for HIPPA compliance with $0 mesh"
-  echo "Seventh, install the GitOps controller with $0 flux."
+  echo "Fifth, install a service mesh (to encrypt inter-service traffic for HIPPA compliance with $0 mesh"
+  echo "Sixth, install the GitOps controller with $0 flux."
   echo "That is it!"
   echo
   echo "----- Basic Commands -----"
@@ -1139,7 +1097,6 @@ function help() {
   echo "values  - create initial values.yaml file"
   echo "config  - create K8s and eksctl K8s manifest files"
   echo "cluster - create AWS EKS cluster, add system:master USERS"
-  echo "gloo    - install gloo"
   echo "mesh    - install service mesh"
   echo "flux    - install flux GitOps controller, Tiller server, client certs for Helm to access Tiller, and deploy key into GitHub"
   echo
@@ -1160,17 +1117,13 @@ function help() {
   echo "await_deletion - await completion of deletion of gthe AWS EKS cluster"
   echo "merge_kubeconfig - copy the KUBECONFIG into the local $KUBECONFIG file"
   echo "gloo_dashboard - open the Gloo dashboard"
-  echo "dns - update the DNS aliases served"
-  echo "linkerd_dashboard - open the Linkerd dashboard"
   echo "linkerd_check - check Linkerd status"
-  echo "mongo_template - output a template to use for creating a mongo secret"
   echo "diff - show recent git diff"
   echo "envrc - create .envrc file for direnv to change kubecontexts and to set REMOTE_REPO"
   echo "update_kubeconfig - modify context and user for kubeconfig"
   echo "envoy - show envoy config"
-  echo "bootstrap - bootstrap flux"
+  echo "mesh - bootstrap flux"
   echo "service_accounts - create service accounts"
-  echo "move_secrets - migrate secrets from external secrets to sops"
   echo "create_key - create a new Amazon KMS key for the cluster"
   echo "vpa - install vpa"
   echo "cadvisor - install cadvisor"
@@ -1222,32 +1175,6 @@ while (("$#")); do
   esac
 done
 
-function delete_secret() {
-  local cluster=$(get_cluster)
-  aws secretsmanager delete-secret --secret-id $cluster/$1/$2
-}
-
-function list_secrets() {
-  local cluster=$(get_cluster)
-  aws secretsmanager list-secrets | jq '.SecretList[].Name' | egrep "^\"$cluster/"
-}
-
-# get_secret ${ENVIRONMENT} ${SECRETNAME}
-function get_secret() {
-  local cluster=$(get_cluster)
-  local yaml=$(aws secretsmanager get-secret-value  --secret-id $cluster/$1/$2 | jq '.SecretString | fromjson' | yq r - | sed -e 's/^/    /')
-  cat <<!
-apiVersion: v1
-kind: Secret
-type: Opaque
-data:
-$yaml
-metadata:
-  name: $2
-  namespace: $1
-!
-}
-
 unset TMP_DIR
 unset TEMPLATE_DIR
 unset CHART_DIR
@@ -1264,18 +1191,6 @@ case $cmd in
     setup_tmpdir
     clone_remote
     delete_secret "$@"
-    ;;
-  get_secret)
-    check_remote_repo
-    setup_tmpdir
-    clone_remote
-    get_secret "$@"
-    ;;
-  list_secrets)
-    check_remote_repo
-    setup_tmpdir
-    clone_remote
-    list_secrets "$@"
     ;;
   repo)
     setup_tmpdir
@@ -1408,21 +1323,11 @@ case $cmd in
     confirm_matching_cluster
     gloo_dashboard
     ;;
-  linkerd_dashboard)
-    check_remote_repo
-    setup_tmpdir
-    clone_remote
-    confirm_matching_cluster
-    linkerd_dashboard
-    ;;
   diff)
     check_remote_repo
     setup_tmpdir
     clone_remote
     diff_config
-    ;;
-  mongo_template)
-    mongo_template
     ;;
   linkerd_check)
     linkerd check --proxy
@@ -1463,7 +1368,7 @@ case $cmd in
     clone_remote
     get_vpc
     ;;
-  bootstrap)
+  mesh)
     check_remote_repo
     setup_tmpdir
     set_template_dir
@@ -1476,8 +1381,6 @@ case $cmd in
     check_remote_repo
     clone_remote
     update_service_accounts
-    ;;
-  envrc)
     ;;
   envoy)
     envoy
@@ -1498,13 +1401,6 @@ case $cmd in
     clone_remote
     create_key
     save_changes "Added kms key"
-    ;;
-  move_secrets)
-    check_remote_repo
-    setup_tmpdir
-    clone_remote
-    move_secrets
-    save_changes "Added encrypted secrets"
     ;;
   *)
     panic "unknown command: $param"
