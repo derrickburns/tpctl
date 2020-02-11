@@ -26,6 +26,7 @@ function create_key {
   cat <<! >>values.yaml
   keys:
     arn: $arn
+    pgp: $pgp
 !
 
   cat <<EOF >>.sops.yaml
