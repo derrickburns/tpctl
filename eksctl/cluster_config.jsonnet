@@ -66,20 +66,26 @@ local cloudWatchRole = metadata('cloudwatch-agent', 'amazon-cloudwatch') + {
   ],
 };
 
-local fluentdRole = metadata('fluentd', 'amazon-cloudwatch') + {
-  attachPolicy: {
-    Statement: {
-      Effect: 'Allow',
-      Action: [
-       "logs:*",
-       "s3:GetObject",
-      ],
-      Resource: [
-        "arn:aws:logs:%s:%s:*" % [this.metadata.region, config.aws.accountNumber],
-        "arn:aws:s3:::*",
-      ],
-    },
-    Version: "2012-10-17"
+local fluentdServiceAccount(config) = {
+  iam+: {
+    serviceAccounts+: [
+      metadata('fluentd', 'amazon-cloudwatch') + {
+        attachPolicy: {
+          Statement: {
+            Effect: 'Allow',
+            Action: [
+              'logs:*',
+              's3:GetObject',
+            ],
+            Resource: [
+              'arn:aws:logs:%s:%s:*' % [config.cluster.metadata.region, config.aws.accountNumber],
+              'arn:aws:s3:::*',
+            ],
+          },
+          Version: '2012-10-17',
+        },
+      },
+    ],
   },
 };
 
@@ -336,16 +342,16 @@ local defaultClusterConfig = {
       //certManagerRole,
       cloudWatchRole,
       externalDNSRole,
-      fluentdRole,
     ],
     withOIDC: true,
   },
 };
 
 local serviceAccounts(config) =
-  secretsManagerServiceAccount(config) +
   tidepoolServiceAccounts(config) +
-  if lib.getElse(config, 'pkgs.sops.enabled', false) then fluxServiceAccount(config) else {};
+  (if lib.getElse(config, 'pkgs.external-secrets.enabled', false) then secretsManagerServiceAccount(config) else {}) +
+  (if lib.getElse(config, 'pkgs.amazon-cloudwatch.enabled', false) then fluentdServiceAccount(config) else {}) +
+  (if lib.getElse(config, 'pkgs.sops.enabled', false) then fluxServiceAccount(config) else {});
 
 local all(config) =
   defaultClusterConfig
