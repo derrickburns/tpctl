@@ -335,7 +335,7 @@ local defaultClusterConfig = {
 local serviceAccounts(config) =
   secretsManagerServiceAccount(config) +
   tidepoolServiceAccounts(config) +
-  fluxServiceAccount(config);
+  if lib.getElse(config, 'pkgs.sops.enabled', false) then fluxServiceAccount(config) else {};
 
 local all(config) =
   defaultClusterConfig
