@@ -417,7 +417,7 @@ function get_key() {
 
 # retrieve PGP digest
 function get_pgp() {
-  require_value "pgp"
+  require_value "keys.pgp"
 }
 
 # retrieve list of AWS environments to create
