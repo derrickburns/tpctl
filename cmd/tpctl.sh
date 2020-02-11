@@ -23,17 +23,14 @@ function create_key {
   local account=$(get_aws_account)
   local pgp=$(get_pgp)
 
-  cat <<! >>values.yaml
-  keys:
-    arn: $arn
-    pgp: $pgp
-!
+  yq w -i values.yaml keys.arn $arn
+  expect_success "Could not write arn to values.yaml file"
 
-  cat <<EOF >>.sops.yaml
-creation_rules:
-        - kms: arn:aws:kms:${region}:${account}:${alias}
-	  encrypted_secret: '^(data|stringData)$'
-	  pgp: $pgp
+  cat  >.sops.yaml  <<EOF
+  creation_rules:
+     - kms: arn:aws:kms:${region}:${account}:${alias}
+       encrypted_secrets: '^(data|stringData)$'
+       pgp: $pgp
 EOF
   complete "created kms key"
 }
