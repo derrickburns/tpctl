@@ -23,7 +23,7 @@ function create_key {
   local account=$(get_aws_account)
   local pgp=$(get_pgp)
 
-  yq w -i values.yaml keys.arn $arn
+  yq w -i values.yaml pkgs.sops.keys.arn $arn
   expect_success "Could not write arn to values.yaml file"
 
   cat  >.sops.yaml  <<EOF
@@ -41,7 +41,6 @@ function move_secrets {
   local region=$(get_region)
   local account=$(get_aws_account)
   list=$(kubectl get externalsecrets --all-namespaces | grep SUCCESS  | cut -c 1-41)
-  export SOPS_KMS_ARN="arn:aws:kms:${region}:${account}:alias/kubernetes-${cluster}"
 
   while IFS= read -r line; do
     namespace=$(echo $line | cut -f1 -d\ )
@@ -415,7 +414,7 @@ function get_key() {
 
 # retrieve PGP digest
 function get_pgp() {
-  require_value "keys.pgp"
+  require_value "pkgs.sops.keys.pgp"
 }
 
 # retrieve list of AWS environments to create
