@@ -21,6 +21,7 @@ function create_key {
   aws kms create-alias --alias-name $alias --target-key-id $arn
   local region=$(get_region)
   local account=$(get_aws_account)
+  local pgp=$(get_pgp)
 
   cat <<! >>values.yaml
   keys:
@@ -30,6 +31,8 @@ function create_key {
   cat <<EOF >>.sops.yaml
 creation_rules:
         - kms: arn:aws:kms:${region}:${account}:${alias}
+	  encrypted_secret: '^(data|stringData)$'
+	  pgp: $pgp
 EOF
   complete "created kms key"
 }
@@ -412,6 +415,12 @@ function get_key() {
   require_value "keys.arn"
 }
 
+# retrieve PGP digest
+function get_pgp() {
+  require_value "pgp"
+}
+
+# retrieve list of AWS environments to create
 # retrieve AWS account number
 function get_aws_account() {
   require_value "aws.accountNumber"
