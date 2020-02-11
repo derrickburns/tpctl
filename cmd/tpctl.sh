@@ -40,7 +40,7 @@ function move_secrets {
   local cluster=$(get_cluster)
   local region=$(get_region)
   local account=$(get_aws_account)
-  list=$(kubectl get externalsecrets --all-namespaces | grep SUCCESS  | cut -c 1-41)
+  list=$(kubectl get externalsecrets --all-namespaces | grep -v "NAMESPACE" |  cut -c 1-41)
 
   while IFS= read -r line; do
     namespace=$(echo $line | cut -f1 -d\ )
