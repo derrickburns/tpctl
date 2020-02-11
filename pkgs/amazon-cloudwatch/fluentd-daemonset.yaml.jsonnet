@@ -31,7 +31,7 @@ local daemonset(config) = {
             env: [
               {
                 name: 'AWS_REGION',
-                value: config.metadata.region,
+                value: config.cluster.metadata.region,
               },
               {
                 name: 'REGION',
