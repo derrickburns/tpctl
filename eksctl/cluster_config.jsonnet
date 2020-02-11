@@ -67,10 +67,20 @@ local cloudWatchRole = metadata('cloudwatch-agent', 'amazon-cloudwatch') + {
 };
 
 local fluentdRole = metadata('fluentd', 'amazon-cloudwatch') + {
-  attachPolicyARNs: [
-    'arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy',
-    'arn:aws:iam::aws:policy/AmazonEC2ReadOnlyAccess',
-  ],
+  attachPolicy: {
+    Statement: {
+      Effect: 'Allow',
+      Action: [
+       "logs:*",
+       "s3:GetObject",
+      ],
+      Resource: [
+        "arn:aws:logs:%s:%s:*" % [this.metadata.region, config.aws.accountNumber],
+        "arn:aws:s3:::*",
+      ],
+    },
+    Version: "2012-10-17"
+  },
 };
 
 local fluxServiceAccount(config) = {

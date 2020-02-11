@@ -18,6 +18,8 @@ spec:
         configHash: 8915de4cf9c3551a8dc74c0137a3e83569d28c71044b0359c2578d2e0461825
     spec:
       serviceAccountName: fluentd
+      securityContext:
+        fsGroup: 65534
       terminationGracePeriodSeconds: 30
       # Because the image's entrypoint requires to write on /fluentd/etc but we mount configmap there which is read-only,
       # this initContainers workaround or other is needed.

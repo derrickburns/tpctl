@@ -48,7 +48,7 @@ function move_secrets {
     mkdir -p secrets/${namespace}
     file="secrets/${namespace}/${name}-secret.yaml"
     kubectl get secret -n $namespace $name -o yaml | yq d - metadata.ownerReferences | yq d - metadata.creationTimestamp | yq d - metadata.resourceVersion | yq d - metadata.selfLink | yq d - metadata.uid >$file
-    sops -i --encrypt --encrypted-regex '^(data|stringData)$' $file
+    sops -i --encrypt $file
   done <<< "$list"
   complete "moved secrets from external secrets"
 }
