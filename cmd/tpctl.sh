@@ -115,6 +115,7 @@ function make_envrc() {
     echo "kubectx $context" >.envrc
   fi
   echo "export REMOTE_REPO=cluster-$cluster" >>.envrc
+  echo "export FLUX_FORWARD_NAMESPACE=flux" >>.envrc
   add_file ".envrc"
   complete "created .envrc"
 }
