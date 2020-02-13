@@ -20,7 +20,7 @@ local getPolicy(config) = (
   ]
 );
 
-local helmrelease(config) = k8s.helmrelease('pomerium', 'pomerium', '4.2.0') {
+local helmrelease(config) = k8s.helmrelease('pomerium', 'pomerium', '5.0.3', 'https://helm.pomerium.io') {
   local domain = lib.rootDomain(config),
   spec+: {
     values: {
@@ -34,7 +34,7 @@ local helmrelease(config) = k8s.helmrelease('pomerium', 'pomerium', '4.2.0') {
         },
       },
       service: {
-        type: 'NodePort',
+        type: 'ClusterIP',
       },
       config: {
         rootDomain: domain,
