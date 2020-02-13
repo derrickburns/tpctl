@@ -63,7 +63,7 @@ local lib = import 'lib.jsonnet';
   routeOptions(vs):: lib.getElse(vs, 'routeOptions', {}),
 
   routes(vs):: [
-    { matchers: [{ prefix: '/' }] } + $.route(vs) + $.routeOptions(vs)
+    { matchers: [{ prefix: '/' }] } + $.route(vs) + { options+: $.routeOptions(vs) }
   ],
 
   route(vs)::
