@@ -1014,11 +1014,20 @@ function randomize_secrets() {
   for env in $(get_environments); do
     local source=$(yq r values.yaml environments.${env}.tidepool.secrets.source)
     if [ "$source" == "random" ]; then
+      complete "generating secrets for $env"
       helm template --namespace $env --set gloo.enabled=false --set global.secret.generated=true $CHART_DIR -f $CHART_DIR/values.yaml | select_kind Secret >$TMP_DIR/x.yaml
-      pushd secrets
-      sops --encrypt $TMP_DIR/x.yaml | separate_by_namespace | add_names
-      popd
+      local dir=$TMP_DIR/secrets
+      mkdir -p $dir 
+      pushd $dir >/dev/null 2>&1
+      separate_by_namespace < $TMP_DIR/x.yaml >/dev/null 2>&1
+      popd >/dev/null 2>&1
+      for file in $(find $dir -type f -print)
+      do
+	      sops --encrypt $file | separate_by_namespace | add_names
+      done
       rm $TMP_DIR/x.yaml
+      rm -r $dir
+      complete "generated secrets for $env"
     fi
   done
 }
