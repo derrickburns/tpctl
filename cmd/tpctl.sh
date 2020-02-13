@@ -1023,7 +1023,10 @@ function randomize_secrets() {
       popd >/dev/null 2>&1
       for file in $(find $dir -type f -print)
       do
-	      sops --encrypt $file | separate_by_namespace | add_names
+	      b=${file#${TMP_DIR}/}
+	      mkdir -p $(dirname $b)
+	      sops --encrypt $file >$b
+	      add_file $b
       done
       rm $TMP_DIR/x.yaml
       rm -r $dir
