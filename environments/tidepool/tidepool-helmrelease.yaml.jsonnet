@@ -75,6 +75,8 @@ spec: {
     rollback: {
       enable: true,
       force: true,
+      retry: true,
+      maxRetries: 0,
     },
     chart: if std.objectHas(env, 'chart') && std.objectHas(env.chart, 'version') then {
       repository: lib.getElse(env.chart, 'repository', 'https://raw.githubusercontent.com/tidepool-org/tidepool-helm/master/'),
