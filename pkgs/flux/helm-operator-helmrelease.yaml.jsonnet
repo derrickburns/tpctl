@@ -34,7 +34,7 @@ local genvalues(config) = {
 
   image: {
     repository: 'docker.io/fluxcd/helm-operator',
-    tag: '1.0.0-rc8',
+    tag: '1.0.0-rc9',
   },
 
   logReleaseDiffs: false,
