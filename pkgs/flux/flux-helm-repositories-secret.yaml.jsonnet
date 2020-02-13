@@ -3,6 +3,16 @@ local info = {
   repositories: [
     {
       caFile: '',
+      cache: 'pomerium-index.yaml',
+      certFile: '',
+      keyFile: '',
+      name: 'pomerium',
+      password: '',
+      url: 'https://helm.pomerium.io',
+      username: '',
+    },
+    {
+      caFile: '',
       cache: 'stable-index.yaml',
       certFile: '',
       keyFile: '',
