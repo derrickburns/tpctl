@@ -1,3 +1,11 @@
+general:
+  email: derrick@tidepool.org
+  kubeconfig: $HOME/.kube/config
+  logLevel: debug
+  sops:
+    keys:
+      pgp: CDE5317D7CCA7B80294FB32721A60B1450343446
+      arn: arn:aws:kms:us-west-2:118346523422:key/0
 aws:
   accountNumber: 118346523422
   iamUsers:
@@ -38,7 +46,6 @@ cluster:
     name: ng
   vpc:
     cidr: 10.47.0.0/16
-email: derrick@tidepool.org
 environments:
   qa2:
     marketo:
@@ -97,8 +104,6 @@ environments:
           requests:
             cpu: 500m
             memory: 256Mi
-kubeconfig: $HOME/.kube/config
-logLevel: debug
 pkgs:
   amazon-cloudwatch:
     enabled: true
