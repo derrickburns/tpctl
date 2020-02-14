@@ -33,6 +33,9 @@ local helmrelease(config) = k8s.helmrelease('pomerium', 'pomerium', '5.0.3', 'ht
           serviceAccount: true,
         },
       },
+      extraEnv: {
+        log_level: lib.getElse(config, 'pkgs.pomerium.logLevel', lib.getElse(config, 'logLevel', 'info')),
+      },
       service: {
         type: 'ClusterIP',
       },
