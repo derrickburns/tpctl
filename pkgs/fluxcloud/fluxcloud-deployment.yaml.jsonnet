@@ -58,7 +58,7 @@ local Deployment(config) = {
               },
               {
                 name: 'GITHUB_URL',
-                value: config.github.https,
+                value: config.general.github.https,
               },
               {
                 name: 'LISTEN_ADDRESS',
