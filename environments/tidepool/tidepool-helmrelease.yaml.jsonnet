@@ -200,7 +200,7 @@ spec: {
       },
       global: {
         local domain = lib.getElse(config, 'cluster.metadata.domain', 'tidepool.org'),
-        logLevel: lib.getElse(config, 'logLevel', 'info'),
+        logLevel: lib.getElse(config, 'general.logLevel', 'info'),
         gateway: {
           proxy: {
             name: "internal-gateway-proxy",

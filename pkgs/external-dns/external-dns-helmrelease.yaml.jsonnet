@@ -7,7 +7,7 @@ local helmrelease(config) = k8s.helmrelease('external-dns', 'external-dns', '2.6
         region: config.cluster.metadata.region,
         zoneType: 'public',
       },
-      logLevel: config.logLevel,
+      logLevel: config.general.logLevel,
       metrics: {
         enabled: true,
       },

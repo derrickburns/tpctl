@@ -13,7 +13,7 @@ local helmrelease(config) = k8s.helmrelease('datadog-agent', 'datadog', '1.31.11
         apiKeyExistingSecret: 'datadog',
         appKeyExistingSecret: 'datadog',
         'cluster.name': config.cluster.metadata.name,
-        logLevel: config.logLevel,
+        logLevel: config.general.logLevel,
         tokenKeyExistingSecret: 'datadog',
       },
       kubeStateMetrics: {

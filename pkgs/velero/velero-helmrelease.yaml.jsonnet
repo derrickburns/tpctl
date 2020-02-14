@@ -15,7 +15,7 @@ local helmrelease(config) = k8s.helmrelease('velero', 'velero', '2.8.1', 'https:
             region: config.cluster.metadata.region,
           },
         },
-        logLevel: config.logLevel,
+        logLevel: config.general.logLevel,
         volumeSnapshotLocation: {
           name: 'velero.io/aws',
           config: {

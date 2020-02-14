@@ -18,8 +18,8 @@ local genvalues(config) = {
 
   git: {
     label: config.cluster.metadata.name,
-    email: config.email,
-    url: '%s.git' % config.github.git,
+    email: config.general.email,
+    url: '%s.git' % config.general.github.git,
   },
 
   prometheus: {

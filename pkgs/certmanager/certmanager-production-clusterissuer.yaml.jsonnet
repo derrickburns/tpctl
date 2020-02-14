@@ -6,7 +6,7 @@ local ClusterIssuer(config) = {
   },
   spec: {
     acme: {
-      email: config.email,
+      email: config.general.email,
       privateKeySecretRef: {
         name: 'letsencrypt-production',
       },

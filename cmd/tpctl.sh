@@ -23,7 +23,7 @@ function create_key {
   local account=$(get_aws_account)
   local pgp=$(get_pgp)
 
-  yq w -i values.yaml pkgs.sops.keys.arn $arn
+  yq w -i values.yaml general.sops.keys.arn $arn
   expect_success "Could not write arn to values.yaml file"
 
   cat  >.sops.yaml  <<EOF
@@ -368,7 +368,7 @@ function get_region() {
 
 # retrieve email address of cluster admin
 function get_email() {
-  require_value "email"
+  require_value "general.email"
 }
 
 # retrieve AWS KMS Master key ARN
@@ -378,7 +378,7 @@ function get_key() {
 
 # retrieve PGP digest
 function get_pgp() {
-  require_value "pkgs.sops.keys.pgp"
+  require_value "general.sops.keys.pgp"
 }
 
 # retrieve list of AWS environments to create
@@ -462,7 +462,7 @@ function expect_github_token() {
 
 # retrieve kubeconfig value
 function get_kubeconfig() {
-  local kc=$(require_value "kubeconfig")
+  local kc=$(require_value "general.kubeconfig")
   realpath $(eval "echo $kc")
 }
 
@@ -953,13 +953,13 @@ function make_values() {
   add_file "values.yaml"
   cat $TMP_DIR/tpctl/values.yaml >values.yaml
   cat >>values.yaml <<!
-github:
-  git: $GIT_REMOTE_REPO
-  https: $HTTPS_REMOTE_REPO
-
+general:
+  github:
+    git: $GIT_REMOTE_REPO
+    https: $HTTPS_REMOTE_REPO
 !
 
-  yq r values.yaml -j | jq '.cluster.metadata.name = .github.git' |
+  yq r values.yaml -j | jq '.cluster.metadata.name = .general.github.git' |
     jq '.cluster.metadata.name |= gsub(".*\/"; "")' |
     jq '.cluster.metadata.name |= gsub("cluster-"; "")' | yq r - >xxx.yaml
   mv xxx.yaml values.yaml

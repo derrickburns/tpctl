@@ -102,7 +102,7 @@ local fluxServiceAccount(config) = {
                 'kms:DescribeKey',
               ],
               Effect: 'Allow',
-              Resource: config.pkgs.sops.keys.arn,
+              Resource: config.general.sops.keys.arn,
             },
           ],
           Version: '2012-10-17',
@@ -351,7 +351,7 @@ local serviceAccounts(config) =
   tidepoolServiceAccounts(config) +
   (if lib.getElse(config, 'pkgs.external-secrets.enabled', false) then secretsManagerServiceAccount(config) else {}) +
   (if lib.getElse(config, 'pkgs.amazon-cloudwatch.enabled', false) then fluentdServiceAccount(config) else {}) +
-  (if lib.getElse(config, 'pkgs.sops.enabled', false) then fluxServiceAccount(config) else {});
+  fluxServiceAccount(config);
 
 local all(config) =
   defaultClusterConfig

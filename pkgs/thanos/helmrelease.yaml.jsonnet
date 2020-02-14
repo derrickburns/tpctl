@@ -5,16 +5,16 @@ local helmrelease(config) = k8s.helmrelease('thanos', 'monitoring', '0.3.12', 'h
   spec+: {
     values: {
       bucket: {
-        logLevel: lib.getElse(config, 'loglevel', 'info'),
+        logLevel: lib.getElse(config, 'general.loglevel', 'info'),
       },
       store: {
-        logLevel: lib.getElse(config, 'loglevel', 'info'),
+        logLevel: lib.getElse(config, 'general.loglevel', 'info'),
       },
       query: {
-        logLevel: lib.getElse(config, 'loglevel', 'info'),
+        logLevel: lib.getElse(config, 'general.loglevel', 'info'),
       },
       compact: {
-        logLevel: lib.getElse(config, 'loglevel', 'info'),
+        logLevel: lib.getElse(config, 'general.loglevel', 'info'),
       },
     },
   },
