@@ -1135,7 +1135,7 @@ function help() {
   echo "envrc - create .envrc file for direnv to change kubecontexts and to set REMOTE_REPO"
   echo "update_kubeconfig - modify context and user for kubeconfig"
   echo "envoy - show envoy config"
-  echo "mesh - bootstrap flux"
+  echo "flux - bootstrap flux"
   echo "service_accounts - create service accounts"
   echo "create_key - create a new Amazon KMS key for the cluster"
   echo "vpa - install vpa"
@@ -1381,7 +1381,7 @@ case $cmd in
     clone_remote
     get_vpc
     ;;
-  mesh)
+  flux)
     check_remote_repo
     setup_tmpdir
     set_template_dir
