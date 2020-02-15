@@ -3,8 +3,8 @@ local k8s = import '../../lib/k8s.jsonnet';
 
 local helmrelease(config, prev) = k8s.helmrelease('tidebot', 'tidebot', '0.2.0', 'https://raw.githubusercontent.com/tidepool-org/tidepool-helm/master/') {
   local tidebot = config.pkgs.tidebot,
-  metadata: {
-    annotations: {
+  metadata+: {
+    annotations+: {
       'fluxcd.io/automated': 'true',
       'repository.fluxcd.io/slack-tidebot': 'deployment.image',
       'fluxcd.io/tag.slack-tidebot': lib.getElse(tidebot, 'gitops', 'glob:master-*'),
