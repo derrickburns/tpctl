@@ -1,5 +1,5 @@
 local lib = import '../../lib/lib.jsonnet';
-local lib = import '../../lib/k8s.jsonnet';
+local k8s = import '../../lib/k8s.jsonnet';
 
 local helmrelease(config, prev) = k8s.helmrelease('tidebot', 'tidebot', '0.2.0', 'https://raw.githubusercontent.com/tidepool-org/tidepool-helm/master/') {
   local tidebot = config.pkgs.tidebot,
