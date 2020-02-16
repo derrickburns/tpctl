@@ -419,13 +419,13 @@ function make_asset_bucket() {
   if [ $? -ne 0 ]
   then
     start "creating asset bucket $asset_bucket"
-    aws s3 mb s3://$asset_bucket
-	expect_success "Cannot create asset bucket"
+    aws s3 mb s3://$asset_bucket >/dev/null 2>&1
+    expect_success "Cannot create asset bucket"
     complete "created asset bucket $asset_bucket"
 
     start "copying dev assets into $asset_bucket"
     aws s3 cp s3://tidepool-dev-asset s3://$asset_bucket
-	expect_success "Cannot cp dev assets to asset bucket"
+    expect_success "Cannot cp dev assets to asset bucket"
     complete "created asset bucket $asset_bucket"
   fi
 }
@@ -438,8 +438,8 @@ function make_data_bucket() {
   if [ $? -ne 0 ]
   then
     start "creating data bucket $data_bucket"
-    aws s3 mb s3://$data_bucket
-	expect_success "Cannot create data bucket"
+    aws s3 mb s3://$data_bucket >/dev/null 2>&1
+    expect_success "Cannot create data bucket"
     complete "created data bucket $data_bucket"
   fi
 }
