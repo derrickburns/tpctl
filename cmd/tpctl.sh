@@ -5,7 +5,7 @@
 
 set -o pipefail
 export FLUX_FORWARD_NAMESPACE=flux
-export REVIEWERS="derrickburns pazaan jamesraby"
+export REVIEWERS="derrickburns pazaan jamesraby todd"
 
 function envoy {
   glooctl proxy served-config
@@ -1004,34 +1004,66 @@ function set_chart_dir() {
   fi
 }
 
-# generate random secrets
-function randomize_secrets() {
-  operation=$1
+# get the name of the environment that is being shadowed, return empty string if no such environment
+function get_shadow_sender() {
+  local env=$1
+  local val=$(yq r values.yaml -j environments.${env}.tidepool.shadow.enabled | sed -e 's/"//g' -e "s/'//g")
+  if [ $? -ne 0 -o "$val" == "null" -o "$val" == "" ]; then
+    echo ""
+  fi
+  local val=$(yq r values.yaml -j environments.${env}.tidepool.shadow.sender | sed -e 's/"//g' -e "s/'//g")
+  if [ $? -ne 0 -o "$val" == "null" -o "$val" == "" ]; then
+    echo ""
+  else
+    echo $val
+  fi
+}
+
+function forward_shadow_secrets() {
+  local env
+  for env in $(get_environments); do
+    local sender=$(get_shadow_sender $env)
+    if [ -n $sender ]; then
+      for file in userdata; do
+	if [ ! -f secrets/${env}/${file}.yaml ]; then
+	  sops -d secrets/${sender}/${file}.yaml | yq w - metadata.namespace $env >secrets/${env}/${file}.yaml
+	  sops -e -i secrets/${env}/${file}.yaml
+	fi
+      done
+    fi
+  done
+}
+
+# generate random secrets,  if they do not already exist
+function generate_secrets() {
   set_chart_dir
   local cluster=$(get_cluster)
   local env
   mkdir -p secrets
+  forward_shadow_secrets
   for env in $(get_environments); do
-    local source=$(yq r values.yaml environments.${env}.tidepool.secrets.source)
-    if [ "$source" == "random" ]; then
-      complete "generating secrets for $env"
-      helm template --namespace $env --set gloo.enabled=false --set global.secret.generated=true $CHART_DIR -f $CHART_DIR/values.yaml | select_kind Secret >$TMP_DIR/x.yaml
-      local dir=$TMP_DIR/secrets
-      mkdir -p $dir 
-      pushd $dir >/dev/null 2>&1
-      separate_by_namespace < $TMP_DIR/x.yaml >/dev/null 2>&1
-      popd >/dev/null 2>&1
-      for file in $(find $dir -type f -print)
-      do
-	      b=${file#${TMP_DIR}/}
-	      mkdir -p $(dirname $b)
-	      sops --encrypt $file >$b
-	      add_file $b
+    start "generating secrets for $env"
+    helm template --namespace $env --set gloo.enabled=false --set global.secret.generated=true $CHART_DIR -f $CHART_DIR/values.yaml | select_kind Secret >$TMP_DIR/x.yaml
+    local dir=$TMP_DIR/secrets
+    mkdir -p $dir 
+    pushd $dir >/dev/null 2>&1
+    separate_by_namespace < $TMP_DIR/x.yaml >/dev/null 2>&1
+    popd >/dev/null 2>&1
+    for file in $(find $dir -type f -print)
+    do
+      b=${file#${TMP_DIR}/}
+      if [ ! -f $b ]
+      then
+	mkdir -p $(dirname $b)
+	sops --encrypt $file >$b
+	add_file $b
+      else
+        info "$b already exists, skipping"
+      fi
       done
       rm $TMP_DIR/x.yaml
       rm -r $dir
       complete "generated secrets for $env"
-    fi
   done
 }
 
@@ -1266,8 +1298,8 @@ case $cmd in
     check_remote_repo
     setup_tmpdir
     clone_remote
-    randomize_secrets
-    save_changes "Added random secrets"
+    generate_secrets
+    save_changes "Added secrets"
     ;;
   migrate_secrets)
     check_remote_repo
