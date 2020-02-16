@@ -250,27 +250,37 @@ local policyAndAccount(accountName, namespace, policy) = {
   },
 };
 
+local withBucketPolicy(config, env, bucket) = 
+  if lib.isShadow(env.tidepool)
+  then withBucketReadingPolicy(config, env, bucket)
+  else withBucketWritingPolicy(config, env, bucket);
+
 local blobServiceAccount(config, env, namespace) = (
   local bucket = lib.getElse(env, 'tidepool.buckets.data', dataBucket(config, namespace));
-  policyAndAccount('blob', namespace, withBucketWritingPolicy(config, env, bucket))
+  policyAndAccount('blob', namespace, withBucketPolicy(config, env, bucket))
 );
 
 local imageServiceAccount(config, env, namespace) = (
   local bucket = lib.getElse(env, 'tidepool.buckets.data', dataBucket(config, namespace));
-  policyAndAccount('image', namespace, withBucketWritingPolicy(config, env, bucket))
+  policyAndAccount('image', namespace, withBucketPolicy(config, env, bucket))
 
 );
 local jellyfishServiceAccount(config, env, namespace) = (
   local bucket = lib.getElse(env, 'tidepool.buckets.data', dataBucket(config, namespace));
-  policyAndAccount('jellyfish', namespace, withBucketWritingPolicy(config, env, bucket))
+  policyAndAccount('jellyfish', namespace, withBucketPolicy(config, env, bucket))
 );
 
+local withEmailPolicy(env) =
+  if lib.isShadow(env.tidepool)
+  then {}
+  else withSESPolicy();
+  
 local hydrophoneServiceAccount(config, env, namespace) = (
   local bucket = lib.getElse(env, 'tidepool.buckets.asset', assetBucket(config, namespace));
   policyAndAccount(
     'hydrophone',
     namespace,
-    withBucketReadingPolicy(config, env, bucket) + withSESPolicy()
+    withBucketReadingPolicy(config, env, bucket) + withEmailPolicy(env)
   )
 );
 
