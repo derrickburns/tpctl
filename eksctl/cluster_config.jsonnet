@@ -1,6 +1,7 @@
 // Generate eksctl ClusterConfig file with IAM policies and service accounts
 
 local lib = import '../lib/lib.jsonnet';
+local tplib = import '../pkgs/tidepool/lib.jsonnet';
 
 local values(obj) = [obj[field] for field in std.objectFields(obj)];
 
@@ -251,7 +252,7 @@ local policyAndAccount(accountName, namespace, policy) = {
 };
 
 local withBucketPolicy(config, env, bucket) = 
-  if lib.isShadow(env.tidepool)
+  if tplib.isShadow(env.tidepool)
   then withBucketReadingPolicy(config, env, bucket)
   else withBucketWritingPolicy(config, env, bucket);
 
@@ -271,7 +272,7 @@ local jellyfishServiceAccount(config, env, namespace) = (
 );
 
 local withEmailPolicy(env) =
-  if lib.isShadow(env.tidepool)
+  if tplib.isShadow(env.tidepool)
   then {}
   else withSESPolicy();
   
