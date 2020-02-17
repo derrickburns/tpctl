@@ -11,6 +11,18 @@ function envoy {
   glooctl proxy served-config
 }
 
+function update_utils {
+  start "updating cordns"
+  eksctl utils update-coredns -f config.yaml  --approve
+  complete "updated cordns"
+  start "updating aws-node"
+  eksctl utils update-aws-node -f config.yaml  --approve
+  complete "updated aws-node"
+  start "updating kube-proxy"
+  eksctl utils update-kube-proxy -f config.yaml  --approve
+  complete "updated kube-proxy"
+}
+
 function create_key {
   start "creating kms key"
   local cluster=$(get_cluster)
@@ -1125,7 +1137,7 @@ function await_deletion() {
 
 # show help
 function help() {
-  echo "$0 [-h|--help] (values|edit_values|config|edit_repo|cluster|flux|make_buckets|mesh|generate_secrets|upsert_plaintext_secrets|install_users|deploy_key|delete_cluster|await_deletion|remove_mesh|merge_kubeconfig|gloo_dashboard|diff|linkerd_check|sync|peering|vpc|update_kubeconfig|service_accounts|vpa|create_key)*"
+  echo "$0 [-h|--help] (values|edit_values|config|edit_repo|cluster|flux|make_buckets|mesh|generate_secrets|upsert_plaintext_secrets|install_users|deploy_key|delete_cluster|await_deletion|remove_mesh|merge_kubeconfig|gloo_dashboard|diff|linkerd_check|sync|peering|vpc|update_kubeconfig|service_accounts|vpa|create_key|update_utils)*"
   echo
   echo
   echo "So you want to built a Kubernetes cluster that runs Tidepool. Great!"
@@ -1166,6 +1178,7 @@ function help() {
   echo "diff - show recent git diff"
   echo "envrc - create .envrc file for direnv to change kubecontexts and to set REMOTE_REPO"
   echo "update_kubeconfig - modify context and user for kubeconfig"
+  echo "update_utils - update coredns, aws-node, and kube-proxy"
   echo "envoy - show envoy config"
   echo "flux - bootstrap flux"
   echo "service_accounts - create service accounts"
@@ -1446,6 +1459,10 @@ case $cmd in
     clone_remote
     create_key
     save_changes "Added kms key"
+    ;;
+  update_utils)
+    check_remote_repo
+    clone_remote
     ;;
   *)
     panic "unknown command: $param"
