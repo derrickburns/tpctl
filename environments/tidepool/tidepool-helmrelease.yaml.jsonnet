@@ -349,6 +349,7 @@ spec: {
       shoreline: lib.mergeList([common, {
         priorityClassName: "high-priority",
         deployment+: {
+          isShadow: lib.isTrue(env, 'shadow.enabled') && (lib.getElse(env, "shadow.sender", "") != ""),
           image: lib.getElse(prev, 'spec.values.shoreline.deployment.image', 'tidepool/shoreline:master-66e766fffb4058781a24740b6a809bb12e2d08a9'),
         },
       }, lib.getElse(env, 'shoreline', {})]),
