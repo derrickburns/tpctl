@@ -312,6 +312,7 @@ spec: {
           },
         },
         deployment+: {
+          replicas: 0,
           image: lib.getElse(prev, 'spec.values.migrations.deployment.image', 'tidepool/platform-migrations:master-8c8d9b39182b9edd9bafd987f50b254470840a8d'),
         },
       }, lib.getElse(env, 'migrations', {})]),
@@ -382,6 +383,7 @@ spec: {
 
       tools: lib.mergeList([common, {
         deployment+: {
+          replicas: 0,
           image: lib.getElse(prev, 'spec.values.tools.deployment.image', 'tidepool/platform-tools:master-8c8d9b39182b9edd9bafd987f50b254470840a8d'),
         },
       }, lib.getElse(env, 'tools', {})]),
