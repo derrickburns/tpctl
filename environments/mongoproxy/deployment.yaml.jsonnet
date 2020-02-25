@@ -117,7 +117,7 @@ local deployment(config, namespace) =
                 },
                 {
                   name: 'PORT',
-                  value: 27017,
+                  value: '27017',
                 },
               ],
             },
