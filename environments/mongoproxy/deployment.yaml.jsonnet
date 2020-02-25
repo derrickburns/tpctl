@@ -2,7 +2,7 @@ local lib = import '../../lib/lib.jsonnet';
 
 local deployment(config, namespace) =
   {
-    apiVersion: 'extensions/v1beta1',
+    apiVersion: 'apps/v1',
     kind: 'Deployment',
     metadata: {
       name: 'mongoproxy',
