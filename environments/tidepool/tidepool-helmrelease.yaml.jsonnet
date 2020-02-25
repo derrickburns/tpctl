@@ -115,8 +115,8 @@ spec: {
               s3: {
                 bucket: lib.getElse(env, 'buckets.data', dataBucket(config, namespace)),
               },
+              type: 's3',
             },
-            type: 's3',
           },
           image: lib.getElse(prev, 'spec.values.blob.deployment.image', 'tidepool/platform-blob:master-8c8d9b39182b9edd9bafd987f50b254470840a8d'),
         },
@@ -261,8 +261,8 @@ spec: {
               s3: {
                 bucket: lib.getElse(env, 'buckets.data', dataBucket(config, namespace)),
               },
+              type: 's3',
             },
-            type: 's3',
           },
           image: lib.getElse(prev, 'spec.values.image.deployment.image', 'tidepool/platform-image:master-8c8d9b39182b9edd9bafd987f50b254470840a8d'),
         },
@@ -282,8 +282,8 @@ spec: {
               s3: {
                 bucket: lib.getElse(env, 'buckets.data', dataBucket(config, namespace)),
               },
+              type: 's3',
             },
-            type: 's3',
           },
           image: lib.getElse(prev, 'spec.values.jellyfish.deployment.image', 'tidepool/jellyfish:master-737f1009a70fd3856e08c9b858ab86752a181b1d'),
         },
