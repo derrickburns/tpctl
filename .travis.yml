@@ -1,0 +1,7 @@
+sudo: false
+
+language: bash
+
+script:
+  - cd cmd
+  - ./artifact.sh
