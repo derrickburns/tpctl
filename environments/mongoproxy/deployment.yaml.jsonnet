@@ -8,6 +8,7 @@ local deployment(config, prev, namespace) =
       annotations: {
         'fluxcd.io/automated': "true",
         'fluxcd.io/tag.mongoproxy': "glob:master-*",
+        'secret.reloader.stakater.com/reload': 'mongoproxy',
       },
       name: 'mongoproxy',
       namespace: namespace,
