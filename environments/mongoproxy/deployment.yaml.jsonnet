@@ -46,7 +46,7 @@ local deployment(config, namespace) =
               ],
               env: [
                 {
-                  name: 'PORT',
+                  name: 'Port',
                   value: '27017',
                 },
               ],
