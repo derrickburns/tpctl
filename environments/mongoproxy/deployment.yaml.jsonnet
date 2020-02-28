@@ -6,8 +6,8 @@ local deployment(config, namespace) =
     kind: 'Deployment',
     metadata: {
       annotations: {
-        'fluxcd.io/automated': "true",
-        'fluxcd.io/tag.mongoproxy': "glob:master-*",
+        'fluxcd.io/automated': 'true',
+        'fluxcd.io/tag.mongoproxy': 'glob:master-*',
       },
       name: 'mongoproxy',
       namespace: namespace,
@@ -38,11 +38,11 @@ local deployment(config, namespace) =
                 containerPort: 27017,
               }],
               envFrom: [
-               { 
-                 secretRef: {
-                   name: mongoproxy
-                 }
-               }
+                {
+                  secretRef: {
+                    name: 'mongoproxy',
+                  },
+                },
               ],
               env: [
                 {
