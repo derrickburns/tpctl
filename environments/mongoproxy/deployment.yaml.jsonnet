@@ -5,6 +5,10 @@ local deployment(config, namespace) =
     apiVersion: 'apps/v1',
     kind: 'Deployment',
     metadata: {
+      annotations: {
+        'fluxcd.io/automated': "true",
+        'fluxcd.io/tag.mongoproxy': "glob:master-*",
+      },
       name: 'mongoproxy',
       namespace: namespace,
     },
