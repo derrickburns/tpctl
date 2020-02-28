@@ -29,10 +29,12 @@ local deployment(config, namespace) =
           },
         },
         spec: {
+          local containers = lib.getElse(prev, 'spec.template.spec.containers', []),
+          local image = if containers == [] then 'tidepool/mongoproxy:latest' else containers[0].image,
           containers: [
             {
               name: 'mongoproxy',
-              image: 'tidepool/mongoproxy:latest',
+              image: image,
               imagePullPolicy: 'IfNotPresent',
               ports: [{
                 containerPort: 27017,
