@@ -1,6 +1,6 @@
 local lib = import '../../lib/lib.jsonnet';
 
-local deployment(config, namespace) =
+local deployment(config, prev, namespace) =
   {
     apiVersion: 'apps/v1',
     kind: 'Deployment',
@@ -134,4 +134,4 @@ local deployment(config, namespace) =
     },
   };
 
-function(config, prev, namespace) deployment(config, namespace)
+function(config, prev, namespace) deployment(config, prev, namespace)
