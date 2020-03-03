@@ -16,6 +16,102 @@ local filterAnnotations(env, svcs) = {
   for svc in svcs
 };
 
+local proxyContainers = [ {
+  name: 'mongoproxy',
+  image: 'tidepool/mongoproxy:latest',
+  imagePullPolicy: 'Always',
+  ports: [{
+    containerPort: 27017,
+  }],
+  env: [
+    {
+      name: 'MONGO_SCHEME',
+      valueFrom: {
+        secretKeyRef: {
+          name: 'mongoproxy',
+          key: 'Scheme',
+        },
+      },
+    },
+    {
+      name: 'MONGO_ADDRESSES',
+      valueFrom: {
+        secretKeyRef: {
+          name: 'mongoproxy',
+          key: 'Addresses',
+        },
+      },
+    },
+    {
+      name: 'MONGO_USERNAME',
+      valueFrom: {
+        secretKeyRef: {
+          name: 'mongoproxy',
+          key: 'Username',
+        },
+      },
+    },
+    {
+      name: 'MONGO_PASSWORD',
+      valueFrom: {
+        secretKeyRef: {
+          name: 'mongoproxy',
+          key: 'Password',
+        },
+      },
+    },
+    {
+      name: 'MONGO_DATABASE',
+      valueFrom: {
+        secretKeyRef: {
+          name: 'mongo',
+          key: 'Database',
+        },
+      },
+    },
+    {
+      name: 'MONGO_OPT_PARAMS',
+      valueFrom: {
+        secretKeyRef: {
+          name: 'mongoproxy',
+          key: 'OptParams',
+        },
+      },
+    },
+    {
+      name: 'MONGO_TLS',
+      valueFrom: {
+        secretKeyRef: {
+          name: 'mongoproxy',
+          key: 'Tls',
+        },
+      },
+    },
+    {
+      name: 'MONGOPROXY_TIMEOUT',
+      valueFrom: {
+        secretKeyRef: {
+          name: 'mongoproxy',
+          key: 'Timeout',
+        },
+      },
+    },
+    {
+      name: 'MONGOPROXY_READONLY',
+      valueFrom: {
+        secretKeyRef: {
+          name: 'mongoproxy',
+          key: 'Readonly',
+        },
+      },
+    },
+    {
+      name: 'MONGOPROXY_PORT',
+      value: '27017',
+    },
+  ]
+} ];
+
 local helmrelease(config, prev, namespace) = {
   local env = mylib.tpFor(config, namespace), 
 
@@ -89,8 +185,11 @@ spec: {
     },
     releaseName: 'tidepool-%s' % namespace,
     values: {
+      //local extraContainers = if lib.isTrue(env, 'shadow.enabled') && (lib.getElse(env, "shadow.sender", "") != "") then proxyContainers else [],
+      local extraContainers = [],
 
       auth: lib.mergeList([ common, {
+        extraContainers: extraContainers,
         deployment+: {
           image: lib.getElse(prev, 'spec.values.auth.deployment.image', 'tidepool/platform-auth:master-8c8d9b39182b9edd9bafd987f50b254470840a8d'),
         },
@@ -103,6 +202,7 @@ spec: {
 	      }, lib.getElse(env, 'blip', {})]),
 
       blob: lib.mergeList([common, {
+        extraContainers: extraContainers,
         serviceAccount: {
           name: 'blob',
         },
@@ -123,6 +223,7 @@ spec: {
       }, lib.getElse(env, 'blob', {})]),
 
       data: lib.mergeList([common, {
+        extraContainers: extraContainers,
         resources: {
           requests: {
             memory: '256Mi',
@@ -141,6 +242,7 @@ spec: {
       dexcom: lib.getElse(env, 'dexcom', {}),
 
       export: lib.mergeList([common, {
+        extraContainers: extraContainers,
         resources: {
           requests: {
             memory: '256Mi',
@@ -157,6 +259,7 @@ spec: {
       }, lib.getElse(env, 'export', {})]),
 
       gatekeeper: lib.mergeList([common, {
+        extraContainers: extraContainers,
         resources: {
           requests: {
             memory: '256Mi',
@@ -223,12 +326,14 @@ spec: {
       },
 
       highwater: lib.mergeList([common, {
+        extraContainers: extraContainers,
         deployment+: {
           image: lib.getElse(prev, 'spec.values.highwater.deployment.image', 'tidepool/highwater:master-8db30b8b1e4ca759e8377de4a09dd9a6f6a5ce88'),
         },
       }, lib.getElse(env, 'highwater', {})]),
 
       hydrophone: lib.mergeList([common, {
+        extraContainers: extraContainers,
         serviceAccount: {
           name: 'hydrophone',
         },
@@ -249,6 +354,7 @@ spec: {
       }, lib.getElse(env, 'hydrophone', {})]),
 
       image: lib.mergeList([common, {
+        extraContainers: extraContainers,
         serviceAccount: {
           name: 'image',
         },
@@ -269,6 +375,7 @@ spec: {
       }, lib.getElse(env, 'image', {})]),
 
       jellyfish: lib.mergeList([common, {
+        extraContainers: extraContainers,
         serviceAccount: {
           name: 'jellyfish',
         },
@@ -296,12 +403,14 @@ spec: {
       },
 
       messageapi: lib.mergeList([common, {
+        extraContainers: extraContainers,
         deployment+: {
           image: lib.getElse(prev, 'spec.values.messageapi.deployment.image', 'tidepool/message-api:master-73e5dc0b12f03bc0ec1428cde45520317dbf4688'),
         },
       }, lib.getElse(env, 'messageapi', {})]),
 
       migrations: lib.mergeList([common, {
+        extraContainers: extraContainers,
         resources: {
           requests: {
             memory: '256Mi',
@@ -326,12 +435,14 @@ spec: {
       },
 
       notification: lib.mergeList([common, {
+        extraContainers: extraContainers,
         deployment+: {
           image: lib.getElse(prev, 'spec.values.notification.deployment.image', 'tidepool/platform-notification:master-8c8d9b39182b9edd9bafd987f50b254470840a8d'),
         },
       }, lib.getElse(env, 'notification', {})]),
 
       seagull: lib.mergeList([common, {
+        extraContainers: extraContainers,
         resources: {
           requests: {
             memory: '256Mi',
@@ -347,6 +458,7 @@ spec: {
       }, lib.getElse(env, 'seagull', {})]),
 
       shoreline: lib.mergeList([common, {
+        extraContainers: extraContainers,
         priorityClassName: "high-priority",
         deployment+: {
           isShadow: lib.isTrue(env, 'shadow.enabled') && (lib.getElse(env, "shadow.sender", "") != ""),
@@ -355,6 +467,7 @@ spec: {
       }, lib.getElse(env, 'shoreline', {})]),
 
       task: lib.mergeList([common, {
+        extraContainers: extraContainers,
         deployment+: {
           image: lib.getElse(prev, 'spec.values.task.deployment.image', 'tidepool/platform-task:master-8c8d9b39182b9edd9bafd987f50b254470840a8d'),
         },
@@ -367,6 +480,7 @@ spec: {
       },
 
       tidewhisperer: lib.mergeList([common, {
+        extraContainers: extraContainers,
         resources: {
           requests: {
             memory: '256Mi',
@@ -383,6 +497,7 @@ spec: {
       }, lib.getElse(env, 'tidewhisperer', {})]),
 
       tools: lib.mergeList([common, {
+        extraContainers: extraContainers,
         deployment+: {
           replicas: 0,
           image: lib.getElse(prev, 'spec.values.tools.deployment.image', 'tidepool/platform-tools:master-8c8d9b39182b9edd9bafd987f50b254470840a8d'),
@@ -390,6 +505,7 @@ spec: {
       }, lib.getElse(env, 'tools', {})]),
 
       user: lib.mergeList([common, {
+        extraContainers: extraContainers,
         deployment+: {
           image: lib.getElse(prev, 'spec.values.user.deployment.image', 'tidepool/platform-user:master-8c8d9b39182b9edd9bafd987f50b254470840a8d'),
         },
