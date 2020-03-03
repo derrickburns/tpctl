@@ -101,7 +101,7 @@ local daemonset(config) = {
               '-c',
               'cp /config-volume/..data/* /fluentd/etc',
             ],
-            image: 'busybox',
+            image: 'busybox:1.31.1',
             name: 'copy-fluentd-config',
             volumeMounts: [
               {
@@ -120,7 +120,7 @@ local daemonset(config) = {
               '-c',
               '',
             ],
-            image: 'busybox',
+            image: 'busybox:1.31.1',
             name: 'update-log-driver',
           },
         ],
