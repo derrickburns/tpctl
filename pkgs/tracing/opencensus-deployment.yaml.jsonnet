@@ -61,6 +61,10 @@ local deployment(config) = {
               {
                 containerPort: 9411,
               },
+              {
+                name: 'metrics',
+                containerPort: 8888,
+              },
             ],
             readinessProbe: {
               httpGet: {
