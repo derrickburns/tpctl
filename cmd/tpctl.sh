@@ -1,4 +1,4 @@
-#!/bin/bash -i
+#!/usr/bin/env bash -i
 #
 # Configure EKS cluster to run Tidepool services
 #
@@ -921,7 +921,7 @@ function make_users() {
   local account=$(get_aws_account)
 
   start "updating system masters"
-  declare -a users
+  declare -A users
   local user
   for user in $(get_iam_users); do
     local arn=arn:aws:iam::${account}:user/${user}
