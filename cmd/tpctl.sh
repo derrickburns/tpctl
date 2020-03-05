@@ -576,7 +576,7 @@ function template_files() {
       local newname=${filename%.jsonnet}
       add_file ${newname}
       local prev=$TMP_DIR/${newname}.json
-      as_yaml_else "$TMP_DIR/${newname}" "$prev" "{}"
+      as_json_else "$TMP_DIR/${newname}" "$prev" "{}"
       jsonnet --tla-code-file prev=$prev --tla-code config="$config" $fullpath | yq r - >${newname}
       expect_success "Templating failure $filename"
     fi
@@ -609,7 +609,7 @@ function make_cluster_config() {
   complete "created eksctl manifest"
 }
 
-function as_yaml_else {
+function as_json_else {
   local source=$1
   local dest=$2
   local default=$3
@@ -636,12 +636,12 @@ function environment_template_files() {
     local dir=environments/$env/$(dirname $filename)
     local file=$(basename $filename)
     mkdir -p $dir
-    if [ "${file: -13}" == ".yaml.jsonnet" ]; then
+    if [ "${filename: -13}" == ".yaml.jsonnet" ]; then
       local newbasename=${file%.jsonnet}
       local out=$dir/${newbasename}
       local prev=${TMP_DIR}/${newbasename}
       add_file ${out}
-      as_yaml_else "${TMP_DIR}/${dir}/${newbasename}" "${prev}" "{}"
+      as_json_else "${TMP_DIR}/${dir}/${newbasename}" "${prev}" "{}"
       jsonnet --tla-code-file prev=${prev} --tla-code config="$config" --tla-str namespace=$env $fullpath | yq r - >${out}
       expect_success "Templating failure $dir/$filename"
       rm ${prev}
