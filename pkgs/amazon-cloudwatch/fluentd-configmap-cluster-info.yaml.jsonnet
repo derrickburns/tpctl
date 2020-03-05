@@ -1,4 +1,4 @@
-local configmap(config) = {
+local configmap(config, namespace) = {
   apiVersion: 'v1',
   data: {
     'cluster.name': config.cluster.metadata.name,
@@ -7,8 +7,8 @@ local configmap(config) = {
   kind: 'ConfigMap',
   metadata: {
     name: 'cluster-info',
-    namespace: 'amazon-cloudwatch',
+    namespace: namespace,
   },
 };
 
-function(config, prev) configmap(config)
+function(config, prev, namespace) configmap(config, namespace)

@@ -1,8 +1,8 @@
 local lib = import '../../lib/lib.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 
-local helmrelease(config, prev) = k8s.helmrelease('tidebot', 'tidebot', '0.2.0', 'https://raw.githubusercontent.com/tidepool-org/tidepool-helm/master/') {
-  local tidebot = config.pkgs.tidebot,
+local helmrelease(config, prev, namespace) = k8s.helmrelease('tidebot', namespace, '0.2.0', 'https://raw.githubusercontent.com/tidepool-org/tidepool-helm/master/') {
+  local tidebot = config.namespaces[namespace].tidebot,
   metadata+: {
     annotations+: {
       'fluxcd.io/automated': 'true',
@@ -23,4 +23,4 @@ local helmrelease(config, prev) = k8s.helmrelease('tidebot', 'tidebot', '0.2.0',
   }, lib.getElse(tidebot, 'spec', {})),
 };
 
-function(config, prev) helmrelease(config, prev)
+function(config, prev, namespace) helmrelease(config, prev, namespace)

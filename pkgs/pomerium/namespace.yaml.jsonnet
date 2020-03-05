@@ -1,12 +1,12 @@
 local linkerd = import '../linkerd/lib.jsonnet';
 
-local namespace(config) = {
+local Namespace(config, name) = {
   apiVersion: 'v1',
   kind: 'Namespace',
   metadata: {
-    name: 'pomerium',
+    name: name,
     annotations: linkerd.annotations(config),
   },
 };
 
-function(config, prev) namespace(config)
+function(config, prev, namespace) Namespace(config, namespace)

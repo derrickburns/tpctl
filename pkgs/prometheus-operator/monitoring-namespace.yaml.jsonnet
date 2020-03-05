@@ -1,12 +1,12 @@
-local namespace(config) = {
+local Namespace(config, name) = {
   apiVersion: 'v1',
   kind: 'Namespace',
   metadata: {
     labels: {
-      name: 'monitoring',
+      name: name,
     },
-    name: 'monitoring',
+    name: name,
   },
 };
 
-function(config, prev) namespace(config)
+function(config, prev, namespace) Namespace(config, namespace)

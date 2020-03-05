@@ -1,6 +1,6 @@
 local lib = import '../../lib/lib.jsonnet';
 
-local servicemonitor(config) = {
+local servicemonitor(config, namespace) = {
   apiVersion: 'monitoring.coreos.com/v1',
   kind: 'PodMonitor',
   metadata: {
@@ -8,7 +8,7 @@ local servicemonitor(config) = {
       purpose: 'support',
     },
     name: 'jaeger-collector',
-    namespace: 'tracing',
+    namespace: namespace,
   },
   spec: {
     podMetricsEndpoints: [
@@ -23,12 +23,12 @@ local servicemonitor(config) = {
       },
     },
     namespaceSelector: {
-      matchNames: ['tracing'],
+      matchNames: [ namespace ],
     },
   },
 };
 
-function(config, prev)
+function(config, prev, namespace)
   if lib.isTrue(config, 'pkgs.prometheus.enabled')
-  then servicemonitor(config)
+  then servicemonitor(config, namespace)
   else {}

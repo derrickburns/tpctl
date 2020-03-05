@@ -2,8 +2,8 @@ local lib = import '../../lib/lib.jsonnet';
 
 local mylib = import 'lib.jsonnet';
 
-local virtualService(config) = {
-  local domain = mylib.rootDomain(config),
+local virtualService(config, namespace) = {
+  local domain = mylib.rootDomain(config, namespace),
   apiVersion: 'gateway.solo.io/v1',
   kind: 'VirtualService',
   metadata: {
@@ -12,14 +12,14 @@ local virtualService(config) = {
       type: 'pomerium',
     },
     name: 'authenticate',
-    namespace: 'pomerium',
+    namespace: namespace,
   },
   spec: {
     displayName: 'authenicate',
     sslConfig: {
       secretRef: {
         name: 'pomerium-tls',
-        namespace: 'pomerium',
+        namespace: namespace,
       },
       sniDomains: [
         'authenticate.%s' % domain,
@@ -40,7 +40,7 @@ local virtualService(config) = {
             single: {
               upstream: {
                 name: 'pomerium-authenticate',
-                namespace: 'pomerium',
+                namespace: namespace,
               },
             },
           },
@@ -50,4 +50,4 @@ local virtualService(config) = {
   },
 };
 
-function(config, prev) virtualService(config)
+function(config, prev, namespace) virtualService(config, namespace)

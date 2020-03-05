@@ -1,14 +1,14 @@
 local tracing = import '../tracing/lib.jsonnet';
 
-local namespace(config) = {
+local Namespace(config, name) = {
   apiVersion: 'v1',
   kind: 'Namespace',
   metadata: {
     labels: {
       app: 'gloo',
     },
-    name: 'gloo-system',
+    name: name,
   },
 };
 
-function(config, prev) namespace(config)
+function(config, prev, namespace) Namespace(config, namespace)

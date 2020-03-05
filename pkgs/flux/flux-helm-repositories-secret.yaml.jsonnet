@@ -114,12 +114,12 @@ local info = {
   ],
 };
 
-local fluxHelmRepos() = {
+local fluxHelmRepos(namespace) = {
   apiVersion: 'v1',
   kind: 'Secret',
   metadata: {
     name: 'flux-helm-repositories',
-    namespace: 'flux',
+    namespace: namespace,
   },
   type: 'Opaque',
   data: {
@@ -127,4 +127,4 @@ local fluxHelmRepos() = {
   },
 };
 
-function(config, prev) fluxHelmRepos()
+function(config, prev, namespace) fluxHelmRepos(namespace)

@@ -1,4 +1,4 @@
-local helmrelease(config) = {
+local helmrelease(config, namespace) = { // XXX use helmrelease lib func
   apiVersion: 'helm.fluxcd.io/v1',
   kind: 'HelmRelease',
   metadata: {
@@ -6,7 +6,7 @@ local helmrelease(config) = {
       'fluxcd.io/automated': 'true',
     },
     name: 'sumologic-fluentd',
-    namespace: 'sumologic',
+    namespace: namespace,
   },
   spec: {
     chart: {
@@ -36,7 +36,7 @@ local helmrelease(config) = {
     },
     sumologic: {
       envFromSecret: 'sumologic',
-      excludeNamespaceRegex: 'amazon-cloudwatch|external-dns|external-secrets|flux|kube-.*|linkerd|monitoring|reloader|sumologic',
+      excludeNamespaceRegex: 'amazon-cloudwatch|external-dns|external-secrets|flux|kube-.*|linkerd|monitoring|reloader|sumologic', // XXX generate
       readFromHead: false,
       sourceCategoryPrefix: 'kubernetes/%s/' % config.cluster.metadata.name,
 
@@ -44,4 +44,4 @@ local helmrelease(config) = {
   },
 };
 
-function(config, prev) helmrelease(config)
+function(config, prev, namespace) helmrelease(config, namespace)

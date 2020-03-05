@@ -1,6 +1,4 @@
-local lib = import '../../../../lib/lib.jsonnet';
-
-local pvc(config) = {
+local persistentvolumeclaim(namespace) = {
   apiVersion: 'v1',
   kind: 'PersistentVolumeClaim',
   metadata: {
@@ -20,11 +18,11 @@ local pvc(config) = {
     ],
     resources: {
       requests: {
-        storage: lib.getElse(config, 'pkgs.glooe-prometheus-server.storage', '32Gi')
+        storage: '64Gi',
       },
     },
     storageClassName: 'gp2-expanding',
   },
 };
 
-function(config,prev) pvc(config)
+function(config, prev, namespace) persistentvolumeclaim(namespace)

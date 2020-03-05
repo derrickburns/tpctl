@@ -30,4 +30,4 @@ local ClusterIssuer(config) = {
   },
 };
 
-function(config, prev) ClusterIssuer(config)
+function(config, prev, namespace) ClusterIssuer(config)

@@ -1,17 +1,17 @@
 local lib = import '../../lib/lib.jsonnet';
 
-local secret(config) = {
+local secret(config, namespace) = {
   apiVersion: 'v1',
   kind: 'Secret',
   metadata: {
-    name: config.pkgs.thanos.secret,
-    namespace: 'monitoring',
+    name: config.namespaces[namespace].thanos.secret,
+    namespace: namespace,
   },
   data: {
     'thanos.yaml': std.base64(std.manifestYamlDoc({
       type: 'S3',
       config: {
-        bucket: config.pkgs.thanos.bucket,
+        bucket: config.namespaces[namespace].thanos.bucket,
         endpoint: 's3.%s.amazonaws.com' % config.cluster.metadata.region,
         region: config.cluster.metadata.region,
         insecure: false,
@@ -31,5 +31,5 @@ local secret(config) = {
   },
 };
 
-function(config, prev)
-  if lib.isTrue(config, 'pkgs.prometheus.enabled') then secret(config) else {}
+function(config, prev, namespace)
+  if lib.isTrue(config, 'pkgs.prometheus.enabled') then secret(config, namespace) else {}

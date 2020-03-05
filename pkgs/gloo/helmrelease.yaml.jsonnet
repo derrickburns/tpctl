@@ -6,10 +6,10 @@ local linkerd = import '../linkerd/lib.jsonnet';
 local pom = import '../pomerium/lib.jsonnet';
 local tracing = import '../tracing/lib.jsonnet';
 
-local baseGatewayProxy(config, name) = {
+local baseGatewayProxy(config, namespace, name) = {
   kind: {
     deployment: {
-      replicas: lib.getElse(config, 'pkgs.gloo.proxies.' + name + '.replicas', 2),
+      replicas: lib.getElse(config.namespaces[namespace], 'gloo.proxies.' + name + '.replicas', 2),
     },
   },
   configMap: {
@@ -40,7 +40,7 @@ local baseGatewayProxy(config, name) = {
   tracing: tracing.envoy(config),
 };
 
-local genvalues(config) = {
+local genvalues(config, namespace) = {
   global: {
     glooStats: {
       enabled: true,
@@ -51,7 +51,7 @@ local genvalues(config) = {
     image: {
       pullPolicy: 'IfNotPresent',
       registry: 'quay.io/solo-io',
-      tag: config.pkgs.gloo.version,
+      tag: config.namespaces[namespace].gloo.version,
     },
   },
   settings: {
@@ -81,14 +81,14 @@ local genvalues(config) = {
     readGatewaysFromAllNamespaces: true,
     upgrade: false,
     validation: {
-      enabled: lib.getElse(config, 'pkgs.gloo.validation.enabled', false),
+      enabled: lib.getElse(config.namespaces[namespace], 'gloo.validation.enabled', false),
       failurePolicy: 'Ignore',
       secretName: 'gateway-validation-certs',
       alwaysAcceptResources: true,
     },
   },
   gatewayProxies+: {
-    pomeriumGatewayProxy: baseGatewayProxy(config, 'pomeriumGatewayProxy') {
+    pomeriumGatewayProxy: baseGatewayProxy(config, namespace, 'pomeriumGatewayProxy') {
       service+: {
         type: 'LoadBalancer',
         extraAnnotations+: {
@@ -105,12 +105,12 @@ local genvalues(config) = {
         },
       },
     },
-    internalGatewayProxy: baseGatewayProxy(config, 'internalGatewayProxy') {
+    internalGatewayProxy: baseGatewayProxy(config, namespace, 'internalGatewayProxy') {
       service+: {
         type: 'ClusterIP',
       },
     },
-    gatewayProxy: baseGatewayProxy(config, 'gatewayProxy') {
+    gatewayProxy: baseGatewayProxy(config, namespace, 'gatewayProxy') {
       service+: {
         type: 'LoadBalancer',
         extraAnnotations+: {
@@ -129,9 +129,9 @@ local genvalues(config) = {
   },
 };
 
-function(config, prev)
-  k8s.helmrelease('gloo', 'gloo-system', '1.3.3', 'https://storage.googleapis.com/solo-public-helm') {
+function(config, prev, namespace)
+  k8s.helmrelease('gloo', namespace, '1.3.3', 'https://storage.googleapis.com/solo-public-helm') {
     spec+: {
-      values: genvalues(config),
+      values: genvalues(config, namespace),
     },
   }

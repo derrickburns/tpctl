@@ -1,11 +1,11 @@
 local lib = import '../../lib/lib.jsonnet';
 
-local elasticsearch(config) = {
+local elasticsearch(config, namespace) = {
   apiVersion: 'elasticsearch.k8s.elastic.co/v1beta1',
   kind: 'Elasticsearch',
   metadata: {
     name: 'jaeger',
-    namespace: 'tracing',
+    namespace: namespace,
   },
   spec: {
     nodeSets: [
@@ -29,7 +29,7 @@ local elasticsearch(config) = {
               ],
               resources: {
                 requests: {
-                  storage: lib.getElse(config, 'pkgs.tracing.storage', '5Gi'),
+                  storage: lib.getElse(config.namespaces[namespace], 'tracing.storage', '5Gi'),
                 },
               },
               storageClassName: 'gp2-expanding',
@@ -42,4 +42,4 @@ local elasticsearch(config) = {
   },
 };
 
-function(config, prev) elasticsearch(config)
+function(config, prev, namespace) elasticsearch(config, namespace)

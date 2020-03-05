@@ -1,6 +1,6 @@
 local lib = import '../../../../lib/lib.jsonnet';
 
-local deployment(config) = {
+local deployment(config, namespace) = {
   apiVersion: 'apps/v1',
   kind: 'Deployment',
   metadata: {
@@ -12,7 +12,7 @@ local deployment(config) = {
       release: 'glooe',
     },
     name: 'glooe-prometheus-server',
-    namespace: 'gloo-system',
+    namespace: namespace,
   },
   spec: {
     replicas: 1,
@@ -54,7 +54,7 @@ local deployment(config) = {
           },
           {
             args: [
-              '--storage.tsdb.retention.time=%s' % lib.getElse(config, 'pkgs.glooe-prometheus-server.retention', '2d'),
+              '--storage.tsdb.retention.time=%s' % lib.getElse(config.namespaces[namespace], 'glooe-prometheus-server.retention', '2d'),
               '--config.file=/etc/config/prometheus.yml',
               '--storage.tsdb.path=/data',
               '--web.console.libraries=/etc/prometheus/console_libraries',
@@ -126,5 +126,5 @@ local deployment(config) = {
   },
 };
 
-function(config, prev) deployment(config)
+function(config, prev, namespace) deployment(config, namespace)
 

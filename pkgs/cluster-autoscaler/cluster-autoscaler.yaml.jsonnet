@@ -1,7 +1,7 @@
 local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
-local helmrelease(config) = k8s.helmrelease('cluster-autoscaler', 'kube-system', '6.6.1') {
+local helmrelease(config, namespace) = k8s.helmrelease('cluster-autoscaler', namespace, '6.6.1') {
   spec+: {
     values: {
       autoDiscovery: {
@@ -24,4 +24,4 @@ local helmrelease(config) = k8s.helmrelease('cluster-autoscaler', 'kube-system',
   },
 };
 
-function(config, prev) helmrelease(config)
+function(config, prev, namespace) helmrelease(config, namespace)

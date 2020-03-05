@@ -1,9 +1,9 @@
 local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
-local genvalues(config) = {
+local genvalues(config, namespace) = {
   image: {
-    tag: lib.getElse(config, 'pkgs.flux.version', '1.18.0'),
+    tag: lib.getElse(config.namespaces[namespace], 'flux.version', '1.18.0'),
   },
 
   helm: {
@@ -34,13 +34,13 @@ local genvalues(config) = {
     dry: false,
   },
 
-  additionalArgs: if lib.isTrue(config, 'pkgs.fluxcloud.enabled') then ['--connect=ws://fluxcloud'] else [],
+  additionalArgs: if lib.isTrue(config.namespaces[namespace], 'fluxcloud.enabled') then ['--connect=ws://fluxcloud'] else [],
 
   extraContainers:
-    if lib.isTrue(config, 'pkgs.fluxrecv.enabled') && lib.isTrue(config, 'pkgs.fluxrecv.sidecar')
+    if lib.isTrue(config.namespaces[namespace], 'fluxrecv.enabled') && lib.isTrue(config.namespaces[namespace], 'fluxrecv.sidecar')
     then [{
       name: 'recv',
-      image: 'fluxcd/flux-recv:%s' % lib.getElse(config, 'pkgs.fluxrecv.version', '0.3.0'),
+      image: 'fluxcd/flux-recv:%s' % lib.getElse(config.namespaces[namespace], 'fluxrecv.version', '0.3.0'),
       imagePullPolicy: 'IfNotPresent',
       args: ['--config=/etc/fluxrecv/fluxrecv.yaml'],
       ports: [{
@@ -54,7 +54,7 @@ local genvalues(config) = {
     else [],
 
   extraVolumes:
-    if lib.isTrue(config, 'pkgs.fluxrecv.enabled') && lib.isTrue(config, 'pkgs.fluxrecv.sidecar')
+    if lib.isTrue(config.namespaces[namespace], 'fluxrecv.enabled') && lib.isTrue(config.namespaces[namespace], 'fluxrecv.sidecar')
     then [{
       name: 'fluxrecv-config',
       secret: {
@@ -72,4 +72,4 @@ local genvalues(config) = {
   },
 };
 
-function(config, prev) k8s.helmrelease('flux', 'flux', '1.2.0', 'https://charts.fluxcd.io') + { spec+: { values: genvalues(config) } }
+function(config, prev, namespace) k8s.helmrelease('flux', namespace, '1.2.0', 'https://charts.fluxcd.io') + { spec+: { values: genvalues(config, namespace) } }

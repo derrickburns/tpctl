@@ -1,9 +1,9 @@
-local daemonset(config) = {
+local daemonset(config, namespace) = {
   apiVersion: 'apps/v1',
   kind: 'DaemonSet',
   metadata: {
     name: 'cloudwatch-agent',
-    namespace: 'amazon-cloudwatch',
+    namespace: namespace,
   },
   spec: {
     selector: {
@@ -141,4 +141,4 @@ local daemonset(config) = {
   },
 };
 
-function(config, prev) daemonset(config)
+function(config, prev, namespace) daemonset(config, namespace)

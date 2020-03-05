@@ -1,11 +1,11 @@
 local lib = import '../../lib/lib.jsonnet';
 
-local jaeger(config) = {
+local jaeger(config, namespace) = {
   apiVersion: 'jaegertracing.io/v1',
   kind: 'Jaeger',
   metadata: {
     name: 'jaeger',
-    namespace: 'tracing',
+    namespace: namespace,
   },
   spec: {
     strategy: 'production',
@@ -15,7 +15,7 @@ local jaeger(config) = {
     storage: {
       options: {
         es: {
-          'server-urls': 'https://jaeger-es-http.tracing:9200',
+          'server-urls': 'https://jaeger-es-http.%s:9200' % namespace,
           tls: {
             ca: '/es/certificates/ca.crt',
           },
@@ -45,7 +45,7 @@ local jaeger(config) = {
   },
 };
 
-function(config, prev)
+function(config, prev, namespace)
   if lib.getElse(config, 'pkgs.tracing.enabled', false)
-  then jaeger(config)
+  then jaeger(config, namespace)
   else {}

@@ -1,4 +1,4 @@
-local configmap(config) = {
+local configmap(config, namespace) = {
   apiVersion: 'v1',
   kind: 'ConfigMap',
   metadata: {
@@ -7,7 +7,7 @@ local configmap(config) = {
       component: 'oc-collector-conf',
     },
     name: 'oc-collector-conf',
-    namespace: 'tracing',
+    namespace: namespace,
   },
   data: {
     'oc-collector-config': std.manifestYamlDoc(
@@ -15,7 +15,7 @@ local configmap(config) = {
         'queued-exporters': {
           'jaeger-all-in-one': {
             'jaeger-thrift-http': {
-              'collector-endpoint': 'http://jaeger-collector.tracing:14268/api/traces',
+              'collector-endpoint': 'http://jaeger-collector.%s:14268/api/traces' % namespace,
               timeout: '5s',
             },
             'num-workers': 4,
@@ -34,4 +34,4 @@ local configmap(config) = {
   },
 };
 
-function(config, prev) configmap(config)
+function(config, prev, namespace) configmap(config, namespace)

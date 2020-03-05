@@ -1,6 +1,6 @@
 local lib = import '../../lib/lib.jsonnet';
 
-local servicemonitor(config) = {
+local servicemonitor(config, namespace) = {
   apiVersion: 'monitoring.coreos.com/v1',
   kind: 'ServiceMonitor',
   metadata: {
@@ -8,6 +8,7 @@ local servicemonitor(config) = {
       purpose: 'support',
     },
     name: 'certmanager',
+    namespace: namespace,
   },
   spec: {
     endpoints: [
@@ -26,7 +27,7 @@ local servicemonitor(config) = {
   },
 };
 
-function(config, prev)
+function(config, prev, namespace)
   if lib.isTrue(config, 'pkgs.prometheus.enabled')
-  then servicemonitor(config)
+  then servicemonitor(config, namespace)
   else {}

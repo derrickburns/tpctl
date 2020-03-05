@@ -1,21 +1,25 @@
 local lib = import '../../lib/lib.jsonnet';
 
 {
-  dnsNameForName(config, name)::
+  dnsNameForPkg(config, namespace, pkg)::
     lib.getElse(
-      config.pkgs[name].sso,
+      config.namespaces[namespace][pkg].sso,
       'dnsName',
-      '%s.%s' % [lib.getElse(config.pkgs[name].sso, 'externalName', name), config.cluster.metadata.domain]
+      '%s.%s' % [lib.getElse(config.namespaces[namespace][pkg].sso, 'externalName', pkg), config.cluster.metadata.domain]
     ),
 
-  dnsNames(config):: (
-    local pkgs = config.pkgs;
-    [$.dnsNameForName(config, x) for x in std.objectFields(pkgs) if std.objectHas(pkgs[x], 'sso') && lib.getElse(pkgs[x], 'enabled', false)]
+  dnsNamesForNamespace(config, namespace, pkgs):: (
+    [$.dnsNameForPkg(config, namespace, pkg) for pkg in std.objectFields(pkgs) if std.objectHas(pkgs[pkg], 'sso') && lib.isEnabled(pkgs[pkg])]
   ),
 
-  rootDomain(config):: lib.getElse(config, 'pkgs.pomerium.rootDomain', config.cluster.metadata.domain),
+  dnsNames(config):: (
+    local dnsNamesFor(namespace, pkgs) = $.dnsNamesForNamespace(config, namespace, pkgs);
+    std.flattenArrays(lib.values(std.mapWithKey(dnsNamesFor, config.namespaces)))
+  ),
 
-  expandPomerium(config):: config.pkgs.pomerium + $.expandPomeriumVirtualServices($.rootDomain(config)),
+  rootDomain(config, namespace):: lib.getElse(config, 'namespaces.' + namespace + '.pomerium.rootDomain', config.cluster.metadata.domain),
+
+  expand(config, pkg, namespace):: pkg + $.expandPomeriumVirtualServices($.rootDomain(config, namespace)),
 
   expandPomeriumVirtualServices(rootDomain):: {
     virtualServices: {

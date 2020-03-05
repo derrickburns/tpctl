@@ -1,6 +1,6 @@
 local lib = import '../../lib/lib.jsonnet';
 
-local podmonitor(config) = {
+local podmonitor(config, namespace) = {
   apiVersion: 'monitoring.coreos.com/v1',
   kind: 'PodMonitor',
   metadata: {
@@ -8,7 +8,7 @@ local podmonitor(config) = {
       purpose: 'support',
     },
     name: 'cadvisor',
-    namespace: 'cadvisor',
+    namespace: namespace,
   },
   spec: {
     podMetricsEndpoints: [
@@ -25,7 +25,7 @@ local podmonitor(config) = {
   },
 };
 
-function(config, prev)
+function(config, prev, namespace)
   if lib.getElse(config, 'pkgs.prometheus.enabled', false)
-  then podmonitor(config)
+  then podmonitor(config, namespace)
   else {}

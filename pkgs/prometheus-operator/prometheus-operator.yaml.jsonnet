@@ -1,11 +1,11 @@
 local lib = import '../../lib/lib.jsonnet';
 
-local Helmrelease(config) = {
+local helmrelease(config, namespace) = { // XXX use helmrelease lib func
   apiVersion: 'helm.fluxcd.io/v1',
   kind: 'HelmRelease',
   metadata: {
     name: 'prometheus-operator',
-    namespace: 'monitoring',
+    namespace: namespace,
   },
   spec: {
     chart: {
@@ -14,10 +14,10 @@ local Helmrelease(config) = {
       version: '8.7.0',
     },
     values+: {
-      grafana: lib.getElse(config, 'pkgs.prometheus-operator.grafana', {}),
-      alertmanager: lib.getElse(config, 'pkgs.prometheus-operator.alertmanager', {}),
+      grafana: lib.getElse(config.namespaces[namespace], 'prometheus-operator.grafana', {}),
+      alertmanager: lib.getElse(config.namespaces[namespace], 'prometheus-operator.alertmanager', {}),
     },
   },
 };
 
-function(config, prev) Helmrelease(config)
+function(config, prev, namespace) helmrelease(config, namespace)

@@ -2,28 +2,23 @@ local lib = import '../../lib/lib.jsonnet';
 
 local mylib = import 'lib.jsonnet';
 
-local dnsNames(config) = (
-  local domain = mylib.rootDomain(config);
+local dnsNames(config, namespace) = (
+  local domain = mylib.rootDomain(config, namespace);
   [
     'authenticate.%s' % domain,
     'authorize.%s' % domain,
   ]
-  + (
-    if lib.getElse(config, 'pkgs.pomerium.forwardauth.enabled', false)
-    then ['forwardauth.%s' % domain]
-    else []
-  )
   + mylib.dnsNames(config)
 );
 
-local certificate(config) = (
-  local names = dnsNames(config);
+local certificate(config, namespace) = (
+  local names = dnsNames(config, namespace);
   {
     apiVersion: 'cert-manager.io/v1alpha2',
     kind: 'Certificate',
     metadata: {
       name: 'pomerium-certificate',
-      namespace: 'pomerium',
+      namespace: namespace,
     },
     spec: {
       secretName: 'pomerium-tls',
@@ -37,4 +32,4 @@ local certificate(config) = (
   }
 );
 
-function(config, prev) certificate(config)
+function(config, prev, namespace) certificate(config, namespace)

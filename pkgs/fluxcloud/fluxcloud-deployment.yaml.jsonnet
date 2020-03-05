@@ -1,11 +1,11 @@
 local lib = import '../../lib/lib.jsonnet';
 
-local Deployment(config) = {
+local Deployment(config, namespace) = {
   apiVersion: 'apps/v1',
   kind: 'Deployment',
   metadata: {
     name: 'fluxcloud',
-    namespace: 'flux',
+    namespace: namespace,
     annotations: {
       'secret.reloader.stakater.com/reload': 'slack',
     },
@@ -39,18 +39,18 @@ local Deployment(config) = {
                 name: 'SLACK_URL',
                 valueFrom: {
                   secretKeyRef: {
-                    name: config.pkgs.fluxcloud.secret,
+                    name: config.namespaces[namespace].fluxcloud.secret,
                     key: 'url',
                   },
                 },
               },
               {
                 name: 'SLACK_CHANNEL',
-                value: lib.getElse(config, 'pkgs.fluxcloud.channel', '#flux-%s' % config.cluster.metadata.name),
+                value: lib.getElse(config.namespaces[namespace], 'fluxcloud.channel', '#flux-%s' % config.cluster.metadata.name),
               },
               {
                 name: 'SLACK_USERNAME',
-                value: lib.getElse(config, 'pkgs.fluxcloud.username', 'derrickburns'),
+                value: lib.getElse(config.namespaces[namespace], 'fluxcloud.username', 'derrickburns'),
               },
               {
                 name: 'SLACK_ICON_EMOJI',
@@ -72,4 +72,4 @@ local Deployment(config) = {
   },
 };
 
-function(config, prev) Deployment(config)
+function(config, prev, namespace) Deployment(config, namespace)

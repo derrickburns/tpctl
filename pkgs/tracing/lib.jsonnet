@@ -1,7 +1,7 @@
 local lib = import '../../lib/lib.jsonnet';
 
 {
-  address(config):: 'oc-collector.tracing:55678',
+  address(config):: 'oc-collector.%s:55678' % config.pkgs.tracing.namespace,
 
   envoy(config):: if lib.getElse(config, 'pkgs.tracing.enabled', false) then {
     provider: {

@@ -1,11 +1,11 @@
 local lib = import '../../lib/lib.jsonnet';
 
-local prometheus(config) = {
+local prometheus(config, namespace) = {
   apiVersion: 'monitoring.coreos.com/v1',
   kind: 'Prometheus',
   metadata: {
     name: 'prometheus',
-    namespace: 'monitoring',
+    namespace: namespace,
   },
   spec: {
     enableAdminAPI: false,
@@ -13,7 +13,7 @@ local prometheus(config) = {
       cluster: config.cluster.metadata.name,
       region: config.cluster.metadata.region,
     },
-    externalUrl: 'http://prometheus.monitoring',
+    externalUrl: 'http://prometheus.%s' % namespace, 
     podMonitorSelector: {
       matchLabels: {},
     },
@@ -32,14 +32,14 @@ local prometheus(config) = {
     serviceMonitorSelector: {
       matchLabels: {},
     },
-    thanos: if lib.isTrue(config, 'pkgs.thanos.enabled') then {
+    thanos: if lib.isTrue(config.namespaces[namespace], 'thanos.enabled') then {
       objectStorageConfig: {
         key: 'thanos.yaml',
-        name: config.pkgs.thanos.secret,
+        name: config.namespaces[namespace].thanos.secret,
       },
       version: 'v0.5.0',
     } else {},
   },
 };
 
-function(config, prev) prometheus(config)
+function(config, prev, namespace) prometheus(config, namespace)

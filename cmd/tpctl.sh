@@ -1,4 +1,4 @@
-#!/usr/bin/env bash -i
+#!/usr/bin/env bash
 #
 # Configure EKS cluster to run Tidepool services
 #
@@ -331,18 +331,6 @@ function set_template_dir() {
   fi
 }
 
-# clone secret-map repo, export SM_DIR
-function clone_secret_map() {
-  if [[ ! -d $SM_DIR ]]; then
-    start "cloning secret-map"
-    pushd $TMP_DIR >/dev/null 2>&1
-    git clone $(repo_with_token https://github.com/tidepool-org/secret-map)
-    SM_DIR=$(pwd)/secret-map
-    popd >/dev/null 2>&1
-    complete "cloned secret-map"
-  fi
-}
-
 # get values file
 function get_config() {
   yq r values.yaml -j
@@ -399,9 +387,19 @@ function get_aws_account() {
   require_value "aws.accountNumber"
 }
 
-# retrieve list of AWS environments to create
+# retrieve full path of tidepool environments 
+function get_environments_path() {
+  yq r values.yaml -p p namespaces.*.tidepool
+}
+
+# retrieve names of all namespaces to create
+function get_namespaces() {
+  yq r values.yaml -p p namespaces.*  | sed -e "s/namespaces\.//" 
+}
+
+# retrieve names of tidepool environments
 function get_environments() {
-  yq r values.yaml environments | sed -e "/^  .*/d" -e s/:.*//
+  yq r values.yaml -p p namespaces.*.tidepool | sed -e "s/namespaces\.//" -e "s/\..*//"
 }
 
 # retrieve list of K8s system masters
@@ -413,7 +411,7 @@ function get_iam_users() {
 function get_bucket() {
   local env=$1
   local kind=$2
-  local bucket=$(yq r values.yaml environments.${env}.tidepool.buckets.${kind} | sed -e "/^  .*/d" -e s/:.*//)
+  local bucket=$(yq r values.yaml namespaces.${env}.tidepool.buckets.${kind} | sed -e "/^  .*/d" -e s/:.*//)
   if [ "$bucket" == "null" ]; then
     local cluster=$(get_cluster)
     echo "tidepool-${cluster}-${env}-${kind}"
@@ -425,7 +423,7 @@ function get_bucket() {
 # create asset bucket and populate it, if the bucket does not already exist
 function make_asset_bucket() {
   local env=$1
-  local create=$(yq r values.yaml environments.${env}.tidepool.buckets.create | sed -e "/^  .*/d" -e s/:.*//)
+  local create=$(yq r values.yaml namespaces.${env}.tidepool.buckets.create | sed -e "/^  .*/d" -e s/:.*//)
   local asset_bucket=$(get_bucket $env asset)
   aws s3 ls s3://$asset_bucket >/dev/null 2>&1
   if [ $? -ne 0 ]
@@ -482,7 +480,7 @@ function update_kubeconfig() {
   start "updating kubeconfig"
   local config=$(get_config)
   yq r ./kubeconfig.yaml -j >$TMP_DIR/kubeconfig.yaml
-  jsonnet --tla-code-file prev=${TMP_DIR}/kubeconfig.yaml --tla-code config="$config" ${TEMPLATE_DIR}/eksctl/kubeconfig.jsonnet | yq r - >kubeconfig.yaml
+  jsonnet --tla-code-file prev=${TMP_DIR}/kubeconfig.yaml --tla-code config="$config" ${TEMPLATE_DIR}/eksctl/kubeconfig.jsonnet | yq r -P - >kubeconfig.yaml
   expect_success "updating kubeconfig failed"
   complete "updated kubeconfig"
 }
@@ -558,31 +556,6 @@ function enabled_pkgs() {
   echo $pkgs
 }
 
-# make K8s manifest file for shared services given config, path to directory, and prefix to strip
-function template_files() {
-  local config=$1
-  local path=$2
-  local prefix=$3
-  local fullpath
-  local cluster=$(get_cluster)
-  local region=$(get_region)
-  for fullpath in $(find $path -type f -print); do
-    local filename=${fullpath#$prefix}
-    mkdir -p $(dirname $filename)
-    if [ "${filename: -5}" == ".yaml" ]; then
-      add_file $filename
-      cp $fullpath $filename
-    elif [ "${filename: -13}" == ".yaml.jsonnet" ]; then
-      local newname=${filename%.jsonnet}
-      add_file ${newname}
-      local prev=$TMP_DIR/${newname}.json
-      as_json_else "$TMP_DIR/${newname}" "$prev" "{}"
-      jsonnet --tla-code-file prev=$prev --tla-code config="$config" $fullpath | yq r - >${newname}
-      expect_success "Templating failure $filename"
-    fi
-  done
-}
-
 # make K8s manifest files for shared services
 function make_shared_config() {
   start "creating package manifests"
@@ -590,10 +563,6 @@ function make_shared_config() {
   cp -r pkgs $TMP_DIR 
   rm -rf flux gloo
   rm -rf pkgs
-  local dir
-  for dir in $(enabled_pkgs $TEMPLATE_DIR/pkgs pkgs); do
-    template_files "$config" $TEMPLATE_DIR/pkgs/$dir $TEMPLATE_DIR/
-  done
   complete "created package manifests"
 }
 
@@ -604,7 +573,10 @@ function make_cluster_config() {
   local config=$(get_config)
   start "creating eksctl manifest"
   add_file "config.yaml"
-  jsonnet --tla-code config="$config" ${TEMPLATE_DIR}/eksctl/cluster_config.jsonnet | yq r - >config.yaml
+  serviceAccountFile=$TMP_DIR/serviceaccounts
+  # XXX add service account yaml
+  make_policy_manifests | yq r - -j  | jq  >$serviceAccountFile
+  jsonnet --tla-code config="$config" --tla-code-file serviceaccounts="$serviceAccountFile"  ${TEMPLATE_DIR}/eksctl/cluster_config.jsonnet | yq r -P - >config.yaml
   expect_success "Templating failure eksctl/cluster_config.jsonnet"
   complete "created eksctl manifest"
 }
@@ -625,44 +597,83 @@ function as_json_else {
   fi
 }
 
-# make K8s manifests for enviroments given config, path, prefix, and environment name
-function environment_template_files() {
+# make service accounts  for namespace given config, path, prefix, and environment name
+function template_service_accounts() {
   local config=$1
   local path=$2
   local prefix=$3
   local env=$4
   for fullpath in $(find $path -type f -print); do
     local filename=${fullpath#$prefix}
-    local dir=environments/$env/$(dirname $filename)
+    local dir=pkgs/$env/$(dirname $filename)
     local file=$(basename $filename)
     mkdir -p $dir
-    if [ "${filename: -13}" == ".yaml.jsonnet" ]; then
+    if [ "${filename: -14}" == "policy.jsonnet" ]; then
+      local newbasename=${file%.jsonnet}
+      local out=$dir/${newbasename}
+      add_file ${out}
+      jsonnet --tla-code config="$config" --tla-str namespace=$env $fullpath | jq '[.]' | yq r - --prettyPrint >$out
+      cat $out
+      expect_success "Templating failure $dir/$filename"
+    fi
+  done
+}
+
+# make K8s manifests for namespace given config, path, prefix, and environment name
+function template_files() {
+  local config=$1
+  local path=$2
+  local prefix=$3
+  local env=$4
+  for fullpath in $(find $path -type f -print); do
+    local filename=${fullpath#$prefix}
+    local dir=pkgs/$env/$(dirname $filename)
+    local file=$(basename $filename)
+    mkdir -p $dir
+    if [ "${filename: -5}" == ".yaml" ]; then
+      add_file $dir/$file
+      cp $fullpath $dir/$file
+    elif [ "${filename: -13}" == ".yaml.jsonnet" ]; then
       local newbasename=${file%.jsonnet}
       local out=$dir/${newbasename}
       local prev=${TMP_DIR}/${newbasename}
       add_file ${out}
       as_json_else "${TMP_DIR}/${dir}/${newbasename}" "${prev}" "{}"
-      jsonnet --tla-code-file prev=${prev} --tla-code config="$config" --tla-str namespace=$env $fullpath | yq r - >${out}
-      expect_success "Templating failure $dir/$filename"
+      jsonnet --tla-code-file prev=${prev} --tla-code config="$config" --tla-str namespace=$env $fullpath | yq r - --prettyPrint  >${out}
+      expect_success "Templating failure ${filename}"
       rm ${prev}
     fi
   done
 }
 
-# make K8s manifests for environments
-function make_environment_config() {
+# make policy manifests 
+function make_policy_manifests() {
   local config=$(get_config)
   local env
-  if [ -d environments ]
+  for ns in $(get_namespaces); do
+    start "creating $ns policy files "
+    for dir in $(enabled_pkgs $TEMPLATE_DIR/pkgs namespaces.$ns); do
+      template_service_accounts "$config" $TEMPLATE_DIR/pkgs/$dir $TEMPLATE_DIR/pkgs/ $ns
+    done
+    complete "created $ns policy files"
+  done
+}
+
+
+# make K8s manifests 
+function make_namespace_config() {
+  local config=$(get_config)
+  local env
+  if [ -d environments ]   # XXX rename to namespaces after fixing tidebot
   then
     mv environments $TMP_DIR
   fi
-  for env in $(get_environments); do
-    start "creating $env environment manifests"
-    for dir in $(enabled_pkgs $TEMPLATE_DIR/environments environments.$env); do
-      environment_template_files "$config" $TEMPLATE_DIR/environments/$dir $TEMPLATE_DIR/environments/ $env
+  for ns in $(get_namespaces); do
+    start "creating $ns namespace manifests"
+    for dir in $(enabled_pkgs $TEMPLATE_DIR/pkgs namespaces.$ns); do
+      template_files "$config" $TEMPLATE_DIR/pkgs/$dir $TEMPLATE_DIR/pkgs/ $ns
     done
-    complete "created $env environment manifests"
+    complete "created $ns namespace manifests"
   done
 }
 
@@ -671,7 +682,7 @@ function make_config() {
   start "creating manifests"
   make_shared_config
   make_cluster_config
-  make_environment_config
+  make_namespace_config
   complete "created manifests"
 }
 
@@ -894,25 +905,6 @@ function make_mesh() {
   complete "installed mesh"
 }
 
-# get values from legacy environments
-function get_legacy_values() {
-  local kind=$1
-  local cluster=$(get_cluster)
-  local env
-  for env in $(get_environments); do
-    local source=$(yq r values.yaml environments.${env}.tidepool.secrets.source)
-    if [ "$source" == "null" -o "$source" == "" -o "$source" == "random" ]; then
-      continue
-    fi
-    if [ "$source" == "dev" -o "$source" == "stg" -o "$source" == "int" -o "$source" == "prd" ]; then
-      $SM_DIR/bin/git_to_map $source | $SM_DIR/bin/map_to_k8s $env $kind
-    else
-      panic "Unknown secret source $source"
-    fi
-  done
-}
-
-
 # create k8s system master users [IDEMPOTENT]
 function make_users() {
   local group=system:masters
@@ -1019,11 +1011,11 @@ function set_chart_dir() {
 # get the name of the environment that is being shadowed, return empty string if no such environment
 function get_shadow_sender() {
   local env=$1
-  local val=$(yq r values.yaml -j environments.${env}.tidepool.shadow.enabled | sed -e 's/"//g' -e "s/'//g")
+  local val=$(yq r values.yaml -j namespaces.${env}.tidepool.shadow.enabled | sed -e 's/"//g' -e "s/'//g")
   if [ $? -ne 0 -o "$val" == "null" -o "$val" == "" ]; then
     echo ""
   fi
-  local val=$(yq r values.yaml -j environments.${env}.tidepool.shadow.sender | sed -e 's/"//g' -e "s/'//g")
+  local val=$(yq r values.yaml -j namespaces.${env}.tidepool.shadow.sender | sed -e 's/"//g' -e "s/'//g")
   if [ $? -ne 0 -o "$val" == "null" -o "$val" == "" ]; then
     echo ""
   else
@@ -1313,15 +1305,6 @@ case $cmd in
     clone_remote
     generate_secrets
     save_changes "Added secrets"
-    ;;
-  migrate_secrets)
-    check_remote_repo
-    setup_tmpdir
-    clone_remote
-    clone_secret_map
-    establish_ssh
-    migrate_secrets
-    save_changes "Added migrated secrets"
     ;;
   install_users)
     check_remote_repo

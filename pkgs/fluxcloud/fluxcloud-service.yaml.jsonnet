@@ -1,9 +1,9 @@
-local service(config) = {
+local service(config, namespace) = {
   apiVersion: 'v1',
   kind: 'Service',
   metadata: {
     name: 'fluxcloud',
-    namespace: 'flux',
+    namespace: namespace,
   },
   spec: {
     selector: {
@@ -19,4 +19,4 @@ local service(config) = {
   },
 };
 
-function(config, prev) service(config)
+function(config, prev, namespace) service(config, namespace)

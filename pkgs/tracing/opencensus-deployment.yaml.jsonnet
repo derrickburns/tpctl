@@ -1,6 +1,6 @@
 local lib = import '../../lib/lib.jsonnet';
 
-local deployment(config) = {
+local deployment(config, namespace) = {
   apiVersion: 'apps/v1',
   kind: 'Deployment',
   metadata: {
@@ -9,7 +9,7 @@ local deployment(config) = {
       component: 'oc-collector',
     },
     name: 'oc-collector',
-    namespace: 'tracing',
+    namespace: namespace,
   },
   spec: {
     minReadySeconds: 5,
@@ -109,4 +109,4 @@ local deployment(config) = {
   },
 };
 
-function(config, prev) deployment(config)
+function(config, prev, namespace) deployment(config, namespace)

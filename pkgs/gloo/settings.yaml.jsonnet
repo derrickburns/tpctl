@@ -2,7 +2,7 @@ local lib = import '../../lib/lib.jsonnet';
 
 // Direct external authorization requests *back* to the proxy after adding the x-tidepool-extauth-request header.
 // Then, a virtual service that selects requests based on that header will rewrite the request as needed and forward it to authorization server.
-local settings(config) = {
+local settings(config, namespace) = {
   apiVersion: 'gloo.solo.io/v1',
   kind: 'Settings',
   metadata: {
@@ -10,11 +10,11 @@ local settings(config) = {
       app: 'gloo',
     },
     name: 'default',
-    namespace: 'gloo-system',
+    namespace: namespace,
   },
   local extauth =
-    if lib.getElse(config, 'pkgs.pomerium.enabled', false) &&
-       lib.getElse(config, 'pkgs.pomerium.forwardauth.enabled', false)
+    if lib.getElse(config.namespaces[namespace], 'pomerium.enabled', false) &&
+       lib.getElse(config.namespace[namespace], 'pomerium.forwardauth.enabled', false)
     then {
       extauth: {
         extauthzServerRef: {
@@ -49,7 +49,7 @@ local settings(config) = {
       fdsMode: 'WHITELIST',
     },
     discoveryNamespace: 'gloo-system',
-    gateway: if lib.getElse(config, 'pkgs.gloo.validation.enabled', false) then {
+    gateway: if lib.getElse(config.namespaces[namespace], 'gloo.validation.enabled', false) then {
       readGatewaysFromAllNamespaces: true,
       validation: {
         proxyValidationServerAddr: 'gloo:9988',
@@ -71,4 +71,4 @@ local settings(config) = {
   },
 };
 
-function(config, prev) settings(config)
+function(config, prev, namespace) settings(config, namespace)

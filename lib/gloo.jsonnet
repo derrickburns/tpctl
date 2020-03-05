@@ -1,25 +1,35 @@
 local lib = import 'lib.jsonnet';
 
 {
-  // provide an array of virtual services for a config
-  virtualServices(config):: (
-    $.virtualServicesForPkgs(lib.environments(config)) +
-    $.virtualServicesForPkgs(lib.packages(config))
+  vsForNamespacedPackage(name, pkg, package):: (
+
+    // add virtual service name and namespace as key/value pairs in each virtual service
+    local taggedVsList(vsmap) = lib.addName(lib.addNamespace(vsmap, name));
+
+    // flatten tagged virtual service map into a simple list
+    local taggedVsMap(vsmap) = lib.values(taggedVsList(vsmap));
+
+    // filter out disabled virtual services
+    local enabledVsList(vsmap) =
+      lib.pruneList(std.filter(function(vs) lib.isEnabled(vs), taggedVsMap(vsmap)));
+
+    // filter out disabled packages
+    std.filter(
+      function(x) lib.isEnabled(package),
+      enabledVsList(lib.getElse(package, 'virtualServices', {}))
+    )
   ),
 
-  // provide array of virtual service maps for array of packages
-  virtualServicesForPkgs(pkgs)::
-    std.flattenArrays(lib.values(std.mapWithKey($.virtualServicesForPkg, pkgs))),
-
-  // provide array of virtual service maps for package
-  // use the name of the package as the namespace if the namespace is not explicitly declared
-  // use the key of the virtual service object as the name of the virtual service
-  virtualServicesForPkg(name, pkg)::
-    std.filter(function(x) lib.isTrue(x, 'enabled'), 
-      lib.pruneList($.virtualServicesToList(lib.getElse(pkg, 'virtualServices', {}), lib.getElse(pkg, 'namespace', name)))),
+  // provide an array of virtual services for a config
+  virtualServices(config):: (
+    local vsForNamespace(name, namespace) = (
+      local vsForPackage(pkg, package) = $.vsForNamespacedPackage(name, pkg, package);
+      std.flattenArrays(lib.values(std.mapWithKey(vsForPackage, namespace)))
+    );
+    std.flattenArrays(lib.values(std.mapWithKey(vsForNamespace, config.namespaces)))
+  ),
 
   // flatten a map after adding name and namespace fields
-  virtualServicesToList(map, ns):: std.filter(function(x) lib.getElse(x, 'enabled', false), lib.values(lib.addName(lib.addNamespace(map, ns)))),
 
   virtualServicesForSelector(vss, selector)::
     std.filter(function(x) lib.matches(x.labels, selector), vss),
@@ -63,7 +73,7 @@ local lib = import 'lib.jsonnet';
   routeOptions(vs):: lib.getElse(vs, 'routeOptions', {}),
 
   routes(vs):: [
-    { matchers: [{ prefix: '/' }] } + $.route(vs) + { options+: $.routeOptions(vs) }
+    { matchers: [{ prefix: '/' }] } + $.route(vs) + { options+: $.routeOptions(vs) },
   ],
 
   route(vs)::
@@ -77,10 +87,10 @@ local lib = import 'lib.jsonnet';
         name: vs.delegateAction,
       },
     } else if std.objectHas(vs, 'routeAction') then {
-      options: if std.objectHas(vs, 'timeout') then { timeout: vs.timeout, } else {},
+      options: if std.objectHas(vs, 'timeout') then { timeout: vs.timeout } else {},
       routeAction: vs.routeAction,
     } else {
-      options: if std.objectHas(vs, 'timeout') then { timeout: vs.timeout, } else {},
+      options: if std.objectHas(vs, 'timeout') then { timeout: vs.timeout } else {},
       routeAction: {
         single: {
           kube: {
@@ -139,8 +149,8 @@ local lib = import 'lib.jsonnet';
   },
 
   virtualHostOptions(vs):: lib.getElse(vs, 'virtualHostOptions', {})
-    + (if lib.isTrue(vs, 'cors.enabled') then $.staticVirtualHostOptions.cors else {})
-    + (if lib.isTrue(vs, 'hsts.enabled') then $.staticVirtualHostOptions.hsts else {}),
+                           + (if lib.isTrue(vs, 'cors.enabled') then $.staticVirtualHostOptions.cors else {})
+                           + (if lib.isTrue(vs, 'hsts.enabled') then $.staticVirtualHostOptions.hsts else {}),
 
   virtualHost(vs):: {
     domains: $.domains(vs),
@@ -170,7 +180,7 @@ local lib = import 'lib.jsonnet';
     [$.gateway(lib.withNamespace(gw, gloo.namespace), vss) for gw in gws]
   ),
 
-  dnsNames(config, selector={ type: 'external'}):: (
+  dnsNames(config, selector={ type: 'external' }):: (
     local vss = $.virtualServices(config);
     local externalVss = $.virtualServicesForSelector(vss, selector);
     std.uniq(std.sort(std.flattenArrays(std.map(function(vs) lib.getElse(vs, 'dnsNames', []), externalVss))))
@@ -252,12 +262,12 @@ local lib = import 'lib.jsonnet';
     },
   },
 
-  service(config, pkg):: {
+  service(config, pkg, namespace):: {
     apiVersion: 'v1',
     kind: 'Service',
     metadata: {
       name: pkg,
-      namespace: lib.namespace(config, pkg),
+      namespace: namespace,
     },
     spec: {
       type: 'ClusterIP',
@@ -273,24 +283,15 @@ local lib = import 'lib.jsonnet';
     },
   },
 
-  virtualServicesForPackage(config, pkgname):: (
-    local vsarray = $.virtualServicesForPkg(pkgname, config.pkgs[pkgname]);
-    std.map(function(v) $.virtualService(v, v.name, lib.namespace(config, pkgname)), vsarray)
-  ),
+  virtualServicesForPackage(config, pkgname, namespace):: (
+    local vsarray = $.vsForNamespacedPackage(namespace, pkgname, config.namespaces[namespace][pkgname]);
+    local tovs(x) = $.virtualService(x, pkgname, namespace);
+    local result = std.map(tovs,  vsarray);
+    result ),
 
-  virtualServicesForEnvironment(config, envname):: (
-    local vsarray = $.virtualServicesForPkg(envname, config.environments[envname].tidepool);
-    std.map(function(v) $.virtualService(v, v.name, envname), vsarray)
-  ),
-
-  certificatesForPackage(config, pkgname):: (
-    local vsarray = $.virtualServicesForPkg(pkgname, config.pkgs[pkgname]);
-    std.map(function(v) $.certificate(config, v, v.name, lib.namespace(config, pkgname)), vsarray)
-  ),
-
-  certificatesForEnvironment(config, envname):: (
-    local vsarray = $.virtualServicesForPkg(envname, config.environments[envname].tidepool);
-    lib.pruneList(std.map(function(v) $.certificate(config, v, v.name, envname), vsarray))
+  certificatesForPackage(config, pkgname, namespace):: (
+    local vsarray = $.vsForNamespacedPackage(namespace, pkgname, config.namespaces[namespace][pkgname]);
+    lib.pruneList(std.map(function(v) $.certificate(config, v, pkgname, namespace), vsarray))
   ),
 
   certificateSecretName(base):: base + '-certificate',

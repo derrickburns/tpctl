@@ -4,11 +4,11 @@ ENV TERM xterm-256color
 ENV TZ America/Los_Angeles
 ENV DEBIAN_FRONTEND noninteractive
 RUN apt update -y && apt upgrade -y && \
-    apt install nano python3-pip curl git openjdk-8-jdk vim python3 build-essential file locales jq expect -y && \
+    apt install nano python3-pip curl git openjdk-8-jdk vim python3 build-essential file locales expect -y && \
     pip3 install --upgrade --user awscli boto3 environs
+RUN curl -sL -o /usr/local/bin/jq https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64
 RUN locale-gen en_US.UTF-8
-RUN curl -sL https://github.com/google/jsonnet/releases/download/v0.14.0/jsonnet-bin-v0.14.0-linux.tar.gz | tar xz -C /tmp && \ 
-    mv /tmp/jsonnet /usr/local/bin
+RUN curl -sL -o /usr/local/bin/jsonnet  https://github.com/databricks/sjsonnet/releases/download/0.2.3/sjsonnet.jar
 RUN curl -sL "https://get.helm.sh/helm-v3.0.2-linux-amd64.tar.gz" | tar xz -C /tmp && mv /tmp/linux-amd64/helm /usr/local/bin
 RUN curl -sL "https://github.com/weaveworks/eksctl/releases/download/latest_release/eksctl_Linux_amd64.tar.gz" | tar xz -C /tmp && \
     mv /tmp/eksctl /usr/local/bin
@@ -17,7 +17,7 @@ RUN git clone https://github.com/ahmetb/kubectx /opt/kubectx && \
     mv /opt/kubectx/kubectx /usr/local/bin/kubectx && \
     mv /opt/kubectx/kubens /usr/local/bin/kubens && \
     rm -rf /opt/kubectx
-RUN curl -sL -o /usr/local/bin/yq https://github.com/mikefarah/yq/releases/download/2.4.0/yq_linux_amd64 
+RUN curl -sL -o /usr/local/bin/yq https://github.com/mikefarah/yq/releases/download/3.2.1/yq_linux_amd64 
 RUN curl -sL -o /usr/local/bin/aws-iam-authenticator https://amazon-eks.s3-us-west-2.amazonaws.com/1.14.6/2019-08-22/bin/linux/amd64/aws-iam-authenticator && \
     curl -sL -o aws-iam-authenticator.sha256 https://amazon-eks.s3-us-west-2.amazonaws.com/1.14.6/2019-08-22/bin/linux/amd64/aws-iam-authenticator.sha256 && \
     openssl sha1 -sha256 /usr/local/bin/aws-iam-authenticator && \

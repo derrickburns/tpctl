@@ -1,6 +1,6 @@
 local k8s = import '../../lib/k8s.jsonnet';
 
-local helmrelease(config) = k8s.helmrelease('external-dns', 'external-dns', '2.6.1') {
+local helmrelease(config, namespace) = k8s.helmrelease('external-dns', namespace, '2.6.1') {
   spec+: {
     values: {
       aws: {
@@ -24,4 +24,4 @@ local helmrelease(config) = k8s.helmrelease('external-dns', 'external-dns', '2.6
   },
 };
 
-function(config, prev) helmrelease(config)
+function(config, prev, namespace) helmrelease(config, namespace)

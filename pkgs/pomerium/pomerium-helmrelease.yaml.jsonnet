@@ -2,15 +2,15 @@ local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 local mylib = import 'lib.jsonnet';
 
-local getPolicy(config) = (
-  local pkgs = config.pkgs;
+local getPoliciesForNamespace(config, namespace) = (
+  local pkgs = config.namespaces[namespace];
   [
     {
       local pkg = pkgs[x],
       local port = lib.getElse(pkg, 'sso.port', 8080),
       local suffix = if port == 80 then '' else ':%s' % port,
-      from: 'https://' + mylib.dnsNameForName(config, x),
-      to: 'http://' + lib.getElse(pkg, 'sso.serviceName', x) + '.' + lib.getElse(pkg, 'namespace', x) + '.svc.cluster.local' + suffix,
+      from: 'https://' + mylib.dnsNameForPkg(config, namespace, x),
+      to: 'http://' + lib.getElse(pkg, 'sso.serviceName', x) + '.' + namespace + '.svc.cluster.local' + suffix,
       allowed_groups: lib.getElse(pkg, 'sso.allowed_groups', []),
       allowed_users: lib.getElse(pkg, 'sso.allowed_users', []),
       allow_websockets: true,
@@ -20,7 +20,9 @@ local getPolicy(config) = (
   ]
 );
 
-local helmrelease(config) = k8s.helmrelease('pomerium', 'pomerium', '5.0.3', 'https://helm.pomerium.io') {
+local getPolicy(config) = std.flattenArrays( [ getPoliciesForNamespace(config, ns) for ns in std.objectFields(config.namespaces) ] );
+
+local helmrelease(config, namespace) = k8s.helmrelease('pomerium', namespace, '5.0.3', 'https://helm.pomerium.io') {
   local domain = lib.rootDomain(config),
   spec+: {
     values: {
@@ -34,7 +36,7 @@ local helmrelease(config) = k8s.helmrelease('pomerium', 'pomerium', '5.0.3', 'ht
         },
       },
       extraEnv: {
-        log_level: lib.getElse(config, 'pkgs.pomerium.logLevel', lib.getElse(config, 'general.logLevel', 'info')),
+        log_level: lib.getElse(config, 'namespaces.' + namespace + '.pomerium.logLevel', lib.getElse(config, 'general.logLevel', 'info')),
       },
       service: {
         type: 'ClusterIP',
@@ -45,7 +47,7 @@ local helmrelease(config) = k8s.helmrelease('pomerium', 'pomerium', '5.0.3', 'ht
         policy: getPolicy(config),
       },
       forwardAuth: {
-        enabled: lib.getElse(config, 'pkgs.pomerium.forwardauth.enabled', false),
+        enabled: false,
       },
       ingress: {
         enabled: false,
@@ -54,4 +56,4 @@ local helmrelease(config) = k8s.helmrelease('pomerium', 'pomerium', '5.0.3', 'ht
   },
 };
 
-function(config, prev) helmrelease(config)
+function(config, prev, namespace) helmrelease(config, namespace)

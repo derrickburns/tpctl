@@ -1,6 +1,6 @@
 local k8s = import '../../lib/k8s.jsonnet';
 
-local helmrelease(config) = k8s.helmrelease('velero', 'velero', '2.8.1', 'https://vmware-tanzu.github.io/helm-charts') {
+local helmrelease(config, namespace) = k8s.helmrelease('velero', namespace, '2.8.1', 'https://vmware-tanzu.github.io/helm-charts') {
   spec+: {
     values: {
       credentials: {
@@ -23,7 +23,7 @@ local helmrelease(config) = k8s.helmrelease('velero', 'velero', '2.8.1', 'https:
           },
         },
         image: {
-          repositoru: 'velero/velero',
+          repository: 'velero/velero',
           pullPolicy: 'IfNotPresent',
         },
         initContainers: [{
@@ -45,4 +45,4 @@ local helmrelease(config) = k8s.helmrelease('velero', 'velero', '2.8.1', 'https:
   },
 };
 
-function(config, prev) helmrelease(config)
+function(config, prev, namespace) helmrelease(config, namespace)

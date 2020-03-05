@@ -1,4 +1,4 @@
-local configmap(config) = {
+local configmap(config, namespace) = {
   apiVersion: 'v1',
   data: {
     'cwagentconfig.json': std.manifestJson(
@@ -21,8 +21,8 @@ local configmap(config) = {
   kind: 'ConfigMap',
   metadata: {
     name: 'cwagentconfig',
-    namespace: 'amazon-cloudwatch',
+    namespace: namespace,
   },
 };
 
-function(config, prev) configmap(config)
+function(config, prev, namespace) configmap(config, namespace)

@@ -1,6 +1,6 @@
 local lib = import '../../lib/lib.jsonnet';
 
-local daemonset(config) = {
+local daemonset(config, namespace) = {
   apiVersion: 'apps/v1',
   kind: 'DaemonSet',
   metadata: {
@@ -8,7 +8,7 @@ local daemonset(config) = {
       'k8s-app': 'fluentd-cloudwatch',
     },
     name: 'fluentd-cloudwatch',
-    namespace: 'amazon-cloudwatch',
+    namespace: namespace,
   },
   spec: {
     selector: {
@@ -170,4 +170,4 @@ local daemonset(config) = {
   },
 };
 
-function(config, prev) daemonset(config)
+function(config, prev, namespace) daemonset(config, namespace)

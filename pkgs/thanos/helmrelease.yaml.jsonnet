@@ -1,7 +1,7 @@
 local lib = import '../../lib/lib.jsonnet';
 local lib = import '../../lib/k8s.jsonnet';
 
-local helmrelease(config) = k8s.helmrelease('thanos', 'monitoring', '0.3.12', 'https://kubernetes-charts.banzaicloud.com') {
+local helmrelease(config, namespace) = k8s.helmrelease('thanos', namespace, '0.3.12', 'https://kubernetes-charts.banzaicloud.com') {
   spec+: {
     values: {
       bucket: {
@@ -20,4 +20,4 @@ local helmrelease(config) = k8s.helmrelease('thanos', 'monitoring', '0.3.12', 'h
   },
 };
 
-function(config, prev) helmrelease(config)
+function(config, prev, namespace) helmrelease(config, namespace)

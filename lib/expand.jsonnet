@@ -1,46 +1,51 @@
 local lib = import 'lib.jsonnet';
 
-local pom = import '../pkgs/pomerium/lib.jsonnet';
+local dispatch = {
+  tidepool:: import '../pkgs/tidepool/expand.jsonnet',
+  pomerium:: import '../pkgs/pomerium/lib.jsonnet',
+};
 
-local tp = import '../environments/tidepool/lib.jsonnet';
+// a virtual service that exports the dns name for this package
+local expandExport(config, name, key, pkg) = {
+  local dnsName = lib.getElse(pkg, 'dnsName', '%s.%s' % [key, config.cluster.metadata.domain]),
+
+  virtualServices: {
+    [key]: {
+      enabled: true,
+      labels: {
+        type: 'pomerium',
+        protocol: 'https',
+      },
+      dnsNames: [dnsName],
+    },
+  },
+};
+
+// expand a package if it requires a virtual service
+local expandPackage(config, name, key, pkg) =
+  pkg +
+  (
+    if (!std.objectHas(pkg, 'virtualServices')) && lib.getElse(pkg, 'export', false)
+    then expandExport(config, name, key, pkg)
+    else {}
+  );
+
+// expand a namespace
+local expandNamespace(config, name, namespace) = (
+  local expand(key, pkg) = (
+    if std.objectHasAll(dispatch, key)
+    then dispatch[key].expand(config, pkg, name)
+    else if (!std.objectHas(pkg, 'virtualServices')) && lib.getElse(pkg, 'export', false)
+    then expandPackage(config, name, key, pkg)
+    else pkg
+   );
+
+  std.mapWithKey(expand, namespace)
+);
 
 {
-  expandConfig(config)::
-    config
-    + (if std.objectHas(config, 'environments')
-       then { environments: tp.expandEnvironments(config) }
-       else {})
-    + (if std.objectHas(config, 'pkgs')
-       then { pkgs: $.expandPackages(config) }
-       else {}),
-
-  expandPackages(config):: (
-    local expandPackage = function(name, pkg) $.expandConfigPackage(config, name, pkg);
-    std.mapWithKey(expandPackage, config.pkgs)
-  ),
-
-  expandConfigPackage(config, name, pkg):: (
-    if name == 'pomerium'
-    then pom.expandPomerium(config)
-    else (
-      local dnsName = lib.getElse(pkg, 'dnsName', '%s.%s' % [name, config.cluster.metadata.domain]);
-      pkg +
-      (
-        if (!std.objectHas(pkg, 'virtualServices')) && lib.getElse(pkg, 'export', false)
-        then {
-          virtualServices: {
-            [name]: {
-              enabled: true,
-              labels: {
-                type: 'pomerium',
-                protocol: 'https',
-              },
-              dnsNames: [dnsName],
-            },
-          },
-        }
-        else {}
-      )
-    )
+  expandConfig(config):: (
+    local expand(name, namespace) = expandNamespace(config, name, namespace);
+    config { namespaces+: std.mapWithKey(expand, config.namespaces) }
   ),
 }

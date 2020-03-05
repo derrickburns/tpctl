@@ -1,16 +1,4 @@
 {
-  environments(config):: (
-    local e = $.getElse(config, 'environments', {});
-    local envs = std.objectFields(e);
-    { [env]: $.withName($.withNamespace(e[env].tidepool, env), env) for env in envs if $.isTrue(e[env], 'tidepool.enabled') }
-  ),
-
-  packages(config):: (
-    local p = $.getElse(config, 'pkgs', {});
-    local pkgs = std.objectFields(p);
-    { [pkg]: $.withNamespace(p[pkg], pkg) for pkg in pkgs if $.isEnabled(p[pkg]) }
-  ),
-
   isEnabled(x):: $.isTrue(x, 'enabled'),
 
   withDefault(obj, field, default)::
@@ -18,17 +6,11 @@
     then obj
     else obj { [field]: default },
 
-  // add a default namespace to an object if it does not have one
-  withNamespace(obj, default):: $.withDefault(obj, 'namespace', default),
-
   // add a default name to an object if it does not have one
   withName(obj, default):: $.withDefault(obj, 'name', default),
 
-  propagate(c, key, field):: c {
-    [key]: { [env]: $.withDefault(c[key][env], field, env) for env in std.objectFields(c[key]) },
-  },
-
-  complete(config):: $.propagate($.propagate(config, 'environments', 'namespace'), 'pkgs', 'namespace'),
+  // add a default namespace to an object if it does not have one
+  withNamespace(obj, default):: $.withDefault(obj, 'namespace', default),
 
   rootDomain(config):: $.getElse(config, 'pkgs.pomerium.rootDomain', config.cluster.metadata.domain),
 
