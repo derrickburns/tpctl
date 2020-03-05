@@ -921,7 +921,7 @@ function make_users() {
   local account=$(get_aws_account)
 
   start "updating system masters"
-  declare -A users
+  declare -a users
   local user
   for user in $(get_iam_users); do
     local arn=arn:aws:iam::${account}:user/${user}
