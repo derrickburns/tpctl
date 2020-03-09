@@ -666,8 +666,8 @@ function create_namespace() {
    create=${create:-true}
    if [ $create == "true" ]
    then
-     local out=${ns}/namespace.yaml
-     mkdir -p ${ns}
+     local out=pkgs/${ns}/namespace.yaml
+     mkdir -p pkgs/${ns}
      jsonnet --tla-code config="$config" --tla-str namespace=$ns $template | yq r - --prettyPrint  >${out}
      add_file $out
    fi
