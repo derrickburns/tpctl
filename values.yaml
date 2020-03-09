@@ -244,6 +244,7 @@ namespaces:
 pkgs:
   certmanager:
     enabled: true
+    issuer: letsencrypt-production
   gloo:
     enabled: true
   linkerd:

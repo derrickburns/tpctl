@@ -1,4 +1,6 @@
 local lib = import 'lib.jsonnet';
+local k8s = import 'k8s.jsonnet';
+local certmanager = import 'certmanager.jsonnet';
 
 {
   vsForNamespacedPackage(name, pkg, package):: (
@@ -238,7 +240,7 @@ local lib = import 'lib.jsonnet';
   gateway(gw, vss):: {
     apiVersion: 'gateway.solo.io/v1',
     kind: 'Gateway',
-    metadata: {
+    metadata+: {
       annotations: {
         origin: 'default',
       },
@@ -262,27 +264,6 @@ local lib = import 'lib.jsonnet';
     },
   },
 
-  service(config, pkg, namespace):: {
-    apiVersion: 'v1',
-    kind: 'Service',
-    metadata: {
-      name: pkg,
-      namespace: namespace,
-    },
-    spec: {
-      type: 'ClusterIP',
-      ports: [{
-        name: 'http',
-        protocol: 'TCP',
-        port: 8080,
-        targetPort: 8080,
-      }],
-      selector: {
-        name: pkg,
-      },
-    },
-  },
-
   virtualServicesForPackage(config, pkgname, namespace):: (
     local vsarray = $.vsForNamespacedPackage(namespace, pkgname, config.namespaces[namespace][pkgname]);
     local tovs(x) = $.virtualService(x, pkgname, namespace);
@@ -301,23 +282,7 @@ local lib = import 'lib.jsonnet';
     if lib.getElse(config, 'pkgs.certmanager.enabled', false)
        && $.isHttps(vs)
        && std.length(vs.dnsNames) > 0
-    then {
-      apiVersion: 'cert-manager.io/v1alpha2',
-      kind: 'Certificate',
-      metadata: {
-        name: std.strReplace(vs.dnsNames[0], '*', 'star'),
-        namespace: vs.namespace,
-      },
-      spec: {
-        secretName: $.certificateSecretName(vs.name),
-        issuerRef: {
-          name: lib.getElse(config, 'certmanager.issuer', 'letsencrypt-production'),
-          kind: 'ClusterIssuer',
-        },
-        commonName: vs.dnsNames[0],
-        dnsNames: vs.dnsNames,
-      },
-    }
+    then certmanager.certificate(config, $.certificateSecretName(vs.name), vs.namespace, vs.dnsNames)
     else {}
   ),
 }
