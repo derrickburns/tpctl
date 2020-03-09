@@ -203,6 +203,8 @@ namespaces:
     jaeger-operator:
       enabled: false
   kube-system:
+    config:
+      create: false
     cluster-autoscaler:
       enabled: true
     metrics-server:
