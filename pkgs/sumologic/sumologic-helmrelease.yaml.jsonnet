@@ -1,4 +1,11 @@
+local k8s = import '../../lib/lib.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
+
+local excluded(config) = (
+   local all = std.set(std.objectFields(config.namespaces));
+   local on = std.set(std.filter(function(x) lib.getElse(config.namespaces[x], 'config.logging', false), all));
+   std.setDiff(all, on)
+);
 
 local helmrelease(config, namespace) = k8s.helmrelease('sumologic-fluentd', namespace, '1.1.1') {
   spec+: {
@@ -10,7 +17,7 @@ local helmrelease(config, namespace) = k8s.helmrelease('sumologic-fluentd', name
         collectorUrlExistingSecret: 'sumologic',
         readFromHead: false,
         sourceCategoryPrefix: 'kubernetes/%s/' % config.cluster.metadata.name,
-        excludeNamespaceRegex: 'amazon-cloudwatch|external-dns|external-secrets|flux|kube-.*|linkerd|monitoring|reloader|sumologic', // XXX generate regex
+        excludeNamespaceRegex: std.join('|', excluded(config)),  
       },
     },
   },
