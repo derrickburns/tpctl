@@ -17,9 +17,7 @@ local lib = import '../../lib/lib.jsonnet';
     std.flattenArrays(lib.values(std.mapWithKey(dnsNamesFor, config.namespaces)))
   ),
 
-  rootDomain(config, namespace):: lib.getElse(config, 'namespaces.' + namespace + '.pomerium.rootDomain', config.cluster.metadata.domain),
-
-  expand(config, pkg, namespace):: pkg + $.expandPomeriumVirtualServices($.rootDomain(config, namespace)),
+  expand(config, pkg, namespace):: pkg + $.expandPomeriumVirtualServices(lib.rootDomain(config)),
 
   expandPomeriumVirtualServices(rootDomain):: {
     virtualServices: {

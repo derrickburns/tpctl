@@ -3,7 +3,7 @@ local lib = import '../../lib/lib.jsonnet';
 local mylib = import 'lib.jsonnet';
 
 local dnsNames(config, namespace) = (
-  local domain = mylib.rootDomain(config, namespace);
+  local domain = lib.rootDomain(config);
   [
     'authenticate.%s' % domain,
     'authorize.%s' % domain,

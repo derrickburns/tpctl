@@ -12,7 +12,7 @@
   // add a default namespace to an object if it does not have one
   withNamespace(obj, default):: $.withDefault(obj, 'namespace', default),
 
-  rootDomain(config):: $.getElse(config, 'pkgs.pomerium.rootDomain', config.cluster.metadata.domain),
+  rootDomain(config):: config.cluster.metadata.domain,
 
   // add namespace field to each object under a map if it does not already have one
   addNamespace(map, ns):: std.mapWithKey(function(n, v) $.withNamespace(v, ns), map),
