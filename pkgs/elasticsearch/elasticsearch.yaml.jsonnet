@@ -29,7 +29,7 @@ local elasticsearch(config, namespace) = {
               ],
               resources: {
                 requests: {
-                  storage: lib.getElse(config.namespaces[namespace], 'tracing.storage', '5Gi'),
+                  storage: lib.getElse(config.namespaces[namespace], 'elasticsearch.storage', '5Gi'),
                 },
               },
               storageClassName: 'gp2-expanding',
