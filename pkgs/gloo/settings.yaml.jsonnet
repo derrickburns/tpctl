@@ -35,7 +35,7 @@ local settings(config, namespace) = {
     kubernetesArtifactSource: {},
     kubernetesConfigSource: {},
     kubernetesSecretSource: {},
-    linkerd: lib.isEnabled(config, 'pkgs.linkerd'),
+    linkerd: lib.isEnabledAt(config, 'pkgs.linkerd'),
     refreshRate: '60s',
   },
 };
