@@ -33,7 +33,7 @@ local prometheus(config, namespace) = {
     serviceMonitorSelector: {
       matchLabels: {},
     },
-    thanos: if lib.isEnabled(ns, 'thanos') then {
+    thanos: if lib.isEnabledAt(ns, 'thanos') then {
       objectStorageConfig: {
         key: 'thanos.yaml',
         name: lib.getElse(ns, 'thanos.secret', 'thanos-objstore-secret'),

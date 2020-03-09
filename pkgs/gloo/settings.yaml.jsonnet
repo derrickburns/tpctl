@@ -18,7 +18,7 @@ local settings(config, namespace) = {
       fdsMode: 'WHITELIST',
     },
     discoveryNamespace: 'gloo-system',
-    gateway: if lib.isEnabled(me, 'validation') then {
+    gateway: if lib.isEnabledAt(me, 'validation') then {
       readGatewaysFromAllNamespaces: true,
       validation: {
         proxyValidationServerAddr: 'gloo:9988',

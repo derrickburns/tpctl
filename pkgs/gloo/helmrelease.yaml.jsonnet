@@ -83,7 +83,7 @@ local genvalues(config, namespace) = {
     readGatewaysFromAllNamespaces: true,
     upgrade: false,
     validation: {
-      enabled: lib.isEnabled(me, 'validation'),
+      enabled: lib.isEnabledAt(me, 'validation'),
       failurePolicy: 'Ignore',
       secretName: 'gateway-validation-certs',
       alwaysAcceptResources: true,

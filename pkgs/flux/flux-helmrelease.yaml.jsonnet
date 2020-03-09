@@ -24,9 +24,9 @@ local genvalues(config, namespace) = {
   },
 
   prometheus: {
-    enabled: lib.isEnabled(config, 'pkgs.prometheus'),
+    enabled: lib.isEnabledAt(config, 'pkgs.prometheus'),
     serviceMonitor: {
-      create: lib.isEnabled(config, 'pkgs.prometheus'),
+      create: lib.isEnabledAt(config, 'pkgs.prometheus'),
     },
   },
 
@@ -38,7 +38,7 @@ local genvalues(config, namespace) = {
   additionalArgs: if lib.isTrue(ns, 'fluxcloud.enabled') then ['--connect=ws://fluxcloud'] else [],
 
   extraContainers:
-    if lib.isEnabled(ns, 'fluxrecv') && lib.isTrue(ns, 'fluxrecv.sidecar')
+    if lib.isEnabledAt(ns, 'fluxrecv') && lib.isTrue(ns, 'fluxrecv.sidecar')
     then [{
       name: 'recv',
       image: 'fluxcd/flux-recv:%s' % lib.getElse(ns, 'fluxrecv.version', '0.3.0'),
@@ -55,7 +55,7 @@ local genvalues(config, namespace) = {
     else [],
 
   extraVolumes:
-    if lib.isEnabled(ns, 'fluxrecv') && lib.isTrue(ns, 'fluxrecv.sidecar')
+    if lib.isEnabledAt(ns, 'fluxrecv') && lib.isTrue(ns, 'fluxrecv.sidecar')
     then [{
       name: 'fluxrecv-config',
       secret: {

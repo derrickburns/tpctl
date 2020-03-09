@@ -1,6 +1,8 @@
 {
   isEnabled(x):: $.isTrue(x, 'enabled'),
 
+  isEnabledAt(x, prop):: $.isTrue(x, prop + '.enabled'),
+
   withDefault(obj, field, default)::
     if obj == null || std.objectHas(obj, field)
     then obj
