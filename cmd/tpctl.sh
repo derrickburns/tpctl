@@ -574,7 +574,6 @@ function make_cluster_config() {
   start "creating eksctl manifest"
   add_file "config.yaml"
   serviceAccountFile=$TMP_DIR/serviceaccounts
-  # XXX add service account yaml
   make_policy_manifests | yq r - -j  | jq  >$serviceAccountFile
   jsonnet --tla-code config="$config" --tla-code-file serviceaccounts="$serviceAccountFile"  ${TEMPLATE_DIR}/eksctl/cluster_config.jsonnet | yq r -P - >config.yaml
   expect_success "Templating failure eksctl/cluster_config.jsonnet"
@@ -659,6 +658,12 @@ function make_policy_manifests() {
   done
 }
 
+function create_namespace() {
+   local template=$TEMPLATE_DIR/namespace.jsonnet
+   local out=namespace/${ns}.yaml
+   jsonnet --tla-code-file --tla-code config="$config" --tla-str namespace=$1 $template | yq r - --prettyPrint  >${out}
+   add_file $out
+}
 
 # make K8s manifests 
 function make_namespace_config() {
@@ -670,6 +675,7 @@ function make_namespace_config() {
   fi
   for ns in $(get_namespaces); do
     start "creating $ns namespace manifests"
+    create_namespace $ns "$config"
     for dir in $(enabled_pkgs $TEMPLATE_DIR/pkgs namespaces.$ns); do
       template_files "$config" $TEMPLATE_DIR/pkgs/$dir $TEMPLATE_DIR/pkgs/ $ns
     done
