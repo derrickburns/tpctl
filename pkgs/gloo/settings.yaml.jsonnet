@@ -3,6 +3,7 @@ local lib = import '../../lib/lib.jsonnet';
 // Direct external authorization requests *back* to the proxy after adding the x-tidepool-extauth-request header.
 // Then, a virtual service that selects requests based on that header will rewrite the request as needed and forward it to authorization server.
 local settings(config, namespace) = {
+  local me = config.namespaces[namespace].gloo,
   apiVersion: 'gloo.solo.io/v1',
   kind: 'Settings',
   metadata: {
@@ -12,44 +13,12 @@ local settings(config, namespace) = {
     name: 'default',
     namespace: namespace,
   },
-  local extauth =
-    if lib.getElse(config.namespaces[namespace], 'pomerium.enabled', false) &&
-       lib.getElse(config.namespace[namespace], 'pomerium.forwardauth.enabled', false)
-    then {
-      extauth: {
-        extauthzServerRef: {
-          name: 'auth',
-          namespace: 'pomerium',
-        },
-        httpService: {
-          response: {
-            allowedUpstreamHeaders: [
-              'x-pomerium-iap-jwt-assertion',
-              'x-pomerium-authenticated-user-email',
-              'x-pomerium-authenticated-user-id',
-              'x-pomerium-authenticated-user-groups',
-            ],
-          },
-          request: {
-            allowedHeaders: [
-              'x-pomerium-iap-jwt-assertion',
-              'x-pomerium-authenticated-user-email',
-              'x-pomerium-authenticated-user-id',
-              'x-pomerium-authenticated-user-groups',
-            ],
-            headersToAdd: {
-              'x-tidepool-extauth-request': 'true',
-            },
-          },
-        },
-      },
-    } else {},
-  spec: extauth {
+  spec: {
     discovery: {
       fdsMode: 'WHITELIST',
     },
     discoveryNamespace: 'gloo-system',
-    gateway: if lib.getElse(config.namespaces[namespace], 'gloo.validation.enabled', false) then {
+    gateway: if lib.isEnabled(me, 'validation') then {
       readGatewaysFromAllNamespaces: true,
       validation: {
         proxyValidationServerAddr: 'gloo:9988',
@@ -66,7 +35,7 @@ local settings(config, namespace) = {
     kubernetesArtifactSource: {},
     kubernetesConfigSource: {},
     kubernetesSecretSource: {},
-    linkerd: lib.getElse(config, 'pkgs.linkerd.enabled', false),
+    linkerd: lib.isEnabled(config, 'pkgs.linkerd'),
     refreshRate: '60s',
   },
 };

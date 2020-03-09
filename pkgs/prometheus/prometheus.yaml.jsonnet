@@ -1,6 +1,7 @@
 local lib = import '../../lib/lib.jsonnet';
 
 local prometheus(config, namespace) = {
+  local ns = config.namespaces[namespace],
   apiVersion: 'monitoring.coreos.com/v1',
   kind: 'Prometheus',
   metadata: {
@@ -32,10 +33,10 @@ local prometheus(config, namespace) = {
     serviceMonitorSelector: {
       matchLabels: {},
     },
-    thanos: if lib.isTrue(config.namespaces[namespace], 'thanos.enabled') then {
+    thanos: if lib.isEnabled(ns, 'thanos') then {
       objectStorageConfig: {
         key: 'thanos.yaml',
-        name: config.namespaces[namespace].thanos.secret,
+        name: lib.getElse(ns, 'thanos.secret', 'thanos-objstore-secret'),
       },
       version: 'v0.5.0',
     } else {},

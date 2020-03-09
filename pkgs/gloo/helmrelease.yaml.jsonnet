@@ -7,9 +7,10 @@ local pom = import '../pomerium/lib.jsonnet';
 local tracing = import '../tracing/lib.jsonnet';
 
 local baseGatewayProxy(config, namespace, name) = {
+  local me = config.namespaces[namespace].gloo,
   kind: {
     deployment: {
-      replicas: lib.getElse(config.namespaces[namespace], 'gloo.proxies.' + name + '.replicas', 2),
+      replicas: lib.getElse(me, 'proxies.' + name + '.replicas', 2),
     },
   },
   configMap: {
@@ -41,6 +42,7 @@ local baseGatewayProxy(config, namespace, name) = {
 };
 
 local genvalues(config, namespace) = {
+  local me = config.namespaces[namespace].gloo,
   global: {
     glooStats: {
       enabled: true,
@@ -51,7 +53,7 @@ local genvalues(config, namespace) = {
     image: {
       pullPolicy: 'IfNotPresent',
       registry: 'quay.io/solo-io',
-      tag: config.namespaces[namespace].gloo.version,
+      tag: me.version,
     },
   },
   settings: {
@@ -81,7 +83,7 @@ local genvalues(config, namespace) = {
     readGatewaysFromAllNamespaces: true,
     upgrade: false,
     validation: {
-      enabled: lib.getElse(config.namespaces[namespace], 'gloo.validation.enabled', false),
+      enabled: lib.isEnabled(me, 'validation'),
       failurePolicy: 'Ignore',
       secretName: 'gateway-validation-certs',
       alwaysAcceptResources: true,

@@ -1,17 +1,18 @@
 local lib = import '../../lib/lib.jsonnet';
 
 local secret(config, namespace) = {
+  local me = config.namespaces[namespace].thanos,
   apiVersion: 'v1',
   kind: 'Secret',
   metadata: {
-    name: config.namespaces[namespace].thanos.secret,
+    name: lib.getElse(me, 'secret', 'thanos-objstore-config'),
     namespace: namespace,
   },
   data: {
     'thanos.yaml': std.base64(std.manifestYamlDoc({
       type: 'S3',
       config: {
-        bucket: config.namespaces[namespace].thanos.bucket,
+        bucket: lib.getElse(me, 'bucket', 'tidepool-thanos'),
         endpoint: 's3.%s.amazonaws.com' % config.cluster.metadata.region,
         region: config.cluster.metadata.region,
         insecure: false,

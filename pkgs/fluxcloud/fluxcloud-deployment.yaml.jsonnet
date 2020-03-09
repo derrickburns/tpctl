@@ -1,6 +1,7 @@
 local lib = import '../../lib/lib.jsonnet';
 
 local Deployment(config, namespace) = {
+  local me = config.namespaces[namespace].fluxcloud,
   apiVersion: 'apps/v1',
   kind: 'Deployment',
   metadata: {
@@ -39,18 +40,18 @@ local Deployment(config, namespace) = {
                 name: 'SLACK_URL',
                 valueFrom: {
                   secretKeyRef: {
-                    name: config.namespaces[namespace].fluxcloud.secret,
+                    name: lib.getElse(me, 'secret', 'slack'),
                     key: 'url',
                   },
                 },
               },
               {
                 name: 'SLACK_CHANNEL',
-                value: lib.getElse(config.namespaces[namespace], 'fluxcloud.channel', '#flux-%s' % config.cluster.metadata.name),
+                value: lib.getElse(me, 'channel', '#flux-%s' % config.cluster.metadata.name),
               },
               {
                 name: 'SLACK_USERNAME',
-                value: lib.getElse(config.namespaces[namespace], 'fluxcloud.username', 'derrickburns'),
+                value: lib.getElse(me, 'username', 'derrickburns'),
               },
               {
                 name: 'SLACK_ICON_EMOJI',

@@ -3,10 +3,10 @@ local lib = import '../../lib/lib.jsonnet';
 local mylib = import 'lib.jsonnet';
 
 local getPoliciesForNamespace(config, namespace) = (
-  local pkgs = config.namespaces[namespace];
+  local ns  = config.namespaces[namespace];
   [
     {
-      local pkg = pkgs[x],
+      local pkg = ns[x],
       local port = lib.getElse(pkg, 'sso.port', 8080),
       local suffix = if port == 80 then '' else ':%s' % port,
       from: 'https://' + mylib.dnsNameForPkg(config, namespace, x),
@@ -15,14 +15,15 @@ local getPoliciesForNamespace(config, namespace) = (
       allowed_users: lib.getElse(pkg, 'sso.allowed_users', []),
       allow_websockets: true,
     }
-    for x in std.objectFields(pkgs)
-    if lib.getElse(pkgs[x], 'sso', {}) != {} && lib.getElse(pkgs[x], 'enabled', false)
+    for x in std.objectFields(ns)
+    if lib.getElse(ns[x], 'sso', {}) != {} && lib.getElse(ns[x], 'enabled', false)
   ]
 );
 
 local getPolicy(config) = std.flattenArrays( [ getPoliciesForNamespace(config, ns) for ns in std.objectFields(config.namespaces) ] );
 
 local helmrelease(config, namespace) = k8s.helmrelease('pomerium', namespace, '5.0.3', 'https://helm.pomerium.io') {
+  local me = config.namespaces[namespace].pomerium,
   local domain = mylib.rootDomain(config),
   spec+: {
     values: {
@@ -36,7 +37,7 @@ local helmrelease(config, namespace) = k8s.helmrelease('pomerium', namespace, '5
         },
       },
       extraEnv: {
-        log_level: lib.getElse(config, 'namespaces.' + namespace + '.pomerium.logLevel', lib.getElse(config, 'general.logLevel', 'info')),
+        log_level: lib.getElse(me, 'logLevel', lib.getElse(config, 'general.logLevel', 'info')),
       },
       service: {
         type: 'ClusterIP',

@@ -2,6 +2,7 @@ local lib = import '../../lib/lib.jsonnet';
 
 local deployment(config, namespace) =
   {
+    local me = config.namespaces[namespace].fluxrecv,
     apiVersion: 'extensions/v1beta1',
     kind: 'Deployment',
     metadata: {
@@ -31,7 +32,7 @@ local deployment(config, namespace) =
           containers: [
             {
               name: 'recv',
-              image: 'fluxcd/flux-recv:%s' % lib.getElse(config.namespaces[namespace], 'fluxrecv.version', '0.3.0'),
+              image: 'fluxcd/flux-recv:%s' % lib.getElse(me, 'version', '0.3.0'),
               imagePullPolicy: 'IfNotPresent',
               args: ['--config=/etc/fluxrecv/fluxrecv.yaml'],
               ports: [{
@@ -48,7 +49,7 @@ local deployment(config, namespace) =
             {
               name: 'fluxrecv-config',
               secret: {
-                secretName: (if lib.isTrue(config.namespaces[namespace], 'fluxrecv.sidecar')
+                secretName: (if lib.isTrue(me, 'sidecar')
      			     then 'fluxrecv-config'
      			     else 'fluxrecv-config-separate'),
                 defaultMode: std.parseOctal('0400'),
@@ -60,4 +61,4 @@ local deployment(config, namespace) =
     },
   };
 
-function(config, prev, namespace) if lib.getElse(config.namespaces[namespace], 'fluxrecv.sidecar', false) then {} else deployment(config, namespace)
+function(config, prev, namespace) if lib.isTrue(config.namespaces[namespace], 'fluxrecv.sidecar') then {} else deployment(config, namespace)
