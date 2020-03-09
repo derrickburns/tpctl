@@ -662,7 +662,8 @@ function create_namespace() {
    local template=$TEMPLATE_DIR/namespace.jsonnet
    local ns=$1
    local config="$2"
-   local out=namespace/${ns}.yaml
+   local out=namespaces/${ns}.yaml
+   mkdir -p namespaces
    jsonnet --tla-code config="$config" --tla-str namespace=$ns $template | yq r - --prettyPrint  >${out}
    add_file $out
 }
