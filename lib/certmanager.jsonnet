@@ -1,3 +1,5 @@
+local lib = import 'lib.jsonnet';
+
 {
   certificate(config, secretName, namespace, dnsNames):: {
       apiVersion: 'cert-manager.io/v1alpha2',
