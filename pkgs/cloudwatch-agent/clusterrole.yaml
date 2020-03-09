@@ -1,4 +1,3 @@
----
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
@@ -23,17 +22,3 @@ rules:
     resources: ["configmaps"]
     resourceNames: ["cwagent-clusterleader"]
     verbs: ["get","update"]
-
----
-kind: ClusterRoleBinding
-apiVersion: rbac.authorization.k8s.io/v1
-metadata:
-  name: cloudwatch-agent-role-binding
-subjects:
-  - kind: ServiceAccount
-    name: cloudwatch-agent
-    namespace: amazon-cloudwatch
-roleRef:
-  kind: ClusterRole
-  name: cloudwatch-agent-role
-  apiGroup: rbac.authorization.k8s.io
