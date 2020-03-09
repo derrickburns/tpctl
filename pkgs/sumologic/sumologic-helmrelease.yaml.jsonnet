@@ -1,4 +1,4 @@
-local k8s = import '../../lib/lib.jsonnet';
+local lib = import '../../lib/lib.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 
 local excluded(config) = (
