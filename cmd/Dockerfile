@@ -8,7 +8,11 @@ RUN apt update -y && apt upgrade -y && \
     pip3 install --upgrade --user awscli boto3 environs
 RUN curl -sL -o /usr/local/bin/jq https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64
 RUN locale-gen en_US.UTF-8
-RUN curl -sL -o /usr/local/bin/jsonnet  https://github.com/databricks/sjsonnet/releases/download/0.2.3/sjsonnet.jar
+#RUN curl -sL -o /usr/local/bin/jsonnet  https://github.com/databricks/sjsonnet/releases/download/0.2.3/sjsonnet.jar
+RUN curl -sL "https://dl.google.com/go/go1.14.linux-amd64.tar.gz" | tar xz -C /tmp
+ENV GOPATH /root/workdir/go
+RUN /tmp/go/bin/go get github.com/google/go-jsonnet/cmd/jsonnet
+RUN mv /root/workdir/go/bin/jsonnet /usr/local/bin/jsonnet
 RUN curl -sL "https://get.helm.sh/helm-v3.0.2-linux-amd64.tar.gz" | tar xz -C /tmp && mv /tmp/linux-amd64/helm /usr/local/bin
 RUN curl -sL "https://github.com/weaveworks/eksctl/releases/download/latest_release/eksctl_Linux_amd64.tar.gz" | tar xz -C /tmp && \
     mv /tmp/eksctl /usr/local/bin
