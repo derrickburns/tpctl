@@ -98,4 +98,10 @@ local canaries(config, prev, namespace) = (
   [ canary(config, env, namespace, svc) for svc in svcs if lib.getElse(env, svc + '.canary.enabled', false) ]
 );
 
-function(config, prev, namespace) std.manifestYamlStream(canaries(config, prev, namespace))
+function(config, prev, namespace) (
+  local result = canaries(config, prev, namespace);
+  if result != []
+  then std.manifestYamlStream(result)
+  else {}
+)
+
