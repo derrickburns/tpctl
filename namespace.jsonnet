@@ -4,7 +4,7 @@ local linkerd = import 'pkgs/linkerd/lib.jsonnet';
 local Namespace(config, name) = (
   local nsConfig = lib.getElse(config, 'namespaces.' + name + '.config', {});
   local meshed = lib.isTrue(nsConfig, 'meshed');
-  local discovery = lib.isTrue(nsConfig, 'discoverable');
+  local discoverable = lib.isTrue(nsConfig, 'discoverable');
 
   if lib.getElse(nsConfig, 'create', 'true') == 'true'
   then
