@@ -11,7 +11,7 @@
     apiVersion: 'helm.fluxcd.io/v1',
     kind: 'HelmRelease',
     metadata+: {
-      annotations: {
+      annotations+: {
         'fluxcd.io/automated': 'false',
       },
     },
