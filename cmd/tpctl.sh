@@ -662,10 +662,15 @@ function create_namespace() {
    local template=$TEMPLATE_DIR/namespace.jsonnet
    local ns=$1
    local config="$2"
-   local out=namespaces/${ns}.yaml
-   mkdir -p namespaces
-   jsonnet --tla-code config="$config" --tla-str namespace=$ns $template | yq r - --prettyPrint  >${out}
-   add_file $out
+   local create=$(`echo "$config" | yq r - "namespaces.${ns}.config.create")
+   create=${create:-true}
+   if [ $create == "true" ]
+   then
+     local out=${ns}/namespace.yaml
+     mkdir -p ${ns}
+     jsonnet --tla-code config="$config" --tla-str namespace=$ns $template | yq r - --prettyPrint  >${out}
+     add_file $out
+   fi`
 }
 
 # make K8s manifests 
