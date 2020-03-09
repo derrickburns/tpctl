@@ -660,7 +660,7 @@ function make_policy_manifests() {
 
 function create_namespace() {
    local template=$TEMPLATE_DIR/namespace.jsonnet
-   local ns=$2
+   local ns=$1
    local config="$2"
    local out=namespace/${ns}.yaml
    jsonnet --tla-code config="$config" --tla-str namespace=$ns $template | yq r - --prettyPrint  >${out}
