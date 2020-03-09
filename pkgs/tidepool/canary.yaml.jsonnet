@@ -100,7 +100,7 @@ local canaries(config, prev, namespace) = (
 
 function(config, prev, namespace) (
   local result = canaries(config, prev, namespace);
-  if result != []
+  if std.length(result) > 0
   then std.manifestYamlStream(result)
   else {}
 )
