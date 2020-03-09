@@ -670,7 +670,7 @@ function create_namespace() {
      mkdir -p ${ns}
      jsonnet --tla-code config="$config" --tla-str namespace=$ns $template | yq r - --prettyPrint  >${out}
      add_file $out
-   fi`
+   fi
 }
 
 # make K8s manifests 
