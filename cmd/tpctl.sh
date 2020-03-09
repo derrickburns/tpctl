@@ -662,7 +662,7 @@ function create_namespace() {
    local template=$TEMPLATE_DIR/namespace.jsonnet
    local ns=$1
    local config="$2"
-   local create=$(`echo "$config" | yq r - "namespaces.${ns}.config.create")
+   local create=$(echo "$config" | yq r - "namespaces.${ns}.config.create")
    create=${create:-true}
    if [ $create == "true" ]
    then
