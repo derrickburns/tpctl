@@ -45,7 +45,7 @@ local svcs = [
 
 local vpas(config, namespace) = (
   local me  = config.namespaces[namespace].tidepool;
-  [ vpa(svc,namespace) for svc in svcs if lib.getElse(me, svc + '.vpa.enabled', lib.isEnabled(me, 'vpa') ) ]
+  [ vpa(svc,namespace) for svc in svcs if lib.getElse(me, svc + '.vpa.enabled', lib.getElse(me, 'vpa.enabled', "false") == "true" ) ]
 );
 
 function(config, prev, namespace) std.manifestYamlStream( vpas(config,  namespace))
