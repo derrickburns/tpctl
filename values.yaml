@@ -104,122 +104,155 @@ environments:
           requests:
             cpu: 500m
             memory: 256Mi
-pkgs:
+namespaces:
+  qa1:
+    marketo:
+      enabled: true
+    mongodb:
+      enabled: false
+    tidepool:
+      buckets:
+        create: false
+        asset: tidepool-qa1-asset
+        data: tidepool-qa1-data
+      chart:
+        version: 0.3.6
+      data:
+        resources:
+          limits:
+            memory: 256Mi
+          requests:
+            cpu: 500m
+            memory: 256Mi
+      deployment:
+        replicas: 2
+      dexcom:
+        configmap:
+          redirectURL: https://api.tidepool.org/v1/oauth/dexcom/redirect
+      dnsNames:
+      - qa1.tidepool.org
+      enabled: true
+      gateway:
+        domain: qa1.tidepool.org
+        host: api.qa1.tidepool.org
+      gitops:
+        default: glob:master-*
+        enabled: true
+        export: glob:release-1.4*
+      hpa:
+        enabled: false
+        minReplicas: 2
+      mongodb:
+        enabled: false
+      nosqlclient:
+        enabled: true
+      pdb: {}
   amazon-cloudwatch:
-    enabled: true
-  apiserver-ui:
-    enabled: false
-    namespace: gloo-system
-    sso:
-      allowed_groups:
-      - eng@tidepool.org
+    amazon-cloudwatch:
+      enabled: true
+  cert-manager:
+    certmanager:
+      enabled: true
+  none:
+    common:
+      enabled: true
+  datadog:
+    datadog:
+      enabled: false
+  dnsutil:
+    dnsutil:
+      enabled: true
+  elasticsearch-operator:
+    elasticsearch-operator:
+      enabled: false
+  external-dns:
+    external-dns:
+      enabled: true
+  flux:
+    flux:
+      enabled: true
+    fluxcloud:
+      enabled: true
+      secret: slack
+      username: derrickburns
+    fluxrecv:
+      enabled: true
+      export: true
+      sidecar: false
+  gloo-system:
+    gloo:
+      enabled: true
+      version: 1.3.3
+    glooe-monitoring:
+      enabled: true
+      sso:
+        allowed_groups:
+        - eng@tidepool.org
+        port: 80
+        serviceName: glooe-grafana
+    glooe-prometheus-server:
+      enabled: false
+      sso:
+        allowed_groups:
+        - eng@tidepool.org
+        externalName: glooe-metrics
+        port: 80
+      storage: 64Gi
+      retention: 7d
+  jaeger-operator:
+    jaeger-operator:
+      enabled: false
+  kube-system:
+    cluster-autoscaler:
+      enabled: true
+    metrics-server:
+      enabled: true
+  kubernetes-dashboard:
+    kubernetes-dashboard:
+      enabled: false
+  linkerd:
+    linkerd:
+      enabled: true
+      version: stable-2.6.1
+    linkerd-web:
+      enabled: true
+      sso:
+        allowed_groups:
+        - eng@tidepool.org
+        port: 8084
+  pomerium:
+    pomerium:
+      enabled: true
+  prometheus-operator:
+    prometheus-operator:
+      enabled: false
+  reloader:
+    reloader:
+      enabled: true
+  sumologic:
+    sumologic:
+      apiEndpoint: https://api.us2.sumologic.com/api/v1/
+      enabled: true
+      namespace: sumologic
+  monitoring:
+    thanos:
+      bucket: tidepool-thanos
+      enabled: false
+      secret: thanos-objstore-config
+  tracing:
+    tracing:
+      enabled: false
+pkgs:
   certmanager:
     enabled: true
-  cluster-autoscaler:
-    enabled: true
-  common:
-    enabled: true
-  datadog:
-    enabled: false
-  dnsutil:
-    enabled: false
-  elasticsearch-operator:
-    enabled: false
-  external-dns:
-    enabled: true
-  external-secrets:
-    enabled: false
-    poller_interval: "120000"
-  flux:
-    enabled: true
-  fluxcloud:
-    enabled: false
-    secret: slack
-    username: derrickburns
-  fluxrecv:
-    enabled: true
-    namespace: flux
-    sidecar: false
-    virtualServices:
-      fluxrecv-https:
-        dnsNames:
-        - fluxrecv.tidepool.org
-        enabled: true
-        labels:
-          protocol: https
-          type: external
   gloo:
     enabled: true
-    namespace: gloo-system
-    version: 1.3.3
-  glooe-monitoring:
-    enabled: false
-    namespace: gloo-system
-    sso:
-      allowed_groups:
-      - eng@tidepool.org
-      port: 80
-      serviceName: glooe-grafana
-  glooe-prometheus-server:
-    enabled: false
-    namespace: gloo-system
-    storage: 32Gi
-    sso:
-      allowed_groups:
-      - eng@tidepool.org
-      externalName: glooe-metrics
-      port: 80
-  grafana:
-    enabled: false
-    namespace: monitoring
-    sso:
-      allowed_groups:
-      - eng@tidepool.org
-      port: 80
-      serviceName: monitoring-prometheus-operator-grafana
-  jaeger-operator:
-    enabled: true
-  kubernetes-dashboard:
-    enabled: false
   linkerd:
-    version: stable-2.7.0
-  linkerd-web:
+    annotations: {}
     enabled: true
-    namespace: linkerd
-    sso:
-      allowed_groups:
-      - eng@tidepool.org
-      port: 8084
-  metrics-server:
-    enabled: true
-  monitoring-prometheus-oper-prometheus:
-    namespace: monitoring
-    sso:
-      allowed_groups:
-      - eng@tidepool.org
-      port: 9090
-  pomerium:
-    enabled: true
-  prometheus-operator:
-    enabled: true
-  reloader:
-    enabled: true
-  sumologic:
-    apiEndpoint: https://api.us2.sumologic.com/api/v1/
-    enabled: false
-    namespace: sumologic
-  thanos:
-    bucket: tidepool-thanos
-    enabled: false
-    secret: thanos-objstore-config
-  tidebot:
+  prometheus:
     enabled: false
   tracing:
     enabled: false
-    sso:
-      allowed_groups:
-      - eng@tidepool.org
-      port: 16686
-      serviceName: jaeger-query
-  velero:
-    enabled: false
+    namespace: tracing
+
