@@ -1233,7 +1233,7 @@ unset SM_DIR
 define_colors
 
 eval set -- "${PARAMS[*]}"
-cmd=$1
+cmd=${1:-config}
 shift
 case $cmd in
   delete_secret)
