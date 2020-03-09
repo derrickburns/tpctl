@@ -500,29 +500,21 @@ tpctl diff
 
 ## Inside The values.yaml File 
 
-Your primary configuration file, `values.yaml`, contains all the information needed to create your Kubernetes cluster and its services.  Here is an annotated example:
+Your primary configuration file, `values.yaml`, contains all the information needed to create your Kubernetes cluster and its services.  
 
-### GitHub Config
+### Metadata
+
+The first section of the file contains configuration values that are shared across the cluster or describe the properties of the configuration repo.
 
 This section establishes where the GitHub repo is located.  
 ```yaml
-github:
-  git: git@github.com:tidepool-org/cluster-test1
-  https: https://github.com/tidepool-org/cluster-test1
-```
-
-### Logging Config
-This section provides the default log level for the services that run in the
-cluster.
-
-```yaml
-logLevel: debug                               # the default log level for all services
-```
-
-### Cluster Administration Configuration
-This section provides an email address for the administrator of the cluster.
-```yaml
-email: derrick@tidepool.org                   # cluster admin email address
+general:
+  github:
+    git: git@github.com:tidepool-org/cluster-test1
+    https: https://github.com/tidepool-org/cluster-test1
+  logLevel: debug                   # the default log level for all services
+  email: derrick@tidepool.org       # cluster admin email address
+  kubeconfig: "$HOME/.kube/config"  # place to put KUBECONFIG
 ```
 
 ### AWS Configuration
@@ -540,12 +532,6 @@ aws:
   - haroldbernard-cli
 ```
 
-### Kubectl Access Configuration
-This secion provides the default location of the Kubernetes cluster configuration file.
-
-```yaml
-kubeconfig: "$HOME/.kube/config"             # place to put KUBECONFIG
-```
 ### Cluster Provisioning Configuration
 This sections provides a description of the AWS cluster itself, including its
 name, region, size, networking config, and IAM policies.
@@ -581,57 +567,60 @@ cluster:
         externalDNS: true
 ```
 
-### Optional Service Configuration
+### Namespace Configuration
 
-There are a number of services that can be installed by `tpctl` to run in your
-Kubernetes cluster.   This section allows you to select the services
-that you want to enable:
+Kubernetes services run in namespaces. Within each namespace, you may configure a set of packages to run:
 ```yaml
 
-pkgs:
-  amazon-cloudwatch:                         # AWS CloudWatch logging
-    enabled: true
-  external-dns:                              # External DNS maintains DNS aliases to Amazon ELBs
-    enabled: true
-  gloo:                                      # Gloo provides the API Gateway 
-    enabled: true
-  gloo-crds:                                 # Gloo CRDs define the Custom Resource Definitions
-    enabled: true
-  prometheus-operator:                       # Prometheus Operator creates Prometheus instances
-    enabled: true
-  certmanager:                               # Certmanager issues TLS certificates
-    enabled: true
-  cluster-autoscaler:                        # Cluster autoscaler scales the nodes in the cluster as needed
-    enabled: true
-  external-secrets:                          # External secrets loads persisted secrets from AWS Secrets Manager
-    enabled: true
-  reloader:                                  # Reloader restarts services on secrets/configmap changes
-    enabled: true
-  datadog:                                   # Datadog send telemetry to the hosted Datadog service
-    enabled: false
-  flux:                                      # Flux provides GitOps
-    enabled: true
-  fluxcloud:                                 # Fluxcloud sends GitOps notifications to Slack
-    enabled: false
-    username: "derrickburns"                 
-    secret: slack                            # Name of secret in which Slack webhook URL is provided
-    #channel: foo                            # Slack channel on which to post notifications
-  metrics-server:                            # Metrics server collects Node level metrics and sends to Prometheus
-    enabled: true
-  sumologic:                                 # Sumologic collects metrics and logs and sents to the hosted service
-    enabled: false
-  thanos:                                    # Thanos aggregates telemetry from all Tidepool clusters
-    enabled: true
-    bucket: tidepool-thanos                  # Writable S3 bucket in which to aggregate multi-cluster telemetry data
-    secret: thanos-objstore-config           # Name of Kubernetes secret in which Thanos config is stored.
+namespaces:
+  amazon-cloudwatch:                         
+    amazon-cloudwatch:                         # AWS CloudWatch logging
+      enabled: true
+  external-dns:
+    external-dns:                              # External DNS maintains DNS aliases to Amazon ELBs
+      enabled: true
+  gloo-system:
+    gloo:                                      # Gloo provides the API Gateway 
+      enabled: true
+  prometheus-operator:
+    prometheus-operator:                       # Prometheus Operator creates Prometheus instances
+      enabled: true
+  cert-manager:                               
+    certmanager:                               # Certmanager issues TLS certificates
+      enabled: true
+  kube-system:
+    cluster-autoscaler:                        # Cluster autoscaler scales the nodes in the cluster as needed
+      enabled: true
+    metrics-server:                            # Metrics server collects Node level metrics and sends to Prometheus
+      enabled: true
+  reloader:
+    reloader:                                  # Reloader restarts services on secrets/configmap changes
+      enabled: true
+  datadog:
+    datadog:                                   # Datadog send telemetry to the hosted Datadog service
+      enabled: false
+  flux:
+    flux:                                      # Flux provides GitOps
+      enabled: true
+    fluxcloud:                                 # Fluxcloud sends GitOps notifications to Slack
+      enabled: false
+      username: "derrickburns"                 
+      secret: slack                            # Name of secret in which Slack webhook URL is provided
+  sumologic:                                 
+    sumologic:                                 # Sumologic collects metrics and logs and sents to the hosted service
+      enabled: false
+  monitoring:
+    thanos:                                    # Thanos aggregates telemetry from all Tidepool clusters
+      enabled: true
+      bucket: tidepool-thanos                  # Writable S3 bucket in which to aggregate multi-cluster telemetry data
+      secret: thanos-objstore-config           # Name of Kubernetes secret in which Thanos config is stored.
 ```
 
-### Tidepool Environment Configuration
-The last section allows you to configure the Tidepool environments that you run in your cluster.
-
+### Tidepool Service Configuration
+You also provide the configuration of your Tidepool environments in the `namespaces` section:
 
 ```yaml
-environments:
+namespaces:
   qa2:
     mongodb:
       enabled: true                          # Whether to use an embedded mongodb 
@@ -663,4 +652,23 @@ environments:
           enabled: false                     # Whether to offer HTTPS access
           dnsNames:                          # DNS Names of the HTTPS hosts to serve
           - qa2.tidepool.org
+```
+### Globals
+Finally, if you have services that define CRDs or other global resources that may be usedby other services, then you must provide an indication of their use in the `pkgs` section:
+
+###
+```yaml
+pkgs:
+  certmanager:
+    enabled: true
+  gloo:
+    enabled: true
+  linkerd:
+    annotations: {}
+    enabled: true
+  prometheus:
+    enabled: false
+  tracing:
+    enabled: false
+    namespace: tracing
 ```
