@@ -12,59 +12,14 @@
   // add a default namespace to an object if it does not have one
   withNamespace(obj, default):: $.withDefault(obj, 'namespace', default),
 
-  rootDomain(config):: config.cluster.metadata.domain,
-
   // add namespace field to each object under a map if it does not already have one
   addNamespace(map, ns):: std.mapWithKey(function(n, v) $.withNamespace(v, ns), map),
 
   // add a name field to each entry of a map, where the name is the key
   addName(map):: std.mapWithKey(function(n, v) $.withName(v, n), map),
 
-  namespace(config, pkg):: $.getElse(config, 'pkgs.' + pkg + '.namespace', pkg),
-
   matches(labels, selector)::
     std.foldl(function(a, b) a && b, [$.getElse(labels, x, false) == selector[x] for x in std.objectFields(selector)], true),
-
-  helmrelease(name, namespace, repo, version):: {
-    apiVersion: 'helm.fluxcd.io/v1',
-    kind: 'HelmRelease',
-    metadata: {
-      annotations: {
-        'fluxcd.io/automated': 'false',
-      },
-      name: name,
-      namespace: namespace,
-    },
-    spec+: {
-      chart: {
-        name: name,
-        repository: repo,
-        version: version,
-      },
-      releaseName: name,
-    },
-  },
-
-  service(config, pkg):: {
-    apiVersion: 'v1',
-    kind: 'Service',
-    metadata: {
-      name: pkg,
-      namespace: $.namespace(config, pkg),
-    },
-    spec: {
-      type: 'ClusterIP',
-      ports: [{
-        name: 'http',
-        protocol: 'TCP',
-        port: 8080,
-        targetPort: 8080,
-      }],
-      selector: {
-        name: pkg,
-      },
-    },
-  },
 
   contains(list, value):: std.foldl(function(a, b) (a || (b == value)), list, false),
 

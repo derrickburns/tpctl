@@ -23,7 +23,7 @@ local getPoliciesForNamespace(config, namespace) = (
 local getPolicy(config) = std.flattenArrays( [ getPoliciesForNamespace(config, ns) for ns in std.objectFields(config.namespaces) ] );
 
 local helmrelease(config, namespace) = k8s.helmrelease('pomerium', namespace, '5.0.3', 'https://helm.pomerium.io') {
-  local domain = lib.rootDomain(config),
+  local domain = mylib.rootDomain(config),
   spec+: {
     values: {
       annotations: {

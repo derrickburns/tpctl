@@ -3,7 +3,7 @@ local lib = import '../../lib/lib.jsonnet';
 local mylib = import 'lib.jsonnet';
 
 local virtualService(config, namespace) = {
-  local domain = lib.rootDomain(config),
+  local domain = mylib.rootDomain(config),
   apiVersion: 'gateway.solo.io/v1',
   kind: 'VirtualService',
   metadata: {

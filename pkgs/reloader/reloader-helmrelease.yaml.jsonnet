@@ -1,20 +1,8 @@
-local helmrelease(namespace) = { // XXX use helmrelease lib func
-  apiVersion: 'helm.fluxcd.io/v1',
-  kind: 'HelmRelease',
-  metadata: {
-    annotations: {
-      'fluxcd.io/automated': 'false',
-    },
-    name: 'reloader',
-    namespace: namespace,
-  },
+local k8s = import '../../lib/k8s.jsonnet';
+
+local helmrelease(namespace) = k8s.helmrelease('reloader', namespace, 'v0.0.51',
+    'https://stakater.github.io/stakater-charts') { 
   spec: {
-    chart: {
-      name: 'reloader',
-      repository: 'https://stakater.github.io/stakater-charts',
-      version: 'v0.0.51',
-    },
-    releaseName: 'reloader',
     values: {
       reloader: {
         serviceAccount: {
