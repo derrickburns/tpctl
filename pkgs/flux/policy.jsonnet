@@ -1,4 +1,4 @@
-local iam = import '../../lib/iam.jsonnet';
+local iam = import '../../lib/k8s.jsonnet';
 
 local policy(config, namespace) = iam.metadata('flux', namespace) + {
   attachPolicy: {

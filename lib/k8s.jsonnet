@@ -1,13 +1,19 @@
 {
-  helmrelease(name, namespace, version, repo='https://kubernetes-charts.storage.googleapis.com'):: {
+
+  metadata(name, namespace):: {
+    metadata: {
+      name: name,
+      namespace: namespace,
+    },
+  },
+
+  helmrelease(name, namespace, version, repo='https://kubernetes-charts.storage.googleapis.com'):: $.metadata(name, namespace) {
     apiVersion: 'helm.fluxcd.io/v1',
     kind: 'HelmRelease',
-    metadata: {
+    metadata+: {
       annotations: {
         'fluxcd.io/automated': 'false',
       },
-      name: name,
-      namespace: namespace,
     },
     spec+: {
       chart: {
@@ -19,12 +25,12 @@
     },
   },
 
-  service(config, pkg):: {
+  service(config, name, namespace):: $.metadata(name, namespace) {
     apiVersion: 'v1',
     kind: 'Service',
     metadata: {
-      name: pkg,
-      namespace: $.namespace(config, pkg),
+      name: name,
+      namespace: namespace,
     },
     spec: {
       type: 'ClusterIP',
@@ -35,7 +41,7 @@
         targetPort: 8080,
       }],
       selector: {
-        name: pkg,
+        name: name,
       },
     },
   },

@@ -1,7 +1,6 @@
 local lib = import '../../lib/lib.jsonnet';
 local tplib = import 'lib.jsonnet';
-local iam = import '../../lib/iam.jsonnet';
-
+local iam = import '../../lib/k8s.jsonnet';
 
 {
   values(obj):: [obj[field] for field in std.objectFields(obj)],
