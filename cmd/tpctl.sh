@@ -1454,6 +1454,7 @@ case $cmd in
   update_utils)
     check_remote_repo
     clone_remote
+    update_utils
     ;;
   *)
     panic "unknown command: $param"
