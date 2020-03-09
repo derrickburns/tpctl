@@ -213,7 +213,6 @@ namespaces:
   linkerd:
     linkerd:
       enabled: true
-      version: stable-2.6.1
     linkerd-web:
       enabled: true
       sso:
@@ -248,6 +247,7 @@ pkgs:
   gloo:
     enabled: true
   linkerd:
+    version: stable-2.6.1
     annotations: {}
     enabled: true
   prometheus:
