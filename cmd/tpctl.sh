@@ -1129,7 +1129,7 @@ function await_deletion() {
 
 # show help
 function help() {
-  echo "$0 [-h|--help] (values|edit_values|config|edit_repo|cluster|flux|make_buckets|mesh|generate_secrets|upsert_plaintext_secrets|install_users|deploy_key|delete_cluster|await_deletion|remove_mesh|merge_kubeconfig|gloo_dashboard|diff|linkerd_check|sync|peering|vpc|update_kubeconfig|service_accounts|vpa|create_key|update_utils)*"
+  echo "$0 [-h|--help] (values|edit_values|config|edit_repo|cluster|flux|make_buckets|mesh|generate_secrets|install_users|deploy_key|delete_cluster|await_deletion|remove_mesh|merge_kubeconfig|gloo_dashboard|diff|linkerd_check|sync|peering|vpc|update_kubeconfig|service_accounts|vpa|create_key|update_utils)*"
   echo
   echo
   echo "So you want to built a Kubernetes cluster that runs Tidepool. Great!"
@@ -1159,7 +1159,6 @@ function help() {
   echo "edit_values - open editor to edit values.yaml file"
   echo "make_buckets - create S3 buckets if needed and copy assets if don't exist"
   echo "generate_secrets - generate secrets used within tidepool environments persist into AWS secrets manager"
-  echo "upsert_plaintext_secrets - read STDIN for plaintext K8s secrets"
   echo "install_users - add system:master USERS to K8s cluster"
   echo "deploy_key - copy deploy key from Flux to GitHub config repo"
   echo "delete_cluster - initiate deletion of the AWS EKS cluster"
@@ -1178,11 +1177,6 @@ function help() {
   echo "vpa - install vpa"
   echo "cadvisor - install cadvisor"
 }
-
-if [ $# -eq 0 ]; then
-  help
-  exit 0
-fi
 
 APPROVE=false
 CLONE_REMOTE=true
