@@ -659,7 +659,7 @@ function make_policy_manifests() {
 }
 
 function create_namespace() {
-   local template=$TEMPLATE_DIR/namespace.jsonnet
+   local template=$TEMPLATE_DIR/lib/namespace.jsonnet
    local ns=$1
    local config="$2"
    local create=$(echo "$config" | yq r - "namespaces.${ns}.config.create")
