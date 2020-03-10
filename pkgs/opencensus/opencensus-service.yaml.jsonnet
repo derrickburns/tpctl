@@ -3,7 +3,7 @@ local service(namespace) = {
   kind: 'Service',
   metadata: {
     labels: {
-      app: 'opencesus',
+      app: 'opencensus',
       component: 'oc-collector',
     },
     name: 'oc-collector',

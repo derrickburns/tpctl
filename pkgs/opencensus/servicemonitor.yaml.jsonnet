@@ -18,7 +18,7 @@ local servicemonitor(config, namespace) = {
     ],
     selector: {
       matchLabels: {
-        app: 'opencesus',
+        app: 'opencensus',
         component: 'oc-collector',
       },
     },
