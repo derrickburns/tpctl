@@ -13,7 +13,7 @@ local configmap(config, namespace) = {
               metrics_collection_interval: 60,
             },
           },
-          force_flush_interval: 5,
+          force_flush_interval: 15,
         },
       }
     ),
