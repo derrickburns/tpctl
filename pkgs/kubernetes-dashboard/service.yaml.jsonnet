@@ -1,4 +1,4 @@
-local robebinding(namespace) = {
+local service(namespace) = {
   apiVersion: 'v1',
   kind: 'Service',
   metadata: {
@@ -21,5 +21,5 @@ local robebinding(namespace) = {
   },
 };
 
-function(config, prev, namespace) rolebinding(namespace)
+function(config, prev, namespace) service(namespace)
 
