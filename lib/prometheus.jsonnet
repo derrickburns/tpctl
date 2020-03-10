@@ -1,3 +1,5 @@
+local lib = import 'lib.jsonnet';
+
 {
   podmonitor(name, namespace, port, selector, path):: {
     apiVersion: 'monitoring.coreos.com/v1',
