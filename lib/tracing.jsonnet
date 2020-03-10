@@ -1,4 +1,4 @@
-local lib = import '../../lib/lib.jsonnet';
+local lib = import 'lib.jsonnet';
 
 {
   address(config):: 'oc-collector.%s:55678' % config.pkgs.tracing.namespace,
