@@ -8,7 +8,7 @@ local Deployment(config, namespace) = {
   metadata: {
     name: 'fluxcloud',
     namespace: namespace,
-    annotations: 
+    annotations: {
       'secret.reloader.stakater.com/reload': secretName,
     },
   },
