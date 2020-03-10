@@ -268,7 +268,8 @@ local certmanager = import 'certmanager.jsonnet';
     local vsarray = $.vsForNamespacedPackage(namespace, pkgname, config.namespaces[namespace][pkgname]);
     local tovs(x) = $.virtualService(x, pkgname, namespace);
     local result = std.map(tovs,  vsarray);
-    result ),
+    std.filter( function(x) std.length(x.spec.virtualHost.domains) > 0, result )
+  ),
 
   certificatesForPackage(config, pkgname, namespace):: (
     local vsarray = $.vsForNamespacedPackage(namespace, pkgname, config.namespaces[namespace][pkgname]);
