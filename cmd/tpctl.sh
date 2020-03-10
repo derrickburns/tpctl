@@ -485,13 +485,21 @@ function update_kubeconfig() {
   complete "updated kubeconfig"
 }
 
-function update_service_accounts() {
+function add_service_accounts() {
   local cluster=$(get_cluster)
-  start "updating service accounts"
+  start "add new service accounts"
+  eksctl create iamserviceaccount -f config.yaml # --approve
+  expect_success "eksctl create service account failed."
+  complete "added new service accounts"
+}
+
+function replace_service_accounts() {
+  local cluster=$(get_cluster)
+  start "replacing service accounts"
   eksctl delete iamserviceaccount -f config.yaml --approve
   eksctl create iamserviceaccount -f config.yaml --approve
   expect_success "eksctl create service account failed."
-  complete "updated service accounts"
+  complete "replaced service accounts"
 }
 
 # create EKS cluster using config.yaml file, add kubeconfig to config repo
@@ -1429,7 +1437,7 @@ case $cmd in
   service_accounts)
     check_remote_repo
     clone_remote
-    update_service_accounts
+    add_service_accounts
     ;;
   envoy)
     envoy
