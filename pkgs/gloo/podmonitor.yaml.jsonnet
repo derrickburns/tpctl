@@ -1,6 +1,7 @@
 local prom = import '../../lib/prometheus.jsonnet';
 
-function(config, prev, namespace) prom.Podmonitor(condig, 'gloo-gateway-proxies', namespace, 'metrics', {
-  'gateway-proxy': 'live',
-  gloo: 'gateway-proxy',
-})
+function(config, prev, namespace)
+  prom.Podmonitor(config, 'gloo-gateway-proxies', namespace, 'metrics', {
+    'gateway-proxy': 'live',
+    gloo: 'gateway-proxy',
+  })
