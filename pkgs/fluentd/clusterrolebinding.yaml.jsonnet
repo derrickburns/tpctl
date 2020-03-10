@@ -1,21 +1,3 @@
-local clusterrolebinding(namespace) = {
-  apiVersion: 'rbac.authorization.k8s.io/v1beta1',
-  kind: 'ClusterRoleBinding',
-  metadata: {
-    name: 'fluentd-role-binding',
-  },
-  roleRef: {
-    apiGroup: 'rbac.authorization.k8s.io',
-    kind: 'ClusterRole',
-    name: 'fluentd-role',
-  },
-  subjects: [
-    {
-      kind: 'ServiceAccount',
-      name: 'fluentd',
-      namespace: namespace,
-    },
-  ],
-};
+local k8s = import '../../lib/k8s.jsonnet';
 
-function(config, prev, namespace) clusterrolebinding(namespace)
+function(config, prev, namespace) k8s.clusterrolebinding('fluentd', namespace)
