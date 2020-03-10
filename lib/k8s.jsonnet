@@ -7,6 +7,15 @@
     },
   },
 
+  serviceaccount(name, namespace):: {
+    apiVersion: 'v1',
+    kind: 'ServiceAccount',
+    metadata: {
+      name: name,
+      namespace: namespace,
+    },
+  },
+
   clusterrolebinding(name, namespace):: {
     apiVersion: 'rbac.authorization.k8s.io/v1',
     kind: 'ClusterRoleBinding',

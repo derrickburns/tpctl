@@ -38,7 +38,7 @@ local servicemonitor(namespace) = {
     jobLabel: 'app',
     namespaceSelector: {
       matchNames: [
-        'linkerd', // XXX parameterize
+        namespace,
       ],
     },
     selector: {
@@ -49,4 +49,7 @@ local servicemonitor(namespace) = {
   },
 };
 
-function(config, prev, namespace) servicemonitor(namespace)
+function(config, prev, namespace) 
+  if lib.isEnabledAt(config, 'pkgs.prometheus')
+  then servicemonitor(namespace)
+  else {}

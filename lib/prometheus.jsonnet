@@ -1,5 +1,5 @@
 {
-  podmonitor(name, port, selector, path):: {
+  podmonitor(name, namespace, port, selector, path):: {
     apiVersion: 'monitoring.coreos.com/v1',
     kind: 'PodMonitor',
     metadata: {
@@ -24,7 +24,7 @@
     },
   },
 
-  Podmonitor(name, port, selector, path='/metrics')::
+  Podmonitor(name, namespace, port, selector, path='/metrics')::
     if lib.isEnabledAt(config, 'pkgs.prometheus')
     then $.podmonitor(name, selector, port, path='/metrics')
     else {}
