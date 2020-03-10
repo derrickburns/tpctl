@@ -3,7 +3,7 @@ local lib = import '../../lib/lib.jsonnet';
 local deployment(config, namespace) =
   {
     local me = config.namespaces[namespace].fluxrecv,
-    local secretName = if lib.isTrue(me, 'sidecar') then 'fluxrecv-config' else 'fluxrecv-config-separate')
+    local secretName = if lib.isTrue(me, 'sidecar') then 'fluxrecv-config' else 'fluxrecv-config-separate'),
     apiVersion: 'extensions/v1beta1',
     kind: 'Deployment',
     metadata: {
