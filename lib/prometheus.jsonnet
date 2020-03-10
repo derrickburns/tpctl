@@ -28,6 +28,6 @@ local lib = import 'lib.jsonnet';
 
   Podmonitor(config, name, namespace, port, selector, path='/metrics')::
     if lib.isEnabledAt(config, 'pkgs.prometheus')
-    then $.podmonitor(name, selector, port, path='/metrics')
+    then $.podmonitor(name, namespace, port, selector, path='/metrics')
     else {}
 }
