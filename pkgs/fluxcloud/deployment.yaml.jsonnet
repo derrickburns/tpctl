@@ -2,13 +2,14 @@ local lib = import '../../lib/lib.jsonnet';
 
 local Deployment(config, namespace) = {
   local me = config.namespaces[namespace].fluxcloud,
+  local secretName = lib.getElse(me, 'secret', 'slack'),
   apiVersion: 'apps/v1',
   kind: 'Deployment',
   metadata: {
     name: 'fluxcloud',
     namespace: namespace,
-    annotations: {
-      'secret.reloader.stakater.com/reload': 'slack',
+    annotations: 
+      'secret.reloader.stakater.com/reload': secretName,
     },
   },
   spec: {
@@ -40,7 +41,7 @@ local Deployment(config, namespace) = {
                 name: 'SLACK_URL',
                 valueFrom: {
                   secretKeyRef: {
-                    name: lib.getElse(me, 'secret', 'slack'),
+                    name: secretName,
                     key: 'url',
                   },
                 },
