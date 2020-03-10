@@ -4,6 +4,7 @@ local mylib = import 'lib.jsonnet';
 
 local dataBucket(config, namespace) = 'tidepool-%s-%s-data' % [config.cluster.metadata.name, namespace];
 local assetBucket(config, namespace) = 'tidepool-%s-%s-asset' % [config.cluster.metadata.name, namespace];
+local virtualBucket(bucket) = '%s.s3.%s.amazonaws.com' % [ bucket, config.cluster.metadata.region ];
 
 local prefixAnnotations(prefix, svcs) = {
   ['%s.fluxcd.io/%s' % [prefix, svc]]: '%s.deployment.image' % svc
@@ -213,7 +214,7 @@ spec: {
           env: {
             store: {
               s3: {
-                bucket: lib.getElse(env, 'buckets.data', dataBucket(config, namespace)),
+                bucket: virtualBucket(lib.getElse(env, 'buckets.data', dataBucket(config, namespace))),
               },
               type: 's3',
             },
@@ -365,7 +366,7 @@ spec: {
           env: {
             store: {
               s3: {
-                bucket: lib.getElse(env, 'buckets.data', dataBucket(config, namespace)),
+		bucket: virtualBucket(lib.getElse(env, 'buckets.data', dataBucket(config, namespace))),
               },
               type: 's3',
             },
@@ -387,7 +388,7 @@ spec: {
           env: {
             store: {
               s3: {
-                bucket: lib.getElse(env, 'buckets.data', dataBucket(config, namespace)),
+		bucket: virtualBucket(lib.getElse(env, 'buckets.data', dataBucket(config, namespace))),
               },
               type: 's3',
             },
