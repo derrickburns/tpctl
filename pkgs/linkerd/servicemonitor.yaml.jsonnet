@@ -1,3 +1,5 @@
+local lib = import '../../lib/lib.jsonnet';
+
 local servicemonitor(namespace) = {
   apiVersion: 'monitoring.coreos.com/v1',
   kind: 'ServiceMonitor',
