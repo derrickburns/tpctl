@@ -7,7 +7,7 @@ local deployment(config, namespace) =
     kind: 'Deployment',
     metadata: {
       annotations: {
-        'secret.reloader.stakater.com/reload': 'fluxrecv-config',
+        'secret.reloader.stakater.com/reload': $.spec.template.spec.volumes[0].secret.secretName,
       },
       name: 'fluxrecv',
       namespace: namespace,
