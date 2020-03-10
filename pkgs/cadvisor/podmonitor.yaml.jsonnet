@@ -26,6 +26,6 @@ local podmonitor(config, namespace) = {
 };
 
 function(config, prev, namespace)
-  if lib.getElse(config, 'pkgs.prometheus.enabled', false)
+  if lib.isEnabledAt(config, 'pkgs.prometheus')
   then podmonitor(config, namespace)
   else {}

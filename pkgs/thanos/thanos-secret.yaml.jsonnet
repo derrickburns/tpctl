@@ -33,4 +33,6 @@ local secret(config, namespace) = {
 };
 
 function(config, prev, namespace)
-  if lib.isTrue(config, 'pkgs.prometheus.enabled') then secret(config, namespace) else {}
+  if lib.isEnabledAt(config, 'pkgs.prometheus')
+  then secret(config, namespace)
+  else {}
