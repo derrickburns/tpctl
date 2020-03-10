@@ -1,34 +1,6 @@
-local lib = import '../../lib/lib.jsonnet';
+local prom = import '../../lib/prometheus.jsonnet';
 
-local servicemonitor(config, namespace) = {
-  apiVersion: 'monitoring.coreos.com/v1',
-  kind: 'PodMonitor',
-  metadata: {
-    labels: {
-      purpose: 'support',
-    },
-    name: 'jaeger-collector',
-    namespace: namespace,
-  },
-  spec: {
-    podMetricsEndpoints: [
-      {
-        port: 'admin-http',
-      },
-    ],
-    selector: {
-      matchLabels: {
-        app: 'jaeger',
-        'app.kubernetes.io/component': 'collector',
-      },
-    },
-    namespaceSelector: {
-      matchNames: [ namespace ],
-    },
-  },
-};
-
-function(config, prev, namespace)
-  if lib.isEnabledAt(config, 'pkgs.prometheus')
-  then servicemonitor(config, namespace)
-  else {}
+function(config, prev, namespace) prom.Podmonitor('jaeger-collector', namespace, 'admin-http', {
+  app: 'jaeger',
+  'app.kubernetes.io/component': 'collector',
+})
