@@ -1,6 +1,7 @@
 local lib = import '../../lib/lib.jsonnet';
 
 function(config, prev, namespace) {
+  local me = config.namespaces[namespace].fluxrecv,
   apiVersion: 'v1',
   kind: 'Service',
   metadata: {
@@ -16,7 +17,7 @@ function(config, prev, namespace) {
       targetPort: 8080,
     }],
     selector: {
-      name: if lib.getElse(config.namespaces[namespace], 'fluxrecv.sidecar', false) then 'flux' else 'fluxrecv',
+      name: if lib.isTrue(me, 'sidecar') then 'flux' else 'fluxrecv',
     },
   },
 }
