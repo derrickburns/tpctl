@@ -3,7 +3,7 @@
 # Configure EKS cluster to run Tidepool services
 #
 
-set -o pipefail
+set -eo pipefail
 export FLUX_FORWARD_NAMESPACE=flux
 export REVIEWERS="derrickburns pazaan jamesraby todd"
 
@@ -203,7 +203,7 @@ function define_colors() {
 # irrecoverable error. Show message and exit.
 function panic() {
   >&2 echo "${RED}[✖] ${1}${RESET}"
-  exit 1
+  kill 0
 }
 
 # confirm that previous command succeeded, otherwise panic with message
@@ -353,12 +353,11 @@ function default_value() {
 
 # retrieve value from values file, or exit if it is not available
 function require_value() {
-  local val=$(yq r values.yaml -j $1 | sed -e 's/"//g' -e "s/'//g")
-  if [ $? -ne 0 -o "$val" == "null" -o "$val" == "" ]; then
-    panic "Missing $1 from values.yaml file."
+  yq r values.yaml -j $1 2>/dev/null
+  if [ $? -ne 0 ]; then
+    panic "value $1 not found in values.yaml"
   fi
-  echo $val
-}
+} 
 
 # retrieve name of cluster
 function get_cluster() {
@@ -1254,7 +1253,10 @@ define_colors
 
 eval set -- "${PARAMS[*]}"
 cmd=${1:-config}
-shift
+if [ $# -ne 0 ]
+then
+  shift
+fi
 case $cmd in
   delete_secret)
     check_remote_repo
