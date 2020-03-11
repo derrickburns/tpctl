@@ -30,9 +30,13 @@ def mkdir_p(path):
 for value in input:
     if value != None and "kind" in value:
         path = "%s" % (convert(value["metadata"]["namespace"]) if "namespace" in value["metadata"] else "global")
-        name = "%s.yaml" % value["metadata"]["name"]
+        if "name" in value["metadata"]:
+            name = "%s.yaml" % value["metadata"]["name"]
+        else:
+            name = "unknown"
         mkdir_p(path)
         print(path + "/" + name)
         with open(path + "/" + name, "w") as out:
             yaml.dump(value, out, encoding='utf-8')
             out.flush()
+            

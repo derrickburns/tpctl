@@ -27,13 +27,20 @@ def mkdir_p(path):
         else:
             raise
 
-for value in input:
+def process(value):
     if value != None and "kind" in value:
-        path = "%s/%s" % (convert(value["metadata"]["namespace"])
-                          if "namespace" in value["metadata"] else "global", value["kind"])
-        name = "%s.yaml" % value["metadata"]["name"]
-        mkdir_p(path)
-        print(path + "/" + name)
-        with open(path + "/" + name, "w") as out:
-            yaml.dump(value, out, encoding='utf-8')
-            out.flush()
+        if value["kind"] == "List":
+            for v in value["items"]:
+                process(v)
+        else:
+            path = "%s/%s" % (convert(value["metadata"]["namespace"])
+                              if "namespace" in value["metadata"] else "global", value["kind"])
+            name = "%s.yaml" % value["metadata"]["name"]
+            mkdir_p(path)
+            print(path + "/" + name)
+            with open(path + "/" + name, "w") as out:
+                yaml.dump(value, out, encoding='utf-8')
+                out.flush()
+
+for value in input:
+    process(value)
