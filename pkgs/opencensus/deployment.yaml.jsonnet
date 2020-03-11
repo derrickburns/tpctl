@@ -46,7 +46,7 @@ local deployment(config, namespace) = {
                 value: '80',
               },
             ],
-            image: 'omnition/opencensus-collector:0.1.10',
+            image: 'omnition/opencensus-collector:0.1.11',
             livenessProbe: {
               httpGet: {
                 path: '/',
