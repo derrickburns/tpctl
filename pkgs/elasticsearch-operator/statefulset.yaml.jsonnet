@@ -28,7 +28,6 @@ local statefulset(namespace) = {
               'manager',
               '--operator-roles',
               'all',
-              '--enable-debug-logs=false',
             ],
             env: [
               {
