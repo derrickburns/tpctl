@@ -28,6 +28,7 @@ local statefulset(namespace) = {
               'manager',
               '--operator-roles',
               'all',
+              '--enable-debug-logs=false',
             ],
             env: [
               {
@@ -48,10 +49,10 @@ local statefulset(namespace) = {
               },
               {
                 name: 'OPERATOR_IMAGE',
-                value: 'docker.elastic.co/eck/eck-operator:1.0.1',
+                value: 'docker.elastic.co/eck/eck-operator:1.0.0-beta1',
               },
             ],
-            image: 'docker.elastic.co/eck/eck-operator:1.0.1',
+            image: 'docker.elastic.co/eck/eck-operator:1.0.0-beta1',
             name: 'manager',
             ports: [
               {
