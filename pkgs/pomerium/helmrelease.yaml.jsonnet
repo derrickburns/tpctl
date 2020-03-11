@@ -11,8 +11,8 @@ local getPoliciesForNamespace(config, namespace) = (
       local suffix = if port == 80 then '' else ':%s' % port,
       from: 'https://' + mylib.dnsNameForPkg(config, namespace, x),
       to: 'http://' + lib.getElse(pkg, 'sso.serviceName', x) + '.' + namespace + '.svc.cluster.local' + suffix,
-      allowed_groups: lib.getElse(pkg, 'sso.allowed_groups', []),
-      allowed_users: lib.getElse(pkg, 'sso.allowed_users', []),
+      allowed_groups: lib.getElse(pkg, 'sso.allowed_groups', lib.getElse(config, 'general.sso.allowed_groups', [])),
+      allowed_users: lib.getElse(pkg, 'sso.allowed_users', lib.getElse(config, 'general.sso.allowed_users', [])),
       allow_websockets: true,
     }
     for x in std.objectFields(ns)
