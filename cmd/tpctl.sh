@@ -334,6 +334,10 @@ function set_template_dir() {
 # get values file
 function get_config() {
   yq r values.yaml -j
+  if [ $? -ne 0 ]
+  then
+    panic "cannot parse values.yaml"
+  fi
 }
 
 # retrieve value from values file, or return the second argument if the value is not found
