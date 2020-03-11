@@ -14,14 +14,14 @@ local ClusterIssuer(config) = {
       solvers: [
         {
           dns01: {
-            route53: {
+            route53: { // XXX AWS dependency
               region: config.cluster.metadata.region,
             },
           },
           selector: {
             dnsZones: [
-              'tidepool.org',
-              '*.tidepool.org',
+              config.cluster.metadata.domain,
+              '*.%s' % config.cluster.metadata.domain,
             ],
           },
         },
