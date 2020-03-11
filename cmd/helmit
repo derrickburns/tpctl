@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -x
 file=$1
 hr=$(yq r $file -j)
 values=$(echo "$hr" | jq .spec.values | yq r - >/tmp/foobar)

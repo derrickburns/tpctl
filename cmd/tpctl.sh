@@ -308,10 +308,11 @@ function clone_remote() {
     cd $TMP_DIR
     if [[ ! -d $(basename $HTTPS_REMOTE_REPO) ]]; then
       start "cloning remote"
-      git clone $(repo_with_token $HTTPS_REMOTE_REPO) >/dev/null
+      git clone $(repo_with_token $HTTPS_REMOTE_REPO)
       expect_success "Cannot clone $HTTPS_REMOTE_REPO"
       complete "cloned remote"
     fi
+    echo $(basename $HTTPS_REMOTE_REPO)
     cd $(basename $HTTPS_REMOTE_REPO)
   fi
 }
@@ -793,9 +794,9 @@ function install_helmrelease() {
 function bootstrap_flux() {
   start "bootstrapping flux"
   establish_ssh
-  install_helmrelease pkgs/flux/flux-helmrelease.yaml
+  install_helmrelease pkgs/flux/flux/flux-helmrelease.yaml
   install_key
-  install_helmrelease pkgs/flux/helm-operator-helmrelease.yaml
+  install_helmrelease pkgs/flux/flux/helm-operator-helmrelease.yaml
   complete "bootstrapped flux"
 }
 
@@ -1433,6 +1434,8 @@ case $cmd in
     set_template_dir
     clone_remote
     make_shared_config
+    make_cluster_config
+    make_namespace_config
     bootstrap_flux
     confirm_matching_cluster
     ;;
