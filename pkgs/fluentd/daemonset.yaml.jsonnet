@@ -52,7 +52,7 @@ local daemonset(config, namespace) = {
                 },
               },
             ],
-            image: 'fluent/fluentd-kubernetes-daemonset:v1.8.1-debian-cloudwatch-1.1',
+            image: 'fluent/fluentd-kubernetes-daemonset:v1.9.2-debian-cloudwatch-1.0',
             name: 'fluentd-cloudwatch',
             resources: {
               limits: {
