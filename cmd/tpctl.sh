@@ -342,12 +342,8 @@ function get_config() {
 
 # retrieve value from values file, or return the second argument if the value is not found
 function default_value() {
-  local val=$(yq r values.yaml -j $1 | sed -e 's/"//g' -e "s/'//g")
-  if [ $? -ne 0 -o "$val" == "null" -o "$val" == "" ]; then
-    echo $2
-  else
-    echo $val
-  fi
+  local v=$(yq r values.yaml $1)
+  echo ${v:-$2}
 }
 
 
