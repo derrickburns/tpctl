@@ -30,6 +30,10 @@ local genvalues(config, namespace) = {
     },
   },
 
+  sync: {
+    timeout: '10m',
+  },
+
   syncGarbageCollection: {
     enabled: true,
     dry: false,
