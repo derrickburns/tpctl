@@ -50,7 +50,7 @@ local deployment(namespace) = {
                 value: 'jaeger-operator',
               },
             ],
-            image: 'jaegertracing/jaeger-operator:1.16.0',
+            image: 'jaegertracing/jaeger-operator:1.17.0',
             imagePullPolicy: 'Always',
             name: 'jaeger-operator',
             ports: [
