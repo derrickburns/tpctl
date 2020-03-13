@@ -1,7 +1,6 @@
 local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 local mylib = import 'lib.jsonnet';
-local tracing = import '../../lib/tracing.jsonnet';
 
 local getPoliciesForNamespace(config, namespace) = (
   local ns = config.namespaces[namespace];
@@ -23,7 +22,7 @@ local getPoliciesForNamespace(config, namespace) = (
 
 local getPolicy(config) = std.flattenArrays([getPoliciesForNamespace(config, ns) for ns in std.objectFields(config.namespaces)]);
 
-local helmrelease(config, namespace) = k8s.helmrelease('pomerium', namespace, '6.0.1', 'https://helm.pomerium.io') {
+local helmrelease(config, namespace) = k8s.helmrelease('pomerium', namespace, '5.0.3', 'https://helm.pomerium.io') {
   local me = config.namespaces[namespace].pomerium,
   local domain = mylib.rootDomain(config),
   spec+: {
@@ -32,30 +31,21 @@ local helmrelease(config, namespace) = k8s.helmrelease('pomerium', namespace, '6
         'secret.reloader.stakater.com/reload': 'pomerium',
         'configmap.reloader.stakater.com/reload': 'pomerium',
       },
+      authenticate: {
+        idp: {
+          serviceAccount: true,
+        },
+      },
       extraEnv: {
         log_level: lib.getElse(me, 'logLevel', lib.getElse(config, 'general.logLevel', 'info')),
       },
       service: {
         type: 'ClusterIP',
       },
-      metrics: {
-        enabled: lib.isEnabledAt(config, 'pkgs.prometheus'),
-      },
-      serviceMonitor: {
-        enabled: lib.isEnabledAt(config, 'pkgs.prometheusOperator'),
-      },
-      tracing: if lib.isEnabledAt(config, 'pkgs.tracing') then {
-        enabled: true,
-        provider: 'Jaeger',
-	jaeger: {
-          collector_endpoint: tracing.address(config)
-        },
-      } else {},
       config: {
         rootDomain: domain,
         existingSecret: 'pomerium',
-        #policy: std.base64(std.manifestYamlDoc(getPolicy(config))),
-        policy: std.manifestYamlDoc(getPolicy(config)),
+        policy: getPolicy(config),
       },
       forwardAuth: {
         enabled: false,
