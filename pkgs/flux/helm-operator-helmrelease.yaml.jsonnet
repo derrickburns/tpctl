@@ -3,15 +3,17 @@ local lib = import '../../lib/lib.jsonnet';
 
 local genvalues(config) = {
 
+  local secretName = 'flux-helm-repositories',
+
   createCRD: false,
   helm: {
     versions: 'v3',
   },
 
   prometheus: {
-    enabled: true,
+    enabled: lib.getElse(config, 'pkgs.prometheus.enabled', false),
     serviceMonitor: {
-      create: true,
+      create: lib.getElse(config, 'pkgs.prometheusOperator.enabled', false),
     },
   },
 
@@ -22,13 +24,13 @@ local genvalues(config) = {
   },
 
   annotations: {
-    'secret.reloader.stakater.com/reload': 'flux-helm-repositories',
+    'secret.reloader.stakater.com/reload': secretName,
   },
 
   configureRepositories: {
     enabled: true,
     volumeName: 'repositories-yaml',
-    secretName: 'flux-helm-repositories',
+    secretName: secretName,
     cacheVolumeName: 'repositories-cache',
   },
 
