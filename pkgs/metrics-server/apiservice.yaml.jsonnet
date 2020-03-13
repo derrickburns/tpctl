@@ -1,4 +1,4 @@
-local apiservice = {
+local apiservice(namespace) = {
   apiVersion: 'apiregistration.k8s.io/v1beta1',
   kind: 'APIService',
   metadata: {
@@ -10,11 +10,11 @@ local apiservice = {
     insecureSkipTLSVerify: true,
     service: {
       name: 'metrics-server',
-      namespace: 'kube-system',
+      namespace: namespace,
     },
     version: 'v1beta1',
     versionPriority: 100,
   },
 };
 
-function(config, prev, namespace) apiservice
+function(config, prev, namespace) apiservice(namespace)
