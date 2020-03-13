@@ -55,7 +55,7 @@ local helmrelease(config, namespace) = k8s.helmrelease('pomerium', namespace, '6
         rootDomain: domain,
         existingSecret: 'pomerium',
         #policy: std.base64(std.manifestYamlDoc(getPolicy(config))),
-        policy: std.manifestYamlDoc(getPolicy(config),
+        policy: std.manifestYamlDoc(getPolicy(config)),
       },
       forwardAuth: {
         enabled: false,
