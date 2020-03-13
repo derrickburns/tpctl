@@ -1,7 +1,15 @@
 local lib = import '../../lib/lib.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 
-local helmrelease(config, namespace) = k8s.helmrelease('cert-manager', namespace, 'v0.14.0',
+local helmrelease(config, namespace) = (
+
+   local k8sVersion = lib.getElse(config, 'cluster.metadata.version', 'auto');
+   local name =
+     if k8sVersion == 'auto' || std.substring(k8sVersion, 0, 4) == '1.14'
+     then 'cert-manager-legacy'
+     else 'cert-manager';
+
+   k8s.helmrelease(name, namespace, 'v0.14.0',
     'https://charts.jetstack.io') { 
   spec+: {
     values+: {
@@ -13,6 +21,6 @@ local helmrelease(config, namespace) = k8s.helmrelease('cert-manager', namespace
       },
     },
   },
-};
+});
 
 function(config, prev, namespace) helmrelease(config, namespace)
