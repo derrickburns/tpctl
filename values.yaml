@@ -46,71 +46,10 @@ cluster:
     name: ng
   vpc:
     cidr: 10.47.0.0/16
-environments:
-  qa2:
-    marketo:
-      enabled: false
-    mongodb:
-      enabled: true
-    tidepool:
-      buckets: {}
-      chart:
-        path: charts/tidepool
-        ref: develop
-      deployment:
-        replicas: 2
-      dnsNames:
-      - qa2.tidepool.org
-      enabled: true
-      gitops:
-        blip: glob:release-1.29*
-        blob: glob:update-aws-go-*
-        default: glob:develop-*
-        export: glob:release-1.4*
-      hpa:
-        enabled: true
-      migrations:
-        resources:
-          limits:
-            cpu: 1000m
-            memory: 256Mi
-          requests:
-            cpu: 500m
-            memory: 256Mi
-      mongodb:
-        enabled: true
-      nosqlclient:
-        enabled: true
-      resources:
-        limits:
-          cpu: 100m
-          memory: 128Mi
-        requests:
-          cpu: 50m
-          memory: 64Mi
-      seagull:
-        resources:
-          limits:
-            cpu: 1000m
-            memory: 256Mi
-          requests:
-            cpu: 500m
-            memory: 256Mi
-      source: stg
-      tidewhisperer:
-        resources:
-          limits:
-            cpu: 1000m
-            memory: 256Mi
-          requests:
-            cpu: 500m
-            memory: 256Mi
 namespaces:
   qa1:
     marketo:
       enabled: true
-    mongodb:
-      enabled: false
     tidepool:
       buckets:
         create: false
@@ -135,7 +74,7 @@ namespaces:
       enabled: true
       gateway:
         domain: qa1.tidepool.org
-        host: api.qa1.tidepool.org
+        host: dev-api.qa1.tidepool.org
       gitops:
         default: glob:master-*
         enabled: true

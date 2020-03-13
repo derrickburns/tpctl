@@ -65,7 +65,7 @@ local certmanager = import 'certmanager.jsonnet';
   sslConfig(vs):: if $.isHttps(vs) then {
     sslConfig: {
       secretRef: {
-        name: $.certificateSecretName(vs.name),
+        name: $.certificateSecretName(vs.name, vs.namespace),
         namespace: vs.namespace,
       },
       sniDomains: lib.getElse(vs, 'dnsNames', []),
@@ -276,14 +276,14 @@ local certmanager = import 'certmanager.jsonnet';
     lib.pruneList(std.map(function(v) $.certificate(config, v, pkgname, namespace), vsarray))
   ),
 
-  certificateSecretName(base):: base + '-certificate',
+  certificateSecretName(base, namespace):: namespace + '-' + base + '-certificate',
 
   certificate(config, vsin, defaultName, defaultNamespace):: (
     local vs = lib.withNamespace(lib.withName(vsin, defaultName), defaultNamespace);
     if lib.getElse(config, 'pkgs.certmanager.enabled', false)
        && $.isHttps(vs)
        && std.length(vs.dnsNames) > 0
-    then certmanager.certificate(config, $.certificateSecretName(vs.name), vs.namespace, vs.dnsNames)
+    then certmanager.certificate(config, $.certificateSecretName(vs.name, vs.namespace), vs.namespace, vs.dnsNames)
     else {}
   ),
 }
