@@ -425,8 +425,7 @@ function make_asset_bucket() {
   local env=$1
   local create=$(yq r values.yaml namespaces.${env}.tidepool.buckets.create | sed -e "/^  .*/d" -e s/:.*//)
   local asset_bucket=$(get_bucket $env asset)
-  aws s3 ls s3://$asset_bucket >/dev/null 2>&1
-  if [ $? -ne 0 ]
+  if[ ! aws s3 ls s3://$asset_bucket >/dev/null 2>&1 ]
   then
     start "creating asset bucket $asset_bucket"
     aws s3 mb s3://$asset_bucket >/dev/null 2>&1
@@ -444,8 +443,7 @@ function make_asset_bucket() {
 function make_data_bucket() {
   local env=$1
   local data_bucket=$(get_bucket $env data)
-  aws s3 ls s3://$data_bucket >/dev/null 2>&1
-  if [ $? -ne 0 ]
+  if ! aws s3 ls s3://$data_bucket >/dev/null 2>&1
   then
     start "creating data bucket $data_bucket"
     aws s3 mb s3://$data_bucket >/dev/null 2>&1
@@ -780,8 +778,7 @@ function expect_cluster_exists() {
 function install_helmrelease() {
   local file=$1
   start "bootstrapping $file"
-  helmit $file >${TMP_DIR}/out 2>&1
-  if [ $? -ne 0 ]
+  if ! helmit $file >${TMP_DIR}/out 2>&1
   then
     cat $TMP_DIR/out
     panic "helm upgrade failed"
@@ -940,8 +937,7 @@ function make_users() {
   for user in $(get_iam_users); do
     local arn=arn:aws:iam::${account}:user/${user}
     users[$arn]=true
-    eksctl get iamidentitymapping --region=$aws_region --arn=$arn --cluster=$cluster >/dev/null 2>&1
-    if [ $? -ne 0 ]
+    if ! eksctl get iamidentitymapping --region=$aws_region --arn=$arn --cluster=$cluster >/dev/null 2>&1
     then
       eksctl create iamidentitymapping --region=$aws_region --arn=$arn --group=$group --cluster=$cluster --username=$user
       while [ $? -ne 0 ]; do
