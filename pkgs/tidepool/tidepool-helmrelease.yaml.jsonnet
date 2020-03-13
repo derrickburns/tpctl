@@ -1,10 +1,10 @@
-local lib = import '../../lib/lib.jsonnet';
 local expand = import '../../lib/expand.jsonnet';
+local lib = import '../../lib/lib.jsonnet';
 local mylib = import 'lib.jsonnet';
 
 local dataBucket(config, namespace) = 'tidepool-%s-%s-data' % [config.cluster.metadata.name, namespace];
 local assetBucket(config, namespace) = 'tidepool-%s-%s-asset' % [config.cluster.metadata.name, namespace];
-#local virtualBucket(config, bucket) = '%s.s3.%s.amazonaws.com' % [ bucket, config.cluster.metadata.region ];
+//local virtualBucket(config, bucket) = '%s.s3.%s.amazonaws.com' % [ bucket, config.cluster.metadata.region ];
 local virtualBucket(config, bucket) = bucket;
 
 local prefixAnnotations(prefix, svcs) = {
@@ -18,7 +18,7 @@ local filterAnnotations(env, svcs) = {
   for svc in svcs
 };
 
-local proxyContainers = [ {
+local proxyContainers = [{
   name: 'mongoproxy',
   image: 'tidepool/mongoproxy:latest',
   imagePullPolicy: 'Always',
@@ -111,11 +111,11 @@ local proxyContainers = [ {
       name: 'MONGOPROXY_PORT',
       value: '27017',
     },
-  ]
-} ];
+  ],
+}];
 
 local helmrelease(config, prev, namespace) = {
-  local env = mylib.tpFor(config, namespace), 
+  local env = mylib.tpFor(config, namespace),
 
   local svcs = [
     'auth',
@@ -143,7 +143,7 @@ local helmrelease(config, prev, namespace) = {
   kind: 'HelmRelease',
   metadata: {
     annotations: {
-                   'fluxcd.io/automated': if lib.getElse(env, 'gitops.enabled', true) then "true" else "false"
+                   'fluxcd.io/automated': if lib.getElse(env, 'gitops.enabled', true) then 'true' else 'false',
                  } + filterAnnotations(env, svcs)
                  + prefixAnnotations('repository', svcs),
     name: 'tidepool',
@@ -166,10 +166,10 @@ local helmrelease(config, prev, namespace) = {
     hpa: lib.getElse(env, 'hpa', { enabled: false }),
     deployment+: {
       replicas: lib.getElse(env, 'deployment.replicas', 1),
-    }
+    },
   },
 
-spec: {
+  spec: {
     rollback: {
       enable: true,
       force: true,
@@ -179,8 +179,8 @@ spec: {
     chart: if std.objectHas(env, 'chart') && std.objectHas(env.chart, 'version') then {
       repository: lib.getElse(env.chart, 'repository', 'https://raw.githubusercontent.com/tidepool-org/tidepool-helm/master/'),
       name: lib.getElse(env.chart, 'name', 'tidepool'),
-      version: env.chart.version
-    } else  {
+      version: env.chart.version,
+    } else {
       git: lib.getElse(env, 'chart.git', 'git@github.com:tidepool-org/development'),
       path: lib.getElse(env, 'chart.path', 'charts/tidepool'),
       ref: lib.getElse(env, 'chart.ref', 'master'),
@@ -190,7 +190,7 @@ spec: {
       //local extraContainers = if lib.isTrue(env, 'shadow.enabled') && (lib.getElse(env, "shadow.sender", "") != "") then proxyContainers else [],
       local extraContainers = [],
 
-      auth: lib.mergeList([ common, {
+      auth: lib.mergeList([common, {
         extraContainers: extraContainers,
         deployment+: {
           image: lib.getElse(prev, 'spec.values.auth.deployment.image', 'tidepool/platform-auth:master-8c8d9b39182b9edd9bafd987f50b254470840a8d'),
@@ -201,7 +201,7 @@ spec: {
         deployment+: {
           image: lib.getElse(prev, 'spec.values.blip.deployment.image', 'tidepool/blip:master-47c8b1b3f298583684fe323ab170dfe7cc968902'),
         },
-	      }, lib.getElse(env, 'blip', {})]),
+      }, lib.getElse(env, 'blip', {})]),
 
       blob: lib.mergeList([common, {
         extraContainers: extraContainers,
@@ -283,8 +283,8 @@ spec: {
           namespace: 'gloo-system',
         },
         virtualServices: {
-          'http': {
-            name: "http-internal",
+          http: {
+            name: 'http-internal',
             dnsNames: mylib.genDnsNames(config, namespace),
             enabled: true,
             labels: {
@@ -294,12 +294,12 @@ spec: {
             },
             options: {
               stats: {
-                virtualClusters: lib.getElse(env,'virtualClusters', []),
+                virtualClusters: lib.getElse(env, 'virtualClusters', []),
               },
             },
           },
           https: {
-            enabled: false
+            enabled: false,
           },
         },
       },
@@ -308,16 +308,17 @@ spec: {
         logLevel: lib.getElse(config, 'general.logLevel', 'info'),
         gateway: {
           proxy: {
-            name: "internal-gateway-proxy",
-            namespace: "gloo-system",
+            name: 'internal-gateway-proxy',
+            namespace: 'gloo-system',
           },
-          default:  {
-	    host: lib.getElse(env, 'gateway.host', '%s.%s' % [  namespace, domain ]),
+          default: {
+            host: lib.getElse(env, 'gateway.host', '%s.%s' % [namespace, domain]),
             protocol: lib.getElse(env, 'gateway.protocol', 'https'),
             domain: lib.getElse(env, 'gateway.domain', domain),
-          }
+          },
         },
         maxTimeout: lib.getElse(env, 'maxTimeout', '120s'),
+        region: lib.getElse(config, 'cluster.metadata.region', 'us-west-2'),
         store: {
           type: 's3',
         },
@@ -367,7 +368,7 @@ spec: {
           env: {
             store: {
               s3: {
-		bucket: virtualBucket(config, lib.getElse(env, 'buckets.data', dataBucket(config, namespace))),
+                bucket: virtualBucket(config, lib.getElse(env, 'buckets.data', dataBucket(config, namespace))),
               },
               type: 's3',
             },
@@ -389,7 +390,7 @@ spec: {
           env: {
             store: {
               s3: {
-		bucket: virtualBucket(config, lib.getElse(env, 'buckets.data', dataBucket(config, namespace))),
+                bucket: virtualBucket(config, lib.getElse(env, 'buckets.data', dataBucket(config, namespace))),
               },
               type: 's3',
             },
@@ -461,9 +462,9 @@ spec: {
 
       shoreline: lib.mergeList([common, {
         extraContainers: extraContainers,
-        priorityClassName: "high-priority",
+        priorityClassName: 'high-priority',
         deployment+: {
-          isShadow: lib.isTrue(env, 'shadow.enabled') && (lib.getElse(env, "shadow.sender", "") != ""),
+          isShadow: lib.isTrue(env, 'shadow.enabled') && (lib.getElse(env, 'shadow.sender', '') != ''),
           image: lib.getElse(prev, 'spec.values.shoreline.deployment.image', 'tidepool/shoreline:master-66e766fffb4058781a24740b6a809bb12e2d08a9'),
         },
       }, lib.getElse(env, 'shoreline', {})]),
