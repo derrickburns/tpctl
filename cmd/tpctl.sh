@@ -425,7 +425,7 @@ function make_asset_bucket() {
   local env=$1
   local create=$(yq r values.yaml namespaces.${env}.tidepool.buckets.create | sed -e "/^  .*/d" -e s/:.*//)
   local asset_bucket=$(get_bucket $env asset)
-  if[ ! aws s3 ls s3://$asset_bucket >/dev/null 2>&1 
+  if ! aws s3 ls s3://$asset_bucket >/dev/null 2>&1 
   then
     start "creating asset bucket $asset_bucket"
     aws s3 mb s3://$asset_bucket >/dev/null 2>&1
