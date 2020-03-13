@@ -5,7 +5,7 @@ local helmrelease(config, namespace) = (
 
    local k8sVersion = lib.getElse(config, 'cluster.metadata.version', 'auto');
    local name =
-     if k8sVersion == 'auto' || std.substring(k8sVersion, 0, 4) == '1.14'
+     if k8sVersion == 'auto' || std.substr(k8sVersion, 0, 4) == '1.14'
      then 'cert-manager-legacy'
      else 'cert-manager';
 
