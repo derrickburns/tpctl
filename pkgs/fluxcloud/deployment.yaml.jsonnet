@@ -30,7 +30,7 @@ local Deployment(config, namespace) = {
         containers: [
           {
             name: 'fluxcloud',
-            image: 'justinbarrick/fluxcloud:v0.3.8',
+            image: 'justinbarrick/fluxcloud:v0.3.9',
             ports: [
               {
                 containerPort: 3032,
