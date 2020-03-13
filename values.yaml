@@ -64,6 +64,7 @@ environments:
       enabled: true
       gitops:
         blip: glob:release-1.29*
+        blob: glob:update-aws-go-*
         default: glob:develop-*
         export: glob:release-1.4*
       hpa:
