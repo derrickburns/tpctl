@@ -36,12 +36,18 @@ local deployment(config, namespace) =
           containers: [
             {
               name: 'recv',
-              image: 'fluxcd/flux-recv:%s' % lib.getElse(me, 'version', '0.3.0'),
+              image: 'fluxcd/flux-recv:%s' % lib.getElse(me, 'version', '0.4.0'),
               imagePullPolicy: 'IfNotPresent',
               args: ['--config=/etc/fluxrecv/fluxrecv.yaml'],
               ports: [{
                 containerPort: 8080,
               }],
+              readinessProbe: {
+                httpGet: {
+                  path: '/health',
+                  port: 8080,
+                },
+              },
               volumeMounts: [{
                 name: 'fluxrecv-config',
                 mountPath: '/etc/fluxrecv',
