@@ -29,7 +29,7 @@ local all(config, serviceaccounts) =
     metadata+: {
       name: config.cluster.metadata.name,
       region: lib.getElse(config, 'cluster.metadata.region', 'us-west-2'),
-      version: lib.getElse(config, 'cluster.metadata.version', '1.14'),
+      version: 'auto',
     },
     cloudWatch+: config.cluster.cloudWatch,
     vpc+: lib.getElse(config, 'cluster.vpc', {}),
