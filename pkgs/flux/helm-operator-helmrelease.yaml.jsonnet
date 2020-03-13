@@ -11,9 +11,9 @@ local genvalues(config) = {
   },
 
   prometheus: {
-    enabled: lib.getElse(config, 'pkgs.prometheus.enabled', false),
+    enabled: lib.isEnabledAt(config, 'pkgs.prometheus'),
     serviceMonitor: {
-      create: lib.getElse(config, 'pkgs.prometheusOperator.enabled', false),
+      create: lib.isEnabledAt(config, 'pkgs.prometheusOperator'),
     },
   },
 

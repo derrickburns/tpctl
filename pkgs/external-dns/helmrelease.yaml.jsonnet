@@ -1,5 +1,5 @@
-local lib = import '../../lib/lib.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
+local lib = import '../../lib/lib.jsonnet';
 
 local helmrelease(config, namespace) = k8s.helmrelease('external-dns', namespace, '2.20.2') {
   spec+: {
@@ -11,7 +11,7 @@ local helmrelease(config, namespace) = k8s.helmrelease('external-dns', namespace
       logLevel: config.general.logLevel,
       metrics: {
         enabled: lib.isEnabledAt(config, 'pkgs.prometheus'),
-	serviceMonitor: {
+        serviceMonitor: {
           enabled: lib.isEnabledAt(config, 'pkgs.prometheusOperator'),
         },
       },

@@ -40,7 +40,7 @@ local helmrelease(config, namespace) = k8s.helmrelease('velero', namespace, '2.8
 
       metrics: {
         serviceMonitor: {
-          enabled: lib.isEnabledAt(config, 'pkgs.prometheus'),
+          enabled: lib.isEnabledAt(config, 'pkgs.prometheusOperator'),
         },
       },
     },
