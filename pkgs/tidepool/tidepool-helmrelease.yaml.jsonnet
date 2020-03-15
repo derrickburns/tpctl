@@ -154,15 +154,6 @@ local helmrelease(config, prev, namespace) = {
       //'config.linkerd.io/proxy-cpu-request': '0.2',
       'cluster-autoscaler.kubernetes.io/safe-to-evict': 'true',
     },
-    resources: {
-      requests: {
-        memory: lib.getElse(env, 'resources.requests.memory', '64Mi'),
-        cpu: lib.getElse(env, 'resources.requests.cpu', '50m'),
-      },
-      limits: {
-        memory: lib.getElse(env, 'resources.limits.memory', '128Mi'),
-      },
-    },
     hpa: lib.getElse(env, 'hpa', { enabled: false }),
     deployment+: {
       replicas: lib.getElse(env, 'deployment.replicas', 1),
@@ -226,15 +217,6 @@ local helmrelease(config, prev, namespace) = {
 
       data: lib.mergeList([common, {
         extraContainers: extraContainers,
-        resources: {
-          requests: {
-            memory: '256Mi',
-            cpu: '500m',
-          },
-          limits: {
-            memory: '256Mi',
-          },
-        },
         deployment+: {
           image: lib.getElse(prev, 'spec.values.data.deployment.image', 'tidepool/platform-data:master-8c8d9b39182b9edd9bafd987f50b254470840a8d'),
           replicas: 3,
@@ -245,15 +227,6 @@ local helmrelease(config, prev, namespace) = {
 
       export: lib.mergeList([common, {
         extraContainers: extraContainers,
-        resources: {
-          requests: {
-            memory: '256Mi',
-            cpu: '500m',
-          },
-          limits: {
-            memory: '256Mi',
-          },
-        },
         deployment+: {
           replicas: 3,
           image: lib.getElse(prev, 'spec.values.export.deployment.image', 'tidepool/export:release-1.4.0-133dc134dce5c287e26caafbdb6871e69fc10150'),
@@ -262,15 +235,6 @@ local helmrelease(config, prev, namespace) = {
 
       gatekeeper: lib.mergeList([common, {
         extraContainers: extraContainers,
-        resources: {
-          requests: {
-            memory: '256Mi',
-            cpu: '500m',
-          },
-          limits: {
-            memory: '256Mi',
-          },
-        },
         deployment+: {
           replicas: 2,
           image: lib.getElse(prev, 'spec.values.gatekeeper.deployment.image', 'tidepool/gatekeeper:master-03ab418230def26a638664bfbfd0a49736c96aa3'),
@@ -414,15 +378,6 @@ local helmrelease(config, prev, namespace) = {
 
       migrations: lib.mergeList([common, {
         extraContainers: extraContainers,
-        resources: {
-          requests: {
-            memory: '256Mi',
-            cpu: '500m',
-          },
-          limits: {
-            memory: '256Mi',
-          },
-        },
         deployment+: {
           replicas: 0,
           image: lib.getElse(prev, 'spec.values.migrations.deployment.image', 'tidepool/platform-migrations:master-8c8d9b39182b9edd9bafd987f50b254470840a8d'),
@@ -446,15 +401,6 @@ local helmrelease(config, prev, namespace) = {
 
       seagull: lib.mergeList([common, {
         extraContainers: extraContainers,
-        resources: {
-          requests: {
-            memory: '256Mi',
-            cpu: '500m',
-          },
-          limits: {
-            memory: '256Mi',
-          },
-        },
         deployment+: {
           image: lib.getElse(prev, 'spec.values.seagull.deployment.image', 'tidepool/seagull:master-0ac202bfccc0994d264b5fe9fcc06d2a56c55977'),
         },
@@ -484,15 +430,6 @@ local helmrelease(config, prev, namespace) = {
 
       tidewhisperer: lib.mergeList([common, {
         extraContainers: extraContainers,
-        resources: {
-          requests: {
-            memory: '256Mi',
-            cpu: '500m',
-          },
-          limits: {
-            memory: '256Mi',
-          },
-        },
         deployment+: {
           replicas: 3,
           image: lib.getElse(prev, 'spec.values.tidewhisperer.deployment.image', 'tidepool/tide-whisperer:master-d64636a94823ceb329ade5ff8e0a7716a5108fef'),
