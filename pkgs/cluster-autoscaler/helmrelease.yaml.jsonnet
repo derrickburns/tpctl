@@ -14,6 +14,9 @@ local helmrelease(config, namespace) = k8s.helmrelease('cluster-autoscaler', nam
         'skip-nodes-with-system-pods': false,
         v: 5,
       },
+      image: {
+        tag: "v1.14.7",
+      },
       rbac+: {
         create: true,
         name: 'cluster-autoscaler',
