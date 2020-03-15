@@ -11,7 +11,6 @@ local helmrelease(config, namespace) = k8s.helmrelease('metrics-server', namespa
         ],
       },
     },
-  },
-};
+  };
 
 function(config, prev, namespace) helmrelease(config, namespace)
