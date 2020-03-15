@@ -17,6 +17,7 @@ local helmrelease(config, namespace) = k8s.helmrelease('cluster-autoscaler', nam
       rbac: {
         create: true,
       },
+      fullnameOverride: 'cluster-autoscaler',
       serviceMonitor: {
         enabled: lib.isEnabledAt(config, 'pkgs.prometheusOperator'),
       },
