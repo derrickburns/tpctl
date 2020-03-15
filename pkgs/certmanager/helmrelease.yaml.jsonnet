@@ -2,14 +2,7 @@ local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
 local helmrelease(config, namespace) = (
-
-  local k8sVersion = lib.getElse(config, 'cluster.metadata.version', 'auto');
-  local name =
-    if k8sVersion == 'auto' || std.substr(k8sVersion, 0, 4) == '1.14'
-    then 'cert-manager-legacy'
-    else 'cert-manager';
-
-  k8s.helmrelease(name, namespace, 'v0.14.0', 'https://charts.jetstack.io') {
+  k8s.helmrelease('cert-manager-legacy', namespace, 'v0.14.0', 'https://charts.jetstack.io') {
     spec+: {
       values+: {
         prometheus: {
