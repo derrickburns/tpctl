@@ -56,7 +56,7 @@ namespaces:
         asset: tidepool-qa1-asset
         data: tidepool-qa1-data
       chart:
-        version: 0.3.6
+        version: 0.3.7
       data:
         resources:
           limits:
@@ -190,7 +190,7 @@ pkgs:
   gloo:
     enabled: true
   linkerd:
-    version: stable-2.6.1
+    version: stable-2.7.0
     annotations: {}
     enabled: true
   prometheus:
