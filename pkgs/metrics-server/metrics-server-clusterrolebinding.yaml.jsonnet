@@ -2,12 +2,12 @@ local clusterrolebinding(namespace) = {
   apiVersion: 'rbac.authorization.k8s.io/v1',
   kind: 'ClusterRoleBinding',
   metadata: {
-    name: 'system:metrics-server',
+    name: 'system:aggregated-metrics-reader:metrics-server',
   },
   roleRef: {
     apiGroup: 'rbac.authorization.k8s.io',
     kind: 'ClusterRole',
-    name: 'system:metrics-server',
+    name: 'system:aggregated-metrics-reader',
   },
   subjects: [
     {
