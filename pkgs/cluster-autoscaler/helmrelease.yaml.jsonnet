@@ -16,6 +16,7 @@ local helmrelease(config, namespace) = k8s.helmrelease('cluster-autoscaler', nam
       },
       rbac+: {
         create: true,
+        name: 'cluster-autoscaler',
         serviceAccount: {
           create: false
         },
