@@ -7,7 +7,7 @@ local helmrelease(config, namespace) = k8s.helmrelease('cadvisor', namespace, '1
     values: {
       metrics: {
        enabled: lib.getElse(config, 'pkgs.prometheusOperator', false),
-      },.
+      },
     },
   },
 };
