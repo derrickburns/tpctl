@@ -30,8 +30,8 @@ local baseGatewayProxy(config, namespace, name) = {
       'config.linkerd.io/skip-inbound-ports': 8081,
     },
     resources: {
-      memory: {
-        limit: '200Mi',
+      limits: {
+        memory: '200Mi',
       },
     },
   },
@@ -73,8 +73,8 @@ local genvalues(config, namespace) = {
     fdsMode: 'WHITELIST',
     deployment: {
       resources: {
-        memory: {
-          limit: '200Mi',
+        limits: {
+          memory: '200Mi',
         },
       },
     },
