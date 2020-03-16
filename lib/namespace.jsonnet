@@ -19,7 +19,7 @@ local Namespace(config, name) = (
           + (if meshed then linkerd.annotations(config) else {}),
         labels:
           lib.getElse(nsConfig, 'labels', {})
-          + { 'discovery.solo.io/function_discovery': if discoverable then 'enabled' else 'disabled' },
+          + { 'discovery.solo.io/function_discovery': if discoverable then 'enabled' else 'disabled' }
           + { 'goldilocks.fairwinds.com/enabled': goldilocks },
       },
     }
