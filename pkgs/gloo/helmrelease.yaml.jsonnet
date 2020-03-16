@@ -132,7 +132,7 @@ local genvalues(config, namespace) = {
 };
 
 function(config, prev, namespace)
-  k8s.helmrelease('gloo', namespace, '1.3.3', 'https://storage.googleapis.com/solo-public-helm') {
+  k8s.helmrelease('gloo', namespace, '1.3.13', 'https://storage.googleapis.com/solo-public-helm') {
     spec+: {
       values: genvalues(config, namespace),
     },
