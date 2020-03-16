@@ -20,7 +20,7 @@ local Namespace(config, name) = (
         labels:
           lib.getElse(nsConfig, 'labels', {})
           + { 'discovery.solo.io/function_discovery': if discoverable then 'enabled' else 'disabled' }
-          + { 'goldilocks.fairwinds.com/enabled': goldilocks },
+          + { 'goldilocks.fairwinds.com/enabled': if goldilocks then 'true' else 'false' },
       },
     }
   else {}
