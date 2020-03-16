@@ -29,6 +29,11 @@ local baseGatewayProxy(config, namespace, name) = {
     extraAnnotations: linkerd.annotations(config) + {
       'config.linkerd.io/skip-inbound-ports': 8081,
     },
+    resources: {
+      memory: {
+        limit: '200Mi',
+      },
+    },
   },
   service: {
     httpPort: 80,
@@ -66,6 +71,12 @@ local genvalues(config, namespace) = {
   discovery: {
     enabled: true,
     fdsMode: 'WHITELIST',
+    deployment: {
+      resources: {
+        memory: {
+          limit: '200Mi',
+        },
+      },
   },
   gateway: {
     deployment: {
