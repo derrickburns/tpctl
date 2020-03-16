@@ -77,6 +77,7 @@ local genvalues(config, namespace) = {
           limit: '200Mi',
         },
       },
+    },
   },
   gateway: {
     deployment: {
