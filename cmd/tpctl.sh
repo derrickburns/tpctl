@@ -134,16 +134,14 @@ function confirm_matching_cluster() {
 }
 
 function establish_ssh() {
-  ssh-add -l &>/dev/null
-  if [ "$?" == 2 ]; then
+  if ! ssh-add -l &>/dev/null; then
     # Could not open a connection to your authentication agent.
 
     # Load stored agent connection info.
     test -r ~/.ssh-agent &&
       eval "$(<~/.ssh-agent)" >/dev/null
 
-    ssh-add -l &>/dev/null
-    if [ "$?" == 2 ]; then
+    if ! ssh-add -l &>/dev/null; then
       # Start agent and store agent connection info.
       (
         umask 066
