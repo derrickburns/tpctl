@@ -46,7 +46,7 @@ local baseGatewayProxy(config, namespace, name) = {
   tracing: tracing.envoy(config),
 };
 
-local genvalues(config, namespace) = {
+local genvalues(config, namespace, version) = {
   local me = config.namespaces[namespace].gloo,
   global: {
     glooStats: {
@@ -58,7 +58,7 @@ local genvalues(config, namespace) = {
     image: {
       pullPolicy: 'IfNotPresent',
       registry: 'quay.io/solo-io',
-      tag: me.version,
+      tag: version,
     },
   },
   settings: {
@@ -145,10 +145,10 @@ local genvalues(config, namespace) = {
 
 local helmrelease(config, namespace) = (
   local me = config.namespaces[namespace].gloo;
-  local version = me.version;
+  local version = lib.getElse(me, 'version', '1.3.14');
   k8s.helmrelease('gloo', namespace, version, 'https://storage.googleapis.com/solo-public-helm') {
     spec+: {
-      values: genvalues(config, namespace),
+      values: genvalues(config, namespace, version),
     },
   }
 );
