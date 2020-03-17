@@ -1,8 +1,8 @@
 local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
-local githelmrelease(config, prev, namespace) =
-  k8s.helmrelease('tidebot', namespace, 'git@github.com:tidepool-org/slack-tidebot', 'master', 'deploy') {
+local helmrelease(config, prev, namespace) =
+  k8s.githelmrelease('tidebot', namespace, 'git@github.com:tidepool-org/slack-tidebot', 'master', 'deploy') {
     local tidebot = config.namespaces[namespace].tidebot,
     metadata+: {
       annotations+: {
