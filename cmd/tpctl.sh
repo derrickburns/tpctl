@@ -1256,6 +1256,7 @@ case $cmd in
     setup_tmpdir
     clone_remote
     set_template_dir
+    make_config
     make_cluster
     merge_kubeconfig
     make_users
