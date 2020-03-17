@@ -7,8 +7,9 @@ local helmrelease(config, namespace) = k8s.helmrelease( 'prometheus-operator', n
   local me = config.namespaces[namespace]["prometheus-operator"],
   spec+: {
     values+: {
-      grafana: lib.getElse(me, 'grafana', {}),
-      alertmanager: lib.getElse(me, 'alertmanager', {}),
+      grafana: lib.getElse(me, 'grafana', { enabled: false}),
+      alertmanager: lib.getElse(me, 'alertmanager', { enabled: false }),
+      prometheus: lib.getElse(me, 'prometheus', { enabled: false }),
     },
   },
 };
