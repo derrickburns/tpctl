@@ -39,7 +39,7 @@
     ],
   },
 
-  helmrelease(name, namespace, version, repo='https://kubernetes-charts.storage.googleapis.com'):: $.metadata(name, namespace) {
+  basehelmrelease(name, namespace):: $.metadata(name, namespace) {
     apiVersion: 'helm.fluxcd.io/v1',
     kind: 'HelmRelease',
     metadata+: {
@@ -48,12 +48,27 @@
       },
     },
     spec+: {
+      releaseName: name,
+    },
+  },
+
+  githelmrelease(name, namespace, git, ref='master', path='.'):: $.basehelmrelease(name, namespace) {
+    spec+: {
+      chart: {
+        git: git,
+        ref: ref,
+        path: path,
+      },
+    },
+  },
+
+  helmrelease(name, namespace, version, repo='https://kubernetes-charts.storage.googleapis.com'):: $.basehelmrelease(name, namespace) {
+    spec+: {
       chart: {
         name: name,
         repository: repo,
         version: version,
       },
-      releaseName: name,
     },
   },
 
