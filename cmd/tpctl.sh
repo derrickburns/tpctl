@@ -608,7 +608,7 @@ function template_files() {
   local absoluteTemplatePkgPath=$absoluteTemplateDir/$4
 
   for absoluteTemplateFilePath in $(find $absoluteTemplatePkgPath -type f -print); do
-    local relativeFilePath=${absoluteTemplateFilePath#$absoluteTemplateDir}
+    local relativeFilePath=${absoluteTemplateFilePath#$absoluteTemplateDir/}
     local relativeTargetDir=pkgs/$namespace/$(dirname $relativeFilePath)
     local templateBasename=$(basename $relativeFilePath)
 
@@ -624,12 +624,13 @@ function template_files() {
       # instantiate a jsonnet template into yaml
       local targetBasename=${templateBasename%.jsonnet}
       local relativeTarget=$relativeTargetDir/${targetBasename}
-      local previousTarget=${TMP_DIR}/${targetBasename}
+      local previousTarget=${TMP_DIR}/$relativeTarget
       add_file ${relativeTarget}
-      as_json_else "${TMP_DIR}/${relativeTarget}" "${previousTarget}" "{}"
-      jsonnet --tla-code-file prev=${previousTarget} --tla-code config="$config" --tla-str namespace=$namespace $absoluteTemplateFilePath | yq r - --prettyPrint  >${relativeTarget}
+      local tmpPreviousTarget=$TMP_DIR/foo
+      as_json_else ${previousTarget} $tmpPreviousTarget "{}"
+      jsonnet --tla-code-file prev=$tmpPreviousTarget --tla-code config="$config" --tla-str namespace=$namespace $absoluteTemplateFilePath | yq r - --prettyPrint  >${relativeTarget}
       expect_success "Templating failure ${relativeFilePath}"
-      rm ${prev}
+      rm ${tmpPreviousTarget}
     fi
   done
 }
@@ -676,7 +677,7 @@ function make_namespace_config() {
     create_namespace $ns "$config"
     local pkg
     for pkg in $(enabled_pkgs $TEMPLATE_DIR/pkgs namespaces.$ns); do
-      template_files "$config" $TEMPLATE_DIR/pkgs/ $ns $pkg
+      template_files "$config" $TEMPLATE_DIR/pkgs $ns $pkg
     done
     complete "created manifests for namespace $ns"
   done
