@@ -575,45 +575,60 @@ function template_service_accounts() {
   local config=$1
   local path=$2
   local prefix=$3
-  local env=$4
+  local namespace=$4
   for fullpath in $(find $path -type f -print); do
     local filename=${fullpath#$prefix}
-    local dir=pkgs/$env/$(dirname $filename)
+    local dir=pkgs/$namespace/$(dirname $filename)
     local file=$(basename $filename)
     mkdir -p $dir
     if [ "${filename: -14}" == "policy.jsonnet" ]; then
       local newbasename=${file%.jsonnet}
       local out=$dir/${newbasename}
       add_file ${out}
-      jsonnet --tla-code config="$config" --tla-str namespace=$env $fullpath | jq '[.]' | yq r - --prettyPrint >$out
+      jsonnet --tla-code config="$config" --tla-str namespace=$namespace $fullpath | jq '[.]' | yq r - --prettyPrint >$out
       cat $out
       expect_success "Templating failure $dir/$filename"
     fi
   done
 }
 
-# make K8s manifests for namespace given config, path, prefix, and environment name
+# instantiate template for pkg in given namespace
 function template_files() {
   local config=$1
-  local path=$2
-  local prefix=$3
-  local env=$4
-  for fullpath in $(find $path -type f -print); do
-    local filename=${fullpath#$prefix}
-    local dir=pkgs/$env/$(dirname $filename)
-    local file=$(basename $filename)
-    mkdir -p $dir
-    if [ "${filename: -5}" == ".yaml" ]; then
-      add_file $dir/$file
-      cp $fullpath $dir/$file
-    elif [ "${filename: -13}" == ".yaml.jsonnet" ]; then
-      local newbasename=${file%.jsonnet}
-      local out=$dir/${newbasename}
-      local prev=${TMP_DIR}/${newbasename}
-      add_file ${out}
-      as_json_else "${TMP_DIR}/${dir}/${newbasename}" "${prev}" "{}"
-      jsonnet --tla-code-file prev=${prev} --tla-code config="$config" --tla-str namespace=$env $fullpath | yq r - --prettyPrint  >${out}
-      expect_success "Templating failure ${filename}"
+
+  # the absolute path to the template directory
+  local absoluteTemplateDir=$2
+
+  # the target namespace for the instantiated templates
+  local namespace=$3
+
+  # the name of the package to instantiate
+  local pkg=$4
+
+  local absoluteTemplatePkgPath=$absoluteTemplateDir/$4
+
+  for absoluteTemplateFilePath in $(find $absoluteTemplatePkgPath -type f -print); do
+    local relativeFilePath=${absoluteTemplateFilePath#$absoluteTemplateDir}
+    local relativeTargetDir=pkgs/$namespace/$(dirname $relativeFilePath)
+    local templateBasename=$(basename $relativeFilePath)
+
+    # make the directory to place the new fil in, if it does not exist
+    mkdir -p $relativeTargetDir
+
+    if [ "${templateBasename: -5}" == ".yaml" ]; then
+      # copy a basic yaml file
+      local relativeTarget=$relativeTargetDir/$templateBasename
+      add_file $relativeTarget
+      cp $absoluteTemplateFilePath $relativeTarget
+    elif [ "${templateBasename: -13}" == ".yaml.jsonnet" ]; then
+      # instantiate a jsonnet template into yaml
+      local targetBasename=${templateBasename%.jsonnet}
+      local relativeTarget=$relativeTargetDir/${targetBasename}
+      local previousTarget=${TMP_DIR}/${targetBasename}
+      add_file ${relativeTarget}
+      as_json_else "${TMP_DIR}/${relativeTarget}" "${previousTarget}" "{}"
+      jsonnet --tla-code-file prev=${previousTarget} --tla-code config="$config" --tla-str namespace=$namespace $absoluteTemplateFilePath | yq r - --prettyPrint  >${relativeTarget}
+      expect_success "Templating failure ${relativeFilePath}"
       rm ${prev}
     fi
   done
@@ -622,11 +637,12 @@ function template_files() {
 # make policy manifests 
 function make_policy_manifests() {
   local config=$(get_config)
-  local env
+  local ns
   for ns in $(get_namespaces); do
     start "creating $ns policy files "
-    for dir in $(enabled_pkgs $TEMPLATE_DIR/pkgs namespaces.$ns); do
-      template_service_accounts "$config" $TEMPLATE_DIR/pkgs/$dir $TEMPLATE_DIR/pkgs/ $ns
+    local pkg
+    for pkg in $(enabled_pkgs $TEMPLATE_DIR/pkgs namespaces.$ns); do
+      template_service_accounts "$config" $TEMPLATE_DIR/pkgs/$pkg $TEMPLATE_DIR/pkgs/ $ns
     done
     complete "created $ns policy files"
   done
@@ -650,18 +666,19 @@ function create_namespace() {
 # make K8s manifests 
 function make_namespace_config() {
   local config=$(get_config)
-  local env
+  local ns
   if [ -d environments ]   # XXX rename to namespaces after fixing tidebot
   then
     mv environments $TMP_DIR
   fi
   for ns in $(get_namespaces); do
-    start "creating $ns namespace manifests"
+    start "creating manifests for namespace $ns"
     create_namespace $ns "$config"
-    for dir in $(enabled_pkgs $TEMPLATE_DIR/pkgs namespaces.$ns); do
-      template_files "$config" $TEMPLATE_DIR/pkgs/$dir $TEMPLATE_DIR/pkgs/ $ns
+    local pkg
+    for pkg in $(enabled_pkgs $TEMPLATE_DIR/pkgs namespaces.$ns); do
+      template_files "$config" $TEMPLATE_DIR/pkgs/ $ns $pkg
     done
-    complete "created $ns namespace manifests"
+    complete "created manifests for namespace $ns"
   done
 }
 
