@@ -459,13 +459,15 @@ function add_service_accounts() {
   complete "added new service accounts"
 }
 
-function replace_service_accounts() {
+function recreate_service_account() {
   local cluster=$(get_cluster)
-  start "replacing service accounts"
-  eksctl delete iamserviceaccount -f config.yaml --approve
+  local namespace=$1
+  local name=$2
+  start "recreating service account $namespace/$name"
+  eksctl delete iamserviceaccount --cluster $cluster --namespace $namespace --name $name
   eksctl create iamserviceaccount -f config.yaml --approve
   expect_success "eksctl create service account failed."
-  complete "replaced service accounts"
+  complete "recreated service account $namespace/$name, now restart dependent services"
 }
 
 # create EKS cluster using config.yaml file, add kubeconfig to config repo
@@ -1133,7 +1135,7 @@ function await_deletion() {
 
 # show help
 function help() {
-  echo "$0 [-h|--help] (values|edit_values|config|edit_repo|cluster|flux|make_buckets|mesh|generate_secrets|install_users|deploy_key|delete_cluster|await_deletion|remove_mesh|merge_kubeconfig|gloo_dashboard|diff|linkerd_check|sync|peering|vpc|update_kubeconfig|service_accounts|vpa|create_key|update_utils)*"
+  echo "$0 [-h|--help] (values|edit_values|config|edit_repo|cluster|flux|make_buckets|mesh|generate_secrets|install_users|deploy_key|delete_cluster|await_deletion|remove_mesh|merge_kubeconfig|gloo_dashboard|diff|linkerd_check|sync|peering|vpc|update_kubeconfig|service_accounts|recreate_service_account|vpa|create_key|update_utils)*"
   echo
   echo
   echo "So you want to built a Kubernetes cluster that runs Tidepool. Great!"
@@ -1177,6 +1179,7 @@ function help() {
   echo "envoy - show envoy config"
   echo "flux - bootstrap flux"
   echo "service_accounts - create service accounts"
+  echo "recreate_service_account $namespace $name - recreate a single service account"
   echo "create_key - create a new Amazon KMS key for the cluster"
   echo "vpa - install vpa"
   echo "cadvisor - install cadvisor"
@@ -1425,6 +1428,11 @@ case $cmd in
     check_remote_repo
     clone_remote
     add_service_accounts
+    ;;
+  recreate_service_account)
+    check_remote_repo
+    clone_remote
+    recreate_service_account $1 $2
     ;;
   envoy)
     envoy
