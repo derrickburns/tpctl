@@ -628,7 +628,7 @@ function template_files() {
       add_file ${relativeTarget}
       local tmpPreviousTarget=$TMP_DIR/foo
       as_json_else ${previousTarget} $tmpPreviousTarget "{}"
-      jsonnet --tla-code-file prev=$tmpPreviousTarget --tla-code config="$config" --tla-str namespace=$namespace $absoluteTemplateFilePath | yq r - --prettyPrint  >${relativeTarget}
+      jsonnet --tla-code-file prev=$tmpPreviousTarget --tla-code config="$config" --tla-str namespace=$namespace --tla-str pkg=$pkg $absoluteTemplateFilePath | yq r - --prettyPrint  >${relativeTarget}
       expect_success "Templating failure ${relativeFilePath}"
       rm ${tmpPreviousTarget}
     fi
