@@ -78,4 +78,4 @@ local role(namespace) = {
   ],
 };
 
-function(config, prev, namespace) role(namespace)
+function(config, prev, namespace, pkg) role(namespace)

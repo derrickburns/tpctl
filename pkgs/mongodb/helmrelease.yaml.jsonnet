@@ -22,4 +22,4 @@ local helmrelease(config, namespace) = {
   },
 };
 
-function(config, prev, namespace) helmrelease(config, namespace)
+function(config, prev, namespace, pkg) helmrelease(config, namespace)

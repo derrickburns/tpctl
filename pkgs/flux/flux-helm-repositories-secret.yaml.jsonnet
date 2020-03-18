@@ -127,4 +127,4 @@ local fluxHelmRepos(namespace) = {
   },
 };
 
-function(config, prev, namespace) fluxHelmRepos(namespace)
+function(config, prev, namespace, pkg) fluxHelmRepos(namespace)

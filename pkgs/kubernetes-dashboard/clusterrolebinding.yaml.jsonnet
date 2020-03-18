@@ -19,4 +19,4 @@ local clusterrolebinding(namespace) = {
   ],
 };
 
-function(config, prev, namespace) clusterrolebinding(namespace)
+function(config, prev, namespace, pkg) clusterrolebinding(namespace)

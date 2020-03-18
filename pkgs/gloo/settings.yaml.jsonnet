@@ -40,4 +40,4 @@ local settings(config, namespace) = {
   },
 };
 
-function(config, prev, namespace) settings(config, namespace)
+function(config, prev, namespace, pkg) settings(config, namespace)

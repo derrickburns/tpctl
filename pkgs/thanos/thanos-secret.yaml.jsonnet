@@ -32,7 +32,7 @@ local secret(config, namespace) = {
   },
 };
 
-function(config, prev, namespace)
+function(config, prev, namespace, pkg)
   if lib.isEnabledAt(config, 'pkgs.prometheus')
   then secret(config, namespace)
   else {}

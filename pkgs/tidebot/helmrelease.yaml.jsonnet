@@ -24,4 +24,4 @@ local helmrelease(config, prev, namespace) =
     }, lib.getElse(tidebot, 'spec', {})),
   };
 
-function(config, prev, namespace) helmrelease(config, prev, namespace)
+function(config, prev, namespace, pkg) helmrelease(config, prev, namespace)

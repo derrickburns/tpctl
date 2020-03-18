@@ -32,4 +32,4 @@ local helmrelease(config, namespace) = k8s.helmrelease('cluster-autoscaler', nam
   },
 };
 
-function(config, prev, namespace) helmrelease(config, namespace)
+function(config, prev, namespace, pkg) helmrelease(config, namespace)

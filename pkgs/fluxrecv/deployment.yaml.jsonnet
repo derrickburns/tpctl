@@ -69,4 +69,4 @@ local deployment(config, namespace) =
     },
   };
 
-function(config, prev, namespace) if lib.isTrue(config.namespaces[namespace], 'fluxrecv.sidecar') then {} else deployment(config, namespace)
+function(config, prev, namespace, pkg) if lib.isTrue(config.namespaces[namespace], 'fluxrecv.sidecar') then {} else deployment(config, namespace)

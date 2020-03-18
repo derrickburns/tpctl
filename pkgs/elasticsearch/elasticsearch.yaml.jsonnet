@@ -42,4 +42,4 @@ local elasticsearch(config, namespace) = {
   },
 };
 
-function(config, prev, namespace) elasticsearch(config, namespace)
+function(config, prev, namespace, pkg) elasticsearch(config, namespace)

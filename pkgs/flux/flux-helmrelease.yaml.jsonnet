@@ -77,4 +77,4 @@ local genvalues(config, namespace) = {
   },
 };
 
-function(config, prev, namespace) k8s.helmrelease('flux', namespace, '1.2.0', 'https://charts.fluxcd.io') + { spec+: { values: genvalues(config, namespace) } }
+function(config, prev, namespace, pkg) k8s.helmrelease('flux', namespace, '1.2.0', 'https://charts.fluxcd.io') + { spec+: { values: genvalues(config, namespace) } }

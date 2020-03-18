@@ -17,4 +17,4 @@ local secret(namespace) = {
   type: 'Opaque',
 };
 
-function(config, prev, namespace) secret(namespace)
+function(config, prev, namespace, pkg) secret(namespace)

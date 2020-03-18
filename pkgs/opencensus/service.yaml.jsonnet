@@ -36,4 +36,4 @@ local service(namespace) = {
   },
 };
 
-function(config, prev, namespace) service(namespace)
+function(config, prev, namespace, pkg) service(namespace)

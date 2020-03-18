@@ -32,4 +32,4 @@ local ClusterIssuer(config) = {
   },
 };
 
-function(config, prev, namespace) ClusterIssuer(config)
+function(config, prev, namespace, pkg) ClusterIssuer(config)

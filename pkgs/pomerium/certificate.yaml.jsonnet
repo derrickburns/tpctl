@@ -32,4 +32,4 @@ local certificate(config, namespace) = (
   }
 );
 
-function(config, prev, namespace) certificate(config, namespace)
+function(config, prev, namespace, pkg) certificate(config, namespace)

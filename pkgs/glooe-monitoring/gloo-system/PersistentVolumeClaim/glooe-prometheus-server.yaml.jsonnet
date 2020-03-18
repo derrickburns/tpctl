@@ -25,4 +25,4 @@ local persistentvolumeclaim(namespace) = {
   },
 };
 
-function(config, prev, namespace) persistentvolumeclaim(namespace)
+function(config, prev, namespace, pkg) persistentvolumeclaim(namespace)

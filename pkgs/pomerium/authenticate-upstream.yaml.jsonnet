@@ -25,4 +25,4 @@ local upstream(namespace) = {
   },
 };
 
-function(config, prev, namespace) upstream(namespace)
+function(config, prev, namespace, pkg) upstream(namespace)

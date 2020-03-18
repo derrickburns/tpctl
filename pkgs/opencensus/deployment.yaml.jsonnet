@@ -109,4 +109,4 @@ local deployment(config, namespace) = {
   },
 };
 
-function(config, prev, namespace) deployment(config, namespace)
+function(config, prev, namespace, pkg) deployment(config, namespace)

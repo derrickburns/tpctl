@@ -43,4 +43,4 @@ local prometheus(config, namespace) = {
   },
 };
 
-function(config, prev, namespace) prometheus(config, namespace)
+function(config, prev, namespace, pkg) prometheus(config, namespace)

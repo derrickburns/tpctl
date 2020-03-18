@@ -80,4 +80,4 @@ local statefulset(namespace) = {
   },
 };
 
-function(config, prev, namespace) statefulset(namespace)
+function(config, prev, namespace, pkg) statefulset(namespace)

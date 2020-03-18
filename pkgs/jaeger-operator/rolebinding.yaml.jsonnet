@@ -1,3 +1,3 @@
 local lib = import '../../lib/k8s.jsonnet';
 
-function(config, prev, namespace) lib.clusterrolebinding('jaeger-operator', namespace)
+function(config, prev, namespace, pkg) lib.clusterrolebinding('jaeger-operator', namespace)

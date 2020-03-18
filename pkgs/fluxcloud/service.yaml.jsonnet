@@ -19,4 +19,4 @@ local service(config, namespace) = {
   },
 };
 
-function(config, prev, namespace) service(config, namespace)
+function(config, prev, namespace, pkg) service(config, namespace)

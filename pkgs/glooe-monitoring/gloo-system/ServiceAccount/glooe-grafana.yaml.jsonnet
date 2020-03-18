@@ -13,4 +13,4 @@ local serviceaccount(namespace) = {
   },
 };
 
-function(config, prev, namespace) serviceaccount(namespace)
+function(config, prev, namespace, pkg) serviceaccount(namespace)

@@ -14,4 +14,4 @@ local helmrelease(namespace) = k8s.helmrelease('reloader', namespace, 'v0.0.51',
   },
 };
 
-function(config, prev, namespace) helmrelease(namespace)
+function(config, prev, namespace, pkg) helmrelease(namespace)

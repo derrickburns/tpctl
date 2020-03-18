@@ -50,4 +50,4 @@ local virtualService(config, namespace) = {
   },
 };
 
-function(config, prev, namespace) virtualService(config, namespace)
+function(config, prev, namespace, pkg) virtualService(config, namespace)

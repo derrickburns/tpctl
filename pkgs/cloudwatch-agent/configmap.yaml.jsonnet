@@ -25,4 +25,4 @@ local configmap(config, namespace) = {
   },
 };
 
-function(config, prev, namespace) configmap(config, namespace)
+function(config, prev, namespace, pkg) configmap(config, namespace)

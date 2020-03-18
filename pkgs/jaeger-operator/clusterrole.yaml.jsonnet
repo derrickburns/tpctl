@@ -150,4 +150,4 @@ local clusterrole() = {
   ],
 };
 
-function(config, prev, namespace) clusterrole()
+function(config, prev, namespace, pkg) clusterrole()

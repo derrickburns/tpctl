@@ -1,6 +1,6 @@
 local lib = import '../../lib/lib.jsonnet';
 
-function(config, prev, namespace) {
+function(config, prev, namespace, pkg) {
   local me = config.namespaces[namespace].fluxrecv,
   apiVersion: 'v1',
   kind: 'Service',

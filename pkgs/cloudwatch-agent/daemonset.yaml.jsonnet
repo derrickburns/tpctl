@@ -141,4 +141,4 @@ local daemonset(config, namespace) = {
   },
 };
 
-function(config, prev, namespace) daemonset(config, namespace)
+function(config, prev, namespace, pkg) daemonset(config, namespace)

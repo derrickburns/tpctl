@@ -49,5 +49,5 @@ local genvalues(config) = {
   },
 };
 
-function(config, prev, namespace)
+function(config, prev, namespace, pkg)
   k8s.helmrelease('helm-operator', namespace, '0.6.0', 'https://charts.fluxcd.io') { spec+: { values: genvalues(config) } }

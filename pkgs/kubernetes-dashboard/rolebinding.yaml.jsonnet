@@ -22,4 +22,4 @@ local rolebinding(namespace) = {
   ],
 };
 
-function(config, prev, namespace) rolebinding(namespace)
+function(config, prev, namespace, pkg) rolebinding(namespace)

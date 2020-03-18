@@ -455,4 +455,4 @@ local helmrelease(config, prev, namespace) = {
   },
 };
 
-function(config, prev, namespace) helmrelease(expand.expandConfig(config), prev, namespace)
+function(config, prev, namespace, pkg) helmrelease(expand.expandConfig(config), prev, namespace)

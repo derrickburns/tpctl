@@ -47,4 +47,4 @@ local helmrelease(config, namespace) = k8s.helmrelease('velero', namespace, '2.8
   },
 };
 
-function(config, prev, namespace) helmrelease(config, namespace)
+function(config, prev, namespace, pkg) helmrelease(config, namespace)

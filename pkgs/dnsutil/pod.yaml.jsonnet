@@ -21,4 +21,4 @@ local pod(namespace) = {
   },
 };
 
-function(config, prev, namespace) pod(namespace)
+function(config, prev, namespace, pkg) pod(namespace)

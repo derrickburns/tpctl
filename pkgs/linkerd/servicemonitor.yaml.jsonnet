@@ -51,7 +51,7 @@ local servicemonitor(namespace) = {
   },
 };
 
-function(config, prev, namespace) 
+function(config, prev, namespace, pkg) 
   if lib.isEnabledAt(config, 'pkgs.prometheusOperator')
   then servicemonitor(namespace)
   else {}
