@@ -20,10 +20,8 @@ local ClusterIssuer(config) = {
           },
           selector: {
             dnsZones: [
-              'tidepool.org', // config.cluster.metadata.domain,
-              '*.tidepool.org', // '*.%s' % config.cluster.metadata.domain,
-              //config.cluster.metadata.domain,
-              //'*.%s' % config.cluster.metadata.domain,
+              config.cluster.metadata.rootDomain,
+              '*.%s' % config.cluster.metadata.rootDomain,
             ],
           },
         },
