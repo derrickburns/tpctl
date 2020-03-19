@@ -7,13 +7,9 @@
     },
   },
 
-  serviceaccount(me):: {
+  serviceaccount(me):: $.metadata(me.pkg, me.namespace) {
     apiVersion: 'v1',
     kind: 'ServiceAccount',
-    metadata: {
-      name: me.pkg,
-      namespace: me.namespace,
-    },
   },
 
   clusterrolebinding(me):: {
@@ -75,10 +71,6 @@
   service(config, name, namespace):: $.metadata(name, namespace) {
     apiVersion: 'v1',
     kind: 'Service',
-    metadata: {
-      name: name,
-      namespace: namespace,
-    },
     spec: {
       type: 'ClusterIP',
       ports: [{
