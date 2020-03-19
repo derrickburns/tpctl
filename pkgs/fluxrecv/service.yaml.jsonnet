@@ -1,12 +1,11 @@
 local lib = import '../../lib/lib.jsonnet';
 
-function(config, prev, namespace, pkg) {
-  local me = config.namespaces[namespace].fluxrecv,
+local service(config, me) = {
   apiVersion: 'v1',
   kind: 'Service',
   metadata: {
     name: 'fluxrecv',
-    namespace: namespace,
+    namespace: me.namespace,
   },
   spec: {
     type: 'ClusterIP',
@@ -20,4 +19,6 @@ function(config, prev, namespace, pkg) {
       name: if lib.isTrue(me, 'sidecar') then 'flux' else 'fluxrecv',
     },
   },
-}
+};
+
+function(config, prev, namespace, pkg) service(config, lib.package(config, namespace, pkg))

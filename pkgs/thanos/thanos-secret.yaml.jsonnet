@@ -1,12 +1,11 @@
 local lib = import '../../lib/lib.jsonnet';
 
-local secret(config, namespace) = {
-  local me = config.namespaces[namespace].thanos,
+local secret(config, me) = {
   apiVersion: 'v1',
   kind: 'Secret',
   metadata: {
     name: lib.getElse(me, 'secret', 'thanos-objstore-config'),
-    namespace: namespace,
+    namespace: me.namespace,
   },
   data: {
     'thanos.yaml': std.base64(std.manifestYamlDoc({
@@ -34,5 +33,5 @@ local secret(config, namespace) = {
 
 function(config, prev, namespace, pkg)
   if lib.isEnabledAt(config, 'pkgs.prometheus')
-  then secret(config, namespace)
+  then secret(config, lib.package(config, namespace, pkg))
   else {}

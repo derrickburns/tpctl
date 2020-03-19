@@ -2,7 +2,7 @@ local lib = import '../../lib/lib.jsonnet';
 
 local expand = import '../../lib/expand.jsonnet';
 
-local vpa(name,namespace) = {
+local vpa(name, namespace) = {
   apiVersion: 'autoscaling.k8s.io/v1beta2',
   kind: 'VerticalPodAutoscaler',
   metadata: {
@@ -22,30 +22,29 @@ local vpa(name,namespace) = {
 };
 
 local svcs = [
-    'auth',
-    'blip',
-    'blob',
-    'data',
-    'export',
-    'gatekeeper',
-    'highwater',
-    'hydrophone',
-    'image',
-    'jellyfish',
-    'messageapi',
-    'migrations',
-    'notification',
-    'seagull',
-    'shoreline',
-    'task',
-    'tidewhisperer',
-    'tools',
-    'user',
+  'auth',
+  'blip',
+  'blob',
+  'data',
+  'export',
+  'gatekeeper',
+  'highwater',
+  'hydrophone',
+  'image',
+  'jellyfish',
+  'messageapi',
+  'migrations',
+  'notification',
+  'seagull',
+  'shoreline',
+  'task',
+  'tidewhisperer',
+  'tools',
+  'user',
 ];
 
-local vpas(config, namespace) = (
-  local me  = config.namespaces[namespace].tidepool;
-  [ vpa(svc,namespace) for svc in svcs if lib.getElse(me, svc + '.vpa.enabled', lib.getElse(me, 'vpa.enabled', "false") == "true" ) ]
+local vpas(config, me) = (
+  [vpa(svc, me.namespace) for svc in svcs if lib.getElse(me, svc + '.vpa.enabled', lib.getElse(me, 'vpa.enabled', 'false') == 'true')]
 );
 
-function(config, prev, namespace, pkg) std.manifestYamlStream( vpas(config,  namespace))
+function(config, prev, namespace, pkg) std.manifestYamlStream(vpas(config, lib.package(config, namespace, pkg)))

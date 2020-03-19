@@ -2,12 +2,11 @@ local expand = import '../../lib/expand.jsonnet';
 local gloo = import '../../lib/gloo.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
+local tracing = import '../../lib/tracing.jsonnet';
 local linkerd = import '../linkerd/lib.jsonnet';
 local pom = import '../pomerium/lib.jsonnet';
-local tracing = import '../../lib/tracing.jsonnet';
 
-local baseGatewayProxy(config, namespace, name) = {
-  local me = config.namespaces[namespace].gloo,
+local baseGatewayProxy(config, me, name) = {
   kind: {
     deployment: {
       replicas: lib.getElse(me, 'proxies.' + name + '.replicas', 2),
@@ -46,8 +45,7 @@ local baseGatewayProxy(config, namespace, name) = {
   tracing: tracing.envoy(config),
 };
 
-local genvalues(config, namespace, version) = {
-  local me = config.namespaces[namespace].gloo,
+local genvalues(config, me, version) = {
   global: {
     glooStats: {
       enabled: true,
@@ -102,7 +100,7 @@ local genvalues(config, namespace, version) = {
     },
   },
   gatewayProxies+: {
-    pomeriumGatewayProxy: baseGatewayProxy(config, namespace, 'pomeriumGatewayProxy') {
+    pomeriumGatewayProxy: baseGatewayProxy(config, me, 'pomeriumGatewayProxy') {
       service+: {
         type: 'LoadBalancer',
         extraAnnotations+: {
@@ -119,12 +117,12 @@ local genvalues(config, namespace, version) = {
         },
       },
     },
-    internalGatewayProxy: baseGatewayProxy(config, namespace, 'internalGatewayProxy') {
+    internalGatewayProxy: baseGatewayProxy(config, me, 'internalGatewayProxy') {
       service+: {
         type: 'ClusterIP',
       },
     },
-    gatewayProxy: baseGatewayProxy(config, namespace, 'gatewayProxy') {
+    gatewayProxy: baseGatewayProxy(config, me, 'gatewayProxy') {
       service+: {
         type: 'LoadBalancer',
         extraAnnotations+: {
@@ -143,14 +141,13 @@ local genvalues(config, namespace, version) = {
   },
 };
 
-local helmrelease(config, namespace) = (
-  local me = config.namespaces[namespace].gloo;
+local helmrelease(config, me) = (
   local version = lib.getElse(me, 'version', '1.3.14');
-  k8s.helmrelease('gloo', namespace, version, 'https://storage.googleapis.com/solo-public-helm') {
+  k8s.helmrelease('gloo', me.namespace, version, 'https://storage.googleapis.com/solo-public-helm') {
     spec+: {
-      values: genvalues(config, namespace, version),
+      values: genvalues(config, me, version),
     },
   }
 );
 
-function(config, prev, namespace, pkg) helmrelease(config, namespace)
+function(config, prev, namespace, pkg) helmrelease(config, lib.package(config, namespace, pkg))

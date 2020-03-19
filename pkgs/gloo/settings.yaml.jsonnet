@@ -2,8 +2,8 @@ local lib = import '../../lib/lib.jsonnet';
 
 // Direct external authorization requests *back* to the proxy after adding the x-tidepool-extauth-request header.
 // Then, a virtual service that selects requests based on that header will rewrite the request as needed and forward it to authorization server.
-local settings(config, namespace) = {
-  local me = config.namespaces[namespace].gloo,
+
+local settings(config, me) = {
   apiVersion: 'gloo.solo.io/v1',
   kind: 'Settings',
   metadata: {
@@ -11,7 +11,7 @@ local settings(config, namespace) = {
       app: 'gloo',
     },
     name: 'default',
-    namespace: namespace,
+    namespace: me.namespace,
   },
   spec: {
     discovery: {
@@ -40,4 +40,4 @@ local settings(config, namespace) = {
   },
 };
 
-function(config, prev, namespace, pkg) settings(config, namespace)
+function(config, prev, namespace, pkg) settings(config, lib.package(config, namespace, pkg))

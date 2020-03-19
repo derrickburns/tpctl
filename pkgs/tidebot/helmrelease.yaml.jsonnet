@@ -1,14 +1,13 @@
 local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
-local helmrelease(config, prev, namespace) =
-  k8s.githelmrelease('tidebot', namespace, 'git@github.com:tidepool-org/slack-tidebot', 'master', 'deploy') {
-    local tidebot = config.namespaces[namespace].tidebot,
+local helmrelease(config, prev, me) =
+  k8s.githelmrelease('tidebot', me.namespace, 'git@github.com:tidepool-org/slack-tidebot', 'master', 'deploy') {
     metadata+: {
       annotations+: {
         'fluxcd.io/automated': 'true',
         'repository.fluxcd.io/slack-tidebot': 'deployment.image',
-        'fluxcd.io/tag.slack-tidebot': lib.getElse(tidebot, 'gitops', 'glob:master-*'),
+        'fluxcd.io/tag.slack-tidebot': lib.getElse(me, 'gitops', 'glob:master-*'),
       },
     },
 
@@ -21,7 +20,7 @@ local helmrelease(config, prev, namespace) =
           enabled: true,
         },
       },
-    }, lib.getElse(tidebot, 'spec', {})),
+    }, lib.getElse(me, 'spec', {})),
   };
 
-function(config, prev, namespace, pkg) helmrelease(config, prev, namespace)
+function(config, prev, namespace, pkg) helmrelease(config, prev, lib.package(config, namespace, pkg))

@@ -1,6 +1,6 @@
+local iam = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 local tplib = import 'lib.jsonnet';
-local iam = import '../../lib/k8s.jsonnet';
 
 {
   values(obj):: [obj[field] for field in std.objectFields(obj)],
@@ -9,7 +9,7 @@ local iam = import '../../lib/k8s.jsonnet';
 
   assetBucket(config, namespace):: 'tidepool-%s-%s-asset' % [config.cluster.metadata.name, namespace],
 
-  withBucketWritingPolicy(config, env, bucket):: {
+  withBucketWritingPolicy(bucket):: {
     attachPolicy+: {
       Statement+: [
         {
@@ -32,7 +32,7 @@ local iam = import '../../lib/k8s.jsonnet';
   },
 
 
-  withBucketReadingPolicy(config, env, bucket):: {
+  withBucketReadingPolicy(bucket):: {
     attachPolicy+: {
       Statement+: [
         {
@@ -67,13 +67,13 @@ local iam = import '../../lib/k8s.jsonnet';
 
   policyAndMetadata(accountName, namespace, policy):: policy + iam.metadata(accountName, namespace),
 
-  withBucketPolicy(config, env, bucket)::
-    if tplib.isShadow(env.tidepool)
-    then $.withBucketReadingPolicy(config, env, bucket)
-    else $.withBucketWritingPolicy(config, env, bucket),
+  withBucketPolicy(me, bucket)::
+    if tplib.isShadow(me)
+    then $.withBucketReadingPolicy(bucket)
+    else $.withBucketWritingPolicy(bucket),
 
-  withEmailPolicy(env)::
-    if tplib.isShadow(env.tidepool)
+  withEmailPolicy(me)::
+    if tplib.isShadow(me)
     then {}
     else $.withSESPolicy(),
 

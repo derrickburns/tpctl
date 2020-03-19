@@ -1,9 +1,11 @@
-local service(config, namespace) = {
+local lib = import '../../lib/lib.jsonnet';
+
+local service(config, me) = {
   apiVersion: 'v1',
   kind: 'Service',
   metadata: {
     name: 'fluxcloud',
-    namespace: namespace,
+    namespace: me.namespace,
   },
   spec: {
     selector: {
@@ -19,4 +21,4 @@ local service(config, namespace) = {
   },
 };
 
-function(config, prev, namespace, pkg) service(config, namespace)
+function(config, prev, namespace, pkg) service(config, lib.package(config, namespace, pkg))

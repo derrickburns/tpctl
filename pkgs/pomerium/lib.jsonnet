@@ -3,21 +3,17 @@ local lib = import '../../lib/lib.jsonnet';
 {
   rootDomain(config):: config.cluster.metadata.domain,
 
-  dnsNameForPkg(config, namespace, pkg)::
-    lib.getElse(
-      config.namespaces[namespace][pkg].sso,
-      'dnsName',
-      '%s.%s' % [lib.getElse(config.namespaces[namespace][pkg].sso, 'externalName', pkg), config.cluster.metadata.domain]
-    ),
+  packagesRequiringSso(config):: [
+    lib.package(config, namespace, pkg)
+    for namespace in std.objectFields(config.namespaces)
+    for pkg in std.objectFields(config.namespaces[namespace])
+    if std.objectHas(config.namespaces[namespace][pkg], 'sso')
+  ],
 
-  dnsNamesForNamespace(config, namespace, pkgs):: (
-    [$.dnsNameForPkg(config, namespace, pkg) for pkg in std.objectFields(pkgs) if std.objectHas(pkgs[pkg], 'sso') && lib.isEnabled(pkgs[pkg])]
-  ),
+  dnsNameForPkg(config, me)::
+    lib.getElse(me, 'sso.dnsName', '%s.%s' % [ lib.getElse(me, 'sso.externalName', me.pkg), config.cluster.metadata.domain]),
 
-  dnsNames(config):: (
-    local dnsNamesFor(namespace, pkgs) = $.dnsNamesForNamespace(config, namespace, pkgs);
-    std.flattenArrays(lib.values(std.mapWithKey(dnsNamesFor, config.namespaces)))
-  ),
+  dnsNames(config):: [$.dnsNameForPkg(config, pkg) for pkg in $.packagesRequiringSso(config)],
 
   expand(config, pkg, namespace):: pkg + $.expandPomeriumVirtualServices($.rootDomain(config)),
 

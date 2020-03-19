@@ -2,13 +2,13 @@ local lib = import '../../lib/lib.jsonnet';
 
 local mylib = import 'policy-lib.jsonnet';
 
-local policy(config, env, namespace) = (
-  local bucket = lib.getElse(env, 'tidepool.buckets.asset', mylib.assetBucket(config, namespace));
+local policy(config, me) = (
+  local bucket = lib.getElse(me, 'buckets.asset', mylib.assetBucket(config, me.namespace));
   mylib.policyAndMetadata(
     'hydrophone',
-    namespace,
-    mylib.withBucketReadingPolicy(config, env, bucket) + mylib.withEmailPolicy(env)
+    me.namespace,
+    mylib.withBucketReadingPolicy(bucket) + mylib.withEmailPolicy(me)
   )
 );
 
-function(config, namespace) policy(config, config.namespaces[namespace], namespace)
+function(config, namespace) policy(config, lib.package(config, namespace, 'tidepool'))

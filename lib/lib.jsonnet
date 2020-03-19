@@ -3,6 +3,21 @@
 
   isEnabledAt(x, prop):: $.isTrue(x, prop + '.enabled'),
 
+  package(config, namespace, pkg):: config.namespaces[namespace][pkg] { namespace: namespace, pkg: pkg },
+
+  namespaces(config):: std.set(std.objectFields(config.namespaces)),
+
+  namespacesWithout(config, prop, default):: (
+    local all = $.namespaces(config);
+    local on = $.namespacesWith(config, prop, default);
+    std.setDiff(all, on)
+  ),
+
+  namespacesWith(config, prop, default):: (
+    local all = $.namespaces(config);
+    std.set(std.filter(function(x) $.getElse(config.namespaces[x], 'config.' + prop, default), all))
+  ),
+
   withDefault(obj, field, default)::
     if obj == null || std.objectHas(obj, field)
     then obj
@@ -57,7 +72,7 @@
 
   isEq(x, path, y):: $.get(x, path) == y,
 
-  isTrue(x, path):: $.isEq(x, path, true) || $.isEq(x, path, "true"),
+  isTrue(x, path):: $.isEq(x, path, true) || $.isEq(x, path, 'true'),
 
   mergeList(list):: std.foldl($.merge, list, {}),
 

@@ -2,9 +2,9 @@ local lib = import '../../lib/lib.jsonnet';
 
 local mylib = import 'policy-lib.jsonnet';
 
-local policy(config, env, namespace) = (
-  local bucket = lib.getElse(env, 'tidepool.buckets.data', mylib.dataBucket(config, namespace));
-  mylib.policyAndMetadata('jellyfish', namespace, mylib.withBucketPolicy(config, env, bucket))
+local policy(config, me) = (
+  local bucket = lib.getElse(me, 'buckets.data', mylib.dataBucket(config, me.namespace));
+  mylib.policyAndMetadata('jellyfish', me.namespace, mylib.withBucketPolicy(me, bucket))
 );
 
-function(config, namespace) policy(config, config.namespaces[namespace], namespace)
+function(config, namespace) policy(config, lib.package(config, namespace, 'tidepool'))

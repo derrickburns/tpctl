@@ -1,8 +1,7 @@
 local lib = import '../../lib/lib.jsonnet';
 
-local deployment(config, namespace) =
+local deployment(config, me) =
   {
-    local me = config.namespaces[namespace].fluxrecv,
     local secretName =
       if lib.isTrue(me, 'sidecar')
       then 'fluxrecv-config'
@@ -14,7 +13,7 @@ local deployment(config, namespace) =
         'secret.reloader.stakater.com/reload': secretName,
       },
       name: 'fluxrecv',
-      namespace: namespace,
+      namespace: me.namespace,
     },
     spec: {
       replicas: 1,
@@ -69,4 +68,9 @@ local deployment(config, namespace) =
     },
   };
 
-function(config, prev, namespace, pkg) if lib.isTrue(config.namespaces[namespace], 'fluxrecv.sidecar') then {} else deployment(config, namespace)
+function(config, prev, namespace, pkg) (
+  local me = lib.package(config, namespace, pkg);
+  if lib.isTrue(me, 'sidecar')
+  then {}
+  else deployment(config, me)
+)

@@ -2,28 +2,20 @@ local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 local mylib = import 'lib.jsonnet';
 
-local getPoliciesForNamespace(config, namespace) = (
-  local ns = config.namespaces[namespace];
-  [
-    {
-      local pkg = ns[x],
-      local port = lib.getElse(pkg, 'sso.port', 8080),
-      local suffix = if port == 80 then '' else ':%s' % port,
-      from: 'https://' + mylib.dnsNameForPkg(config, namespace, x),
-      to: 'http://' + lib.getElse(pkg, 'sso.serviceName', x) + '.' + namespace + '.svc.cluster.local' + suffix,
-      allowed_groups: lib.getElse(pkg, 'sso.allowed_groups', lib.getElse(config, 'general.sso.allowed_groups', [])),
-      allowed_users: lib.getElse(pkg, 'sso.allowed_users', lib.getElse(config, 'general.sso.allowed_users', [])),
-      allow_websockets: true,
-    }
-    for x in std.objectFields(ns)
-    if lib.getElse(ns[x], 'sso', {}) != {} && lib.getElse(ns[x], 'enabled', false)
-  ]
-);
+local getPoliciesForPackage(config, me) = {
+  local sso = me.sso,
+  local port = lib.getElse(sso, 'port', 8080),
+  local suffix = if port == 80 then '' else ':%s' % port,
+  from: 'https://' + mylib.dnsNameForPkg(config, me),
+  to: 'http://' + lib.getElse(sso, 'serviceName', me.pkg) + '.' + me.namespace + '.svc.cluster.local' + suffix,
+  allowed_groups: lib.getElse(me, 'allowed_groups', lib.getElse(config, 'general.sso.allowed_groups', [])),
+  allowed_users: lib.getElse(me, 'allowed_users', lib.getElse(config, 'general.sso.allowed_users', [])),
+  allow_websockets: lib.getElse(me, 'allow_websockets', lib.getElse(config, 'general.sso.allow_websockets', true))
+};
 
-local getPolicy(config) = std.flattenArrays([getPoliciesForNamespace(config, ns) for ns in std.objectFields(config.namespaces)]);
+local getPolicy(config) = [getPoliciesForPackage(config, pkg) for pkg in mylib.packagesRequiringSso(config)];
 
-local helmrelease(config, namespace) = k8s.helmrelease('pomerium', namespace, '5.0.3', 'https://helm.pomerium.io') {
-  local me = config.namespaces[namespace].pomerium,
+local helmrelease(config, me) = k8s.helmrelease('pomerium', me.namespace, '5.0.3', 'https://helm.pomerium.io') {
   local domain = mylib.rootDomain(config),
   spec+: {
     values: {
@@ -57,4 +49,4 @@ local helmrelease(config, namespace) = k8s.helmrelease('pomerium', namespace, '5
   },
 };
 
-function(config, prev, namespace, pkg) helmrelease(config, namespace)
+function(config, prev, namespace, pkg) helmrelease(config, lib.package(config, namespace, pkg))
