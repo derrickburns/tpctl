@@ -63,6 +63,15 @@ local genvalues(config, me, version) = {
     create: false,
     linkerd: true,
   },
+  gloo: {
+    deployment: {
+      resources: {
+        limits: {
+          memory: '200Mi',
+        },
+      },
+    },
+  },
   namespace: {
     create: false,
   },
