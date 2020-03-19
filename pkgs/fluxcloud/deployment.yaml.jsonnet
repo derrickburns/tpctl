@@ -5,7 +5,7 @@ local Deployment(config, me) = {
   apiVersion: 'apps/v1',
   kind: 'Deployment',
   metadata: {
-    name: 'fluxcloud',
+    name: me.pkg,
     namespace: me.namespace,
     annotations: {
       'secret.reloader.stakater.com/reload': secretName,
@@ -14,7 +14,7 @@ local Deployment(config, me) = {
   spec: {
     selector: {
       matchLabels: {
-        name: 'fluxcloud',
+        name: me.pkg,
       },
     },
     replicas: 1,
@@ -22,13 +22,13 @@ local Deployment(config, me) = {
     template: {
       metadata: {
         labels: {
-          name: 'fluxcloud',
+          name: me.pkg,
         },
       },
       spec: {
         containers: [
           {
-            name: 'fluxcloud',
+            name: me.pkg,
             image: 'justinbarrick/fluxcloud:v0.3.9',
             ports: [
               {

@@ -1,24 +1,24 @@
-local deployment(namespace) = {
+local deployment(me) = {
   apiVersion: 'apps/v1',
   kind: 'Deployment',
   metadata: {
     labels: {
-      app: 'mongomirror',
+      app: me.pkg,
     },
-    name: 'mongomirror',
-    namespace: namespace,
+    name: me.pkg,
+    namespace: me.namespace,
   },
   spec: {
     replicas: 1,
     selector: {
       matchLabels: {
-        app: 'mongomirror',
+        app: me.pkg,
       },
     },
     template: {
       metadata: {
         labels: {
-          app: 'mongomirror',
+          app: me.pkg,
         },
       },
       spec: {
@@ -114,4 +114,4 @@ local deployment(namespace) = {
   },
 };
 
-function(config, prev, namespace, pkg) deployment(namespace)
+function(config, prev, namespace, pkg) deployment(lib.package(config, namespace, pkg))

@@ -1,24 +1,26 @@
-local statefulset(namespace) = {
+local lib = import '../../lib/lib.jsonnet';
+
+local statefulset(me) = {
   apiVersion: 'apps/v1',
   kind: 'StatefulSet',
   metadata: {
     labels: {
-      'control-plane': 'elastic-operator',
+      'control-plane': me.pkg,
     },
-    name: 'elastic-operator',
-    namespace: namespace,
+    name: me.pkg,
+    namespace: me.namespace,
   },
   spec: {
     selector: {
       matchLabels: {
-        'control-plane': 'elastic-operator',
+        'control-plane': me.pkg,
       },
     },
-    serviceName: 'elastic-operator',
+    serviceName: me.pkg,
     template: {
       metadata: {
         labels: {
-          'control-plane': 'elastic-operator',
+          'control-plane': me.pkg,
         },
       },
       spec: {
@@ -45,7 +47,7 @@ local statefulset(namespace) = {
               },
               {
                 name: 'WEBHOOK_PODS_LABEL',
-                value: 'elastic-operator',
+                value: me.pkg,
               },
               {
                 name: 'OPERATOR_IMAGE',
@@ -73,11 +75,11 @@ local statefulset(namespace) = {
             },
           },
         ],
-        serviceAccountName: 'elastic-operator',
+        serviceAccountName: me.pkg,
         terminationGracePeriodSeconds: 10,
       },
     },
   },
 };
 
-function(config, prev, namespace, pkg) statefulset(namespace)
+function(config, prev, namespace, pkg) statefulset(lib.package(config, namespace, pkg))

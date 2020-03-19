@@ -3,7 +3,7 @@
 
   isEnabledAt(x, prop):: $.isTrue(x, prop + '.enabled'),
 
-  package(config, namespace, pkg):: config.namespaces[namespace][pkg] { namespace: namespace, pkg: pkg },
+  package(config, namespace, pkg):: config.namespaces[namespace][pkg] { namespace: $.kebabCase(namespace), pkg: $.kebabCase(pkg) },
 
   namespaces(config):: std.set(std.objectFields(config.namespaces)),
 

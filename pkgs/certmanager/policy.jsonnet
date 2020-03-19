@@ -4,20 +4,21 @@ local policy(namespace) = iam.metadata('cert-manager', namespace) + {
   attachPolicy: {
     Statement: [
       {
+        Effect: 'Allow',
+        Action: 'route53:GetChange',
+        Resource: 'arn:aws:route53:::change/*',
+      },
+      {
+        Effect: 'Allow',
         Action: [
           'route53:ChangeResourceRecordSets',
+          'route53:ListResourceRecordSets',
         ],
-        Effect: 'Allow',
         Resource: 'arn:aws:route53:::hostedzone/*',
       },
       {
-        Action: [
-          'route53:GetChange',
-          'route53:ListHostedZones',
-          'route53:ListResourceRecordSets',
-          'route53:ListHostedZonesByName',
-        ],
         Effect: 'Allow',
+        Action: 'route53:ListHostedZonesByName',
         Resource: '*',
       },
     ],

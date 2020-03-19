@@ -1,13 +1,14 @@
-local configmap(config, namespace) = {
+local lib = import '../../lib/lib.jsonnet';
+
+local configmap(config, me) = {
   apiVersion: 'v1',
   kind: 'ConfigMap',
   metadata: {
     labels: {
-      app: 'opencensus',
-      component: 'oc-collector-conf',
+      app: me.pkg,
     },
-    name: 'oc-collector-conf',
-    namespace: namespace,
+    name: me.pkg,
+    namespace: me.namespace,
   },
   data: {
     'oc-collector-config': std.manifestYamlDoc(
@@ -15,7 +16,7 @@ local configmap(config, namespace) = {
         'queued-exporters': {
           'jaeger-all-in-one': {
             'jaeger-thrift-http': {
-              'collector-endpoint': 'http://jaeger-collector.%s:14268/api/traces' % namespace,
+              'collector-endpoint': 'http://jaeger-collector.%s:14268/api/traces' % me.namespace,
               timeout: '5s',
             },
             'num-workers': 4,
@@ -34,4 +35,4 @@ local configmap(config, namespace) = {
   },
 };
 
-function(config, prev, namespace, pkg) configmap(config, namespace)
+function(config, prev, namespace, pkg) configmap(config, lib.package(config, namespace, pkg))

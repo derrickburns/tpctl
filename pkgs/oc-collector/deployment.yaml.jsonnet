@@ -1,15 +1,14 @@
 local lib = import '../../lib/lib.jsonnet';
 
-local deployment(config, namespace) = {
+local deployment(config, me) = {
   apiVersion: 'apps/v1',
   kind: 'Deployment',
   metadata: {
     labels: {
-      app: 'opencensus',
-      component: 'oc-collector',
+      app: me.pkg,
     },
-    name: 'oc-collector',
-    namespace: namespace,
+    name: me.pkg,
+    namespace: me.namespace,
   },
   spec: {
     minReadySeconds: 5,
@@ -17,20 +16,26 @@ local deployment(config, namespace) = {
     replicas: 1,
     selector: {
       matchLabels: {
-        app: 'opencensus',
+        app: me.pkg,
       },
     },
     template: {
       metadata: {
-        annotations: {
-          'linkerd.io/inject': if lib.getElse(config, 'pkgs.linkerd.enabled', false) then 'enabled' else 'disabled',
-          'prometheus.io/path': '/metrics',
-          'prometheus.io/port': '8888',
-          'prometheus.io/scrape': 'true',
-        },
+        annotations:
+          (if lib.isEnabledAt(config, 'pkgs.prometheus')
+           then {
+             'prometheus.io/path': '/metrics',
+             'prometheus.io/port': '8888',
+             'prometheus.io/scrape': 'true',
+           }
+           else {}) +
+          (if lib.isEnabledAt(config, 'pkgs.linkerd')
+           then {
+             'linkerd.io/inject': 'enabled',
+           }
+           else {}),
         labels: {
-          app: 'opencensus',
-          component: 'oc-collector',
+          app: me.pkg,
         },
       },
       spec: {
@@ -99,7 +104,7 @@ local deployment(config, namespace) = {
                   path: 'oc-collector-config.yaml',
                 },
               ],
-              name: 'oc-collector-conf',
+              name: me.pkg,
             },
             name: 'oc-collector-config-vol',
           },
@@ -109,4 +114,4 @@ local deployment(config, namespace) = {
   },
 };
 
-function(config, prev, namespace, pkg) deployment(config, namespace)
+function(config, prev, namespace, pkg) deployment(config, lib.package(config, namespace, pkg))

@@ -31,10 +31,16 @@ local dispatch = {
 local addLocalChanges(config, name, pkgName, pkg) =
   if std.objectHasAll(dispatch, pkgName) then dispatch[pkgName].expand(config, pkg, name) else pkg;
 
+local purgeDisabled(config, name, pkgName, pkg) = 
+  if lib.getElse(pkg, 'enabled', false)
+  then pkg
+  else {};
+
 // list of package expander functions to call in order
 local packageExpanders = [
   addVirtualServiceIfNeeded,
-  addLocalChanges
+  addLocalChanges,
+  purgeDisabled
 ];
 
 // expand all packages in a namespace

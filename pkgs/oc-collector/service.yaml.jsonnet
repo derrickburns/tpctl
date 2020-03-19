@@ -1,13 +1,14 @@
-local service(namespace) = {
+local lib = import '../../lib/lib.jsonnet';
+
+local service(me) = {
   apiVersion: 'v1',
   kind: 'Service',
   metadata: {
     labels: {
-      app: 'opencensus',
-      component: 'oc-collector',
+      app: me.pkg,
     },
-    name: 'oc-collector',
-    namespace: namespace,
+    name: me.pkg,
+    namespace: me.namespace,
   },
   spec: {
     ports: [
@@ -31,9 +32,9 @@ local service(namespace) = {
       },
     ],
     selector: {
-      component: 'oc-collector',
+      app: me.pkg,
     },
   },
 };
 
-function(config, prev, namespace, pkg) service(namespace)
+function(config, prev, namespace, pkg) service(lib.package(config, namespace, pkg))

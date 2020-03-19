@@ -1,7 +1,7 @@
 local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
-local helmrelease(config, namespace) = k8s.helmrelease('cluster-autoscaler', namespace, '7.1.0') {
+local helmrelease(config, me) = k8s.helmrelease('cluster-autoscaler', me.namespace, '7.1.0') {
   spec+: {
     values: {
       autoDiscovery: {
@@ -15,16 +15,16 @@ local helmrelease(config, namespace) = k8s.helmrelease('cluster-autoscaler', nam
         v: 5,
       },
       image: {
-        tag: "v1.14.7",
+        tag: lib.getElse(me, 'version', '1.14.7'), // XXX
       },
       rbac+: {
         create: true,
-        name: 'cluster-autoscaler',
+        name: me.pkg,
         serviceAccount: {
           create: false
         },
       },
-      fullnameOverride: 'cluster-autoscaler',
+      fullnameOverride: me.pkg,
       serviceMonitor: {
         enabled: lib.isEnabledAt(config, 'pkgs.prometheusOperator'),
       },
@@ -32,4 +32,4 @@ local helmrelease(config, namespace) = k8s.helmrelease('cluster-autoscaler', nam
   },
 };
 
-function(config, prev, namespace, pkg) helmrelease(config, namespace)
+function(config, prev, namespace, pkg) helmrelease(config, lib.package(config, namespace, pkg))

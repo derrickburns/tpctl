@@ -1,20 +1,22 @@
-local daemonset(config, namespace) = {
+local lib = import '../../lib/lib.jsonnet';
+
+local daemonset(config, me) = {
   apiVersion: 'apps/v1',
   kind: 'DaemonSet',
   metadata: {
-    name: 'cloudwatch-agent',
-    namespace: namespace,
+    name: me.pkg,
+    namespace: me.namespace,
   },
   spec: {
     selector: {
       matchLabels: {
-        name: 'cloudwatch-agent',
+        name: me.pkg,
       },
     },
     template: {
       metadata: {
         labels: {
-          name: 'cloudwatch-agent',
+          name: me.pkg,
         },
       },
       spec: {
@@ -52,7 +54,7 @@ local daemonset(config, namespace) = {
             ],
             image: 'amazon/cloudwatch-agent:latest',
             imagePullPolicy: 'Always',
-            name: 'cloudwatch-agent',
+            name: me.pkg,
             resources: {
               limits: {
                 cpu: '200m',
@@ -96,7 +98,7 @@ local daemonset(config, namespace) = {
             ],
           },
         ],
-        serviceAccountName: 'cloudwatch-agent',
+        serviceAccountName: me.pkg,
         terminationGracePeriodSeconds: 60,
         volumes: [
           {
@@ -141,4 +143,4 @@ local daemonset(config, namespace) = {
   },
 };
 
-function(config, prev, namespace, pkg) daemonset(config, namespace)
+function(config, prev, namespace, pkg) daemonset(config, lib.package(config, namespace, pkg))

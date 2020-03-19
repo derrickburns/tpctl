@@ -45,7 +45,4 @@ local jaeger(config, namespace) = {
   },
 };
 
-function(config, prev, namespace, pkg)
-  if lib.getElse(config, 'pkgs.tracing.enabled', false)
-  then jaeger(config, namespace)
-  else {}
+function(config, prev, namespace, pkg) jaeger(config, namespace)

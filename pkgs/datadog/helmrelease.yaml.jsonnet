@@ -1,6 +1,6 @@
 local k8s = import '../../lib/k8s.jsonnet';
 
-local helmrelease(config, namespace) = k8s.helmrelease('datadog-agent', namespace, '2.0.4') {
+local helmrelease(config, me) = k8s.helmrelease('datadog-agent', me.namespace, '2.0.4') {
   spec+: {
     values: {
       clusterAgent: {
@@ -23,4 +23,4 @@ local helmrelease(config, namespace) = k8s.helmrelease('datadog-agent', namespac
   },
 };
 
-function(config, prev, namespace, pkg) helmrelease(config, namespace)
+function(config, prev, namespace, pkg) helmrelease(config, lib.package(config, namespace, pkg))

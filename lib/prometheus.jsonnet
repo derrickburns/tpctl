@@ -26,8 +26,32 @@ local lib = import 'lib.jsonnet';
     },
   },
 
+  servicemonitor(me, targetPort):: {
+    apiVersion: 'monitoring.coreos.com/v1',
+    kind: 'ServiceMonitor',
+    metadata: {
+      name: me.pkg,
+      namespace: me.namespace,
+    },
+    spec: {
+      endpoints: [
+        {
+          targetPort: targetPort,
+        },
+      ],
+      selector: {
+        matchLabels: {
+          app: me.pkg,
+        },
+      },
+      namespaceSelector: {
+        matchNames: [me.namespace],
+      },
+    },
+  },
+
   Podmonitor(config, name, namespace, port, selector, path='/metrics')::
     if lib.isEnabledAt(config, 'pkgs.prometheusOperator')
     then $.podmonitor(name, namespace, port, selector, path='/metrics')
-    else {}
+    else {},
 }

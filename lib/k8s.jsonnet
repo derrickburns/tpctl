@@ -7,34 +7,34 @@
     },
   },
 
-  serviceaccount(name, namespace):: {
+  serviceaccount(me):: {
     apiVersion: 'v1',
     kind: 'ServiceAccount',
     metadata: {
-      name: name,
-      namespace: namespace,
+      name: me.pkg,
+      namespace: me.namespace,
     },
   },
 
-  clusterrolebinding(name, namespace):: {
+  clusterrolebinding(me):: {
     apiVersion: 'rbac.authorization.k8s.io/v1',
     kind: 'ClusterRoleBinding',
     metadata: {
       labels: {
-        app: name,
+        app: me.pkg,
       },
-      name: name,
+      name: me.pkg,
     },
     roleRef: {
       apiGroup: 'rbac.authorization.k8s.io',
       kind: 'ClusterRole',
-      name: name,
+      name: me.pkg,
     },
     subjects: [
       {
         kind: 'ServiceAccount',
-        name: name,
-        namespace: namespace,
+        name: me.pkg,
+        namespace: me.namespace,
       },
     ],
   },

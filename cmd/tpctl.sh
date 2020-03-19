@@ -11,6 +11,11 @@ function envoy {
   glooctl proxy served-config
 }
 
+function actual_k8s_version {
+  local cluster=$(get_cluster)
+  eksctl get cluster $cluster -o json | jq '.[0].Version'
+}
+
 function update_utils {
   start "updating cordns"
   eksctl utils update-coredns -f config.yaml  --approve

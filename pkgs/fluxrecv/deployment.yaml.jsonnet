@@ -12,14 +12,14 @@ local deployment(config, me) =
       annotations: {
         'secret.reloader.stakater.com/reload': secretName,
       },
-      name: 'fluxrecv',
+      name: me.pkg,
       namespace: me.namespace,
     },
     spec: {
       replicas: 1,
       selector: {
         matchLabels: {
-          name: 'fluxrecv',
+          name: me.pkg,
         },
       },
       strategy: {
@@ -28,7 +28,7 @@ local deployment(config, me) =
       template: {
         metadata: {
           labels: {
-            name: 'fluxrecv',
+            name: me.pkg,
           },
         },
         spec: {

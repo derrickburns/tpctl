@@ -1,10 +1,5 @@
-local serviceaccount(namespace) = {
-  apiVersion: 'v1',
-  kind: 'ServiceAccount',
-  metadata: {
-    name: 'prometheus',
-    namespace: namespace,
-  },
-};
+local k8s = import '../../lib/k8s.jsonnet';
+local lib = import '../../lib/lib.jsonnet';
 
-function(config, prev, namespace, pkg) serviceaccount(namespace)
+function(config, prev, namespace, pkg) k8s.serviceaccount(lib.package(config, namespace, pkg))
+

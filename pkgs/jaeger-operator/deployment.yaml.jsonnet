@@ -1,21 +1,23 @@
-local deployment(namespace) = {
+local lib = import '../../lib/lib.jsonnet';
+
+local deployment(me) = {
   apiVersion: 'apps/v1',
   kind: 'Deployment',
   metadata: {
-    name: 'jaeger-operator',
-    namespace: namespace,
+    name: me.pkg,
+    namespace: me.namespace,
   },
   spec: {
     replicas: 1,
     selector: {
       matchLabels: {
-        name: 'jaeger-operator',
+        name: me.pkg,
       },
     },
     template: {
       metadata: {
         labels: {
-          name: 'jaeger-operator',
+          name: me.pkg,
         },
       },
       spec: {
@@ -47,12 +49,12 @@ local deployment(namespace) = {
               },
               {
                 name: 'OPERATOR_NAME',
-                value: 'jaeger-operator',
+                value: me.pkg,
               },
             ],
             image: 'jaegertracing/jaeger-operator:1.17.0',
             imagePullPolicy: 'Always',
-            name: 'jaeger-operator',
+            name: me.pkg,
             ports: [
               {
                 containerPort: 8383,
@@ -61,10 +63,10 @@ local deployment(namespace) = {
             ],
           },
         ],
-        serviceAccountName: 'jaeger-operator',
+        serviceAccountName: me.pkg,
       },
     },
   },
 };
 
-function(config, prev, namespace, pkg) deployment(namespace)
+function(config, prev, namespace, pkg) deployment(lib.package(config, namespace, pkg))

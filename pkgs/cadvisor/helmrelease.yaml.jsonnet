@@ -2,7 +2,7 @@ local k8s = import '../../lib/k8s.jsonnet';
 
 local lib = import '../../lib/lib.jsonnet';
 
-local helmrelease(config, namespace) = k8s.helmrelease('cadvisor', namespace, '1.1.0', 'https://code-chris.github.io/helm-charts') {
+local helmrelease(config, me) = k8s.helmrelease('cadvisor', me.namespace, '1.1.0', 'https://code-chris.github.io/helm-charts') {
   spec+: {
     values: {
       metrics: {
@@ -12,4 +12,4 @@ local helmrelease(config, namespace) = k8s.helmrelease('cadvisor', namespace, '1
   },
 };
 
-function(config, prev, namespace, pkg) helmrelease(config, namespace)
+function(config, prev, namespace, pkg) helmrelease(config, lib.package(config, namespace, pkg))
