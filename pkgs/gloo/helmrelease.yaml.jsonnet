@@ -66,8 +66,12 @@ local genvalues(config, me, version) = {
   gloo: {
     deployment: {
       resources: {
+        requests: {
+          cpu: '500m',
+          memory: '256Mi',
+        },
         limits: {
-          memory: '200Mi',
+          memory: '256Mi',
         },
       },
     },
