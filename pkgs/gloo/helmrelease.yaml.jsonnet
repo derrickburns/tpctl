@@ -123,8 +123,8 @@ local genvalues(config, me, version) = {
           'external-dns.alpha.kubernetes.io/alias': 'true',
           'external-dns.alpha.kubernetes.io/hostname': std.join(
             ',',
-            gloo.dnsNames(expand.expandConfig(config), { type: 'pomerium' })
-            + pom.dnsNames(expand.expandConfig(config))
+            gloo.dnsNames(expand.expand(config), { type: 'pomerium' })
+            + pom.dnsNames(expand.expand(config))
           ),
           'service.beta.kubernetes.io/aws-load-balancer-additional-resource-tags': 'cluster:%s' % config.cluster.metadata.name,
         },
@@ -145,7 +145,7 @@ local genvalues(config, me, version) = {
           'external-dns.alpha.kubernetes.io/alias': 'true',
           'external-dns.alpha.kubernetes.io/hostname': std.join(
             ',',
-            gloo.dnsNames(expand.expandConfig(config), { type: 'external' })
+            gloo.dnsNames(expand.expand(config), { type: 'external' })
           ),
           'service.beta.kubernetes.io/aws-load-balancer-additional-resource-tags': 'cluster:%s' % config.cluster.metadata.name,
         },

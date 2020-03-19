@@ -25,7 +25,7 @@ local lib = import '../../lib/lib.jsonnet';
     namespace: 'gloo-system', // XXX 
   },
 
-  expandConfigEnvironment(config, name, env):: (
+  expandEnvironment(config, name, env):: (
     local dnsNames = lib.getElse(env, 'tidepool.dnsNames', []);
     env {
       tidepool+: {

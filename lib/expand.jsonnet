@@ -1,16 +1,11 @@
 local lib = import 'lib.jsonnet';
 
-local dispatch = {
-  tidepool:: import '../pkgs/tidepool/expand.jsonnet',
-  pomerium:: import '../pkgs/pomerium/lib.jsonnet',
-};
-
 // a virtual service that exports the dns name for this package
-local expandExport(config, name, key, pkg) = {
-  local dnsName = lib.getElse(pkg, 'dnsName', '%s.%s' % [key, config.cluster.metadata.domain]),
+local virtualServiceDescription(config, name, pkgName, pkg) = {
+  local dnsName = lib.getElse(pkg, 'dnsName', '%s.%s' % [pkgName, config.cluster.metadata.domain]),
 
   virtualServices: {
-    [key]: {
+    [pkgName]: {
       enabled: true,
       labels: {
         type: 'pomerium',
@@ -21,31 +16,36 @@ local expandExport(config, name, key, pkg) = {
   },
 };
 
-// expand a package if it requires a virtual service
-local expandPackage(config, name, key, pkg) =
-  pkg +
-  (
-    if (!std.objectHas(pkg, 'virtualServices')) && lib.getElse(pkg, 'export', false)
-    then expandExport(config, name, key, pkg)
-    else {}
-  );
+// add virtual service description for packages that need one
+local addVirtualServiceIfNeeded(config, name, pkgName, pkg) = pkg + (
+  if (!std.objectHas(pkg, 'virtualServices')) && lib.getElse(pkg, 'export', false)
+  then virtualServiceDescription(config, name, pkgName, pkg)
+  else {}
+);
 
-// expand a namespace
-local expandNamespace(config, name, namespace) = (
-  local expand(key, pkg) = (
-    if std.objectHasAll(dispatch, key)
-    then dispatch[key].expand(config, pkg, name)
-    else if (!std.objectHas(pkg, 'virtualServices')) && lib.getElse(pkg, 'export', false)
-    then expandPackage(config, name, key, pkg)
-    else pkg
-   );
+local dispatch = {
+  tidepool:: import '../pkgs/tidepool/expand.jsonnet',
+  pomerium:: import '../pkgs/pomerium/lib.jsonnet',
+};
 
+local addLocalChanges(config, name, pkgName, pkg) =
+  if std.objectHasAll(dispatch, pkgName) then dispatch[pkgName].expand(config, pkg, name) else pkg;
+
+// list of package expander functions to call in order
+local packageExpanders = [
+  addVirtualServiceIfNeeded,
+  addLocalChanges
+];
+
+// expand all packages in a namespace
+local namespaceExpander(config, name, namespace) = (
+  local expand(key, pkg) = std.foldl(function(prev, f) f(config, name, key, prev), packageExpanders, pkg);
   std.mapWithKey(expand, namespace)
 );
 
 {
-  expandConfig(config):: (
-    local expand(name, namespace) = expandNamespace(config, name, namespace);
-    config { namespaces+: std.mapWithKey(expand, config.namespaces) }
+  expand(config):: (
+    local e(name, namespace) = namespaceExpander(config, name, namespace);
+    config { namespaces+: std.mapWithKey(e, config.namespaces) }
   ),
 }
