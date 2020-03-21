@@ -1,5 +1,5 @@
 local lib = import '../../lib/lib.jsonnet';
-
+local global = import '../../lib/global.jsonnet';
 local mylib = import 'lib.jsonnet';
 
 local dnsNames(config, namespace) = (
@@ -23,7 +23,7 @@ local certificate(config, namespace) = (
     spec: {
       secretName: 'pomerium-tls',
       issuerRef: {
-        name: lib.getElse(config, 'certmanager.issuer', 'letsencrypt-production'),
+        name: lib.getElse(global.package(config, 'certmanager'), 'issuer', 'letsencrypt-production'),
         kind: 'ClusterIssuer',
       },
       commonName: names[0],

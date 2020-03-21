@@ -1,7 +1,5 @@
 local lib = import '../../lib/lib.jsonnet';
-
 local gloo = import '../../lib/gloo.jsonnet';
-
 local expand = import '../../lib/expand.jsonnet';
 
 local defaults = {

@@ -1,4 +1,5 @@
 local lib = import 'lib.jsonnet';
+local global = import 'global.jsonnet';
 
 {
   certificate(config, secretName, namespace, dnsNames):: {
@@ -11,7 +12,7 @@ local lib = import 'lib.jsonnet';
       spec: {
         secretName: secretName,
         issuerRef: {
-          name: lib.getElse(config, 'pkgs.certmanager.issuer', 'letsencrypt-production'),
+          name: lib.getElse(global.package(config, 'certmanager'), 'issuer', 'letsencrypt-production'),
           kind: 'ClusterIssuer',
         },
         commonName: dnsNames[0],

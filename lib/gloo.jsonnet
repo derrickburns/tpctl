@@ -1,5 +1,7 @@
 local lib = import 'lib.jsonnet';
 local k8s = import 'k8s.jsonnet';
+local global = import 'global.jsonnet';
+
 local certmanager = import 'certmanager.jsonnet';
 
 {
@@ -280,7 +282,7 @@ local certmanager = import 'certmanager.jsonnet';
 
   certificate(config, vsin, defaultName, defaultNamespace):: (
     local vs = lib.withNamespace(lib.withName(vsin, defaultName), defaultNamespace);
-    if lib.getElse(config, 'pkgs.certmanager.enabled', false)
+    if global.isEnabled(config, 'certmanager')
        && $.isHttps(vs)
        && std.length(vs.dnsNames) > 0
     then certmanager.certificate(config, $.certificateSecretName(vs.name, vs.namespace), vs.namespace, vs.dnsNames)

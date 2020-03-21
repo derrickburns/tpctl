@@ -1,4 +1,5 @@
 local lib = import '../../lib/lib.jsonnet';
+local global = import '../../lib/global.jsonnet';
 
 local deployment(config, me) = {
   apiVersion: 'apps/v1',
@@ -22,14 +23,14 @@ local deployment(config, me) = {
     template: {
       metadata: {
         annotations:
-          (if lib.isEnabledAt(config, 'pkgs.prometheus')
+          (if global.isEnabled(config, 'prometheus')
            then {
              'prometheus.io/path': '/metrics',
              'prometheus.io/port': '8888',
              'prometheus.io/scrape': 'true',
            }
            else {}) +
-          (if lib.isEnabledAt(config, 'pkgs.linkerd')
+          (if global.isEnabled(config, 'linkerd')
            then {
              'linkerd.io/inject': 'enabled',
            }

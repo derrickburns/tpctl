@@ -1,5 +1,6 @@
 local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
+local global = import '../../lib/global.jsonnet';
 
 local helmrelease(config, me) = k8s.helmrelease('cluster-autoscaler', me.namespace, '7.1.0') {
   spec+: {
@@ -26,7 +27,7 @@ local helmrelease(config, me) = k8s.helmrelease('cluster-autoscaler', me.namespa
       },
       fullnameOverride: me.pkg,
       serviceMonitor: {
-        enabled: lib.isEnabledAt(config, 'pkgs.prometheusOperator'),
+        enabled: global.isEnabled(config, 'prometheus-operator'),
       },
     },
   },

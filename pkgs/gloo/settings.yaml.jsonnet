@@ -1,4 +1,5 @@
 local lib = import '../../lib/lib.jsonnet';
+local global = import '../../lib/global.jsonnet';
 
 // Direct external authorization requests *back* to the proxy after adding the x-tidepool-extauth-request header.
 // Then, a virtual service that selects requests based on that header will rewrite the request as needed and forward it to authorization server.
@@ -35,7 +36,7 @@ local settings(config, me) = {
     kubernetesArtifactSource: {},
     kubernetesConfigSource: {},
     kubernetesSecretSource: {},
-    linkerd: lib.isEnabledAt(config, 'pkgs.linkerd'),
+    linkerd: global.isEnabled(config, 'linkerd'),
     refreshRate: '60s',
   },
 };

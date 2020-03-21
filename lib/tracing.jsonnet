@@ -1,9 +1,10 @@
 local lib = import 'lib.jsonnet';
+local global = import 'global.jsonnet';
 
 {
-  address(config):: 'oc-collector.%s:55678' % config.pkgs.tracing.namespace, // XXX parameterize name
+  address(config):: 'oc-collector.%s:55678' % lib.getElse( global.package(config, 'oc-collector'), 'namespace', null), // XXX
 
-  envoy(config):: if lib.getElse(config, 'pkgs.tracing.enabled', false) then {
+  envoy(config):: if global.isEnabled(config, 'oc-collector') then {
     provider: {
       name: 'envoy.tracers.opencensus',
       typed_config: {
