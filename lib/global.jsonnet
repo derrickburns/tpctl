@@ -7,8 +7,8 @@ local lib = import 'lib.jsonnet';
     local matches = $.packagesWithFilter( 
       config, 
       function(me, config, namespace, pkg) lib.isTrue(me, 'global') && pkg == x);
-    assert std.length(matches) == 1: std.manifestJson( { err: "missing global package", pkg: x, config: config } );
-    matches[0]
+    assert std.length(matches) <= 1: std.manifestJson( { err: "missing global package", pkg: x, config: config } );
+    if std.length(matches) == 0 then null else matches[0];
   ),
 
   packagesWithFilter(config, filter):: [
