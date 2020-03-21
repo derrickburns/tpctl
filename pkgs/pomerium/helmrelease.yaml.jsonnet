@@ -1,6 +1,7 @@
 local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 local mylib = import 'lib.jsonnet';
+local global = import '../../lib/global.jsonnet';
 
 local getPoliciesForPackage(config, me) = {
   local sso = me.sso,
@@ -13,7 +14,7 @@ local getPoliciesForPackage(config, me) = {
   allow_websockets: lib.getElse(me, 'allow_websockets', lib.getElse(config, 'general.sso.allow_websockets', true))
 };
 
-local getPolicy(config) = [getPoliciesForPackage(config, pkg) for pkg in mylib.packagesRequiringSso(config)];
+local getPolicy(config) = [getPoliciesForPackage(config, pkg) for pkg in global.packagesWithKey(config, 'sso')];
 
 local helmrelease(config, me) = k8s.helmrelease('pomerium', me.namespace, '5.0.3', 'https://helm.pomerium.io') {
   local domain = mylib.rootDomain(config),

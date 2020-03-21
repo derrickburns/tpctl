@@ -1,6 +1,6 @@
 local k8s = import '../../lib/k8s.jsonnet';
-
 local lib = import '../../lib/lib.jsonnet';
+local global = import '../../lib/global.jsonnet';
 
 local helmrelease(config, namespace) = k8s.helmrelease('velero', namespace, '2.8.1', 'https://vmware-tanzu.github.io/helm-charts') {
   spec+: {
@@ -40,7 +40,7 @@ local helmrelease(config, namespace) = k8s.helmrelease('velero', namespace, '2.8
 
       metrics: {
         serviceMonitor: {
-          enabled: lib.isEnabledAt(config, 'pkgs.prometheusOperator'),
+          enabled: global.isEnabled(config, 'prometheus-operator'),
         },
       },
     },

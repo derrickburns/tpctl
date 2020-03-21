@@ -1,5 +1,7 @@
 local expand = import '../../lib/expand.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
+local global = import '../../lib/global.jsonnet';
+
 local mylib = import 'lib.jsonnet';
 
 local dataBucket(config, namespace) = 'tidepool-%s-%s-data' % [config.cluster.metadata.name, namespace];
@@ -365,7 +367,7 @@ local helmrelease(config, prev, namespace) = {
 
       linkerdsupport: {
         serviceProfiles: {
-          enabled: lib.getElse(config, 'pkgs.linkerd.enabled', false),
+          enabled: global.isEnabled(config, 'linkerd'),
         },
       },
 

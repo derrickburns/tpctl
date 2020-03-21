@@ -1,4 +1,5 @@
 local lib = import '../../lib/lib.jsonnet';
+local global = import '../../lib/global.jsonnet';
 
 local secret(config, me) = {
   apiVersion: 'v1',
@@ -32,6 +33,6 @@ local secret(config, me) = {
 };
 
 function(config, prev, namespace, pkg)
-  if lib.isEnabledAt(config, 'pkgs.prometheus')
+  if global.isEnabled(config, 'prometheus')
   then secret(config, lib.package(config, namespace, pkg))
   else {}

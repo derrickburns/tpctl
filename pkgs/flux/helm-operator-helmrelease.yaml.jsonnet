@@ -1,5 +1,6 @@
 local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
+local global = import '../../lib/global.jsonnet';
 
 local genvalues(config) = {
 
@@ -11,9 +12,9 @@ local genvalues(config) = {
   },
 
   prometheus: {
-    enabled: lib.isEnabledAt(config, 'pkgs.prometheus'),
+    enabled: global.isEnabled(config, 'prometheus'),
     serviceMonitor: {
-      create: lib.isEnabledAt(config, 'pkgs.prometheusOperator'),
+      create: global.isEnabled(config, 'prometheus-operator'),
     },
   },
 

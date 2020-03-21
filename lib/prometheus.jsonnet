@@ -1,4 +1,5 @@
 local lib = import 'lib.jsonnet';
+local global = import 'global.jsonnet';
 
 {
   podmonitor(name, namespace, port, selector, path):: {
@@ -51,7 +52,7 @@ local lib = import 'lib.jsonnet';
   },
 
   Podmonitor(config, name, namespace, port, selector, path='/metrics')::
-    if lib.isEnabledAt(config, 'pkgs.prometheusOperator')
+    if global.isEnabled(config, 'prometheus-operator')
     then $.podmonitor(name, namespace, port, selector, path='/metrics')
     else {},
 }
