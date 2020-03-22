@@ -1,115 +1,85 @@
-general:
-  email: derrick@tidepool.org
-  kubeconfig: $HOME/.kube/config
-  logLevel: debug
-  sops:
-    keys:
-      pgp: CDE5317D7CCA7B80294FB32721A60B1450343446
-      arn: arn:aws:kms:us-west-2:118346523422:key/0
 aws:
   accountNumber: 118346523422
   iamUsers:
-  - derrick
-  - derrick-cli
-  - lennartgoedhart
-  - lennartgoedhart-cli
-  - benderr
-  - jamesraby
-  - haroldbernard
-  - tapaniotala
+    - benderr
+    - derrick
+    - derrick-cli
+    - lennartgoedhart
+    - lennartgoedhart-cli
+    - jamesraby
+    - haroldbernard
+    - tapaniotali
+    - toddkazakov
 cluster:
   cloudWatch:
     clusterLogging:
       enableTypes:
-      - authenticator
-      - api
-      - controllerManager
-      - scheduler
+        - authenticator
+        - api
+        - controllerManager
+        - scheduler
   metadata:
-    domain: tidepool.org
-    name: test1
+    rootDomain: tidepool.org
+    domain: qa2.tidepool.org
+    name: qa2
     region: us-west-2
+    version: 1.14.7
   nodeGroups:
-  - desiredCapacity: 4
-    iam:
-      attachPolicyARNs:
-      - arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy
-      - arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy
-      - arn:aws:iam::aws:policy/ElasticLoadBalancingFullAccess
-      withAddonPolicies:
-        autoScaler: true
-        certManager: true
-        externalDNS: true
-    instanceType: m5.large
-    maxSize: 10
-    minSize: 1
-    name: ng
+    - desiredCapacity: 6
+      iam:
+        attachPolicyARNs:
+          - arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy
+          - arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy
+          - arn:aws:iam::aws:policy/ElasticLoadBalancingFullAccess
+          - arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly
+      instanceType: c5.xlarge
+      labels:
+        role: worker
+      maxSize: 7
+      minSize: 3
+      name: ngc
+      tags:
+        nodegroup-role: worker
   vpc:
-    cidr: 10.47.0.0/16
+    cidr: 10.43.0.0/16
+general:
+  email: derrick@tidepool.org
+  github:
+    git: git@github.com:tidepool-org/cluster-qa2
+    https: https://github.com/tidepool-org/cluster-qa2
+  kubeconfig: $HOME/.kube/config
+  logLevel: debug
+  sops:
+    keys:
+      arn: arn:aws:kms:us-west-2:118346523422:key/73c43c2f-358c-4677-a8bb-8e654c6afa46
+      pgp: CDE5317D7CCA7B80294FB32721A60B1450343446
+  sso:
+    allowed_groups:
+      - eng@tidepool.org
 namespaces:
-  qa1:
-    marketo:
-      enabled: true
-    tidepool:
-      buckets:
-        create: false
-        asset: tidepool-qa1-asset
-        data: tidepool-qa1-data
-      chart:
-        version: 0.3.7
-      data:
-        resources:
-          limits:
-            memory: 256Mi
-          requests:
-            cpu: 500m
-            memory: 256Mi
-      deployment:
-        replicas: 2
-      dexcom:
-        configmap:
-          redirectURL: https://api.tidepool.org/v1/oauth/dexcom/redirect
-      dnsNames:
-      - qa1.tidepool.org
-      enabled: true
-      gateway:
-        domain: qa1.tidepool.org
-        host: dev-api.qa1.tidepool.org
-      gitops:
-        default: glob:master-*
-        enabled: true
-        export: glob:release-1.4*
-      hpa:
-        enabled: false
-        minReplicas: 2
-      mongodb:
-        enabled: false
-      nosqlclient:
-        enabled: true
-      pdb: {}
   amazon-cloudwatch:
-    amazon-cloudwatch:
+    cloudwatch-agent:
+      enabled: true
+    fluentd:
       enabled: true
   cert-manager:
+    config:
+      create: false
     certmanager:
+      global: true
       enabled: true
-  none:
-    common:
-      enabled: true
-  datadog:
-    datadog:
+    certmanager15:
       enabled: false
-  dnsutil:
-    dnsutil:
+  elastic-system:
+    elastic-operator:
       enabled: true
-  elasticsearch-operator:
-    elasticsearch-operator:
-      enabled: false
   external-dns:
     external-dns:
       enabled: true
   flux:
     flux:
+      collectGarbage:
+        enabled: true
       enabled: true
     fluxcloud:
       enabled: true
@@ -120,53 +90,167 @@ namespaces:
       export: true
       sidecar: false
   gloo-system:
+    config:
+      meshed: true
+      logging: true
     gloo:
       enabled: true
-      version: 1.3.3
+      validation: false
+      version: 1.3.14
     glooe-monitoring:
       enabled: true
       sso:
-        allowed_groups:
-        - eng@tidepool.org
         port: 80
         serviceName: glooe-grafana
     glooe-prometheus-server:
-      enabled: false
+      enabled: true
       sso:
-        allowed_groups:
-        - eng@tidepool.org
         externalName: glooe-metrics
         port: 80
       storage: 64Gi
-      retention: 7d
   jaeger-operator:
     jaeger-operator:
-      enabled: false
+      enabled: true
   kube-system:
     config:
-      create: false
+      labels:
+        config.linkerd.io/admission-webhooks: disabled
     cluster-autoscaler:
-      enabled: true
+      enabled: false
     metrics-server:
       enabled: true
   kubernetes-dashboard:
+    config:
+      create: false
     kubernetes-dashboard:
       enabled: false
   linkerd:
+    config:
+      labels:
+        config.linkerd.io/admission-webhooks: disabled
+        linkerd.io/is-control-plane: "true"
     linkerd:
+      global: true
       enabled: true
     linkerd-web:
       enabled: true
       sso:
-        allowed_groups:
-        - eng@tidepool.org
         port: 8084
+  monitoring:
+    prometheus:
+      enabled: true
+      global: true
+      sso:
+        externalName: metrics
+        port: 9090
+        serviceName: prometheus-operator-prometheus
+    prometheus-operator:
+      global: true
+      enabled: true
+    thanos:
+      bucket: tidepool-thanos
+      enabled: false
+      secret: thanos-objstore-config
+  none:
+    config:
+      create: false
+    common:
+      enabled: true
   pomerium:
+    config:
+      meshed: true
+      logging: true
     pomerium:
       enabled: true
-  prometheus-operator:
-    prometheus-operator:
+  qa1:
+    config:
+      logging: true
+      meshed: true
+    locust:
+      enabled: true
+    tidepool:
+      buckets:
+        asset: tidepool-qa1-asset
+        data: tidepool-qa1-data
+      chart:
+        version: 0.3.7
+      dnsNames:
+        - qa1.development.tidepool.org
+        - dev.tidepool.org
+        - dev-api.tidepool.org
+        - dev-app.tidepool.org
+        - dev-uploads.tidepool.org
+      enabled: true
+      gateway:
+        domain: development.tidepool.org
+        host: qa1.development.tidepool.org
+      gitops:
+        default: glob:master-*
+        shoreline: glob:master-*
+        data: glob:dataModelPart3-*
+        blob: glob:dataModelPart3-*
+        auth: glob:dataModelPart3-*
+        image: glob:dataModelPart3-*
+        migrations: glob:dataModelPart3-*
+        notification: glob:dataModelPart3-*
+        task: glob:dataModelPart3-*
+        tools: glob:dataModelPart3-*
+        user: glob:dataModelPart3-*
+      hpa:
+        enabled: false
+      mongodb:
+        enabled: false
+      nosqlclient:
+        enabled: true
+      shadow:
+        enabled: false
+        receiver: qa1-mirror
+      task:
+        deployment:
+          replicas: 0
+      virtualClusters:
+        - method: POST
+          name: dataset_post
+          pattern: /v1/datasets/[^/]+/data
+  qa2:
+    config:
+      meshed: true
+      logging: true
+    marketo:
       enabled: false
+    mongodb:
+      enabled: false
+    tidepool:
+      buckets:
+        asset: tidepool-qa2-asset
+        data: tidepool-qa2-data
+      chart:
+        version: 0.3.7
+      dnsNames:
+        - qa2.development.tidepool.org
+        - stg-api.tidepool.org
+        - stg-app.tidepool.org
+        - stg-uploads.tidepool.org
+      enabled: true
+      gateway:
+        domain: development.tidepool.org
+        host: qa2.development.tidepool.org
+      gitops:
+        blip: glob:release-1.32.0-*
+        data: glob:pazaan-debug-400s-*
+        default: glob:master-*
+        export: glob:master-*
+        hydrophone: glob:master-*
+        task: glob:1.32.2-hotfix.2
+        tidewhisperer: glob:master-*
+        tools: glob:pazaan-test-vividcortex-*
+        shoreline: glob:derrick-marketobug-*
+      hpa:
+        enabled: false
+      mongodb:
+        enabled: false
+      nosqlclient:
+        enabled: true
   reloader:
     reloader:
       enabled: true
@@ -174,28 +258,21 @@ namespaces:
     sumologic:
       apiEndpoint: https://api.us2.sumologic.com/api/v1/
       enabled: true
-      namespace: sumologic
-  monitoring:
-    thanos:
-      bucket: tidepool-thanos
-      enabled: false
-      secret: thanos-objstore-config
   tracing:
-    tracing:
+    jaeger:
+      enabled: true
+      sso:
+        port: 16686
+        serviceName: jaeger-query
+        externalName: tracing
+    oc-collector:
+      enabled: true
+      global: true
+    elasticsearch:
+      enabled: true
+      storage: 15Gi
+  velero:
+    config:
+      create: false
+    velero:
       enabled: false
-pkgs:
-  certmanager:
-    enabled: true
-    issuer: letsencrypt-production
-  gloo:
-    enabled: true
-  linkerd:
-    version: stable-2.7.0
-    annotations: {}
-    enabled: true
-  prometheus:
-    enabled: false
-  tracing:
-    enabled: false
-    namespace: tracing
-
