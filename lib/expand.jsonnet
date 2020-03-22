@@ -1,25 +1,23 @@
 local lib = import 'lib.jsonnet';
 
 // a virtual service that exports the dns name for this package
-local virtualServiceDescription(config, name, pkgName, pkg) = {
-  local dnsName = lib.getElse(pkg, 'dnsName', '%s.%s' % [pkgName, config.cluster.metadata.domain]),
-
+local virtualServiceDescription(me, config, pkg) = {
   virtualServices: {
-    [pkgName]: {
+    [pkg]: {
       enabled: true,
       labels: {
         type: 'pomerium',
         protocol: 'https',
       },
-      dnsNames: [dnsName],
+      dnsNames: [lib.getElse(me, 'dnsName', '%s.%s' % [pkg, config.cluster.metadata.domain])],
     },
   },
 };
 
 // add virtual service description for packages that need one
-local addVirtualServiceIfNeeded(config, name, pkgName, pkg) = pkg + (
-  if (!std.objectHas(pkg, 'virtualServices')) && lib.getElse(pkg, 'export', false)
-  then virtualServiceDescription(config, name, pkgName, pkg)
+local addVirtualServiceIfNeeded(me, config, name, pkg) = me + (
+  if (!std.objectHas(me, 'virtualServices')) && lib.getElse(me, 'export', false)
+  then virtualServiceDescription(me, config, pkg)
   else {}
 );
 
@@ -28,13 +26,12 @@ local dispatch = {
   pomerium:: import '../pkgs/pomerium/lib.jsonnet',
 };
 
-local addLocalChanges(config, name, pkgName, pkg) =
-  if std.objectHasAll(dispatch, pkgName) then dispatch[pkgName].expand(config, pkg, name) else pkg;
+local addLocalChanges(me, config, name, pkg) =
+  if std.objectHasAll(dispatch, pkg)
+  then dispatch[pkg].expand(config, me, name)
+  else me;
 
-local purgeDisabled(config, name, pkgName, pkg) = 
-  if lib.getElse(pkg, 'enabled', false)
-  then pkg
-  else {};
+local purgeDisabled(me, config, name, pkg) = if lib.isEnabled(me) then me else {};
 
 // list of package expander functions to call in order
 local packageExpanders = [
@@ -45,7 +42,7 @@ local packageExpanders = [
 
 // expand all packages in a namespace
 local namespaceExpander(config, name, namespace) = (
-  local expand(key, pkg) = std.foldl(function(prev, f) f(config, name, key, prev), packageExpanders, pkg);
+  local expand(key, pkg) = std.foldl(function(prev, f) f(prev, config, name, key), packageExpanders, pkg);
   std.mapWithKey(expand, namespace)
 );
 
