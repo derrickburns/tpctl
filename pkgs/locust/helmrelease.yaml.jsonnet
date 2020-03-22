@@ -3,7 +3,7 @@ local lib = import '../../lib/lib.jsonnet';
 
 local helmrelease(config, prev, me) =
   k8s.githelmrelease('locust', me.namespace, 'git@github.com:tidepool-org/locust-helm', 'master', '.') {
-    spec: {
+    spec+: {
       values+: {
         master: {
           config: {
