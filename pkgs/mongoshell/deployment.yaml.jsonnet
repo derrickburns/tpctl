@@ -25,7 +25,7 @@ local deployment(me) = {
         containers: [
           {
             args: [
-              '$(MONGO_SCHEME)://$(MONGO_USERNAME):$(MONGO_PASSWORD)@$(MONGO_ADDRESSES)/$(MONGO_DATABASE)?ssl=true&$(MONGO_OPT_PARAMS)',
+              '$(MONGO_SCHEME)://$(MONGO_USERNAME):$(MONGO_PASSWORD)@$(MONGO_ADDRESSES)/$(MONGO_DATABASE)?ssl=$(MONGO_SSL)&$(MONGO_OPT_PARAMS)',
             ],
             command: [
               'mongo',
@@ -59,6 +59,11 @@ local deployment(me) = {
                 secretKeyRef:
                   name: mongo
                   key: OptParams
+            - name: MONGO_SSL
+              valueFrom:
+                secretKeyRef:
+                  name: mongo
+                  key: Tls
             ports: [
               {
                 containerPort: 27017,
