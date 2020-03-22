@@ -12,6 +12,11 @@
     kind: 'ServiceAccount',
   },
 
+  configmap(me):: $.metadata(me.pkg, me.namespace) {
+    apiVersion: 'v1',
+    kind: 'ConfigMap',
+  },
+
   clusterrolebinding(me):: {
     apiVersion: 'rbac.authorization.k8s.io/v1',
     kind: 'ClusterRoleBinding',

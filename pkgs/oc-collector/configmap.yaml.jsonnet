@@ -1,15 +1,7 @@
 local lib = import '../../lib/lib.jsonnet';
+local k8s = import '../../lib/k8s.jsonnet';
 
-local configmap(config, me) = {
-  apiVersion: 'v1',
-  kind: 'ConfigMap',
-  metadata: {
-    labels: {
-      app: me.pkg,
-    },
-    name: me.pkg,
-    namespace: me.namespace,
-  },
+local configmap(config, me) = k8s.configmap(me) {
   data: {
     'oc-collector-config': std.manifestYamlDoc(
       {

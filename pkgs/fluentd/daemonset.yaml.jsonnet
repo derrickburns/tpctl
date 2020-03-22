@@ -35,21 +35,11 @@ local daemonset(config, namespace) = {
               },
               {
                 name: 'REGION',
-                valueFrom: {
-                  configMapKeyRef: {
-                    key: 'logs.region',
-                    name: 'cluster-info',
-                  },
-                },
+                value: config.cluster.metadata.region,
               },
               {
                 name: 'CLUSTER_NAME',
-                valueFrom: {
-                  configMapKeyRef: {
-                    key: 'cluster.name',
-                    name: 'cluster-info',
-                  },
-                },
+		value: config.cluster.metadata.name,
               },
             ],
             image: 'fluent/fluentd-kubernetes-daemonset:v1.9.2-debian-cloudwatch-1.0',
