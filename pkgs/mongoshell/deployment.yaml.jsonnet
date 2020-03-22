@@ -73,6 +73,10 @@ local deployment(me) = {
                 },
               },
               {
+                name: 'MONGO_DATABASE',
+                value: 'user',
+              },
+              {
                 name: 'MONGO_OPT_PARAMS',
                 valueFrom: {
                   secretKeyRef: {
