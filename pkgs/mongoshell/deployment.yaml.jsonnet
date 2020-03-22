@@ -1,3 +1,5 @@
+local lib = import '../../lib/lib.jsonnet';
+
 local deployment(me) = {
   apiVersion: 'apps/v1',
   kind: 'Deployment',
