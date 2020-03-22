@@ -32,38 +32,63 @@ local deployment(me) = {
             ],
             image: 'mongo:3.6.17',
             name: 'mongo',
-            env:
-            - name: MONGO_SCHEME
-              valueFrom:
-                secretKeyRef:
-                  name: mongo
-                  key: Scheme
-            - name: MONGO_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  name: mongo
-                  key: Username
-            - name: MONGO_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: mongo
-                  key: Password
-                  optional: true
-            - name: MONGO_ADDRESSES
-              valueFrom:
-                secretKeyRef:
-                  name: mongo
-                  key: Addresses
-            - name: MONGO_OPT_PARAMS
-              valueFrom:
-                secretKeyRef:
-                  name: mongo
-                  key: OptParams
-            - name: MONGO_SSL
-              valueFrom:
-                secretKeyRef:
-                  name: mongo
-                  key: Tls
+            env: [
+              {
+                name: 'MONGO_SCHEME',
+                valueFrom: {
+                  secretKeyRef: {
+                    key: 'Scheme',
+                    name: 'mongo',
+                  },
+                },
+              },
+              {
+                name: 'MONGO_USERNAME',
+                valueFrom: {
+                  secretKeyRef: {
+                    key: 'Username',
+                    name: 'mongo',
+                  },
+                },
+              },
+              {
+                name: 'MONGO_PASSWORD',
+                valueFrom: {
+                  secretKeyRef: {
+                    key: 'Password',
+                    name: 'mongo',
+                    optional: true,
+                  },
+                },
+              },
+              {
+                name: 'MONGO_ADDRESSES',
+                valueFrom: {
+                  secretKeyRef: {
+                    key: 'Addresses',
+                    name: 'mongo',
+                  },
+                },
+              },
+              {
+                name: 'MONGO_OPT_PARAMS',
+                valueFrom: {
+                  secretKeyRef: {
+                    key: 'OptParams',
+                    name: 'mongo',
+                  },
+                },
+              },
+              {
+                name: 'MONGO_SSL',
+                valueFrom: {
+                  secretKeyRef: {
+                    key: 'Tls',
+                    name: 'mongo',
+                  },
+                },
+              },
+            ],
             ports: [
               {
                 containerPort: 27017,
