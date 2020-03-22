@@ -1,15 +1,7 @@
 aws:
-  accountNumber: 118346523422
+  accountNumber: 123456789012
   iamUsers:
-    - benderr
     - derrick
-    - derrick-cli
-    - lennartgoedhart
-    - lennartgoedhart-cli
-    - jamesraby
-    - haroldbernard
-    - tapaniotali
-    - toddkazakov
 cluster:
   cloudWatch:
     clusterLogging:
