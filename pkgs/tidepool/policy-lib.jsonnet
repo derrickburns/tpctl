@@ -3,8 +3,6 @@ local lib = import '../../lib/lib.jsonnet';
 local tplib = import 'lib.jsonnet';
 
 {
-  values(obj):: [obj[field] for field in std.objectFields(obj)],
-
   dataBucket(config, namespace):: 'tidepool-%s-%s-data' % [config.cluster.metadata.name, namespace],
 
   assetBucket(config, namespace):: 'tidepool-%s-%s-asset' % [config.cluster.metadata.name, namespace],
@@ -52,29 +50,10 @@ local tplib = import 'lib.jsonnet';
     },
   },
 
-  withSESPolicy():: {
-    attachPolicy+: {
-      Statement+: [
-        {
-          Effect: 'Allow',
-          Action: 'ses:*',
-          Resource: '*',
-        },
-      ],
-      Version: '2012-10-17',
-    },
-  },
-
   policyAndMetadata(accountName, namespace, policy):: policy + iam.metadata(accountName, namespace),
 
   withBucketPolicy(me, bucket)::
     if tplib.isShadow(me)
     then $.withBucketReadingPolicy(bucket)
     else $.withBucketWritingPolicy(bucket),
-
-  withEmailPolicy(me)::
-    if tplib.isShadow(me)
-    then {}
-    else $.withSESPolicy(),
-
 }
