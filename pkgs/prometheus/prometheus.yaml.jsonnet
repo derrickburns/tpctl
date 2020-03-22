@@ -1,4 +1,5 @@
 local lib = import '../../lib/lib.jsonnet';
+local global = import '../../lib/global.jsonnet';
 
 local prometheus(config, namespace) = {
   local ns = config.namespaces[namespace],
@@ -33,10 +34,11 @@ local prometheus(config, namespace) = {
     serviceMonitorSelector: {
       matchLabels: {},
     },
-    thanos: if lib.isEnabledAt(ns, 'thanos') then { // XXX
+    thanos: if global.isEnabled(config, 'thanos') then { 
+      local thanos = global.package(config, 'thanos'),
       objectStorageConfig: {
         key: 'thanos.yaml',
-        name: lib.getElse(ns, 'thanos.secret', 'thanos-objstore-secret'),
+        name: lib.getElse(thanos, 'secret', 'thanos-objstore-secret'),
       },
       version: 'v0.5.0',
     } else {},
