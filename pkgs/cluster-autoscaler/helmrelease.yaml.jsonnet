@@ -16,7 +16,7 @@ local helmrelease(config, me) = k8s.helmrelease('cluster-autoscaler', me.namespa
         v: 5,
       },
       image: {
-        tag: lib.getElse(me, 'version', '1.14.7'), // XXX
+        tag: lib.getElse(me, 'version', 'v1.14.7'), // XXX
       },
       rbac+: {
         create: true,
