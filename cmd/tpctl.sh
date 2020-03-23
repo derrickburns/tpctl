@@ -57,6 +57,7 @@ function vpa {
     cd $TMP_DIR
     git clone https://github.com/kubernetes/autoscaler.git
     cd autoscaler/vertical-pod-autoscaler
+    git pull
     ./hack/vpa-up.sh
   )
 }
@@ -287,6 +288,7 @@ function clone_remote() {
     fi
     echo $(basename $HTTPS_REMOTE_REPO)
     cd $(basename $HTTPS_REMOTE_REPO)
+    git pull
   fi
 }
 
@@ -1013,6 +1015,7 @@ function set_chart_dir() {
     pushd $TMP_DIR >/dev/null 2>&1
     git clone $(repo_with_token https://github.com/tidepool-org/development)
     cd development
+    git pull
     CHART_DIR=$(pwd)/charts/tidepool
     popd >/dev/null 2>&1
     complete "cloned development tools"
