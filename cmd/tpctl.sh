@@ -3,7 +3,7 @@
 # Configure EKS cluster to run Tidepool services
 #
 
-set -eo pipefail
+set -eo 
 export FLUX_FORWARD_NAMESPACE=flux
 export REVIEWERS="derrickburns pazaan jamesraby todd"
 
@@ -771,7 +771,7 @@ function expect_cluster_exists() {
 function install_helmrelease() {
   local file=$1
   start "bootstrapping $file"
-  if ! helmit $file >${TMP_DIR}/out 2>&1
+  if ! bash -x helmit $file >${TMP_DIR}/out 2>&1
   then
     cat $TMP_DIR/out
     panic "helm upgrade failed"
@@ -803,8 +803,8 @@ function install_key() {
     cat ${TMP_DIR}/err
     info "waiting for flux deploy secret to be created"
     sleep 2
-    rm ${TMP_DIR}/err
-    key=$(fluxctl --k8s-fwd-ns=${FLUX_FORWARD_NAMESPACE} identity 2>$TMP_DIR/err)
+    rm -f ${TMP_DIR}/err
+    key="$(fluxctl --k8s-fwd-ns=${FLUX_FORWARD_NAMESPACE} identity 2>$TMP_DIR/err || true)"
   done
   local reponame="$(echo $GIT_REMOTE_REPO | cut -d: -f2 | sed -e 's/\.git//')"
   local cluster=$(get_cluster)
@@ -1102,7 +1102,6 @@ function remove_mesh() {
 
 function create_repo() {
   expect_github_token
-  set -x
   read -p "${GREEN}repo name?${RESET} " -r
   REMOTE_REPO=$REPLY
   DATA='{"name":"yolo-test", "private":"true", "auto_init": true}'
