@@ -27,6 +27,7 @@ local deployment(me) = {
         containers: [
           {
             image: 'tidepool/clinic-report:latest',
+            imagePullPolicy: 'Always',
             name: 'mongo',
             env: [
               {
