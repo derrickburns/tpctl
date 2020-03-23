@@ -26,9 +26,18 @@ local deployment(me) = {
       spec: {
         containers: [
           {
-            image: 'mongo:3.6.17',
+            image: 'tidepool/clinic-report:latest',
             name: 'mongo',
             env: [
+              {
+                name: 'SALT_DEPLOY',
+                valueFrom: {
+                  secretKeyRef: {
+                    key: 'UserIdSalt',
+                    name: 'userdata',
+                  },
+                },
+              },
               {
                 name: 'MONGO_SCHEME',
                 valueFrom: {
