@@ -486,7 +486,6 @@ function make_cluster() {
   update_kubeconfig
   git pull
   add_file "./kubeconfig.yaml"
-  make_envrc
   complete "created cluster $cluster"
 }
 
@@ -1274,7 +1273,6 @@ case $cmd in
     set_template_dir
     confirm_matching_cluster
     make_config
-    make_envrc
     save_changes "Added config packages"
     ;;
   cluster)
@@ -1286,7 +1284,6 @@ case $cmd in
     make_cluster
     merge_kubeconfig
     make_users
-    make_envrc
     save_changes "Added cluster and users"
     ;;
   mesh)
