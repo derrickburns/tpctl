@@ -26,12 +26,6 @@ local deployment(me) = {
       spec: {
         containers: [
           {
-            args: [
-              '$(MONGO_SCHEME)://$(MONGO_USERNAME):$(MONGO_PASSWORD)@$(MONGO_ADDRESSES)/$(MONGO_DATABASE)?ssl=$(MONGO_SSL)&$(MONGO_OPT_PARAMS)',
-            ],
-            command: [
-              'mongo',
-            ],
             image: 'mongo:3.6.17',
             name: 'mongo',
             env: [
