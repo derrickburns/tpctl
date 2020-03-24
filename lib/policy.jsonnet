@@ -2,8 +2,7 @@ local iam = import 'k8s.jsonnet';
 local lib = import 'lib.jsonnet';
 
 {
-local withEmailPolicy() =
-  {
+  withEmailPolicy():: {
     attachPolicy+: {
       Statement+: [
         {
