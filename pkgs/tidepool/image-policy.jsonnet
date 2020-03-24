@@ -7,4 +7,4 @@ local policy(config, me) = (
   basepolicy.policyAndMetadata('image', me.namespace, mylib.withBucketPolicy(me, bucket))
 );
 
-function(config, namespace) policy(config, lib.package(config, namespace, 'tidepool'))
+function(config, namespace, pkg) policy(config, lib.package(config, namespace, 'tidepool'))

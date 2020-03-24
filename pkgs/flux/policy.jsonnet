@@ -16,4 +16,4 @@ local policy(config, namespace) = iam.metadata('flux', namespace) + {
   },
 };
 
-function(config, namespace) policy(config, namespace)
+function(config, namespace, pkg) policy(config, namespace)

@@ -25,4 +25,4 @@ local policy(namespace) = iam.metadata('cert-manager', namespace) + {
   },
 };
 
-function(config, namespace) policy(namespace)
+function(config, namespace, pkg) policy(namespace)

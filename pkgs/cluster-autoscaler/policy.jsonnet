@@ -20,4 +20,4 @@ local policy(namespace) = iam.metadata('cluster-autoscaler', namespace) + {
   },
 };
 
-function(config, namespace) policy(namespace)
+function(config, namespace, pkg) policy(namespace)

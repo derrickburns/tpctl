@@ -586,14 +586,15 @@ function template_service_accounts() {
   local namespace=$4
   for fullpath in $(find $path -type f -print); do
     local filename=${fullpath#$prefix}
-    local dir=pkgs/$namespace/$(dirname $filename)
+    local pkg=$(dirname $filename)
+    local dir=pkgs/$namespace/$pkg
     local file=$(basename $filename)
     mkdir -p $dir
     if [ "${filename: -14}" == "policy.jsonnet" ]; then
       local newbasename=${file%.jsonnet}
       local out=$dir/${newbasename}
       add_file ${out}
-      jsonnet --tla-code config="$config" --tla-str namespace=$namespace $fullpath | jq '[.]' | yq r - --prettyPrint >$out
+      jsonnet --tla-code config="$config" --tla-code pkg="$pkg"  --tla-str namespace=$namespace $fullpath | jq '[.]' | yq r - --prettyPrint >$out
       cat $out
       expect_success "Templating failure $dir/$filename"
     fi

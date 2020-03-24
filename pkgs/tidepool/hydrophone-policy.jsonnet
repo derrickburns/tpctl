@@ -17,4 +17,4 @@ local policy(config, me) = (
   )
 );
 
-function(config, namespace) policy(config, lib.package(config, namespace, 'tidepool'))
+function(config, namespace, pkg) policy(config, lib.package(config, namespace, 'tidepool'))

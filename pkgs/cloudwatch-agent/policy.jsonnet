@@ -7,4 +7,4 @@ local policy(namespace) = iam.metadata('cloudwatch-agent', namespace) + {
   ]
 };
 
-function(config, namespace) policy(namespace)
+function(config, namespace, pkg) policy(namespace)
