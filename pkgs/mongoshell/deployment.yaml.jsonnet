@@ -107,6 +107,7 @@ local deployment(me) = {
           },
         ],
         restartPolicy: 'Always',
+        serviceAccountName: me.pkg,
       },
     },
   },
