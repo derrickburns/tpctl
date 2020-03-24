@@ -155,7 +155,7 @@ local genvalues(config, me, version) = {
 };
 
 local helmrelease(config, me) = (
-  local version = lib.getElse(me, 'version', '1.3.14');
+  local version = lib.getElse(me, 'version', '1.3.15');
   k8s.helmrelease('gloo', me.namespace, version, 'https://storage.googleapis.com/solo-public-helm') {
     spec+: {
       values: genvalues(config, me, version),
