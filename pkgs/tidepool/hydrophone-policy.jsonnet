@@ -10,7 +10,7 @@ local withEmailPolicy(me) =
 
 local policy(config, me) = (
   local bucket = lib.getElse(me, 'buckets.asset', mylib.assetBucket(config, me.namespace));
-  mylib.policyAndMetadata(
+  policy.policyAndMetadata(
     'hydrophone',
     me.namespace,
     policy.withBucketReadingPolicy(bucket) + $.withEmailPolicy(me)
