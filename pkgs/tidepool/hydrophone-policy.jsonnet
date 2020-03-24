@@ -13,7 +13,7 @@ local policy(config, me) = (
   policy.policyAndMetadata(
     'hydrophone',
     me.namespace,
-    policy.withBucketReadingPolicy(bucket) + $.withEmailPolicy(me)
+    policy.withBucketReadingPolicy(bucket) + policy.withEmailPolicy(me)
   )
 );
 
