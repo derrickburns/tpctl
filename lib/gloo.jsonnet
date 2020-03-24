@@ -1,6 +1,6 @@
-local lib = import 'lib.jsonnet';
-local k8s = import 'k8s.jsonnet';
 local global = import 'global.jsonnet';
+local k8s = import 'k8s.jsonnet';
+local lib = import 'lib.jsonnet';
 
 local certmanager = import 'certmanager.jsonnet';
 
@@ -269,8 +269,8 @@ local certmanager = import 'certmanager.jsonnet';
   virtualServicesForPackage(config, pkgname, namespace):: (
     local vsarray = $.vsForNamespacedPackage(namespace, pkgname, config.namespaces[namespace][pkgname]);
     local tovs(x) = $.virtualService(x, pkgname, namespace);
-    local result = std.map(tovs,  vsarray);
-    std.filter( function(x) std.length(x.spec.virtualHost.domains) > 0, result )
+    local result = std.map(tovs, vsarray);
+    std.filter(function(x) std.length(x.spec.virtualHost.domains) > 0, result)
   ),
 
   certificatesForPackage(config, pkgname, namespace):: (

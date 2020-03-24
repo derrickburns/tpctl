@@ -1,5 +1,5 @@
-local lib = import 'lib.jsonnet';
 local global = import 'global.jsonnet';
+local lib = import 'lib.jsonnet';
 
 {
   podmonitor(name, namespace, port, selector, path):: {

@@ -1,5 +1,5 @@
-local lib = import 'lib.jsonnet';
 local linkerd = import '../pkgs/linkerd/lib.jsonnet';
+local lib = import 'lib.jsonnet';
 
 local Namespace(config, name) = (
   local nsConfig = lib.getElse(config, 'namespaces.' + name + '.config', {});

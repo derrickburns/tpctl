@@ -1,8 +1,8 @@
-local lib = import 'lib.jsonnet';
 local global = import 'global.jsonnet';
+local lib = import 'lib.jsonnet';
 
 {
-  address(config):: 'oc-collector.%s:55678' % lib.getElse( global.package(config, 'oc-collector'), 'namespace', null), // XXX
+  address(config):: 'oc-collector.%s:55678' % lib.getElse(global.package(config, 'oc-collector'), 'namespace', null),  // XXX
 
   envoy(config):: if global.isEnabled(config, 'oc-collector') then {
     provider: {

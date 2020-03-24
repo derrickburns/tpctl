@@ -37,7 +37,7 @@ local purgeDisabled(me, config, name, pkg) = if lib.isEnabled(me) then me else {
 local packageExpanders = [
   addVirtualServiceIfNeeded,
   addLocalChanges,
-  purgeDisabled
+  purgeDisabled,
 ];
 
 // expand all packages in a namespace
