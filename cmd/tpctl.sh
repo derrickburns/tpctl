@@ -594,7 +594,7 @@ function template_service_accounts() {
       local newbasename=${file%.jsonnet}
       local out=$dir/${newbasename}
       add_file ${out}
-      jsonnet --tla-code config="$config" --tla-str namespace=$namespace $fullpath --tla-code pkg="$pkg" | jq '[.]' | yq r - --prettyPrint >$out
+      jsonnet --tla-code config="$config" --tla-str namespace=$namespace $fullpath --tla-str pkg="$pkg" | jq '[.]' | yq r - --prettyPrint >$out
       cat $out
       expect_success "Templating failure $dir/$filename"
     fi
