@@ -601,17 +601,20 @@ function template_service_accounts() {
   done
 }
 
-# instantiate template for pkg in given namespace
+# template_files $1 $2 $3 $4 - instantiates template for pkg in given namespace
+# $1 - config (values.yaml file as string)
+# $2 - the absolute path to the template directory
+# $3 - the target namespace for the instantiated templates 
+# $4 - the name of the package to instantiate
+#
+# copies files with suffix ".yaml"
+# evaluates templates for files with suffix ".yaml.jsonnet"
+# lists files created to stderr
+#
 function template_files() {
   local config=$1
-
-  # the absolute path to the template directory
   local absoluteTemplateDir=$2
-
-  # the target namespace for the instantiated templates
   local namespace=$3
-
-  # the name of the package to instantiate
   local pkg=$4
 
   local absoluteTemplatePkgPath=$absoluteTemplateDir/$4
