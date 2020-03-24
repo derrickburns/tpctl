@@ -3,7 +3,7 @@
 # Configure EKS cluster to run Tidepool services
 #
 
-set -e
+set -eo pipefail
 export FLUX_FORWARD_NAMESPACE=flux
 export REVIEWERS="derrickburns pazaan jamesraby todd"
 
