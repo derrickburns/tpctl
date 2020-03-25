@@ -1128,8 +1128,8 @@ function help() {
   echo "envrc                         - create .envrc file for direnv to change kubecontexts and to set REMOTE_REPO"
   echo "fluxkey                       - copy public key from Flux to GitHub config repo"
   echo "repo                          - create config repo on GitHub"
-  echo "secrets                       - generate secrets to config repo"
-  echo "sync                          - cause flux to sync with the config repo."
+  echo "secrets                       - generate new secrets for all tidepool environments"
+  echo "sync                          - cause flux to sync with the config repo"
   echo "values                        - create initial values.yaml file"
   echo 
   echo "----- Query Commands (safe) -----"
