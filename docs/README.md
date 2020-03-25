@@ -33,9 +33,7 @@ brew "fluxctl"
 brew "coreutils"
 brew "python3"
 brew "hub"
-brew "jsonnet"
 brew "kubecfg"
-brew "expect"
 brew "cfssl"
 brew "weaveworks/tap/eksctl"
 ```
@@ -43,6 +41,11 @@ brew "weaveworks/tap/eksctl"
 In addition, you will need to install `python3` with three packages:
 ```bash
 pip3 install --upgrade --user awscli boto3 environs
+```
+
+You will also need:
+```bash
+go get github.com/google/go-jsonnet/cmd/jsonnet
 ```
 
 ## Installation
@@ -273,16 +276,6 @@ tpctl flux
 
 In addition, this command installs the `tiller` server (the counterpart to the `Helm` client) and creates and installs TLS certificates that the Helm client needs to communicate with `tiller` server.
 
-### Install the Gloo API Gateway
-
-The Gloo API Gateway provides the interface between the Tidepool services and end users.  To install the API Gateway:
-
-```bash
-tpctl gloo
-```
-
-N.B. This command must be rerun if you change the DNS names or ingress settings in your `values.yaml` configuration file. 
-
 ## Common Issues
 
 Sometimes, one of the steps will fail. Most of the time, you can simply retry that step.  However, in the case of `tpctl cluster` and  `tpctl mesh`, certain side-effects 
@@ -312,44 +305,18 @@ In addition to the basic commands above, you may:
 
 We do not recommend that you make manual changes to the files in your config repo, *except* the `values.yaml` file. 
   
-However, you may access the GitHub configuration repo using standard Git commands.  In addition, `tpctl` makes it convenient to clone the repo into a directory for you to make changes. 
-
-With this command, `tpctl` opens a shell with a clone of the config repo in the current directory.  You may makes changes to that clone as you see fit.  When you exit the shell, `tpctl` will commit those changes (with your permission) and push them to GitHub.
-
-```bash
-tpctl edit_repo
-```
- 
-### Regenerate Helm Client Certs 
-
-If you are managing multiple Kubernetes clusters with a TLS-enabled `tiller`, you must switch between TLS certificates.  You may use this command to change to or regenerate the TLS certificates in your `~/.helm` directory:
-
-```bash
-tpctl regenerate_cert 
-```
+However, you may access the GitHub configuration repo using standard Git commands.  
 
 ### Edit Your values.yaml File
 
-If you need to modify the configuration parameters in the `values.yaml` file, you may do so with standard Git commands to operate on your Git repo.  `tpctl` makes it even easier by checking out the Git repo on your behalf and opening the `vi` editor:
+If you need to modify the configuration parameters in the `values.yaml` file, you may do so with standard Git commands to operate on your Git repo. 
 
-```bash
-tpctl edit_values
-```
-
-### Copy S3 Assets To A New Bucket
+### Create and Populate S3 Buckets for Tidepool
 
 If you are launching a new cluster, you must provide S3 assets for email verification.  You may copy the standard assets by using this command:
 
 ```bash
-tpctl copy_assets
-```
-
-### Migrate Legacy Secrets
-  
-If you are migrating from one of the Tidepool legacy environments, you may migrate the secrets that are used in one of those environments to AWS Secrets Manager and modify your configuration repo to access those secrets:
-
-```bash
-tpctl migrate_secrets
+tpctl buckets
 ```
 
 ### Generate and Persist Random Secrets
@@ -357,15 +324,7 @@ tpctl migrate_secrets
 If you are creating a new environment, you can generate a new set of secrets and persist those secrets in AWS Secrets Manager and modify your configuration repot to access those secrets:
 
 ```bash
-tpctl randomize_secrets
-```
-
-### Load Plaintext Secrets
-
-If you have secrets to persist and use in your cluster, such as those provided by a third party vendor, you may upload those secrets to AWS Secrets Manager and update your config repo to access those secrets by providing those secrets (as *plaintext* Kubernetes secrets) via the standard input to `tpctl`:
-
-```bash
-tpctl upsert_plaintext_secrets
+tpctl secrets
 ```
 
 ### Add system:master Users 
@@ -373,10 +332,10 @@ tpctl upsert_plaintext_secrets
 If you have additional `system:master` users to add to your cluster, you may add them to your `values.yaml` file and run this command to install them in your cluster:
 
 ```bash
-tpctl install_users
+tpctl _users
 ```
 
-This operation is not idempotent. Any users will be added to the existing set of users.  So, only run this if you are adding new system master users.  
+This operation is idempotent. 
 
 You may inspect the existing set of users with:
 ```
@@ -430,7 +389,7 @@ In order to manipulate your Github config repo, Flux needs to be authorized to d
 Should  you delete and reinstall Flux manually, it will create a new public key that you must provide to your GitHub repo in order to authenticate Flux and authorize it to modify the repo.  You do that with:
 
   ```bash
-  tpctl deploy_key
+  tpctl fluxkey
   ``` 
 
 You may inspect your Github config repo to see that the key was deployed by going to the `Settings` tab of the config repo and looking under `Deploy Keys`. 
@@ -474,30 +433,6 @@ tpctl merge_kubeconfig
 ```
 Then, you may use `kubectx` to select which cluster to modify.
 
-### Open the Gloo Dashboard
-
-We use the Gloo API Gateway.  If you would like to see the gateways, virtual services, and/or routes that are installed, you may use this command to open up a web page to the Gloo dashboard:
-
-```bash
-tpctl gloo_dashboard
-```
-
-### Open the Service Mesh Dashboard
-
-If you have installed a service mesh, you may view a dashboard to monitor traffic in a web page:
-  
-```bash
-tpctl linkerd_dashboard
-```
-
-### Show Recent git diff
-
-If you would like to see the most recent changes to your config repo, you may use standard Git tools, or you may simply run:
-
-```bash
-tpctl diff
-```
-
 ## Inside The values.yaml File 
 
 Your primary configuration file, `values.yaml`, contains all the information needed to create your Kubernetes cluster and its services.  
@@ -509,12 +444,19 @@ The first section of the file contains configuration values that are shared acro
 This section establishes where the GitHub repo is located.  
 ```yaml
 general:
+  email: derrick@tidepool.org
   github:
-    git: git@github.com:tidepool-org/cluster-test1
-    https: https://github.com/tidepool-org/cluster-test1
-  logLevel: debug                   # the default log level for all services
-  email: derrick@tidepool.org       # cluster admin email address
-  kubeconfig: "$HOME/.kube/config"  # place to put KUBECONFIG
+    git: git@github.com:tidepool-org/cluster-dev
+    https: https://github.com/tidepool-org/cluster-dev
+  kubeconfig: $HOME/.kube/config
+  logLevel: debug
+  sops:
+    keys:
+      arn: arn:aws:kms:us-west-2:118346523422:key/02d4583e-a7be-41c0-b5c0-2a9c569f3c87
+      pgp: CDE5317D7CCA7B80294FB32721A60B1450343446
+  sso:
+    allowed_groups:
+      - eng@tidepool.org
 ```
 
 ### AWS Configuration
@@ -536,84 +478,197 @@ aws:
 This sections provides a description of the AWS cluster itself, including its
 name, region, size, networking config, and IAM policies.
 ```yaml
-
 cluster:
+  cloudWatch:
+    clusterLogging:
+      enableTypes:
+        - authenticator
+        - api
+        - controllerManager
+        - scheduler
+  managedNodeGroups:
+    - desiredCapacity: 3
+      instanceType: c5.xlarge
+      labels:
+        role: worker
+      maxSize: 7
+      minSize: 3
+      name: ngm
+      tags:
+        nodegroup-role: worker
+  nodeGroups:
+    - desiredCapacity: 3
+      instanceType: c5.xlarge
+      labels:
+        role: worker
+      maxSize: 7
+      minSize: 3
+      name: ng
+      tags:
+        nodegroup-role: worker
   metadata:
-    name: test1                              # name of the cluster
-    region: us-west-2                        # AWS region to host the cluster
-  cloudWatch:                                # AWS cloudwatch configuration
-    clusterLogging:                          
-      enableTypes:                           # Types of log messages to persist to CloudWatch
-      - authenticator
-      - api
-      - controllerManager
-      - scheduler
-  vpc:                                       # Amazon VPC configuration
-    cidr: "10.47.0.0/16"                     # CIDR of AWS VPC
-  nodeGroups: 
-  - instanceType: "m5.large"                 # AWS instance type for workers 
-    desiredCapacity: 4                       # initial capacity of auto scaling group of workers
-    minSize: 1                               # minimum size of auto scaling group of workers
-    maxSize: 10                              # maximum size of auto scaling group of workers
-    name: ng
-    iam:                                     # AWS IAM policies to attach to the nodes in the cluster
-      attachPolicyARNs:
-      - arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy
-      - arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy
-      - arn:aws:iam::aws:policy/ElasticLoadBalancingFullAccess
-      withAddonPolicies:
-        autoScaler: true
-        certManager: true
-        externalDNS: true
+    rootDomain: tidepool.org
+    domain: dev.tidepool.org
+    name: qa1
+    region: us-west-2
+    version: auto
+  vpc:
+    cidr: 10.47.0.0/16
+
 ```
 
 ### Namespace Configuration
 
 Kubernetes services run in namespaces. Within each namespace, you may configure a set of packages to run:
 ```yaml
-
 namespaces:
-  amazon-cloudwatch:                         
-    amazon-cloudwatch:                         # AWS CloudWatch logging
+  amazon-cloudwatch:
+    cloudwatch-agent:
       enabled: true
+    fluentd:
+      enabled: true
+  cadvisor:
+    cadvisor:
+      enabled: true
+  cert-manager:
+    config:
+      create: false
+    certmanager:
+      enabled: true
+      global: true
+  elastic-system:
+    elastic-operator:
+      enabled: true
+      storage: 20Gi
   external-dns:
-    external-dns:                              # External DNS maintains DNS aliases to Amazon ELBs
+    external-dns:
       enabled: true
+  flux:
+    flux:
+      enabled: true
+    fluxcloud:
+      enabled: true
+      username: derrickburns
+    fluxrecv:
+      enabled: true
+      export: true
+      sidecar: false
   gloo-system:
-    gloo:                                      # Gloo provides the API Gateway 
+    config:
+      goldilocks: true
+      meshed: true
+    gloo:
       enabled: true
-  prometheus-operator:
-    prometheus-operator:                       # Prometheus Operator creates Prometheus instances
+      global: true
+      proxies:
+        gatewayProxy:
+          replicas: 2
+        internalGatewayProxy:
+          replicas: 2
+        pomeriumGatewayProxy:
+          replicas: 1
+      version: 1.3.15
+    glooe-monitoring:
       enabled: true
-  cert-manager:                               
-    certmanager:                               # Certmanager issues TLS certificates
+      sso:
+        port: 80
+        serviceName: glooe-grafana
+    glooe-prometheus-server:
+      enabled: false
+      sso:
+        externalName: glooe-metrics
+        port: 80
+      storage: 64Gi
+  goldilocks:
+    goldilocks:
+      enabled: true
+      sso:
+        externalName: goldilocks
+        serviceName: goldilocks-dashboard
+        port: 80
+  jaeger-operator:
+    jaeger-operator:
       enabled: true
   kube-system:
-    cluster-autoscaler:                        # Cluster autoscaler scales the nodes in the cluster as needed
+    config:
+      logging: true
+      labels:
+        config.linkerd.io/admission-webhooks: disabled
+    cluster-autoscaler:
+      enabled: false
+    metrics-server:
       enabled: true
-    metrics-server:                            # Metrics server collects Node level metrics and sends to Prometheus
+  kubernetes-dashboard:
+    kubernetes-dashboard:
+      enabled: true
+  linkerd:
+    config:
+      labels:
+        config.linkerd.io/admission-webhooks: disabled
+        linkerd.io/is-control-plane: "true"
+    linkerd:
+      enabled: true
+      global: true
+    linkerd-web:
+      enabled: true
+      sso:
+        port: 8084
+  monitoring:
+    config:
+      goldilocks: true
+    grafana:
+      enabled: true
+      sso:
+        port: 80
+        serviceName: monitoring-prometheus-operator-grafana
+    prometheus:
+      enabled: true
+      global: true
+      sso:
+        externalName: metrics
+    prometheus-operator:
+      alertmanager:
+        enabled: false
+      enabled: true
+      global: true
+      grafana:
+        enabled: true
+    thanos:
+      bucket: tidepool-thanos
+      enabled: false
+  none:
+    config:
+      create: false
+    common:
+      enabled: true
+  pomerium:
+    config:
+      meshed: true
+    pomerium:
       enabled: true
   reloader:
-    reloader:                                  # Reloader restarts services on secrets/configmap changes
+    reloader:
       enabled: true
-  datadog:
-    datadog:                                   # Datadog send telemetry to the hosted Datadog service
-      enabled: false
-  flux:
-    flux:                                      # Flux provides GitOps
+  sumologic:
+    sumologic:
       enabled: true
-    fluxcloud:                                 # Fluxcloud sends GitOps notifications to Slack
-      enabled: false
-      username: "derrickburns"                 
-      secret: slack                            # Name of secret in which Slack webhook URL is provided
-  sumologic:                                 
-    sumologic:                                 # Sumologic collects metrics and logs and sents to the hosted service
-      enabled: false
-  monitoring:
-    thanos:                                    # Thanos aggregates telemetry from all Tidepool clusters
+  tracing:
+    jaeger:
       enabled: true
-      bucket: tidepool-thanos                  # Writable S3 bucket in which to aggregate multi-cluster telemetry data
-      secret: thanos-objstore-config           # Name of Kubernetes secret in which Thanos config is stored.
+      sso:
+        port: 16686
+        serviceName: jaeger-query
+        externalName: tracing
+    oc-collector:
+      enabled: true
+    elasticsearch:
+      storage: 15Gi
+      enabled: true
+  velero:
+    config:
+      create: false
+    velero:
+      enabled: false
 ```
 
 ### Tidepool Service Configuration
@@ -621,54 +676,24 @@ You also provide the configuration of your Tidepool environments in the `namespa
 
 ```yaml
 namespaces:
-  qa2:
-    mongodb:
-      enabled: true                          # Whether to use an embedded mongodb 
+  dev1:
+    config:
+      logging: true
+      meshed: true
     tidepool:
-      source: stg                            # Where to get initial secrets from
+      buckets:
+        asset: tidepool-dev1-asset
+        data: tidepool-dev1-data
+      chart:
+        version: 0.4.0
+      dnsNames:
+        - dev1.dev.tidepool.org
       enabled: true
-      hpa:                                   # Whether to implement horizontal pod scalers for each service
-        enabled: true
-      nosqlclient:                           # Whether to deploy a nosqlclient to query Mongo data
-        enabled: true
-      mongodb:                  
-        enabled: true
-      gitops:                                
-        branch: develop                      # Which branch to use for automatic image updates
-      buckets: {}                            # Which S3 buckets to store/retrieve data to/from
-        #data: tidepool-test-qa2-data        # Name of the writable S3 bucket to store document data to
-        #asset: tidepool-test-qa2-asset      # Name of the readable S3 bucker form which to get email assets
-      certificate:
-        secret: tls                          # Name of the K8s secret to store the TLS certificate for the hosts served
-        issuer: letsencrypt-staging          # Name of the Certificate Issuer to use
       gateway:
-        default:                             # Default protocol to use for communication for email verification
-          protocol: http                
-        http:
-          enabled: true                      # Whether to offer HTTP access
-          dnsNames:                          # DNS Names of the HTTP hosts to serve
-          - localhost                       
-        https:
-          enabled: false                     # Whether to offer HTTPS access
-          dnsNames:                          # DNS Names of the HTTPS hosts to serve
-          - qa2.tidepool.org
-```
-### Globals
-Finally, if you have services that define CRDs or other global resources that may be usedby other services, then you must provide an indication of their use in the `pkgs` section:
-
-###
-```yaml
-pkgs:
-  certmanager:
-    enabled: true
-  gloo:
-    enabled: true
-  linkerd:
-    annotations: {}
-    enabled: true
-  prometheus:
-    enabled: false
-  tracing:
-    enabled: false
-    namespace: tracing
+        domain: dev.tidepool.org
+        host: dev1.dev.tidepool.org
+      gitops:
+        default: glob:master-*
+      hpa:
+        enabled: false
 ```
