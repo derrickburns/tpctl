@@ -1144,7 +1144,7 @@ function help() {
   echo "delete_cluster                - (initiate) deletion of the AWS EKS cluster"
   echo "flux                          - install flux GitOps controller and deploy flux public key into GitHub"
   echo "mesh                          - install service mesh"
-  echo "service_account $namespace $name - recreate a single service account in current context"
+  echo "service_account \$namespace \$name - recreate a single service account in current context"
   echo "users                         - add system:master USERS to K8s cluster"
   echo "utils                         - update coredns, aws-node, and kube-proxy services in current context"
   echo "vpa                           - install vertical pod autoscaler"
