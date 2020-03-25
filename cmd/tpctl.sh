@@ -661,7 +661,7 @@ function create_namespace() {
    local config="$2"
    local create=$(echo "$config" | yq r - "namespaces.${ns}.config.create")
    create=${create:-true}
-   if [ $create == "true" ]
+   if [ "$create" == "true" ]
    then
      local out=pkgs/${ns}/namespace.yaml
      mkdir -p pkgs/${ns}
