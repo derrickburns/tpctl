@@ -1153,6 +1153,7 @@ function help() {
   echo "buckets                       - create S3 buckets if needed and copy assets if don't exist"
   echo "kmskey                        - create a new Amazon KMS key for the cluster"
   echo "merge_kubeconfig              - copy the KUBECONFIG into the local $KUBECONFIG file"
+  echo "remove_mesh                   - uninstall the service mesh"
   echo "update_kubeconfig             - modify context and user for kubeconfig"
 }
 
@@ -1258,12 +1259,6 @@ case $cmd in
     clone_remote
     confirm_matching_cluster
     delete_peering_connections
-    ;;
-  delete_secret)
-    check_remote_repo
-    setup_tmpdir
-    clone_remote
-    delete_secret "$@"
     ;;
   envoy)
     envoy
