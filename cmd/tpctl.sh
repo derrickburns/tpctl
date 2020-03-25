@@ -3,7 +3,7 @@
 # Configure EKS cluster to run Tidepool services
 #
 
-set -eo pipefail
+set -e
 export FLUX_FORWARD_NAMESPACE=flux
 export REVIEWERS="derrickburns pazaan jamesraby todd"
 
@@ -1029,7 +1029,7 @@ function set_chart_dir() {
 function get_shadow_sender() {
   local env=$1
   local val=$(yq r values.yaml -j namespaces.${env}.tidepool.shadow.enabled | sed -e 's/"//g' -e "s/'//g")
-  if [ $? -ne 0 -o "$val" == "null" -o "$val" == "" ]; then
+  if [ $? -ne 0 -o "$val" == "null" -o "$val" == "" -o "$val" == "false" ]; then
     echo ""
   fi
   local val=$(yq r values.yaml -j namespaces.${env}.tidepool.shadow.sender | sed -e 's/"//g' -e "s/'//g")
@@ -1044,7 +1044,7 @@ function forward_shadow_secrets() {
   local env
   for env in $(get_environments); do
     local sender=$(get_shadow_sender $env)
-    if [ -n $sender ]; then
+    if [[ -n $sender ]]; then
       for file in userdata; do
 	if [ ! -f secrets/${env}/${file}.yaml ]; then
 	  sops -d secrets/${sender}/${file}.yaml | yq w - metadata.namespace $env >secrets/${env}/${file}.yaml
