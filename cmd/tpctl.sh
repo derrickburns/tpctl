@@ -5,7 +5,7 @@
 
 set -e
 export FLUX_FORWARD_NAMESPACE=flux
-export REVIEWERS="derrickburns pazaan jamesraby todd"
+export REVIEWERS="derrickburns pazaan jamesraby todd haroldbernard"
 
 function envoy {
   glooctl proxy served-config
@@ -28,7 +28,7 @@ function update_utils {
   complete "updated kube-proxy"
 }
 
-function create_key {
+function create_kmskey {
   start "creating kms key"
   local cluster=$(get_cluster)
   key=$(aws kms create-key --tags TagKey=cluster,TagValue=$cluster --description "Key for cluster $cluster")
@@ -102,7 +102,7 @@ function make_envrc() {
     local context=$(yq r kubeconfig.yaml current-context)
     echo "kubectx $context" >.envrc
   fi
-  echo "export REMOTE_REPO=cluster-$cluster" >>.envrc
+  echo "export REMOTE_REPO=cluster-$cluster" >>.envrc   # XXX fix name
   echo "export FLUX_FORWARD_NAMESPACE=flux" >>.envrc
   add_file ".envrc"
   complete "created .envrc"
@@ -458,14 +458,6 @@ function update_kubeconfig() {
   complete "updated kubeconfig"
 }
 
-function add_service_accounts() {
-  local cluster=$(get_cluster)
-  start "add new service accounts"
-  eksctl create iamserviceaccount -f config.yaml # --approve
-  expect_success "eksctl create service account failed."
-  complete "added new service accounts"
-}
-
 function recreate_service_account() {
   local cluster=$(get_cluster)
   local namespace=$1
@@ -661,6 +653,7 @@ function make_policy_manifests() {
   done
 }
 
+# create a namespace given a configuration
 function create_namespace() {
    local template=$TEMPLATE_DIR/lib/namespace.jsonnet
    local ns=$1
@@ -790,13 +783,13 @@ function bootstrap_flux() {
   start "bootstrapping flux"
   establish_ssh
   install_helmrelease pkgs/flux/flux/flux-helmrelease.yaml
-  install_key
+  install_fluxkey
   install_helmrelease pkgs/flux/flux/helm-operator-helmrelease.yaml
   complete "bootstrapped flux"
 }
 
 # save deploy key to config repo
-function install_key() {
+function install_fluxkey() {
   start "authorizing access to ${GIT_REMOTE_REPO}"
 
   expect_github_token
@@ -1001,16 +994,6 @@ function diff_config() {
   git diff HEAD~1
 }
 
-# edit values file
-function edit_values() {
-  if [ -f values.yaml ]; then
-    info "editing values file for repo $GIT_REMOTE_REPO"
-    ${EDITOR:-vi} values.yaml
-  else
-    panic "values.yaml does not exist."
-  fi
-}
-
 # clone development repo, exports CHART_DIR
 function set_chart_dir() {
   if [[ ! -d $CHART_DIR ]]; then
@@ -1129,11 +1112,6 @@ function create_repo() {
   complete "private repo created"
 }
 
-function gloo_dashboard() {
-  mykubectl port-forward -n gloo-system deployment/api-server 8081:8080 &
-  open -a "Google Chrome" http://localhost:8081
-}
-
 # await deletion of a CloudFormation template that represents a cluster before returning
 function await_deletion() {
   local cluster=$(get_cluster)
@@ -1145,53 +1123,37 @@ function await_deletion() {
 
 # show help
 function help() {
-  echo "$0 [-h|--help] (values|edit_values|config|edit_repo|cluster|flux|make_buckets|mesh|generate_secrets|install_users|deploy_key|delete_cluster|await_deletion|remove_mesh|merge_kubeconfig|gloo_dashboard|diff|linkerd_check|sync|peering|vpc|update_kubeconfig|service_accounts|recreate_service_account|vpa|create_key|update_utils)*"
-  echo
-  echo
-  echo "So you want to built a Kubernetes cluster that runs Tidepool. Great!"
-  echo "First, create an (empty) configuration repo on GitHub with $0 repo."
-  echo "Second, create/edit a configuration file with $0 values."
-  echo "Third, gerenate the rest of the configuration with $0 config."
-  echo "Fourth, generate the actual AWS EKS cluster with $0 cluster."
-  echo "Fifth, install a service mesh (to encrypt inter-service traffic for HIPPA compliance with $0 mesh"
-  echo "Sixth, install the GitOps controller with $0 flux."
-  echo "That is it!"
-  echo
-  echo "----- Basic Commands -----"
-  echo "repo    - create config repo on GitHub"
-  echo "values  - create initial values.yaml file"
-  echo "config  - create K8s and eksctl K8s manifest files"
-  echo "cluster - create AWS EKS cluster, add system:master USERS"
-  echo "mesh    - install service mesh"
-  echo "flux    - install flux GitOps controller, Tiller server, client certs for Helm to access Tiller, and deploy key into GitHub"
-  echo
-  echo "If you run into trouble or have specific needs, check out these commands:"
-  echo
-  echo "----- Advanced Commands -----"
-  echo "vpc - identify the VPC"
-  echo "sync - Cause flux to sync with the config repo."
-  echo "peering - List peering relationships"
-  echo "edit_repo - open shell with config repo in current directory.  Exit shell to commit changes."
-  echo "edit_values - open editor to edit values.yaml file"
-  echo "make_buckets - create S3 buckets if needed and copy assets if don't exist"
-  echo "generate_secrets - generate secrets used within tidepool environments persist into AWS secrets manager"
-  echo "install_users - add system:master USERS to K8s cluster"
-  echo "deploy_key - copy deploy key from Flux to GitHub config repo"
-  echo "delete_cluster - initiate deletion of the AWS EKS cluster"
-  echo "await_deletion - await completion of deletion of gthe AWS EKS cluster"
-  echo "merge_kubeconfig - copy the KUBECONFIG into the local $KUBECONFIG file"
-  echo "gloo_dashboard - open the Gloo dashboard"
-  echo "linkerd_check - check Linkerd status"
-  echo "diff - show recent git diff"
-  echo "envrc - create .envrc file for direnv to change kubecontexts and to set REMOTE_REPO"
-  echo "update_kubeconfig - modify context and user for kubeconfig"
-  echo "update_utils - update coredns, aws-node, and kube-proxy"
-  echo "envoy - show envoy config"
-  echo "flux - bootstrap flux"
-  echo "service_accounts - create service accounts"
-  echo "recreate_service_account $namespace $name - recreate a single service account"
-  echo "create_key - create a new Amazon KMS key for the cluster"
-  echo "vpa - install vpa"
+  echo "----- Repo Commands (safe) -----"
+  echo "config                        - create K8s and eksctl K8s manifest files"
+  echo "envrc                         - create .envrc file for direnv to change kubecontexts and to set REMOTE_REPO"
+  echo "fluxkey                       - copy public key from Flux to GitHub config repo"
+  echo "repo                          - create config repo on GitHub"
+  echo "secrets                       - generate secrets to config repo"
+  echo "sync                          - cause flux to sync with the config repo."
+  echo "values                        - create initial values.yaml file"
+  echo 
+  echo "----- Query Commands (safe) -----"
+  echo "envoy                         - show envoy config"
+  echo "linkerd_check                 - check Linkerd status"
+  echo "peering                       - list peering relationships"
+  echo "vpc                           - identify the VPC"
+  echo 
+  echo "----- Cluster Commands -----"
+  echo "await_deletion                - await completion of deletion of the AWS EKS cluster"
+  echo "cluster                       - create AWS EKS cluster, add system:master USERS"
+  echo "delete_cluster                - (initiate) deletion of the AWS EKS cluster"
+  echo "flux                          - install flux GitOps controller and deploy flux public key into GitHub"
+  echo "mesh                          - install service mesh"
+  echo "service_account $namespace $name - recreate a single service account in current context"
+  echo "users                         - add system:master USERS to K8s cluster"
+  echo "utils                         - update coredns, aws-node, and kube-proxy services in current context"
+  echo "vpa                           - install vertical pod autoscaler"
+  echo 
+  echo "----- Other Commands -----"
+  echo "buckets                       - create S3 buckets if needed and copy assets if don't exist"
+  echo "kmskey                        - create a new Amazon KMS key for the cluster"
+  echo "merge_kubeconfig              - copy the KUBECONFIG into the local $KUBECONFIG file"
+  echo "update_kubeconfig             - modify context and user for kubeconfig"
 }
 
 APPROVE=false
@@ -1249,34 +1211,17 @@ then
   shift
 fi
 case $cmd in
-  delete_secret)
+  await_deletion)
     check_remote_repo
     setup_tmpdir
     clone_remote
-    delete_secret "$@"
-    ;;
-  repo)
-    setup_tmpdir
-    create_repo
-    ;;
-  values)
-    check_remote_repo
-    setup_tmpdir
-    clone_remote
-    expect_values_not_exist
-    set_template_dir
-    make_values
-    save_changes "Added values"
-    ;;
-  config)
-    check_remote_repo
-    expect_github_token
-    setup_tmpdir
-    clone_remote
-    set_template_dir
     confirm_matching_cluster
-    make_config
-    save_changes "Added config packages"
+    await_deletion
+    info "cluster deleted"
+    ;;
+  buckets)
+    check_remote_repo
+    make_buckets
     ;;
   cluster)
     check_remote_repo
@@ -1289,47 +1234,15 @@ case $cmd in
     make_users
     save_changes "Added cluster and users"
     ;;
-  mesh)
+  config)
     check_remote_repo
-    setup_tmpdir
-    clone_remote
-    confirm_matching_cluster
-    make_mesh
-    save_changes "Added linkerd mesh"
-    ;;
-  edit_values)
-    check_remote_repo
+    expect_github_token
     setup_tmpdir
     clone_remote
     set_template_dir
-    edit_values
-    make_config
-    save_changes "Edited values. Updated config."
-    ;;
-  make_buckets)
-    check_remote_repo
-    make_buckets
-    ;;
-  generate_secrets)
-    check_remote_repo
-    setup_tmpdir
-    clone_remote
-    generate_secrets
-    save_changes "Added secrets"
-    ;;
-  install_users)
-    check_remote_repo
-    setup_tmpdir
-    clone_remote
     confirm_matching_cluster
-    make_users
-    ;;
-  deploy_key)
-    check_remote_repo
-    setup_tmpdir
-    clone_remote
-    expect_github_token
-    install_key
+    make_config
+    save_changes "Added config packages"
     ;;
   delete_cluster)
     check_remote_repo
@@ -1339,60 +1252,6 @@ case $cmd in
     confirm_matching_cluster
     delete_cluster
     ;;
-  await_deletion)
-    check_remote_repo
-    setup_tmpdir
-    clone_remote
-    confirm_matching_cluster
-    await_deletion
-    info "cluster deleted"
-    ;;
-  remove_mesh)
-    check_remote_repo
-    setup_tmpdir
-    clone_remote
-    confirm_matching_cluster
-    remove_mesh
-    save_changes "Removed mesh."
-    ;;
-  edit_repo)
-    check_remote_repo
-    setup_tmpdir
-    clone_remote
-    edit_config
-    save_changes "Manual changes."
-    ;;
-  merge_kubeconfig)
-    check_remote_repo
-    setup_tmpdir
-    clone_remote
-    merge_kubeconfig
-    ;;
-  gloo_dashboard)
-    check_remote_repo
-    setup_tmpdir
-    clone_remote
-    confirm_matching_cluster
-    gloo_dashboard
-    ;;
-  diff)
-    check_remote_repo
-    setup_tmpdir
-    clone_remote
-    diff_config
-    ;;
-  linkerd_check)
-    linkerd check --proxy
-    ;;
-  sync)
-    fluxctl sync
-    ;;
-  peering)
-    check_remote_repo
-    setup_tmpdir
-    clone_remote
-    find_peering_connections
-    ;;
   delete_peering)
     check_remote_repo
     setup_tmpdir
@@ -1400,25 +1259,20 @@ case $cmd in
     confirm_matching_cluster
     delete_peering_connections
     ;;
-  update_kubeconfig)
+  delete_secret)
     check_remote_repo
     setup_tmpdir
-    set_template_dir
     clone_remote
-    update_kubeconfig
-    save_changes "Updated kubeconfig"
+    delete_secret "$@"
+    ;;
+  envoy)
+    envoy
     ;;
   envrc)
     check_remote_repo
     setup_tmpdir
     clone_remote
     make_envrc
-    ;;
-  vpc)
-    check_remote_repo
-    setup_tmpdir
-    clone_remote
-    get_vpc
     ;;
   flux)
     check_remote_repo
@@ -1431,37 +1285,111 @@ case $cmd in
     bootstrap_flux
     confirm_matching_cluster
     ;;
-  service_accounts)
+  fluxkey)
     check_remote_repo
+    setup_tmpdir
     clone_remote
-    add_service_accounts
+    expect_github_token
+    install_fluxkey
     ;;
-  recreate_service_account)
+  kmskey)
+    check_remote_repo
+    setup_tmpdir
+    clone_remote
+    create_kmskey
+    save_changes "Added kms key"
+    ;;
+  linkerd_check)
+    linkerd check --proxy
+    ;;
+  merge_kubeconfig)
+    check_remote_repo
+    setup_tmpdir
+    clone_remote
+    merge_kubeconfig
+    ;;
+  mesh)
+    check_remote_repo
+    setup_tmpdir
+    clone_remote
+    confirm_matching_cluster
+    make_mesh
+    save_changes "Added linkerd mesh"
+    ;;
+  peering)
+    check_remote_repo
+    setup_tmpdir
+    clone_remote
+    find_peering_connections
+    ;;
+  remove_mesh)
+    check_remote_repo
+    setup_tmpdir
+    clone_remote
+    confirm_matching_cluster
+    remove_mesh
+    save_changes "Removed mesh."
+    ;;
+  repo)
+    setup_tmpdir
+    create_repo
+    ;;
+  secrets)
+    check_remote_repo
+    setup_tmpdir
+    clone_remote
+    generate_secrets
+    save_changes "Added secrets"
+    ;;
+  service_account)
     check_remote_repo
     clone_remote
     recreate_service_account $1 $2
     ;;
-  envoy)
-    envoy
+  sync)
+    fluxctl sync
+    ;;
+  update_kubeconfig)
+    check_remote_repo
+    setup_tmpdir
+    set_template_dir
+    clone_remote
+    update_kubeconfig
+    save_changes "Updated kubeconfig"
+    ;;
+  users)
+    check_remote_repo
+    setup_tmpdir
+    clone_remote
+    confirm_matching_cluster
+    make_users
+    ;;
+  utils)
+    check_remote_repo
+    clone_remote
+    update_utils
+    ;;
+  values)
+    check_remote_repo
+    setup_tmpdir
+    clone_remote
+    expect_values_not_exist
+    set_template_dir
+    make_values
+    save_changes "Added values"
     ;;
   vpa)
     check_remote_repo
     setup_tmpdir
     vpa
     ;;
-  create_key)
+  vpc)
     check_remote_repo
     setup_tmpdir
     clone_remote
-    create_key
-    save_changes "Added kms key"
-    ;;
-  update_utils)
-    check_remote_repo
-    clone_remote
-    update_utils
+    get_vpc
     ;;
   *)
-    panic "unknown command: $param"
+    panic "unknown command: $*"
     ;;
 esac
