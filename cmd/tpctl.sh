@@ -1192,7 +1192,6 @@ function help() {
   echo "recreate_service_account $namespace $name - recreate a single service account"
   echo "create_key - create a new Amazon KMS key for the cluster"
   echo "vpa - install vpa"
-  echo "cadvisor - install cadvisor"
 }
 
 APPROVE=false
@@ -1444,11 +1443,6 @@ case $cmd in
     ;;
   envoy)
     envoy
-    ;;
-  cadvisor)
-    check_remote_repo
-    setup_tmpdir
-    cadvisor
     ;;
   vpa)
     check_remote_repo
