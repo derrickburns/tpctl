@@ -37,7 +37,6 @@ RUN curl -sL -o /usr/local/bin/sops  "https://github.com/mozilla/sops/releases/d
 RUN ln -s /usr/bin/python3 /usr/local/bin/python3 && chmod +x /usr/local/bin/*
 COPY helmit /usr/local/bin/helmit
 COPY select_kind /usr/local/bin/select_kind
-COPY add_ns /usr/local/bin/add_ns
 COPY separate_files /usr/local/bin/separate_files
 COPY separate_by_namespace /usr/local/bin/separate_by_namespace
 COPY tpctl.sh /root/tpctl
