@@ -10,7 +10,7 @@ local service(me) = {
   spec: {
     type: 'ClusterIP',
     selector: {
-      name: me.pkg,
+      app: me.pkg,
     },
   },
 };
