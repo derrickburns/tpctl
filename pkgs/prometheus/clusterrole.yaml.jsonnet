@@ -1,4 +1,4 @@
-local lib = '../../lib/lib.jsonnet';
+local lib = import '../../lib/lib.jsonnet';
 
 local clusterrole(me) = {
   apiVersion: 'rbac.authorization.k8s.io/v1',
