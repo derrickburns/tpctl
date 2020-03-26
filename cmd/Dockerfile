@@ -8,13 +8,12 @@ RUN apt update -y && apt upgrade -y && \
     pip3 install --upgrade --user awscli boto3 environs
 RUN curl -sL -o /usr/local/bin/jq https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64
 RUN locale-gen en_US.UTF-8
-#RUN curl -sL -o /usr/local/bin/jsonnet  https://github.com/databricks/sjsonnet/releases/download/0.2.3/sjsonnet.jar
 RUN curl -sL "https://dl.google.com/go/go1.14.linux-amd64.tar.gz" | tar xz -C /tmp
 ENV GOPATH /root/workdir/go
 RUN /tmp/go/bin/go get github.com/google/go-jsonnet/cmd/jsonnet
 RUN mv /root/workdir/go/bin/jsonnet /usr/local/bin/jsonnet
-RUN curl -sL "https://get.helm.sh/helm-v3.0.2-linux-amd64.tar.gz" | tar xz -C /tmp && mv /tmp/linux-amd64/helm /usr/local/bin
-RUN curl -sL "https://github.com/weaveworks/eksctl/releases/download/latest_release/eksctl_Linux_amd64.tar.gz" | tar xz -C /tmp && \
+RUN curl -sL "https://get.helm.sh/helm-v3.1.2-linux-amd64.tar.gz" | tar xz -C /tmp && mv /tmp/linux-amd64/helm /usr/local/bin
+RUN curl -sL "https://github.com/weaveworks/eksctl/releases/download/0.15.0/eksctl_Linux_amd64.tar.gz" | tar xz -C /tmp && \
     mv /tmp/eksctl /usr/local/bin
 RUN curl -sL -o /usr/local/bin/kubectl https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl 
 RUN git clone https://github.com/ahmetb/kubectx /opt/kubectx && \
@@ -29,7 +28,7 @@ RUN curl -sL -o /usr/local/bin/aws-iam-authenticator https://amazon-eks.s3-us-we
 RUN curl -sL -o /usr/local/bin/fluxctl https://github.com/fluxcd/flux/releases/download/1.18.0/fluxctl_linux_amd64
 RUN mv ~/.local/bin/* /usr/local/bin
 RUN curl -sL -o /usr/local/bin/linkerd https://github.com/linkerd/linkerd2/releases/download/stable-2.7.0/linkerd2-cli-stable-2.7.0-linux 
-RUN curl -sL -o /usr/local/bin/glooctl https://github.com/solo-io/gloo/releases/download/v1.3.3/glooctl-linux-amd64
+RUN curl -sL -o /usr/local/bin/glooctl https://github.com/solo-io/gloo/releases/download/v1.3.15/glooctl-linux-amd64
 RUN curl -sL /usr/local/bin/hub https://github.com/github/hub/releases/download/v2.13.0/hub-linux-amd64-2.13.0.tgz | tar xz -C /tmp && \
     mv /tmp/hub-linux-amd64-2.13.0/bin/hub /usr/local/bin
 RUN curl -sL "https://github.com/smallstep/cli/releases/download/v0.14.0-rc.3/step_0.14.0-rc.3_linux_amd64.tar.gz" | tar -xz -C /tmp && mv /tmp/step*/bin/step /usr/local/bin
