@@ -3,7 +3,7 @@ local gloo = import '../../lib/gloo.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 local tracing = import '../../lib/tracing.jsonnet';
-local linkerd = import '../linkerd/lib.jsonnet';
+local linkerd = import '../../lib/linkerd.jsonnet';
 local pom = import '../pomerium/lib.jsonnet';
 
 local baseGatewayProxy(config, me, name) = {

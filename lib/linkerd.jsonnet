@@ -1,6 +1,6 @@
-local lib = import '../../lib/lib.jsonnet';
-local global = import '../../lib/global.jsonnet';
-local tracing = import '../../lib/tracing.jsonnet';
+local lib = import 'lib.jsonnet';
+local global = import 'global.jsonnet';
+local tracing = import 'tracing.jsonnet';
 
 {
   annotations(config)::

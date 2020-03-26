@@ -1,7 +1,7 @@
 local expand = import '../../lib/expand.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 local global = import '../../lib/global.jsonnet';
-
+local linkerd = import '../../lib/linkerd.jsonnet';
 local mylib = import 'lib.jsonnet';
 
 local dataBucket(config, namespace) = 'tidepool-%s-%s-data' % [config.cluster.metadata.name, namespace];
@@ -159,6 +159,7 @@ local helmrelease(config, prev, namespace) = {
     hpa: lib.getElse(env, 'hpa', { enabled: false }),
     deployment+: {
       replicas: lib.getElse(env, 'deployment.replicas', 1),
+      annotations: linkerd.annotations(config),
     },
   },
 
