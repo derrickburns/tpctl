@@ -1,4 +1,4 @@
-local linkerd = import '../pkgs/linkerd/lib.jsonnet';
+local linkerd = import 'linkerd.jsonnet';
 local lib = import 'lib.jsonnet';
 
 local Namespace(config, name) = (
