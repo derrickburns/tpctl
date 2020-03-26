@@ -1,6 +1,7 @@
 local iam = import '../../lib/k8s.jsonnet';
+local lib = import '../../lib/lib.jsonnet';
 
-local policy(config, namespace) = iam.metadata('fluentd', namespace) + {
+local policy(config, me) = iam.metadata(me.pkg, me.namespace) + {
   attachPolicy: {
     Statement: {
       Effect: 'Allow',
@@ -17,4 +18,4 @@ local policy(config, namespace) = iam.metadata('fluentd', namespace) + {
   },
 };
 
-function(config, namespace, pkg) policy(config, namespace)
+function(config, namespace, pkg) policy(config, lib.package(config, namespace, pkg))

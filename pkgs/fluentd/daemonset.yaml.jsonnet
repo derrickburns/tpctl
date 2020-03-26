@@ -1,19 +1,19 @@
 local lib = import '../../lib/lib.jsonnet';
 
-local daemonset(config, namespace) = {
+local daemonset(config, me) = {
   apiVersion: 'apps/v1',
   kind: 'DaemonSet',
   metadata: {
     labels: {
-      'k8s-app': 'fluentd-cloudwatch',
+      'k8s-app': me.pkg,
     },
-    name: 'fluentd-cloudwatch',
-    namespace: namespace,
+    name: me.pkg,
+    namespace: me.namespace,
   },
   spec: {
     selector: {
       matchLabels: {
-        'k8s-app': 'fluentd-cloudwatch',
+        'k8s-app': me.pkg,
       },
     },
     template: {
@@ -22,7 +22,7 @@ local daemonset(config, namespace) = {
           configHash: '8915de4cf9c3551a8dc74c0137a3e83569d28c71044b0359c2578d2e0461825',
         },
         labels: {
-          'k8s-app': 'fluentd-cloudwatch',
+          'k8s-app': me.pkg,
         },
       },
       spec: {
@@ -117,7 +117,7 @@ local daemonset(config, namespace) = {
         securityContext: {
           fsGroup: 65534,
         },
-        serviceAccountName: 'fluentd',
+        serviceAccountName: me.pkg,
         terminationGracePeriodSeconds: 30,
         volumes: [
           {
@@ -160,4 +160,4 @@ local daemonset(config, namespace) = {
   },
 };
 
-function(config, prev, namespace, pkg) daemonset(config, namespace)
+function(config, prev, namespace, pkg) daemonset(config, lib.package(config, namespace, pkg))
