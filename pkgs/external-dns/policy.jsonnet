@@ -1,6 +1,7 @@
 local iam = import '../../lib/k8s.jsonnet';
+local lib = import '../../lib/lib.jsonnet';
 
-local policy(namespace) = iam.metadata('external-dns', namespace) + {
+local policy(me) = iam.metadata(me.pkg, me.namespace) + {
   attachPolicy: {
     Statement: [
       {
@@ -25,4 +26,4 @@ local policy(namespace) = iam.metadata('external-dns', namespace) + {
   },
 };
 
-function(config, namespace, pkg) policy(namespace)
+function(config, namespace, pkg) policy(lib.package(config, namespace, pkg))

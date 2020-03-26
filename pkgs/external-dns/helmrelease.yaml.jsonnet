@@ -2,7 +2,7 @@ local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 local global = import '../../lib/global.jsonnet';
 
-local helmrelease(config, namespace) = k8s.helmrelease('external-dns', namespace, '2.20.6', 'https://raw.githubusercontent.com/tidepool-org/tidepool-helm/master') {
+local helmrelease(config, me) = k8s.helmrelease('external-dns', me.namespace, '2.20.6', 'https://raw.githubusercontent.com/tidepool-org/tidepool-helm/master') {
   spec+: {
     values: {
       aws: {
@@ -19,7 +19,7 @@ local helmrelease(config, namespace) = k8s.helmrelease('external-dns', namespace
       provider: 'aws',
       rbac: {
         create: true,
-        serviceAccountName: 'external-dns',
+        serviceAccountName: me.pkg,
         serviceAccount: {
           create: false
         },
@@ -32,4 +32,4 @@ local helmrelease(config, namespace) = k8s.helmrelease('external-dns', namespace
   },
 };
 
-function(config, prev, namespace, pkg) helmrelease(config, namespace)
+function(config, prev, namespace, pkg) helmrelease(config, lib.package(config, namespace, pkg))
