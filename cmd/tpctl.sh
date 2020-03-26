@@ -463,8 +463,7 @@ function recreate_service_account() {
   local namespace=$1
   local name=$2
   start "recreating service account $namespace/$name"
-  kubectl delete service account -n $namespace $name
-  eksctl delete iamserviceaccount --cluster $cluster --namespace $namespace --name $name
+  eksctl delete iamserviceaccount --cluster $cluster --namespace $namespace --name $name || true
   eksctl create iamserviceaccount -f config.yaml --approve
   expect_success "eksctl create service account failed."
   complete "recreated service account $namespace/$name, now restart dependent services"
