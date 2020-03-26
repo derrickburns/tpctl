@@ -246,6 +246,9 @@ local helmrelease(config, prev, namespace) = {
 
       glooingress: {
         enabled: true,
+        gloo: {
+          enabled: false,
+        },
         discovery: {
           namespace: 'gloo-system',
         },
@@ -289,10 +292,6 @@ local helmrelease(config, prev, namespace) = {
         store: {
           type: 's3',
         },
-      },
-
-      gloo: {
-        enabled: false,
       },
 
       highwater: lib.mergeList([common, {
