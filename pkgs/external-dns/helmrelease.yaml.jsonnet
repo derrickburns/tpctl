@@ -2,7 +2,7 @@ local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 local global = import '../../lib/global.jsonnet';
 
-local helmrelease(config, me) = k8s.helmrelease('external-dns', me.namespace, '2.20.6', 'https://raw.githubusercontent.com/tidepool-org/tidepool-helm/master') {
+local helmrelease(config, me) = k8s.helmrelease('external-dns', me.namespace, '2.20.8', 'https://charts.bitnami.com/bitnami') {
   spec+: {
     values: {
       aws: {
@@ -20,9 +20,6 @@ local helmrelease(config, me) = k8s.helmrelease('external-dns', me.namespace, '2
       rbac: {
         create: true,
         serviceAccountName: me.pkg,
-        serviceAccount: {
-          create: false
-        },
       },
       txtOwnerId: config.cluster.metadata.name,
       podSecurityContext: {
