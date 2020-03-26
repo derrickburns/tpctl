@@ -1,13 +1,13 @@
 local lib = import '../../lib/lib.jsonnet';
 local global = import '../../lib/global.jsonnet';
 
-local prometheus(config, namespace) = {
-  local ns = config.namespaces[namespace],
+local prometheus(config, me) = {
+  local ns = config.namespaces[me.namespace],
   apiVersion: 'monitoring.coreos.com/v1',
   kind: 'Prometheus',
   metadata: {
-    name: 'prometheus',
-    namespace: namespace,
+    name: me.pkg,
+    namespace: me.namespace,
   },
   spec: {
     enableAdminAPI: false,
@@ -15,7 +15,7 @@ local prometheus(config, namespace) = {
       cluster: config.cluster.metadata.name,
       region: config.cluster.metadata.region,
     },
-    externalUrl: 'http://prometheus.%s' % namespace, 
+    externalUrl: 'http://%s.%s' % [me.pkg, me.namespace],  // XXX Check
     podMonitorSelector: {
       matchLabels: {},
     },
@@ -27,7 +27,7 @@ local prometheus(config, namespace) = {
         memory: '400Mi',
       },
     },
-    serviceAccountName: 'prometheus',
+    serviceAccountName: me.pkg,
     serviceMonitorNamespaceSelector: {
       matchLabels: {},
     },
@@ -45,4 +45,4 @@ local prometheus(config, namespace) = {
   },
 };
 
-function(config, prev, namespace, pkg) prometheus(config, namespace)
+function(config, prev, namespace, pkg) prometheus(config, lib.package(config, namespace, pkg))

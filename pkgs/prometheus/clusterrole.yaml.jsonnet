@@ -1,11 +1,13 @@
-local clusterrole = {
+local lib = '../../lib/lib.jsonnet';
+
+local clusterrole(me) = {
   apiVersion: 'rbac.authorization.k8s.io/v1',
   kind: 'ClusterRole',
   metadata: {
     labels: {
-      app: 'prometheus',
+      app: me.pkg,
     },
-    name: 'prometheus',
+    name: me.pkg,
   },
   rules: [
     {
@@ -26,4 +28,4 @@ local clusterrole = {
   ],
 };
 
-function(config, prev, namespace, pkg) clusterrole
+function(config, prev, namespace, pkg) clusterrole(lib.package(config, namespace, pkg))
