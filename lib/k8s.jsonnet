@@ -12,6 +12,8 @@
     if namespace != '' then { namespace: namespace, } else {},
   },
 
+  serviceaccount(me):: $.k('v1', 'ServiceAccount') + $.metadata(me.pkg, me.namespace),
+
   configmap(me):: $.k('v1', 'ConfigMap') + $.metadata(me.pkg, me.namespace),
 
   clusterrolebinding(me):: $.k('rbac.authorization.k8s.io/v1', 'ClusterRoleBinding') + $.metadata(me.pkg) {
@@ -55,18 +57,9 @@
     },
   },
 
-  service(name, namespace):: $.k('v1', 'Service') + $.metadata(name, namespace) {
-    spec+: {
-      type: 'ClusterIP',
-      ports: [{
-        name: 'http',
-        protocol: 'TCP',
-        port: 8080,
-        targetPort: 8080,
-      }],
-      selector: {
-        name: name,
-      },
+  service(name, namespace, type='ClusterIP'):: $.k('v1', 'Service') + $.metadata(name, namespace) {
+    spec+ {
+      type: type,
     },
   },
 }

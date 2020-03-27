@@ -1,14 +1,8 @@
 local lib = import '../../lib/lib.jsonnet';
+local k8s = import '../../lib/k8s.jsonnet';
 
-local service(config, me) = {
-  apiVersion: 'v1',
-  kind: 'Service',
-  metadata: {
-    name: 'fluxrecv',
-    namespace: me.namespace,
-  },
-  spec: {
-    type: 'ClusterIP',
+local service(me) = k8s.service(me.pkg, me.namespace) {
+  spec+: {
     ports: [{
       name: 'http',
       protocol: 'TCP',
@@ -21,4 +15,4 @@ local service(config, me) = {
   },
 };
 
-function(config, prev, namespace, pkg) service(config, lib.package(config, namespace, pkg))
+function(config, prev, namespace, pkg) service(lib.package(config, namespace, pkg))

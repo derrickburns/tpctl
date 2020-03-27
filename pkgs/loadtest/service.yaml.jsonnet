@@ -1,14 +1,8 @@
 local lib = import '../../lib/lib.jsonnet';
+local k8s = import '../../lib/k8s.jsonnet';
 
-local service(me) = {
-  apiVersion: 'v1',
-  kind: 'Service',
-  metadata: {
-    name: me.pkg,
-    namespace: me.namespace,
-  },
-  spec: {
-    type: 'ClusterIP',
+local service(me) = k8s.service(me.pkg, me.namespace) {
+  spec+: {
     selector: {
       app: me.pkg,
     },
