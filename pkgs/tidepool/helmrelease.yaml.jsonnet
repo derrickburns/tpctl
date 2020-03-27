@@ -152,14 +152,12 @@ local helmrelease(config, prev, namespace) = {
     namespace: namespace,
   },
   local common = {
-    podAnnotations: {
-      //'config.linkerd.io/proxy-cpu-request': '0.2',
-      'cluster-autoscaler.kubernetes.io/safe-to-evict': 'true',
+    podAnnotations: linkerd.annotations(config) + {
+      'cluster-autoscaler.kubernetes.io/safe-to-evict': 'true', // XXX
     },
     hpa: lib.getElse(env, 'hpa', { enabled: false }),
     deployment+: {
       replicas: lib.getElse(env, 'deployment.replicas', 1),
-      annotations: linkerd.annotations(config),
     },
   },
 
