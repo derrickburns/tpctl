@@ -6,6 +6,12 @@ local service(me) = k8s.service(me.pkg, me.namespace) {
     selector: {
       app: me.pkg,
     },
+    ports: [{
+      name: 'http',
+      protocol: 'TCP',
+      port: 8080,
+      targetPort: 8080,
+    }],
   },
 };
 
