@@ -278,7 +278,7 @@ function repo_with_token() {
 
 # clone remote 
 function clone_remote() {
-  if [ "$CLONE_REMOTE" == "true" ]; then
+  if [ "$USE_LOCAL_FILESYSTEM" == "false" ]; then
     cd $TMP_DIR
     if [[ ! -d $(basename $HTTPS_REMOTE_REPO) ]]; then
       start "cloning remote"
@@ -1107,8 +1107,14 @@ function create_repo() {
     REMOTE_REPO=$REPLY/$REMOTE_REPO
     curl "https://api.github.com/user/repos?access_token=${GITHUB_TOKEN}" -d "$D"
   fi
-  info "clone repo using: "
-  info "git clone git@github.com:${REMOTE_REPO}.git"
+
+  if [ "$USE_LOCAL_FILESYSTEM" == "true" ]
+  then
+    git clone http://github.com/${REMOTE_REPO}.git
+  else
+    info "clone repo using: "
+    info "git clone http://github.com/${REMOTE_REPO}.git"
+  fi
   complete "private repo created"
 }
 
@@ -1158,7 +1164,7 @@ function help() {
 }
 
 APPROVE=false
-CLONE_REMOTE=true
+USE_LOCAL_FILESYSTEM=false
 SKIP_REVIEW=false
 declare -a PARAMS
 while (("$#")); do
@@ -1176,7 +1182,7 @@ while (("$#")); do
       shift 1
       ;;
     -l | --local)
-      CLONE_REMOTE=false
+      USE_LOCAL_FILESYSTEM=true
       shift 1
       ;;
     -h | --help)
