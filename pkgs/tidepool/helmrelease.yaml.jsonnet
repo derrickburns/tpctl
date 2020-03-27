@@ -390,10 +390,6 @@ local helmrelease(config, prev, namespace) = {
         enabled: lib.isTrue(env, 'mongodb.enable'),
       },
 
-      nosqlclient: {
-        enabled: lib.isTrue(env, 'nosqlclient.enabled'),
-      },
-
       notification: lib.mergeList([common, {
         extraContainers: extraContainers,
         deployment+: {
