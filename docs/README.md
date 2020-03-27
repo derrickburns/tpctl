@@ -55,55 +55,10 @@ You may pull down the latest version Docker image of `tpctl` from Docker Hub wit
 docker pull tidepool/tpctl
 ```
 
-Copy the following to a file called `tpctl` and to make it executable:
+Retrieve the `tpctl` driver file and to make it executable:
 
 ```bash
-#!/bin/sh
-
-# set defaults
-HELM_HOME=${HELM_HOME:-~/.helm}
-KUBE_CONFIG=${KUBECONFIG:-~/.kube/config}
-AWS_CONFIG=${AWS_CONFIG:-~/.aws}
-GIT_CONFIG=${GIT_CONFIG:-~/.gitconfig}
-SSH_KEY=${SSH_KEY:-id_rsa}
-AGENT_CONTAINER=""
-
-function shutdown_agent {
-	docker kill ssh-agent >/dev/null
-	docker rm $AGENT_CONTAINER >/dev/null
-}
-
-running=$(docker inspect -f '{{.State.Running}}' ssh-agent 2>/dev/null)
-if [ $? -ne 0 -o "$running" == "false"  ]
-then
-	AGENT_CONTAINER=$(docker run -d --name=ssh-agent nardeas/ssh-agent)
-	docker run --rm --volumes-from=ssh-agent -v ~/.ssh:/.ssh -it nardeas/ssh-agent ssh-add /root/.ssh/${SSH_KEY}
-        trap shutdown_agent EXIT
-fi
-
-if [ -z "$GITHUB_TOKEN" ]
-then
-	echo "GITHUB_TOKEN with repo scope is needed."
-	exit 1
-fi
-
-mkdir -p $HELM_HOME
-if [ ! -f "$KUBE_CONFIG" ]
-then
-	touch $KUBE_CONFIG
-fi
-
-docker run -it \
---volumes-from=ssh-agent \
--e SSH_AUTH_SOCK=/.ssh-agent/socket \
--e GITHUB_TOKEN=${GITHUB_TOKEN} \
--e REMOTE_REPO=${REMOTE_REPO} \
--v ${GIT_CONFIG}:/root/.gitconfig:ro \
--v ${HELM_HOME}:/root/.helm \
--v ${AWS_CONFIG}:/root/.aws:ro \
--v ${KUBE_CONFIG}:/root/.kube/config \
-tidepool/tpctl /root/tpctl $*
-
+wget https://raw.githubusercontent.com/tidepool-org/tpctl/master/cmd/tpctl
 ```
 
 Alternatively, you may build your own local Docker image from the source by cloning the Tidepool `tpctl` repo and running the `cmd/build.sh` script:
