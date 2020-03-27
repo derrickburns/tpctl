@@ -58,7 +58,7 @@
   },
 
   service(name, namespace, type='ClusterIP'):: $.k('v1', 'Service') + $.metadata(name, namespace) {
-    spec+ {
+    spec+: {
       type: type,
     },
   },
