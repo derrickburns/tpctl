@@ -1,31 +1,20 @@
 {
 
-  metadata(name, namespace):: {
+  k(apiVersion, kind):: {
+    apiVersion: apiVersion,
+    kind: kind,
+  }, 
+
+  metadata(name, namespace=''):: {
     metadata: {
       name: name,
-      namespace: namespace,
-    },
+    } +
+    if namespace != '' then { namespace: namespace, } else {},
   },
 
-  serviceaccount(me):: $.metadata(me.pkg, me.namespace) {
-    apiVersion: 'v1',
-    kind: 'ServiceAccount',
-  },
+  configmap(me):: $.k('v1', 'ConfigMap') + $.metadata(me.pkg, me.namespace),
 
-  configmap(me):: $.metadata(me.pkg, me.namespace) {
-    apiVersion: 'v1',
-    kind: 'ConfigMap',
-  },
-
-  clusterrolebinding(me):: {
-    apiVersion: 'rbac.authorization.k8s.io/v1',
-    kind: 'ClusterRoleBinding',
-    metadata: {
-      labels: {
-        app: me.pkg,
-      },
-      name: me.pkg,
-    },
+  clusterrolebinding(me):: $.k('rbac.authorization.k8s.io/v1', 'ClusterRoleBinding') + $.metadata(me.pkg) {
     roleRef: {
       apiGroup: 'rbac.authorization.k8s.io',
       kind: 'ClusterRole',
@@ -40,14 +29,7 @@
     ],
   },
 
-  basehelmrelease(name, namespace):: $.metadata(name, namespace) {
-    apiVersion: 'helm.fluxcd.io/v1',
-    kind: 'HelmRelease',
-    metadata+: {
-      annotations+: {
-        'fluxcd.io/automated': 'false',
-      },
-    },
+  basehelmrelease(name, namespace):: $.k('helm.fluxcd.io/v1', 'HelmRelease') + $.metadata(name, namespace) {
     spec+: {
       releaseName: name,
     },
@@ -73,10 +55,8 @@
     },
   },
 
-  service(config, name, namespace):: $.metadata(name, namespace) {
-    apiVersion: 'v1',
-    kind: 'Service',
-    spec: {
+  service(name, namespace):: $.k('v1', 'Service') + $.metadata(name, namespace) {
+    spec+: {
       type: 'ClusterIP',
       ports: [{
         name: 'http',
