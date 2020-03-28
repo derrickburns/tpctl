@@ -1089,28 +1089,34 @@ function remove_mesh() {
   complete "removed linkerd"
 }
 
-function create_repo() {
-  expect_github_token
-  read -p "${GREEN}repo name?${RESET} " -r
-  REMOTE_REPO=$REPLY
-  DATA='{"name":"yolo-test", "private":"true", "auto_init": true}'
-  D=$(echo $DATA | sed -e "s/yolo-test/$REMOTE_REPO/")
+function make_repo() {
+  REMOTE_REPO="$1"
 
-  read -p "${GREEN}Is this for an organization? ${RESET}" -r
-  if [[ "$REPLY" =~ (y|Y).* ]]; then
-    read -r -p $"${GREEN} Name of organization [tidepool-org]?${RESET} " ORG
-    ORG=${ORG:-tidepool-org}
-    REMOTE_REPO=$ORG/$REMOTE_REPO
-    curl "https://api.github.com/orgs/$ORG/repos?access_token=${GITHUB_TOKEN}" -d "$D"
+  local org
+  local repo
+  local dest
+
+  if [[ "$REMOTE_REPO" == */* ]]; then
+    org=$(echo -n $REMOTE_REPO | cut -d '/' -f 1)
+    repo=$(echo -n $REMOTE_REPO | cut -d '/' -f 2)
+    dest="https://api.github.com/orgs/$org/repos"
   else
-    read -p $"${GREEN} Git user name?${RESET} " -r
-    REMOTE_REPO=$REPLY/$REMOTE_REPO
-    curl "https://api.github.com/user/repos?access_token=${GITHUB_TOKEN}" -d "$D"
+    org=$ORG
+    repo=$REMOTE_REPO
+    dest="https://api.github.com/user/repos"
   fi
+
+  local template='{"name":"yolo-test", "private":"true", "auto_init": true}'
+  local args=$(echo $template | sed -e "s/yolo-test/$repo/")
+
+  curl -H "Authorization: token ${GITHUB_TOKEN}" $dest -d "$args"
 
   if [ "$USE_LOCAL_FILESYSTEM" == "true" ]
   then
+    info "cloning repo"
     git clone http://github.com/${REMOTE_REPO}.git
+    cd $repo
+    info "cloned repo into $(pwd)"
   else
     info "clone repo using: "
     info "git clone http://github.com/${REMOTE_REPO}.git"
@@ -1166,6 +1172,7 @@ function help() {
 APPROVE=false
 USE_LOCAL_FILESYSTEM=false
 SKIP_REVIEW=false
+ORG=${ORG:-tidepool-org}
 declare -a PARAMS
 while (("$#")); do
   case "$1" in
@@ -1333,7 +1340,7 @@ case $cmd in
     ;;
   repo)
     setup_tmpdir
-    create_repo
+    make_repo $@
     ;;
   secrets)
     check_remote_repo

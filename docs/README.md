@@ -153,7 +153,7 @@ export REMOTE_REPO=git@github.com:tidepool-org/cluster-test1
 
 Alternatively, if you have not already created a GitHub repository you may create one using `tpctl`:
 ```bash
-tpctl repo
+tpctl repo ${ORG}/${REPO_NAME}
 ```
 
 ## Basic Usage
