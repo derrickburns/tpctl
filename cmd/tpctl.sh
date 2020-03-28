@@ -1089,6 +1089,12 @@ function remove_mesh() {
   complete "removed linkerd"
 }
 
+# create an empty GitHub config repo 
+# name is given in $1
+# if name contains a slash, the part before is treated as the organization
+# if name does not containa slash, then organization is interpolated from the environment variable $ORG
+# if that is unset, then use personal account associated with provided GitHub token.
+
 function make_repo() {
   REMOTE_REPO="$1"
 
@@ -1099,17 +1105,24 @@ function make_repo() {
   if [[ "$REMOTE_REPO" == */* ]]; then
     org=$(echo -n $REMOTE_REPO | cut -d '/' -f 1)
     repo=$(echo -n $REMOTE_REPO | cut -d '/' -f 2)
-    dest="https://api.github.com/orgs/$org/repos"
   else
     org=$ORG
     repo=$REMOTE_REPO
+  fi
+
+  if [[ -z $org ]]; then
     dest="https://api.github.com/user/repos"
+  else
+    dest="https://api.github.com/orgs/$org/repos"
   fi
 
   local template='{"name":"yolo-test", "private":"true", "auto_init": true}'
   local args=$(echo $template | sed -e "s/yolo-test/$repo/")
 
+  info "creating private repo $org/$repo"
   curl -H "Authorization: token ${GITHUB_TOKEN}" $dest -d "$args"
+  expect_success "Could not create repo $org/$repo"
+  complete  "created private repo $org/$repo"
 
   if [ "$USE_LOCAL_FILESYSTEM" == "true" ]
   then
