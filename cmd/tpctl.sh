@@ -6,29 +6,33 @@
 set -e
 export FLUX_FORWARD_NAMESPACE=flux
 export REVIEWERS="derrickburns pazaan jamesraby todd haroldbernard"
+export APPROVE=false
+export USE_LOCAL_FILESYSTEM=false
+export SKIP_REVIEW=false
+export GITHUB_ORG=${GITHUB_ORG:-tidepool-org}
 
-function envoy {
+function envoy() {
   glooctl proxy served-config
 }
 
-function actual_k8s_version {
+function actual_k8s_version() {
   local cluster=$(get_cluster)
   eksctl get cluster $cluster -o json | jq '.[0].Version'
 }
 
-function update_utils {
+function update_utils() {
   start "updating cordns"
-  eksctl utils update-coredns -f config.yaml  --approve
+  eksctl utils update-coredns -f config.yaml --approve
   complete "updated cordns"
   start "updating aws-node"
-  eksctl utils update-aws-node -f config.yaml  --approve
+  eksctl utils update-aws-node -f config.yaml --approve
   complete "updated aws-node"
   start "updating kube-proxy"
-  eksctl utils update-kube-proxy -f config.yaml  --approve
+  eksctl utils update-kube-proxy -f config.yaml --approve
   complete "updated kube-proxy"
 }
 
-function create_kmskey {
+function create_kmskey() {
   start "creating kms key"
   local cluster=$(get_cluster)
   key=$(aws kms create-key --tags TagKey=cluster,TagValue=$cluster --description "Key for cluster $cluster")
@@ -43,7 +47,7 @@ function create_kmskey {
   yq w -i values.yaml general.sops.keys.arn $arn
   expect_success "Could not write arn to values.yaml file"
 
-  cat  >.sops.yaml  <<EOF
+  cat >.sops.yaml <<EOF
   creation_rules:
      - kms: arn:aws:kms:${region}:${account}:${alias}
        encrypted_regex: '^(data|stringData)$'
@@ -52,7 +56,7 @@ EOF
   complete "created kms key"
 }
 
-function vpa {
+function vpa() {
   (
     cd $TMP_DIR
     git clone https://github.com/kubernetes/autoscaler.git
@@ -62,7 +66,7 @@ function vpa {
   )
 }
 
-function get_vpc {
+function get_vpc() {
   local cluster=$(get_cluster)
   aws cloudformation describe-stacks --stack-name eksctl-${cluster}-cluster | jq '.Stacks[0].Outputs| .[] | select(.OutputKey | contains("VPC")) | .OutputValue' | sed -e 's/"//g'
 }
@@ -77,10 +81,9 @@ function delete_peering_connections() {
   start "deleting peering connections"
   local ids=$(find_peering_connections | jq '.VpcPeeringConnections | .[].VpcPeeringConnectionId' | sed -e 's/"//g')
   confirm "Delete peering connections: $ids?"
-  for id in ids
-  do
+  for id in ids; do
     info "deleting peering connection $id"
-    aws ec2 delete-vpc-peering-connection --vpc-peering-connection-id  $id
+    aws ec2 delete-vpc-peering-connection --vpc-peering-connection-id $id
   done
   complete "deleted peering connections"
 }
@@ -97,12 +100,11 @@ function cluster_in_context() {
 function make_envrc() {
   start "creating .envrc"
   local cluster=$(get_cluster)
-  if [ -f kubeconfig.yaml ]
-  then
+  if [ -f kubeconfig.yaml ]; then
     local context=$(yq r kubeconfig.yaml current-context)
     echo "kubectx $context" >.envrc
   fi
-  echo "export REMOTE_REPO=cluster-$cluster" >>.envrc   # XXX fix name
+  echo "export REMOTE_REPO=cluster-$cluster" >>.envrc # XXX fix name
   echo "export FLUX_FORWARD_NAMESPACE=flux" >>.envrc
   add_file ".envrc"
   complete "created .envrc"
@@ -112,17 +114,16 @@ function cluster_in_repo() {
   yq r kubeconfig.yaml -j current-context | sed -e 's/"//g' -e "s/'//g"
 }
 
-function install_glooctl {
+function install_glooctl() {
   start "checking glooctl"
   local glooctl_version=$(require_value "pkgs.gloo.version")
-  if ! command -v glooctl >/dev/null 2>&1 || [ $(glooctl version -o json | grep Client | yq r - 'Client.version') != ${glooctl_version} ]
-  then
+  if ! command -v glooctl >/dev/null 2>&1 || [ $(glooctl version -o json | grep Client | yq r - 'Client.version') != ${glooctl_version} ]; then
     start "installing glooctl"
     OS=$(ostype)
     local name="https://github.com/solo-io/gloo/releases/download/v${glooctl_version}/glooctl-${OS}-amd64"
     curl -sL -o /usr/local/bin/glooctl $name
     expect_success "Failed to download $name"
-    chmod 755 /usr/local/bin/glooctl 
+    chmod 755 /usr/local/bin/glooctl
     complete "installed glooctl ${glooctl_version} for ${OS}"
   else
     complete "glooctl up-to-date"
@@ -176,7 +177,7 @@ function define_colors() {
 
 # irrecoverable error. Show message and exit.
 function panic() {
-  >&2 echo "${RED}[✖] ${1}${RESET}"
+  echo >&2 "${RED}[✖] ${1}${RESET}"
   kill 0
 }
 
@@ -189,22 +190,22 @@ function expect_success() {
 
 # show info message
 function start() {
- >&2 echo "${GREEN}[i] ${1}${RESET}"
+  echo >&2 "${GREEN}[i] ${1}${RESET}"
 }
 
 # show info message
 function complete() {
-  >&2 echo "${MAGENTA}[√] ${1}${RESET}"
+  echo >&2 "${MAGENTA}[√] ${1}${RESET}"
 }
 
 # show info message
 function info() {
-  >&2 echo "${MAGENTA}[√] ${1}${RESET}"
+  echo >&2 "${MAGENTA}[√] ${1}${RESET}"
 }
 
 # report that file is being added to config repo
 function add_file() {
-  >&2 echo "${GREEN}[ℹ] adding ${1}${RESET}"
+  echo >&2 "${GREEN}[ℹ] adding ${1}${RESET}"
 }
 
 # report all files added to config repo from list given in stdin
@@ -216,7 +217,7 @@ function add_names() {
 
 # report renaming of file in config repo
 function rename_file() {
-  >&2 echo "${GREEN}[√] renaming ${1} ${2}${RESET}"
+  echo >&2 "${GREEN}[√] renaming ${1} ${2}${RESET}"
 }
 
 # conform action, else exit
@@ -227,7 +228,7 @@ function confirm() {
     if [[ ! $REPLY =~ ^[Yy]$ ]]; then
       exit 1
     else
-      >&2 echo
+      echo >&2
     fi
   fi
 }
@@ -251,7 +252,7 @@ function check_remote_repo() {
 # clean up all temporary files
 function cleanup() {
   if [ -d .git ]; then
-      git reset
+    git reset
   fi
   if [ -f "$TMP_DIR" ]; then
     cd /
@@ -276,7 +277,7 @@ function repo_with_token() {
   echo $repo | sed -e "s#https://#https://$GITHUB_TOKEN@#"
 }
 
-# clone remote 
+# clone remote
 function clone_remote() {
   if [ "$USE_LOCAL_FILESYSTEM" == "false" ]; then
     cd $TMP_DIR
@@ -299,7 +300,10 @@ function set_template_dir() {
     pushd $TMP_DIR >/dev/null 2>&1
     git clone $(repo_with_token https://github.com/tidepool-org/tpctl)
     if [ -n "$TPCTL_BRANCH" ]; then
-      (cd tpctl; git checkout $TPCTL_BRANCH)
+      (
+        cd tpctl
+        git checkout $TPCTL_BRANCH
+      )
     fi
     export TEMPLATE_DIR=$(pwd)/tpctl
     popd >/dev/null 2>&1
@@ -310,8 +314,7 @@ function set_template_dir() {
 # get values file
 function get_config() {
   yq r values.yaml -j
-  if [ $? -ne 0 ]
-  then
+  if [ $? -ne 0 ]; then
     panic "cannot parse values.yaml"
   fi
 }
@@ -322,14 +325,13 @@ function default_value() {
   echo ${v:-$2}
 }
 
-
 # retrieve value from values file, or exit if it is not available
 function require_value() {
   yq r values.yaml -j $1 2>/dev/null
   if [ $? -ne 0 ]; then
     panic "value $1 not found in values.yaml"
   fi
-} 
+}
 
 # retrieve name of cluster
 function get_cluster() {
@@ -362,14 +364,14 @@ function get_aws_account() {
   require_value "aws.accountNumber"
 }
 
-# retrieve full path of tidepool environments 
+# retrieve full path of tidepool environments
 function get_environments_path() {
   yq r values.yaml -p p namespaces.*.tidepool
 }
 
 # retrieve names of all namespaces to create
 function get_namespaces() {
-  yq r values.yaml -p p namespaces.*  | sed -e "s/namespaces\.//" 
+  yq r values.yaml -p p namespaces.* | sed -e "s/namespaces\.//"
 }
 
 # retrieve names of tidepool environments
@@ -400,8 +402,7 @@ function make_asset_bucket() {
   local env=$1
   local create=$(yq r values.yaml namespaces.${env}.tidepool.buckets.create | sed -e "/^  .*/d" -e s/:.*//)
   local asset_bucket=$(get_bucket $env asset)
-  if ! aws s3 ls s3://$asset_bucket >/dev/null 2>&1 
-  then
+  if ! aws s3 ls s3://$asset_bucket >/dev/null 2>&1; then
     start "creating asset bucket $asset_bucket"
     aws s3 mb s3://$asset_bucket >/dev/null 2>&1
     expect_success "Cannot create asset bucket"
@@ -418,8 +419,7 @@ function make_asset_bucket() {
 function make_data_bucket() {
   local env=$1
   local data_bucket=$(get_bucket $env data)
-  if ! aws s3 ls s3://$data_bucket >/dev/null 2>&1
-  then
+  if ! aws s3 ls s3://$data_bucket >/dev/null 2>&1; then
     start "creating data bucket $data_bucket"
     aws s3 mb s3://$data_bucket >/dev/null 2>&1
     expect_success "Cannot create data bucket"
@@ -534,7 +534,7 @@ function enabled_pkgs() {
 function make_shared_config() {
   start "creating package manifests"
   local config=$(get_config)
-  cp -r pkgs $TMP_DIR 
+  cp -r pkgs $TMP_DIR
   rm -rf flux gloo
   rm -rf pkgs
   complete "created package manifests"
@@ -548,21 +548,20 @@ function make_cluster_config() {
   start "creating eksctl manifest"
   add_file "config.yaml"
   serviceAccountFile=$TMP_DIR/serviceaccounts
-  make_policy_manifests | yq r - -j  | jq  >$serviceAccountFile
-  jsonnet --tla-code config="$config" --tla-code-file serviceaccounts="$serviceAccountFile"  ${TEMPLATE_DIR}/eksctl/cluster_config.jsonnet | yq r -P - >config.yaml
+  make_policy_manifests | yq r - -j | jq >$serviceAccountFile
+  jsonnet --tla-code config="$config" --tla-code-file serviceaccounts="$serviceAccountFile" ${TEMPLATE_DIR}/eksctl/cluster_config.jsonnet | yq r -P - >config.yaml
   expect_success "Templating failure eksctl/cluster_config.jsonnet"
   complete "created eksctl manifest"
 }
 
-function as_json_else {
+function as_json_else() {
   local source=$1
   local dest=$2
   local default=$3
   mkdir -p $(dirname $dest)
   if [ -f $source ]; then
     yq r $source -j >${dest}
-    if [[ $? -ne 0 || $(wc -w < ${dest} | sed -e "s/ *//") == 0 ]]
-    then
+    if [[ $? -ne 0 || $(wc -w <${dest} | sed -e "s/ *//") == 0 ]]; then
       echo "$default" >${dest}
     fi
   else
@@ -596,7 +595,7 @@ function template_service_accounts() {
 # template_files $1 $2 $3 $4 - instantiates template for pkg in given namespace
 # $1 - config (values.yaml file as string)
 # $2 - the absolute path to the template directory
-# $3 - the target namespace for the instantiated templates 
+# $3 - the target namespace for the instantiated templates
 # $4 - the name of the package to instantiate
 #
 # copies files with suffix ".yaml"
@@ -632,14 +631,14 @@ function template_files() {
       add_file ${relativeTarget}
       local tmpPreviousTarget=$TMP_DIR/foo
       as_json_else ${previousTarget} $tmpPreviousTarget "{}"
-      jsonnet --tla-code-file prev=$tmpPreviousTarget --tla-code config="$config" --tla-str namespace=$namespace --tla-str pkg=$pkg $absoluteTemplateFilePath | yq r - --prettyPrint  >${relativeTarget}
+      jsonnet --tla-code-file prev=$tmpPreviousTarget --tla-code config="$config" --tla-str namespace=$namespace --tla-str pkg=$pkg $absoluteTemplateFilePath | yq r - --prettyPrint >${relativeTarget}
       expect_success "Templating failure ${relativeFilePath}"
       rm ${tmpPreviousTarget}
     fi
   done
 }
 
-# make policy manifests 
+# make policy manifests
 function make_policy_manifests() {
   local config=$(get_config)
   local ns
@@ -655,26 +654,24 @@ function make_policy_manifests() {
 
 # create a namespace given a configuration
 function create_namespace() {
-   local template=$TEMPLATE_DIR/lib/namespace.jsonnet
-   local ns=$1
-   local config="$2"
-   local create=$(echo "$config" | yq r - "namespaces.${ns}.config.create")
-   create=${create:-true}
-   if [ "$create" == "true" ]
-   then
-     local out=pkgs/${ns}/namespace.yaml
-     mkdir -p pkgs/${ns}
-     jsonnet --tla-code config="$config" --tla-str namespace=$ns $template | yq r - --prettyPrint  >${out}
-     add_file $out
-   fi
+  local template=$TEMPLATE_DIR/lib/namespace.jsonnet
+  local ns=$1
+  local config="$2"
+  local create=$(echo "$config" | yq r - "namespaces.${ns}.config.create")
+  create=${create:-true}
+  if [ "$create" == "true" ]; then
+    local out=pkgs/${ns}/namespace.yaml
+    mkdir -p pkgs/${ns}
+    jsonnet --tla-code config="$config" --tla-str namespace=$ns $template | yq r - --prettyPrint >${out}
+    add_file $out
+  fi
 }
 
-# make K8s manifests 
+# make K8s manifests
 function make_namespace_config() {
   local config=$(get_config)
   local ns
-  if [ -d environments ]   # XXX rename to namespaces after fixing tidebot
-  then
+  if [ -d environments ]; then # XXX rename to namespaces after fixing tidebot
     mv environments $TMP_DIR
   fi
   for ns in $(get_namespaces); do
@@ -703,8 +700,7 @@ function save_changes() {
   expect_success "git add failed"
   export GIT_PAGER=/bin/cat
   DIFFS=$(git diff --cached HEAD)
-  if [ -z "$DIFFS" ]
-  then
+  if [ -z "$DIFFS" ]; then
     info "No changes made"
     return
   fi
@@ -713,8 +709,7 @@ function save_changes() {
   info "==== END Changes"
   local proposed="tpctl-$(date '+%Y-%m-%d-%H-%M-%S')"
   local branch
-  if [ "$APPROVE" != "true" ]
-  then
+  if [ "$APPROVE" != "true" ]; then
     confirm "Do you want to save these changes? "
     read -p "${GREEN}Branch name [$proposed]?${RESET} "
     branch=${REPLY:-$proposed}
@@ -726,7 +721,7 @@ function save_changes() {
   git add .
   expect_success "git add failed"
   if [ "$branch" != "master" ]; then
-    >&2 git checkout -b $branch
+    git >&2 checkout -b $branch
     expect_success "git checkout failed"
   fi
   expect_success "git checkout failed"
@@ -737,17 +732,15 @@ function save_changes() {
   expect_success "git push failed"
   complete "pushed changes to config repo branch $branch"
   if [ "$SKIP_REVIEW" == true ]; then
-   echo "Skipping review"
-   return
+    echo "Skipping review"
+    return
   fi
   read -p "${GREEN}PR Message? ${RESET} " -r
   local message=$REPLY
   info "Please select PR reviewer: "
-  select REVIEWER in none $REVIEWERS ;
-  do
-    if [ "$REVIEWER" == "none" ]
-    then
-      hub pull-request -m "$message" 
+  select REVIEWER in none $REVIEWERS; do
+    if [ "$REVIEWER" == "none" ]; then
+      hub pull-request -m "$message"
       expect_success "failed to create pull request, please create manually"
       complete "create pull request"
     else
@@ -769,8 +762,7 @@ function expect_cluster_exists() {
 function install_helmrelease() {
   local file=$1
   start "bootstrapping $file"
-  if ! bash -x helmit $file >${TMP_DIR}/out 2>&1
-  then
+  if ! bash -x helmit $file >${TMP_DIR}/out 2>&1; then
     cat $TMP_DIR/out
     panic "helm upgrade failed"
   fi
@@ -778,7 +770,7 @@ function install_helmrelease() {
   complete "bootstrapped $file"
 }
 
-# bootstrap flux 
+# bootstrap flux
 function bootstrap_flux() {
   start "bootstrapping flux"
   establish_ssh
@@ -795,9 +787,8 @@ function install_fluxkey() {
   expect_github_token
 
   local key=$(fluxctl --k8s-fwd-ns=${FLUX_FORWARD_NAMESPACE} identity 2>${TMP_DIR}/err)
-  
-  while [ -s ${TMP_DIR}/err ]
-  do
+
+  while [ -s ${TMP_DIR}/err ]; do
     cat ${TMP_DIR}/err
     info "waiting for flux deploy secret to be created"
     sleep 2
@@ -824,53 +815,51 @@ function mykubectl() {
   KUBECONFIG=~/.kube/config kubectl $@
 }
 
-function ostype {
+function ostype() {
   case "$OSTYPE" in
-  darwin*)  echo "darwin" ;; 
-  linux*)   echo "linux" ;;
-  bsd*)     echo "bsd" ;;
-  msys*)    echo "windows" ;;
-  *)        echo "unknown: $OSTYPE" ;;
+    darwin*) echo "darwin" ;;
+    linux*) echo "linux" ;;
+    bsd*) echo "bsd" ;;
+    msys*) echo "windows" ;;
+    *) echo "unknown: $OSTYPE" ;;
   esac
 }
 
-function install_mesh_client {
+function install_mesh_client() {
   start "checking linkerd client"
   local linkerd_version=$(require_value "pkgs.linkerd.version")
-  if ! command -v linkerd >/dev/null 2>&1 || [ $(linkerd version --client --short) != ${linkerd_version} ]
-  then
+  if ! command -v linkerd >/dev/null 2>&1 || [ $(linkerd version --client --short) != ${linkerd_version} ]; then
     start "installing linkerd client"
     OS=$(ostype)
     local name="https://github.com/linkerd/linkerd2/releases/download/${linkerd_version}/linkerd2-cli-${linkerd_version}-${OS}"
     curl -sL -o /usr/local/bin/linkerd $name
     expect_success "Failed to download $name"
-    chmod 755 /usr/local/bin/linkerd 
+    chmod 755 /usr/local/bin/linkerd
     complete "installed linkerd ${linkerd_version} for ${OS}"
   else
     complete "linkerd client up to date"
   fi
 }
 
-function make_mesh_with_helm {
+function make_mesh_with_helm() {
   local linkerd_version=$(require_value "pkgs.linkerd.version")
   install_mesh_client
   step certificate create identity.linkerd.cluster.local $TMP_DIR/ca.crt $TMP_DIR/ca.key --profile root-ca --no-password --insecure
   step certificate create identity.linkerd.cluster.local $TMP_DIR/issuer.crt $TMP_DIR/issuer.key --ca $TMP_DIR/ca.crt --ca-key $TMP_DIR/ca.key --profile intermediate-ca --not-after 8760h --no-password --insecure
-  if [[ ${linkerd_version} =~ "edge" ]]
-  then
+  if [[ ${linkerd_version} =~ "edge" ]]; then
     helm repo add linkerd https://helm.linkerd.io/edge
   else
     helm repo add linkerd https://helm.linkerd.io/stable
   fi
   helm repo update
   kubectl create namespace linkerd
-  kubectl annotate namespace  --overwrite linkerd linkerd.io/admission-webhooks=disabled
+  kubectl annotate namespace --overwrite linkerd linkerd.io/admission-webhooks=disabled
   helm upgrade -i linkerd --namespace linkerd --set installNamespace=false \
-  --set-file global.identityTrustAnchorsPEM=$TMP_DIR/ca.crt \
-  --set-file identity.issuer.tls.crtPEM=$TMP_DIR/issuer.crt \
-  --set-file identity.issuer.tls.keyPEM=$TMP_DIR/issuer.key \
-  --set identity.issuer.crtExpiry=$(date -d '+8760 hour' +"%Y-%m-%dT%H:%M:%SZ") \
-  linkerd/linkerd2
+    --set-file global.identityTrustAnchorsPEM=$TMP_DIR/ca.crt \
+    --set-file identity.issuer.tls.crtPEM=$TMP_DIR/issuer.crt \
+    --set-file identity.issuer.tls.keyPEM=$TMP_DIR/issuer.key \
+    --set identity.issuer.crtExpiry=$(date -d '+8760 hour' +"%Y-%m-%dT%H:%M:%SZ") \
+    linkerd/linkerd2
 }
 
 # create service mesh
@@ -886,8 +875,7 @@ function make_mesh() {
   linkerd version
   info "linkerd check --pre"
 
-  if [ "$APPROVE" != "true" ]
-  then
+  if [ "$APPROVE" != "true" ]; then
     confirm "Do you want to install the mesh directly? "
   fi
 
@@ -928,8 +916,7 @@ function make_users() {
   for user in $(get_iam_users); do
     local arn=arn:aws:iam::${account}:user/${user}
     users[$arn]=true
-    if ! eksctl get iamidentitymapping --region=$aws_region --arn=$arn --cluster=$cluster >/dev/null 2>&1
-    then
+    if ! eksctl get iamidentitymapping --region=$aws_region --arn=$arn --cluster=$cluster >/dev/null 2>&1; then
       eksctl create iamidentitymapping --region=$aws_region --arn=$arn --group=$group --cluster=$cluster --username=$user
       while [ $? -ne 0 ]; do
         sleep 3
@@ -940,11 +927,9 @@ function make_users() {
     fi
   done
 
-  for arn in $(eksctl get iamidentitymapping --cluster $cluster | grep user | cut -f1)
-  do
-    if [ -z "${users[$arn]}" ]
-    then
-      eksctl delete  iamidentitymapping --region=$aws_region --arn=$arn --cluster=$cluster --all
+  for arn in $(eksctl get iamidentitymapping --cluster $cluster | grep user | cut -f1); do
+    if [ -z "${users[$arn]}" ]; then
+      eksctl delete iamidentitymapping --region=$aws_region --arn=$arn --cluster=$cluster --all
       expect_success "Could not delete $arn from cluster $cluster in region $aws_region"
       info "removed $arn from authorized users in cluster $cluster in region $aws_region"
     fi
@@ -973,8 +958,8 @@ general:
 !
 
   #yq r values.yaml -j | jq '.cluster.metadata.name = .general.github.git' |
-    #jq '.cluster.metadata.name |= gsub(".*\/"; "")' |
-    #jq '.cluster.metadata.name |= gsub("cluster-"; "")' | yq r - >xxx.yaml
+  #jq '.cluster.metadata.name |= gsub(".*\/"; "")' |
+  #jq '.cluster.metadata.name |= gsub("cluster-"; "")' | yq r - >xxx.yaml
   #mv xxx.yaml values.yaml
   if [ "$APPROVE" != "true" ]; then
     ${EDITOR:-vi} values.yaml
@@ -1029,10 +1014,10 @@ function forward_shadow_secrets() {
     local sender=$(get_shadow_sender $env)
     if [[ -n $sender ]]; then
       for file in userdata; do
-	if [ ! -f secrets/${env}/${file}.yaml ]; then
-	  sops -d secrets/${sender}/${file}.yaml | yq w - metadata.namespace $env >secrets/${env}/${file}.yaml
-	  sops -e -i secrets/${env}/${file}.yaml
-	fi
+        if [ ! -f secrets/${env}/${file}.yaml ]; then
+          sops -d secrets/${sender}/${file}.yaml | yq w - metadata.namespace $env >secrets/${env}/${file}.yaml
+          sops -e -i secrets/${env}/${file}.yaml
+        fi
       done
     fi
   done
@@ -1049,25 +1034,23 @@ function generate_secrets() {
     start "generating secrets for $env"
     helm template --namespace $env --set gloo.enabled=false --set global.secret.generated=true $CHART_DIR -f $CHART_DIR/values.yaml | select_kind Secret >$TMP_DIR/x.yaml
     local dir=$TMP_DIR/secrets
-    mkdir -p $dir 
+    mkdir -p $dir
     pushd $dir >/dev/null 2>&1
-    separate_by_namespace < $TMP_DIR/x.yaml >/dev/null 2>&1
+    separate_by_namespace <$TMP_DIR/x.yaml >/dev/null 2>&1
     popd >/dev/null 2>&1
-    for file in $(find $dir -type f -print)
-    do
+    for file in $(find $dir -type f -print); do
       b=${file#${TMP_DIR}/}
-      if [ ! -f $b ]
-      then
-	mkdir -p $(dirname $b)
-	sops --encrypt $file >$b
-	add_file $b
+      if [ ! -f $b ]; then
+        mkdir -p $(dirname $b)
+        sops --encrypt $file >$b
+        add_file $b
       else
         info "$b already exists, skipping"
       fi
-      done
-      rm $TMP_DIR/x.yaml
-      rm -r $dir
-      complete "generated secrets for $env"
+    done
+    rm $TMP_DIR/x.yaml
+    rm -r $dir
+    complete "generated secrets for $env"
   done
 }
 
@@ -1089,7 +1072,7 @@ function remove_mesh() {
   complete "removed linkerd"
 }
 
-# create an empty GitHub config repo 
+# create an empty GitHub config repo
 # name is given in $1
 # if name contains a slash, the part before is treated as the organization
 # if name does not containa slash, then organization is interpolated from the environment variable $ORG
@@ -1124,10 +1107,9 @@ function make_repo() {
   info "creating private repo $org/$repo"
   curl -H "Authorization: token ${GITHUB_TOKEN}" $dest -d "$args"
   expect_success "Could not create repo $org/$repo"
-  complete  "created private repo $org/$repo"
+  complete "created private repo $org/$repo"
 
-  if [ "$USE_LOCAL_FILESYSTEM" == "true" ]
-  then
+  if [ "$USE_LOCAL_FILESYSTEM" == "true" ]; then
     info "cloning repo"
     git clone http://github.com/${org}/${repo}.git
     cd $repo
@@ -1150,276 +1132,278 @@ function await_deletion() {
 
 # show help
 function help() {
-  echo "----- Repo Commands (safe) -----"
-  echo "config                        - create K8s and eksctl K8s manifest files"
-  echo "envrc                         - create .envrc file for direnv to change kubecontexts and to set REMOTE_REPO"
-  echo "fluxkey                       - copy public key from Flux to GitHub config repo"
-  echo "repo                          - create config repo on GitHub"
-  echo "secrets                       - generate new secrets for all tidepool environments"
-  echo "sync                          - cause flux to sync with the config repo"
-  echo "values                        - create initial values.yaml file"
-  echo 
-  echo "----- Query Commands (safe) -----"
-  echo "envoy                         - show envoy config"
-  echo "linkerd_check                 - check Linkerd status"
-  echo "peering                       - list peering relationships"
-  echo "vpc                           - identify the VPC"
-  echo 
-  echo "----- Cluster Commands -----"
-  echo "await_deletion                - await completion of deletion of the AWS EKS cluster"
-  echo "cluster                       - create AWS EKS cluster, add system:master USERS"
-  echo "delete_cluster                - (initiate) deletion of the AWS EKS cluster"
-  echo "flux                          - install flux GitOps controller and deploy flux public key into GitHub"
-  echo "mesh                          - install service mesh"
-  echo "service_account \$namespace \$name - recreate a single service account in current context"
-  echo "users                         - add system:master USERS to K8s cluster"
-  echo "utils                         - update coredns, aws-node, and kube-proxy services in current context"
-  echo "vpa                           - install vertical pod autoscaler"
-  echo 
-  echo "----- Other Commands -----"
-  echo "buckets                       - create S3 buckets if needed and copy assets if don't exist"
-  echo "kmskey                        - create a new Amazon KMS key for the cluster"
-  echo "merge_kubeconfig              - copy the KUBECONFIG into the local $KUBECONFIG file"
-  echo "remove_mesh                   - uninstall the service mesh"
-  echo "update_kubeconfig             - modify context and user for kubeconfig"
+  cat << EOF
+----- Repo Commands (safe)"
+config                              - create K8s and eksctl K8s manifest files"
+envrc                               - create .envrc file for direnv to change kubecontexts and to set REMOTE_REPO"
+fluxkey                             - copy public key from Flux to GitHub config repo"
+repo  \$ORG/\$REPO_NAME             - create config repo on GitHub"
+secrets                             - generate new secrets for all tidepool environments"
+sync                                - cause flux to sync with the config repo"
+values                              - create initial values.yaml file"
+      
+----- Query Commands (safe)"
+envoy                               - show envoy config"
+linkerd_check                       - check Linkerd status"
+peering                             - list peering relationships"
+vpc                                 - identify the VPC"
+      
+----- Cluster Commands"
+await_deletion                      - await completion of deletion of the AWS EKS cluster"
+cluster                             - create AWS EKS cluster, add system:master USERS"
+delete_cluster                      - (initiate) deletion of the AWS EKS cluster"
+flux                                - install flux GitOps controller and deploy flux public key into GitHub"
+mesh                                - install service mesh"
+service_account \$namespace \$name  - recreate a single service account in current context"
+users                               - add system:master USERS to K8s cluster"
+utils                               - update coredns, aws-node, and kube-proxy services in current context"
+vpa                                 - install vertical pod autoscaler"
+      
+----- Other Commands"
+buckets                             - create S3 buckets if needed and copy assets if don't exist"
+kmskey                              - create a new Amazon KMS key for the cluster"
+merge_kubeconfig                    - copy the KUBECONFIG into the local $KUBECONFIG file"
+remove_mesh                         - uninstall the service mesh"
+update_kubeconfig                   - modify context and user for kubeconfig"
+EOF
 }
 
-APPROVE=false
-USE_LOCAL_FILESYSTEM=false
-SKIP_REVIEW=false
-GITHUB_ORG=${GITHUB_ORG:-tidepool-org}
-declare -a PARAMS
-while (("$#")); do
-  case "$1" in
-    -y | --approve)
-      APPROVE=true
-      shift 1
+
+main() {
+  declare -a PARAMS
+  while (("$#")); do
+    case "$1" in
+      -y | --approve)
+        APPROVE=true
+        shift 1
+        ;;
+      --skip-review)
+        SKIP_REVIEW=true
+        shift 1
+        ;;
+      -x)
+        set -x
+        shift 1
+        ;;
+      -l | --local)
+        USE_LOCAL_FILESYSTEM=true
+        shift 1
+        ;;
+      -h | --help)
+        help
+        exit 0
+        ;;
+      --) # end argument parsing
+        shift
+        break
+        ;;
+      -* | --*=) # unsupported flags
+        echo "Error: Unsupported flag $1" >&2
+        exit 1
+        ;;
+      *) # preserve positional arguments
+        PARAMS+=("$1")
+        shift
+        ;;
+    esac
+  done
+
+  unset TMP_DIR
+  unset TEMPLATE_DIR
+  unset CHART_DIR
+  unset SM_DIR
+
+  define_colors
+
+  eval set -- "${PARAMS[*]}"
+  cmd=${1:-config}
+  if [ $# -ne 0 ]; then
+    shift
+  fi
+  case $cmd in
+    await_deletion)
+      check_remote_repo
+      setup_tmpdir
+      clone_remote
+      confirm_matching_cluster
+      await_deletion
+      info "cluster deleted"
       ;;
-    --skip-review)
-      SKIP_REVIEW=true
-      shift 1
+    buckets)
+      check_remote_repo
+      make_buckets
       ;;
-    -x)
-      set -x
-      shift 1
+    cluster)
+      check_remote_repo
+      setup_tmpdir
+      clone_remote
+      set_template_dir
+      make_config
+      make_cluster
+      merge_kubeconfig
+      make_users
+      save_changes "Added cluster and users"
       ;;
-    -l | --local)
-      USE_LOCAL_FILESYSTEM=true
-      shift 1
+    config)
+      check_remote_repo
+      expect_github_token
+      setup_tmpdir
+      clone_remote
+      set_template_dir
+      confirm_matching_cluster
+      make_config
+      save_changes "Added config packages"
       ;;
-    -h | --help)
-      help
-      exit 0
+    delete_cluster)
+      check_remote_repo
+      setup_tmpdir
+      clone_remote
+      set_template_dir
+      confirm_matching_cluster
+      delete_cluster
       ;;
-    --) # end argument parsing
-      shift
-      break
+    delete_peering)
+      check_remote_repo
+      setup_tmpdir
+      clone_remote
+      confirm_matching_cluster
+      delete_peering_connections
       ;;
-    -* | --*=) # unsupported flags
-      echo "Error: Unsupported flag $1" >&2
-      exit 1
+    envoy)
+      envoy
       ;;
-    *) # preserve positional arguments
-      PARAMS+=("$1")
-      shift
+    envrc)
+      check_remote_repo
+      setup_tmpdir
+      clone_remote
+      make_envrc
+      ;;
+    flux)
+      check_remote_repo
+      setup_tmpdir
+      set_template_dir
+      clone_remote
+      make_shared_config
+      make_cluster_config
+      make_namespace_config
+      bootstrap_flux
+      confirm_matching_cluster
+      ;;
+    fluxkey)
+      check_remote_repo
+      setup_tmpdir
+      clone_remote
+      expect_github_token
+      install_fluxkey
+      ;;
+    kmskey)
+      check_remote_repo
+      setup_tmpdir
+      clone_remote
+      create_kmskey
+      save_changes "Added kms key"
+      ;;
+    linkerd_check)
+      linkerd check --proxy
+      ;;
+    merge_kubeconfig)
+      check_remote_repo
+      setup_tmpdir
+      clone_remote
+      merge_kubeconfig
+      ;;
+    mesh)
+      check_remote_repo
+      setup_tmpdir
+      clone_remote
+      confirm_matching_cluster
+      make_mesh
+      save_changes "Added linkerd mesh"
+      ;;
+    peering)
+      check_remote_repo
+      setup_tmpdir
+      clone_remote
+      find_peering_connections
+      ;;
+    remove_mesh)
+      check_remote_repo
+      setup_tmpdir
+      clone_remote
+      confirm_matching_cluster
+      remove_mesh
+      save_changes "Removed mesh."
+      ;;
+    repo)
+      setup_tmpdir
+      make_repo $@
+      check_remote_repo
+      setup_tmpdir
+      clone_remote
+      expect_values_not_exist
+      set_template_dir
+      make_values
+      save_changes "Added values"
+      ;;
+    secrets)
+      check_remote_repo
+      setup_tmpdir
+      clone_remote
+      generate_secrets
+      save_changes "Added secrets"
+      ;;
+    service_account)
+      check_remote_repo
+      clone_remote
+      recreate_service_account $1 $2
+      ;;
+    sync)
+      fluxctl sync
+      ;;
+    update_kubeconfig)
+      check_remote_repo
+      setup_tmpdir
+      set_template_dir
+      clone_remote
+      update_kubeconfig
+      save_changes "Updated kubeconfig"
+      ;;
+    users)
+      check_remote_repo
+      setup_tmpdir
+      clone_remote
+      confirm_matching_cluster
+      make_users
+      ;;
+    utils)
+      check_remote_repo
+      clone_remote
+      update_utils
+      ;;
+    values)
+      check_remote_repo
+      setup_tmpdir
+      clone_remote
+      expect_values_not_exist
+      set_template_dir
+      make_values
+      save_changes "Added values"
+      ;;
+    vpa)
+      check_remote_repo
+      setup_tmpdir
+      vpa
+      ;;
+    vpc)
+      check_remote_repo
+      setup_tmpdir
+      clone_remote
+      get_vpc
+      ;;
+    *)
+      panic "unknown command: $*"
       ;;
   esac
-done
+}
 
-unset TMP_DIR
-unset TEMPLATE_DIR
-unset CHART_DIR
-unset SM_DIR
-
-define_colors
-
-eval set -- "${PARAMS[*]}"
-cmd=${1:-config}
-if [ $# -ne 0 ]
-then
-  shift
-fi
-case $cmd in
-  await_deletion)
-    check_remote_repo
-    setup_tmpdir
-    clone_remote
-    confirm_matching_cluster
-    await_deletion
-    info "cluster deleted"
-    ;;
-  buckets)
-    check_remote_repo
-    make_buckets
-    ;;
-  cluster)
-    check_remote_repo
-    setup_tmpdir
-    clone_remote
-    set_template_dir
-    make_config
-    make_cluster
-    merge_kubeconfig
-    make_users
-    save_changes "Added cluster and users"
-    ;;
-  config)
-    check_remote_repo
-    expect_github_token
-    setup_tmpdir
-    clone_remote
-    set_template_dir
-    confirm_matching_cluster
-    make_config
-    save_changes "Added config packages"
-    ;;
-  delete_cluster)
-    check_remote_repo
-    setup_tmpdir
-    clone_remote
-    set_template_dir
-    confirm_matching_cluster
-    delete_cluster
-    ;;
-  delete_peering)
-    check_remote_repo
-    setup_tmpdir
-    clone_remote
-    confirm_matching_cluster
-    delete_peering_connections
-    ;;
-  envoy)
-    envoy
-    ;;
-  envrc)
-    check_remote_repo
-    setup_tmpdir
-    clone_remote
-    make_envrc
-    ;;
-  flux)
-    check_remote_repo
-    setup_tmpdir
-    set_template_dir
-    clone_remote
-    make_shared_config
-    make_cluster_config
-    make_namespace_config
-    bootstrap_flux
-    confirm_matching_cluster
-    ;;
-  fluxkey)
-    check_remote_repo
-    setup_tmpdir
-    clone_remote
-    expect_github_token
-    install_fluxkey
-    ;;
-  kmskey)
-    check_remote_repo
-    setup_tmpdir
-    clone_remote
-    create_kmskey
-    save_changes "Added kms key"
-    ;;
-  linkerd_check)
-    linkerd check --proxy
-    ;;
-  merge_kubeconfig)
-    check_remote_repo
-    setup_tmpdir
-    clone_remote
-    merge_kubeconfig
-    ;;
-  mesh)
-    check_remote_repo
-    setup_tmpdir
-    clone_remote
-    confirm_matching_cluster
-    make_mesh
-    save_changes "Added linkerd mesh"
-    ;;
-  peering)
-    check_remote_repo
-    setup_tmpdir
-    clone_remote
-    find_peering_connections
-    ;;
-  remove_mesh)
-    check_remote_repo
-    setup_tmpdir
-    clone_remote
-    confirm_matching_cluster
-    remove_mesh
-    save_changes "Removed mesh."
-    ;;
-  repo)
-    setup_tmpdir
-    make_repo $@
-    check_remote_repo
-    setup_tmpdir
-    clone_remote
-    expect_values_not_exist
-    set_template_dir
-    make_values
-    save_changes "Added values"
-    ;;
-  secrets)
-    check_remote_repo
-    setup_tmpdir
-    clone_remote
-    generate_secrets
-    save_changes "Added secrets"
-    ;;
-  service_account)
-    check_remote_repo
-    clone_remote
-    recreate_service_account $1 $2
-    ;;
-  sync)
-    fluxctl sync
-    ;;
-  update_kubeconfig)
-    check_remote_repo
-    setup_tmpdir
-    set_template_dir
-    clone_remote
-    update_kubeconfig
-    save_changes "Updated kubeconfig"
-    ;;
-  users)
-    check_remote_repo
-    setup_tmpdir
-    clone_remote
-    confirm_matching_cluster
-    make_users
-    ;;
-  utils)
-    check_remote_repo
-    clone_remote
-    update_utils
-    ;;
-  values)
-    check_remote_repo
-    setup_tmpdir
-    clone_remote
-    expect_values_not_exist
-    set_template_dir
-    make_values
-    save_changes "Added values"
-    ;;
-  vpa)
-    check_remote_repo
-    setup_tmpdir
-    vpa
-    ;;
-  vpc)
-    check_remote_repo
-    setup_tmpdir
-    clone_remote
-    get_vpc
-    ;;
-  *)
-    panic "unknown command: $*"
-    ;;
-esac
+main "$@"
