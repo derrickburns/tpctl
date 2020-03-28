@@ -215,6 +215,7 @@ local certmanager = import 'certmanager.jsonnet';
               startTime: '%START_TIME%',
               token: '%REQ(x-tidepool-session-token)%',
               upstream: '%UPSTREAM_CLUSTER%',
+              clientName: '%REQ(x-tidepool-client-name)%',
             },
             path: '/dev/stdout',
           },

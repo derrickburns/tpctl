@@ -972,10 +972,10 @@ general:
     https: $HTTPS_REMOTE_REPO
 !
 
-  yq r values.yaml -j | jq '.cluster.metadata.name = .general.github.git' |
-    jq '.cluster.metadata.name |= gsub(".*\/"; "")' |
-    jq '.cluster.metadata.name |= gsub("cluster-"; "")' | yq r - >xxx.yaml
-  mv xxx.yaml values.yaml
+  #yq r values.yaml -j | jq '.cluster.metadata.name = .general.github.git' |
+    #jq '.cluster.metadata.name |= gsub(".*\/"; "")' |
+    #jq '.cluster.metadata.name |= gsub("cluster-"; "")' | yq r - >xxx.yaml
+  #mv xxx.yaml values.yaml
   if [ "$APPROVE" != "true" ]; then
     ${EDITOR:-vi} values.yaml
   fi
@@ -1096,24 +1096,26 @@ function remove_mesh() {
 # if that is unset, then use personal account associated with provided GitHub token.
 
 function make_repo() {
-  REMOTE_REPO="$1"
+  input="$1"
 
   local org
   local repo
   local dest
 
-  if [[ "$REMOTE_REPO" == */* ]]; then
-    org=$(echo -n $REMOTE_REPO | cut -d '/' -f 1)
-    repo=$(echo -n $REMOTE_REPO | cut -d '/' -f 2)
+  if [[ "$input" == */* ]]; then
+    org=$(echo -n $input | cut -d '/' -f 1)
+    repo=$(echo -n $input | cut -d '/' -f 2)
   else
-    org=$ORG
-    repo=$REMOTE_REPO
+    org=$GITHUB_ORG
+    repo=$input
   fi
 
   if [[ -z $org ]]; then
     dest="https://api.github.com/user/repos"
+    export REMOTE_REPO=${GITHUB_USER}/$repo
   else
     dest="https://api.github.com/orgs/$org/repos"
+    export REMOTE_REPO=$org/$repo
   fi
 
   local template='{"name":"yolo-test", "private":"true", "auto_init": true}'
@@ -1127,12 +1129,12 @@ function make_repo() {
   if [ "$USE_LOCAL_FILESYSTEM" == "true" ]
   then
     info "cloning repo"
-    git clone http://github.com/${REMOTE_REPO}.git
+    git clone http://github.com/${org}/${repo}.git
     cd $repo
     info "cloned repo into $(pwd)"
   else
     info "clone repo using: "
-    info "git clone http://github.com/${REMOTE_REPO}.git"
+    info "git clone http://github.com/${org}/${repo}.git"
   fi
   complete "private repo created"
 }
@@ -1185,7 +1187,7 @@ function help() {
 APPROVE=false
 USE_LOCAL_FILESYSTEM=false
 SKIP_REVIEW=false
-ORG=${ORG:-tidepool-org}
+GITHUB_ORG=${GITHUB_ORG:-tidepool-org}
 declare -a PARAMS
 while (("$#")); do
   case "$1" in
@@ -1354,6 +1356,13 @@ case $cmd in
   repo)
     setup_tmpdir
     make_repo $@
+    check_remote_repo
+    setup_tmpdir
+    clone_remote
+    expect_values_not_exist
+    set_template_dir
+    make_values
+    save_changes "Added values"
     ;;
   secrets)
     check_remote_repo
