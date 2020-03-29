@@ -310,6 +310,7 @@ local tracing = import 'tracing.jsonnet';
       probes: false,
       image: {
         repository: 'gloo-envoy-wrapper',
+        tag: lib.getElse(me, 'gloo.version', lib.getElse(me, 'version', '1.3.15')),
       },
       httpPort: 8080,
       httpsPort: 8443,
