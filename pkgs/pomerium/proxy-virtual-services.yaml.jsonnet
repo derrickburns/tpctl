@@ -1,18 +1,14 @@
+local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
+local mylib = import '../../lib/pom.jsonnet';
 
-local mylib = import 'lib.jsonnet';
-
-local proxyVirtualService(config, namespace) = {
+local proxyVirtualService(config, namespace) = k8s.k('gateway.solo.io/v1', 'VirtualService') + k8s.metadata('proxy-https', namespace) {
   local domains = mylib.dnsNames(config),
-  apiVersion: 'gateway.solo.io/v1',
-  kind: 'VirtualService',
-  metadata: {
+  metadata+: {
     labels: {
       protocol: 'https',
       type: 'pomerium',
     },
-    name: 'proxy-https',
-    namespace: namespace,
   },
   spec: {
     displayName: 'proxy-https',

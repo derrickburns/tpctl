@@ -1,7 +1,7 @@
+local global = import '../../lib/global.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
-local mylib = import 'lib.jsonnet';
-local global = import '../../lib/global.jsonnet';
+local mylib = import '../../lib/pom.jsonnet';
 
 local getPoliciesForPackage(config, me) = {
   local sso = me.sso,
@@ -11,7 +11,7 @@ local getPoliciesForPackage(config, me) = {
   to: 'http://' + lib.getElse(sso, 'serviceName', me.pkg) + '.' + me.namespace + '.svc.cluster.local' + suffix,
   allowed_groups: lib.getElse(me, 'allowed_groups', lib.getElse(config, 'general.sso.allowed_groups', [])),
   allowed_users: lib.getElse(me, 'allowed_users', lib.getElse(config, 'general.sso.allowed_users', [])),
-  allow_websockets: lib.getElse(me, 'allow_websockets', lib.getElse(config, 'general.sso.allow_websockets', true))
+  allow_websockets: lib.getElse(me, 'allow_websockets', lib.getElse(config, 'general.sso.allow_websockets', true)),
 };
 
 local getPolicy(config) = [getPoliciesForPackage(config, pkg) for pkg in global.packagesWithKey(config, 'sso')];

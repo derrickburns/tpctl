@@ -1,10 +1,6 @@
-local upstream(namespace) = {
-  apiVersion: 'gloo.solo.io/v1',
-  kind: 'Upstream',
-  metadata: {
-    name: 'pomerium-authenticate',
-    namespace: namespace,
-  },
+local k8s = import '../../lib/k8s.jsonnet';
+
+local upstream(namespace) = k8s.k('gloo.solo.io/v1', 'Upstream') + k8s.metadata('pomerium-authenticate', namespace) {
   spec: {
     discoveryMetadata: {},
     kube: {

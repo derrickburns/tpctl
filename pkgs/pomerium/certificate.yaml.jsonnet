@@ -1,6 +1,7 @@
-local lib = import '../../lib/lib.jsonnet';
 local global = import '../../lib/global.jsonnet';
-local mylib = import 'lib.jsonnet';
+local k8s = import '../../lib/k8s.jsonnet';
+local lib = import '../../lib/lib.jsonnet';
+local mylib = import '../../lib/pom.jsonnet';
 
 local dnsNames(config, namespace) = (
   local domain = mylib.rootDomain(config);
@@ -11,15 +12,9 @@ local dnsNames(config, namespace) = (
   + mylib.dnsNames(config)
 );
 
-local certificate(config, namespace) = (
+local certificate(config, namespace) = +k8s.k('cert-manager.io/v1alpha2', 'Certificate') + k8s.metadata('pomerium-certificate', namespace)(
   local names = dnsNames(config, namespace);
   {
-    apiVersion: 'cert-manager.io/v1alpha2',
-    kind: 'Certificate',
-    metadata: {
-      name: 'pomerium-certificate',
-      namespace: namespace,
-    },
     spec: {
       secretName: 'pomerium-tls',
       issuerRef: {

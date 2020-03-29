@@ -1,18 +1,14 @@
+local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
+local mylib = import '../../lib/pom.jsonnet';
 
-local mylib = import 'lib.jsonnet';
-
-local virtualService(config, namespace) = {
+local virtualService(config, namespace) = k8s.k('gateway.solo.io/v1', 'VirtualService') + k8s.metadata('authenticate', namespace) {
   local domain = mylib.rootDomain(config),
-  apiVersion: 'gateway.solo.io/v1',
-  kind: 'VirtualService',
-  metadata: {
+  metadata+: {
     labels: {
       protocol: 'https',
       type: 'pomerium',
     },
-    name: 'authenticate',
-    namespace: namespace,
   },
   spec: {
     displayName: 'authenicate',
