@@ -1,4 +1,4 @@
-local pom = import '../pkgs/pomerium/lib.jsonnet';
+local pom = import 'pom.jsonnet';
 local certmanager = import 'certmanager.jsonnet';
 local expand = import 'expand.jsonnet';
 local global = import 'global.jsonnet';
