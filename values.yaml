@@ -18,12 +18,6 @@ cluster:
     version: 1.14.7
   nodeGroups:
     - desiredCapacity: 6
-      iam:
-        attachPolicyARNs:
-          - arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy
-          - arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy
-          - arn:aws:iam::aws:policy/ElasticLoadBalancingFullAccess
-          - arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly
       instanceType: c5.xlarge
       labels:
         role: worker
@@ -165,7 +159,7 @@ namespaces:
         asset: tidepool-qa1-asset
         data: tidepool-qa1-data
       chart:
-        version: 0.3.7
+        version: 0.4.5
       dnsNames:
         - qa1.development.tidepool.org
         - dev.tidepool.org
@@ -217,7 +211,7 @@ namespaces:
         asset: tidepool-qa2-asset
         data: tidepool-qa2-data
       chart:
-        version: 0.3.7
+        version: 0.4.5
       dnsNames:
         - qa2.development.tidepool.org
         - stg-api.tidepool.org
