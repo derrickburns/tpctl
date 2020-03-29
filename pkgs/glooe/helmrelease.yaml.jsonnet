@@ -7,7 +7,10 @@ local helmrelease(config, me) = (
   local glooVersion = lib.getElse(me, 'gloo.version', '1.3.15');
   k8s.helmrelease('gloo-ee', me.namespace, version, 'http://storage.googleapis.com/gloo-ee-helm') {
     spec+: {
-      values: gloo.globalValues(config, me, glooVersion) + { gloo: gloo.glooValues(config, me, glooVersion) }
+      values: gloo.globalValues(config, me, glooVersion) + {
+        gloo: gloo.glooValues(config, me, glooVersion),
+        create_license_secret: false,
+      },
     },
   }
 );
