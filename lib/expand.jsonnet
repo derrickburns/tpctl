@@ -23,7 +23,7 @@ local addVirtualServiceIfNeeded(me, config, name, pkg) = me + (
 
 local dispatch = {
   tidepool:: import '../pkgs/tidepool/expand.jsonnet',
-  pomerium:: import '../pkgs/pomerium/lib.jsonnet',
+  pomerium:: import 'pom.jsonnet',
 };
 
 local addLocalChanges(me, config, name, pkg) =
