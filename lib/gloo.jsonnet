@@ -415,7 +415,7 @@ local tracing = import 'tracing.jsonnet';
             'external-dns.alpha.kubernetes.io/alias': 'true',
             'external-dns.alpha.kubernetes.io/hostname': std.join(
               ',',
-              gloo.dnsNames(expand.expand(config), { type: 'pomerium' })
+              $.dnsNames(expand.expand(config), { type: 'pomerium' })
               + pom.dnsNames(expand.expand(config))
             ),
             'service.beta.kubernetes.io/aws-load-balancer-additional-resource-tags': 'cluster:%s' % config.cluster.metadata.name,
@@ -437,7 +437,7 @@ local tracing = import 'tracing.jsonnet';
             'external-dns.alpha.kubernetes.io/alias': 'true',
             'external-dns.alpha.kubernetes.io/hostname': std.join(
               ',',
-              gloo.dnsNames(expand.expand(config), { type: 'external' })
+              $.dnsNames(expand.expand(config), { type: 'external' })
             ),
             'service.beta.kubernetes.io/aws-load-balancer-additional-resource-tags': 'cluster:%s' % config.cluster.metadata.name,
           },
