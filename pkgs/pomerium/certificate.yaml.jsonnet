@@ -12,7 +12,7 @@ local dnsNames(config, namespace) = (
   + mylib.dnsNames(config)
 );
 
-local certificate(config, namespace) = k8s.k('cert-manager.io/v1alpha2', 'Certificate') + k8s.metadata('pomerium-certificate', namespace)(
+local certificate(config, namespace) = k8s.k('cert-manager.io/v1alpha2', 'Certificate') + k8s.metadata('pomerium-certificate', namespace) (
   local names = dnsNames(config, namespace);
   {
     spec: {
