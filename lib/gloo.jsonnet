@@ -405,7 +405,7 @@ local tracing = import 'tracing.jsonnet';
       },
     },
     gatewayProxies+: {
-      pomeriumGatewayProxy: baseGatewayProxy(config, me, 'pomeriumGatewayProxy') {
+      pomeriumGatewayProxy: $.baseGatewayProxy(config, me, 'pomeriumGatewayProxy') {
         service+: {
           type: 'LoadBalancer',
           extraAnnotations+: {
@@ -422,12 +422,12 @@ local tracing = import 'tracing.jsonnet';
           },
         },
       },
-      internalGatewayProxy: baseGatewayProxy(config, me, 'internalGatewayProxy') {
+      internalGatewayProxy: $.baseGatewayProxy(config, me, 'internalGatewayProxy') {
         service+: {
           type: 'ClusterIP',
         },
       },
-      gatewayProxy: baseGatewayProxy(config, me, 'gatewayProxy') {
+      gatewayProxy: $.baseGatewayProxy(config, me, 'gatewayProxy') {
         service+: {
           type: 'LoadBalancer',
           extraAnnotations+: {
