@@ -1,5 +1,5 @@
-local lib = import '../../lib/lib.jsonnet';
-local global = import '../../lib/global.jsonnet';
+local lib = import 'lib.jsonnet';
+local global = import 'global.jsonnet';
 
 {
   rootDomain(config):: config.cluster.metadata.domain,
