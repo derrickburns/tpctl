@@ -1,5 +1,6 @@
 local gloo = import '../../lib/gloo.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
+local lib = import '../../lib/lib.jsonnet';
 
 local helmrelease(config, me) = (
   local version = lib.getElse(me, 'version', '1.3.0-beta6');
