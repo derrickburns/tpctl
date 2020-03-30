@@ -13,6 +13,18 @@ local helmrelease(config, me) = (
         persistence: {
          storageClassName: "gp2-expanding",
         },
+        prometheus: {
+          server: {
+            resources: {
+              limits: {
+                mem: "2Gi",
+              },
+              requests: {
+                mem: "2Gi",
+              },
+            },
+          },
+        },
       },
     },
   }
