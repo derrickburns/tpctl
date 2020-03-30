@@ -6,6 +6,10 @@ function(config, prev, namespace, pkg)
       values+: {
         serviceAccount: {
           create: false
+          name: pkg,
+        },
+        securityContext: {
+          enabled: true.
         },
       },
     },
