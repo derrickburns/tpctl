@@ -3,8 +3,8 @@ local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
 local helmrelease(config, me) = (
-  local version = lib.getElse(me, 'version', '1.3.0-beta6');
-  local glooVersion = lib.getElse(me, 'gloo.version', '1.3.15');
+  local version = lib.getElse(me, 'version', '1.2.12');
+  local glooVersion = lib.getElse(me, 'gloo.version', '1.2.23');
   k8s.helmrelease('gloo-ee', me.namespace, version, 'http://storage.googleapis.com/gloo-ee-helm') {
     spec+: {
       values: gloo.globalValues(config, me, glooVersion) + {
