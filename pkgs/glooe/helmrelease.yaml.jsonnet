@@ -17,10 +17,10 @@ local helmrelease(config, me) = (
           server: {
             resources: {
               limits: {
-                mem: "2Gi",
+                memory: "2Gi",
               },
               requests: {
-                mem: "2Gi",
+                memory: "2Gi",
               },
             },
           },
