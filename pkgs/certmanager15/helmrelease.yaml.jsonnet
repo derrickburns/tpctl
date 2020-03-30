@@ -6,7 +6,7 @@ function(config, prev, namespace, pkg)
       values+: {
         serviceAccount: {
           create: false,
-          name: pkg,
+          name: 'cert-manager',
         },
         securityContext: {
           enabled: true,
