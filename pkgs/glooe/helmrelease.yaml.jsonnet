@@ -17,7 +17,7 @@ local helmrelease(config, me) = (
           server: {
             resources: {
               limits: {
-                memory: "2Gi",
+                memory: "3Gi",
               },
               requests: {
                 memory: "2Gi",
