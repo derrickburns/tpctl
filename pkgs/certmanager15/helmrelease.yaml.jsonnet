@@ -5,11 +5,11 @@ function(config, prev, namespace, pkg)
     spec+: {
       values+: {
         serviceAccount: {
-          create: false
+          create: false,
           name: pkg,
         },
         securityContext: {
-          enabled: true.
+          enabled: true,
         },
       },
     },
