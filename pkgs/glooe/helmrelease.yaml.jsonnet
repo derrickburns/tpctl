@@ -10,6 +10,9 @@ local helmrelease(config, me) = (
       values: gloo.globalValues(config, me, glooVersion) + {
         gloo: gloo.glooValues(config, me, glooVersion),
         create_license_secret: false,
+        persistence: {
+         storageClassName: "gp2-expanding",
+        },
       },
     },
   }
