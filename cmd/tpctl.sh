@@ -462,8 +462,11 @@ function recreate_service_account() {
   local cluster=$(get_cluster)
   local namespace=$1
   local name=$2
-  start "recreating service account $namespace/$name"
+  start "deleting service account $namespace/$name"
   eksctl delete iamserviceaccount --cluster $cluster --namespace $namespace --name $name || true
+  start "awaiting deletion of cloud formation stack for service account"
+  aws cloudformation wait stack-delete-complete --stack-name eksctl-${cluster}-addon-iamserviceaccount-${namespace}-${name}
+  start "creating new service account"
   eksctl create iamserviceaccount -f config.yaml --approve
   expect_success "eksctl create service account failed."
   complete "recreated service account $namespace/$name, now restart dependent services"
