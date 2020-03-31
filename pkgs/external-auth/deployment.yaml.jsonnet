@@ -30,6 +30,15 @@ local deployment(me) = {
             imagePullPolicy: 'Always',
             name: 'external-auth',
             env: [
+                {
+                  name: 'API_SECRET',
+                  valueFrom: {
+                    secretKeyRef: {
+                      name: 'shoreline',
+                      key: 'ServiceAuth',
+                    },
+                  },
+                },
             ],
             ports: [{
               containerPort: 4000,
