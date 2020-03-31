@@ -6,7 +6,7 @@ local deployment(config, me) =
       if lib.isTrue(me, 'sidecar')
       then 'fluxrecv-config'
       else 'fluxrecv-config-separate',
-    apiVersion: 'extensions/v1beta1',
+    apiVersion: 'apps/v1',
     kind: 'Deployment',
     metadata: {
       annotations: {
