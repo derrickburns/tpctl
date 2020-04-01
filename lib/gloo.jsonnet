@@ -1,10 +1,10 @@
-local pom = import 'pom.jsonnet';
 local certmanager = import 'certmanager.jsonnet';
 local expand = import 'expand.jsonnet';
 local global = import 'global.jsonnet';
 local k8s = import 'k8s.jsonnet';
 local lib = import 'lib.jsonnet';
 local linkerd = import 'linkerd.jsonnet';
+local pom = import 'pom.jsonnet';
 local tracing = import 'tracing.jsonnet';
 
 {
@@ -454,6 +454,32 @@ local tracing = import 'tracing.jsonnet';
       },
     },
     spec: {
+      ratelimit: {
+        descriptors: [
+          {
+            key: 'Unauthenticated',
+            rateLimit: {
+              requestsPerUnit: 60,
+              unit: 'MINUTE',
+            },
+          },
+          {
+            key: 'Individual',
+            rateLimit: {
+              requestsPerUnit: 10,
+              unit: 'MINUTE',
+            },
+          },
+          {
+            key: 'SmallClinic',
+            rateLimit: {
+              requestsPerUnit: 30,
+              unit: 'MINUTE',
+            },
+          },
+        ],
+      },
+
       discovery: {
         fdsMode: 'WHITELIST',
       },
