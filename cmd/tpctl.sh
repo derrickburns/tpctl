@@ -714,17 +714,11 @@ function save_changes() {
   info "==== BEGIN Changes"
   git diff --cached HEAD
   info "==== END Changes"
-  local proposed="tpctl-$(date '+%Y-%m-%d-%H-%M-%S')"
-  local branch
-  if [ "$APPROVE" != "true" ]; then
-    confirm "Do you want to save these changes? "
-    read -p "${GREEN}Branch name [$proposed]?${RESET} "
-    branch=${REPLY:-$proposed}
-  else
-    branch=$proposed
-  fi
+  local branch="tpctl-$(date '+%Y-%m-%d-%H-%M-%S')"
   establish_ssh
   start "saving changes to config repo"
+  read -p "${GREEN}PR Message? ${RESET} " -r
+  local message=$REPLY
   git add .
   expect_success "git add failed"
   if [ "$branch" != "master" ]; then
@@ -742,8 +736,6 @@ function save_changes() {
     echo "Skipping review"
     return
   fi
-  read -p "${GREEN}PR Message? ${RESET} " -r
-  local message=$REPLY
   info "Please select PR reviewer: "
   select REVIEWER in none $REVIEWERS; do
     if [ "$REVIEWER" == "none" ]; then
