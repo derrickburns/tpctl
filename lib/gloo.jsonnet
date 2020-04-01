@@ -220,6 +220,7 @@ local tracing = import 'tracing.jsonnet';
               upstream: '%UPSTREAM_CLUSTER%',
               clientName: '%REQ(x-tidepool-client-name)%',
               userAgent: '%REQ(user-agent)%',
+              referrer: '%REQ(referrer)%',
             },
             path: '/dev/stdout',
           },
