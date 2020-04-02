@@ -53,4 +53,4 @@ local helmrelease(config, me) = k8s.helmrelease('helm-operator', me.namespace, '
   },
 };
 
-function(config, prev, namespace, pkg) helmrelease(config, lib.package(conig, namespace, pkg))
+function(config, prev, namespace, pkg) helmrelease(config, lib.package(config, namespace, pkg))
