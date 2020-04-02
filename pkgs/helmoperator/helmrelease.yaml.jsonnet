@@ -2,7 +2,7 @@ local global = import '../../lib/global.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
-local helmrelease(config, me) = k8s.helmrelease('helm-operator', namespace, '0.6.0', 'https://charts.fluxcd.io') {
+local helmrelease(config, me) = k8s.helmrelease('helm-operator', me.namespace, '0.6.0', 'https://charts.fluxcd.io') {
   spec+: {
     values: {
       local secretName = 'flux-helm-repositories',
