@@ -53,5 +53,4 @@ local helmrelease(config, me) = k8s.helmrelease('helm-operator', me.namespace, '
   },
 };
 
-function(config, prev, namespace, pkg)
-  k8s.helmrelease('helm-operator', namespace, '0.6.0', 'https://charts.fluxcd.io') { spec+: { values: genvalues(config) } }
+function(config, prev, namespace, pkg) helmrelease(config, lib.package(conig, namespace, pkg))
