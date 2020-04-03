@@ -52,6 +52,7 @@ namespaces:
     config:
       create: false
     certmanager:
+      pkg: cert-manager
       global: true
       enabled: true
     certmanager15:
@@ -75,6 +76,8 @@ namespaces:
       enabled: true
       export: true
       sidecar: false
+    helm-operator:
+      enabled: true
   gloo-system:
     config:
       meshed: true
@@ -241,7 +244,7 @@ namespaces:
     reloader:
       enabled: true
   sumologic:
-    sumologic:
+    sumologic-fluentd:
       apiEndpoint: https://api.us2.sumologic.com/api/v1/
       enabled: true
   tracing:
