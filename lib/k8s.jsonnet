@@ -1,15 +1,44 @@
-{
+local lib = import 'lib.jsonnet';
 
+local providesHelmRepo(me) = std.objectHas(me, 'version') && std.objectHas(me, 'name') && std.objectHas(me, 'repository');
+
+local providesGitRepo(me) = std.objectHas(me, 'git') && std.objectHas(me, 'path') && std.objectHas(me, 'ref');
+
+local helm(me) = {
+  repository: me.repository,
+  name: me.name,
+  version: me.version,
+};
+
+local git(me) = {
+  git: me.git,
+  path: me.path,
+  ref: me.ref,
+};
+
+local chart(me, values) = (
+  local defaults = { path: '.', ref: 'master', repository: 'https://kubernetes-charts.storage.googleapis.com' };
+  local custom = { name: me.pkg } + lib.getElse(me, 'chart', {});
+  local withDefaults = { name: me.pkg } + defaults + values + custom;
+
+  if providesHelmRepo(custom) then helm(custom)
+  else if providesGitRepo(custom) then git(custom)
+  else if providesHelmRepo(withDefaults) then helm(withDefaults)
+  else if providesGitRepo(withDefaults) then git(withDefaults)
+  else {}
+);
+
+{
   k(apiVersion, kind):: {
     apiVersion: apiVersion,
     kind: kind,
-  }, 
+  },
 
   metadata(name, namespace=''):: {
     metadata: {
-      name: name,
-    } +
-    if namespace != '' then { namespace: namespace, } else {},
+                name: name,
+              } +
+              if namespace != '' then { namespace: namespace } else {},
   },
 
   serviceaccount(me):: $.k('v1', 'ServiceAccount') + $.metadata(me.pkg, me.namespace),
@@ -31,31 +60,13 @@
     ],
   },
 
-  basehelmrelease(name, namespace):: $.k('helm.fluxcd.io/v1', 'HelmRelease') + $.metadata(name, namespace) {
-    spec+: {
-      releaseName: name,
-    },
-  },
-
-  githelmrelease(name, namespace, git, ref='master', path='.'):: $.basehelmrelease(name, namespace) {
-    spec+: {
-      chart: {
-        git: git,
-        ref: ref,
-        path: path,
+  helmrelease(me, chartValues):: 
+    $.k('helm.fluxcd.io/v1', 'HelmRelease') + $.metadata(me.pkg, me.namespace) {
+      spec+: {
+        releaseName: me.pkg,
+        chart: chart(me, chartValues),
       },
     },
-  },
-
-  helmrelease(name, namespace, version, repo='https://kubernetes-charts.storage.googleapis.com'):: $.basehelmrelease(name, namespace) {
-    spec+: {
-      chart: {
-        name: name,
-        repository: repo,
-        version: version,
-      },
-    },
-  },
 
   service(name, namespace, type='ClusterIP'):: $.k('v1', 'Service') + $.metadata(name, namespace) {
     spec+: {

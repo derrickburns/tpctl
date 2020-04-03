@@ -2,7 +2,7 @@ local lib = import '../../lib/lib.jsonnet';
 
 local k8s = import '../../lib/k8s.jsonnet';
 
-local helmrelease(config, me) = k8s.helmrelease('prometheus-operator', me.namespace, '8.12.7') {
+local helmrelease(config, me) = k8s.helmrelease(me, { version: '8.12.7' }) {
   spec+: {
     values+: {
       grafana: lib.getElse(me, 'grafana', { enabled: false }),
@@ -13,10 +13,10 @@ local helmrelease(config, me) = k8s.helmrelease('prometheus-operator', me.namesp
           enabled: false,
           patch: {
             enabled: false,
-          }
+          },
         },
         tlsProxy: {
-          enabled: false
+          enabled: false,
         },
       },
     },

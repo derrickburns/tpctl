@@ -1,6 +1,7 @@
 local expand = import '../../lib/expand.jsonnet';
-local lib = import '../../lib/lib.jsonnet';
 local global = import '../../lib/global.jsonnet';
+local lib = import '../../lib/lib.jsonnet';
+local k8s = import '../../lib/k8s.jsonnet';
 local linkerd = import '../../lib/linkerd.jsonnet';
 local mylib = import 'lib.jsonnet';
 
@@ -116,339 +117,345 @@ local proxyContainers = [{
   ],
 }];
 
-local helmrelease(config, prev, namespace) = {
-  local env = mylib.tpFor(config, namespace),
+local helmrelease(config, me, prev) =
+  k8s.helmrelease(me, {
+    repository: 'https://raw.githubusercontent.com/tidepool-org/tidepool-helm/master/',
+    git: 'git@github.com:tidepool-org/development',
+    path: 'charts/tidepool',
+  }) {
 
-  local svcs = [
-    'auth',
-    'blip',
-    'blob',
-    'data',
-    'export',
-    'gatekeeper',
-    'highwater',
-    'hydrophone',
-    'image',
-    'jellyfish',
-    'messageapi',
-    'migrations',
-    'notification',
-    'seagull',
-    'shoreline',
-    'task',
-    'tidewhisperer',
-    'tools',
-    'user',
-  ],
+    local env = me,
 
-  apiVersion: 'helm.fluxcd.io/v1',
-  kind: 'HelmRelease',
-  metadata: {
-    annotations: {
-                   'fluxcd.io/automated': if lib.getElse(env, 'gitops.enabled', true) then 'true' else 'false',
-                 } + filterAnnotations(env, svcs)
-                 + prefixAnnotations('repository', svcs),
-    name: 'tidepool',
-    namespace: namespace,
-  },
-  local common = {
-    podAnnotations: linkerd.annotations(config) + {
-      'cluster-autoscaler.kubernetes.io/safe-to-evict': 'true', // XXX
+    local svcs = [
+      'auth',
+      'blip',
+      'blob',
+      'data',
+      'export',
+      'gatekeeper',
+      'highwater',
+      'hydrophone',
+      'image',
+      'jellyfish',
+      'messageapi',
+      'migrations',
+      'notification',
+      'seagull',
+      'shoreline',
+      'task',
+      'tidewhisperer',
+      'tools',
+      'user',
+    ],
+
+    apiVersion: 'helm.fluxcd.io/v1',
+    kind: 'HelmRelease',
+    metadata: {
+      annotations: {
+                     'fluxcd.io/automated': if lib.getElse(env, 'gitops.enabled', true) then 'true' else 'false',
+                   } + filterAnnotations(env, svcs)
+                   + prefixAnnotations('repository', svcs),
+      name: 'tidepool',
+      namespace: me.namespace,
     },
-    hpa: lib.getElse(env, 'hpa', { enabled: false }),
-    deployment+: {
-      replicas: lib.getElse(env, 'deployment.replicas', 1),
+    local common = {
+      podAnnotations: linkerd.annotations(config) + {
+        'cluster-autoscaler.kubernetes.io/safe-to-evict': 'true',  // XXX
+      },
+      hpa: lib.getElse(env, 'hpa', { enabled: false }),
+      deployment+: {
+        replicas: lib.getElse(env, 'deployment.replicas', 1),
+      },
     },
-  },
 
-  spec: {
-    rollback: {
-      enable: true,
-      force: true,
-      retry: true,
-      maxRetries: 0,
-    },
-    chart: if std.objectHas(env, 'chart') && std.objectHas(env.chart, 'version') then {
-      repository: lib.getElse(env.chart, 'repository', 'https://raw.githubusercontent.com/tidepool-org/tidepool-helm/master/'),
-      name: lib.getElse(env.chart, 'name', 'tidepool'),
-      version: env.chart.version,
-    } else {
-      git: lib.getElse(env, 'chart.git', 'git@github.com:tidepool-org/development'),
-      path: lib.getElse(env, 'chart.path', 'charts/tidepool'),
-      ref: lib.getElse(env, 'chart.ref', 'master'),
-    },
-    releaseName: 'tidepool-%s' % namespace,
-    values: {
-      //local extraContainers = if lib.isTrue(env, 'shadow.enabled') && (lib.getElse(env, "shadow.sender", "") != "") then proxyContainers else [],
-      local extraContainers = [],
+    spec: {
+      rollback: {
+        enable: true,
+        force: true,
+        retry: true,
+        maxRetries: 0,
+      },
+      chart: if std.objectHas(env, 'chart') && std.objectHas(env.chart, 'version') then {
+        repository: lib.getElse(env.chart, 'repository', 'https://raw.githubusercontent.com/tidepool-org/tidepool-helm/master/'),
+        name: lib.getElse(env.chart, 'name', 'tidepool'),
+        version: env.chart.version,
+      } else {
+        git: lib.getElse(env, 'chart.git', 'git@github.com:tidepool-org/development'),
+        path: lib.getElse(env, 'chart.path', 'charts/tidepool'),
+        ref: lib.getElse(env, 'chart.ref', 'master'),
+      },
+      releaseName: 'tidepool-%s' % me.namespace,
+      values: {
+        //local extraContainers = if lib.isTrue(env, 'shadow.enabled') && (lib.getElse(env, "shadow.sender", "") != "") then proxyContainers else [],
+        local extraContainers = [],
 
-      auth: lib.mergeList([common, {
-        extraContainers: extraContainers,
-        deployment+: {
-          image: lib.getElse(prev, 'spec.values.auth.deployment.image', 'tidepool/platform-auth:master-8c8d9b39182b9edd9bafd987f50b254470840a8d'),
-        },
-      }, lib.getElse(env, 'auth', {})]),
-
-      blip: lib.mergeList([common, {
-        deployment+: {
-          image: lib.getElse(prev, 'spec.values.blip.deployment.image', 'tidepool/blip:master-47c8b1b3f298583684fe323ab170dfe7cc968902'),
-        },
-      }, lib.getElse(env, 'blip', {})]),
-
-      blob: lib.mergeList([common, {
-        extraContainers: extraContainers,
-        serviceAccount: {
-          name: 'blob',
-        },
-        securityContext: {
-          fsGroup: 65534,  // To be able to read Kubernetes and AWS token files
-        },
-        deployment+: {
-          env: {
-            store: {
-              s3: {
-                bucket: virtualBucket(config, lib.getElse(env, 'buckets.data', dataBucket(config, namespace))),
-              },
-              type: 's3',
-            },
+        auth: lib.mergeList([common, {
+          extraContainers: extraContainers,
+          deployment+: {
+            image: lib.getElse(prev, 'spec.values.auth.deployment.image', 'tidepool/platform-auth:master-8c8d9b39182b9edd9bafd987f50b254470840a8d'),
           },
-          image: lib.getElse(prev, 'spec.values.blob.deployment.image', 'tidepool/platform-blob:master-8c8d9b39182b9edd9bafd987f50b254470840a8d'),
-        },
-      }, lib.getElse(env, 'blob', {})]),
+        }, lib.getElse(env, 'auth', {})]),
 
-      data: lib.mergeList([common, {
-        extraContainers: extraContainers,
-        deployment+: {
-          image: lib.getElse(prev, 'spec.values.data.deployment.image', 'tidepool/platform-data:master-8c8d9b39182b9edd9bafd987f50b254470840a8d'),
-          replicas: 3,
-        },
-      }, lib.getElse(env, 'data', {})]),
+        blip: lib.mergeList([common, {
+          deployment+: {
+            image: lib.getElse(prev, 'spec.values.blip.deployment.image', 'tidepool/blip:master-47c8b1b3f298583684fe323ab170dfe7cc968902'),
+          },
+        }, lib.getElse(env, 'blip', {})]),
 
-      dexcom: lib.getElse(env, 'dexcom', {}),
-
-      export: lib.mergeList([common, {
-        extraContainers: extraContainers,
-        deployment+: {
-          replicas: 3,
-          image: lib.getElse(prev, 'spec.values.export.deployment.image', 'tidepool/export:release-1.4.0-133dc134dce5c287e26caafbdb6871e69fc10150'),
-        },
-      }, lib.getElse(env, 'export', {})]),
-
-      gatekeeper: lib.mergeList([common, {
-        extraContainers: extraContainers,
-        deployment+: {
-          replicas: 2,
-          image: lib.getElse(prev, 'spec.values.gatekeeper.deployment.image', 'tidepool/gatekeeper:master-03ab418230def26a638664bfbfd0a49736c96aa3'),
-        },
-      }, lib.getElse(env, 'gatekeeper', {})]),
-
-      glooingress: {
-        enabled: true,
-        gloo: {
-          enabled: false,
-        },
-        discovery: {
-          namespace: 'gloo-system',
-        },
-        virtualServices: {
-          http: {
-            name: 'http-internal',
-            dnsNames: mylib.genDnsNames(config, namespace),
-            enabled: true,
-            labels: {
-              protocol: 'http',
-              type: 'internal',
-              namespace: namespace,
-            },
-            options: {
-              stats: {
-                virtualClusters: lib.getElse(env, 'virtualClusters', []),
+        blob: lib.mergeList([common, {
+          extraContainers: extraContainers,
+          serviceAccount: {
+            name: 'blob',
+          },
+          securityContext: {
+            fsGroup: 65534,  // To be able to read Kubernetes and AWS token files
+          },
+          deployment+: {
+            env: {
+              store: {
+                s3: {
+                  bucket: virtualBucket(config, lib.getElse(env, 'buckets.data', dataBucket(config, me.namespace))),
+                },
+                type: 's3',
               },
             },
+            image: lib.getElse(prev, 'spec.values.blob.deployment.image', 'tidepool/platform-blob:master-8c8d9b39182b9edd9bafd987f50b254470840a8d'),
           },
-          https: {
+        }, lib.getElse(env, 'blob', {})]),
+
+        data: lib.mergeList([common, {
+          extraContainers: extraContainers,
+          deployment+: {
+            image: lib.getElse(prev, 'spec.values.data.deployment.image', 'tidepool/platform-data:master-8c8d9b39182b9edd9bafd987f50b254470840a8d'),
+            replicas: 3,
+          },
+        }, lib.getElse(env, 'data', {})]),
+
+        dexcom: lib.getElse(env, 'dexcom', {}),
+
+        export: lib.mergeList([common, {
+          extraContainers: extraContainers,
+          deployment+: {
+            replicas: 3,
+            image: lib.getElse(prev, 'spec.values.export.deployment.image', 'tidepool/export:release-1.4.0-133dc134dce5c287e26caafbdb6871e69fc10150'),
+          },
+        }, lib.getElse(env, 'export', {})]),
+
+        gatekeeper: lib.mergeList([common, {
+          extraContainers: extraContainers,
+          deployment+: {
+            replicas: 2,
+            image: lib.getElse(prev, 'spec.values.gatekeeper.deployment.image', 'tidepool/gatekeeper:master-03ab418230def26a638664bfbfd0a49736c96aa3'),
+          },
+        }, lib.getElse(env, 'gatekeeper', {})]),
+
+        glooingress: {
+          enabled: true,
+          gloo: {
             enabled: false,
           },
-        },
-      },
-      global: {
-        local domain = lib.getElse(config, 'cluster.metadata.domain', 'tidepool.org'),
-        logLevel: lib.getElse(config, 'general.logLevel', 'info'),
-        gateway: {
-          proxy: {
-            name: 'internal-gateway-proxy',
+          discovery: {
             namespace: 'gloo-system',
           },
-          default: {
-            host: lib.getElse(env, 'gateway.host', '%s.%s' % [namespace, domain]),
-            protocol: lib.getElse(env, 'gateway.protocol', 'https'),
-            domain: lib.getElse(env, 'gateway.domain', domain),
-          },
-        },
-        maxTimeout: lib.getElse(env, 'maxTimeout', '120s'),
-        region: lib.getElse(config, 'cluster.metadata.region', 'us-west-2'),
-        store: {
-          type: 's3',
-        },
-      },
-
-      highwater: lib.mergeList([common, {
-        extraContainers: extraContainers,
-        deployment+: {
-          image: lib.getElse(prev, 'spec.values.highwater.deployment.image', 'tidepool/highwater:master-8db30b8b1e4ca759e8377de4a09dd9a6f6a5ce88'),
-        },
-      }, lib.getElse(env, 'highwater', {})]),
-
-      hydrophone: lib.mergeList([common, {
-        extraContainers: extraContainers,
-        serviceAccount: {
-          name: 'hydrophone',
-        },
-        securityContext: {
-          fsGroup: 65534,  // To be able to read Kubernetes and AWS token files
-        },
-        deployment+: {
-          env: {
-            store: {
-              s3: {
-                bucket: lib.getElse(env, 'buckets.asset', assetBucket(config, namespace)),
+          virtualServices: {
+            http: {
+              name: 'http-internal',
+              dnsNames: mylib.genDnsNames(config, me.namespace),
+              enabled: true,
+              labels: {
+                protocol: 'http',
+                type: 'internal',
+                namespace: me.namespace,
+              },
+              options: {
+                stats: {
+                  virtualClusters: lib.getElse(env, 'virtualClusters', []),
+                },
               },
             },
+            https: {
+              enabled: false,
+            },
+          },
+        },
+        global: {
+          local domain = lib.getElse(config, 'cluster.metadata.domain', 'tidepool.org'),
+          logLevel: lib.getElse(config, 'general.logLevel', 'info'),
+          gateway: {
+            proxy: {
+              name: 'internal-gateway-proxy',
+              namespace: 'gloo-system',
+            },
+            default: {
+              host: lib.getElse(env, 'gateway.host', '%s.%s' % [me.namespace, domain]),
+              protocol: lib.getElse(env, 'gateway.protocol', 'https'),
+              domain: lib.getElse(env, 'gateway.domain', domain),
+            },
+          },
+          maxTimeout: lib.getElse(env, 'maxTimeout', '120s'),
+          region: lib.getElse(config, 'cluster.metadata.region', 'us-west-2'),
+          store: {
             type: 's3',
           },
-          image: lib.getElse(prev, 'spec.values.hydrophone.deployment.image', 'tidepool/hydrophone:master-8537584fb9633995c36e2df333e9709f94b30095'),
         },
-      }, lib.getElse(env, 'hydrophone', {})]),
 
-      image: lib.mergeList([common, {
-        extraContainers: extraContainers,
-        serviceAccount: {
-          name: 'image',
-        },
-        securityContext: {
-          fsGroup: 65534,  // To be able to read Kubernetes and AWS token files
-        },
-        deployment+: {
-          env: {
-            store: {
-              s3: {
-                bucket: virtualBucket(config, lib.getElse(env, 'buckets.data', dataBucket(config, namespace))),
+        highwater: lib.mergeList([common, {
+          extraContainers: extraContainers,
+          deployment+: {
+            image: lib.getElse(prev, 'spec.values.highwater.deployment.image', 'tidepool/highwater:master-8db30b8b1e4ca759e8377de4a09dd9a6f6a5ce88'),
+          },
+        }, lib.getElse(env, 'highwater', {})]),
+
+        hydrophone: lib.mergeList([common, {
+          extraContainers: extraContainers,
+          serviceAccount: {
+            name: 'hydrophone',
+          },
+          securityContext: {
+            fsGroup: 65534,  // To be able to read Kubernetes and AWS token files
+          },
+          deployment+: {
+            env: {
+              store: {
+                s3: {
+                  bucket: lib.getElse(env, 'buckets.asset', assetBucket(config, me.namespace)),
+                },
               },
               type: 's3',
             },
+            image: lib.getElse(prev, 'spec.values.hydrophone.deployment.image', 'tidepool/hydrophone:master-8537584fb9633995c36e2df333e9709f94b30095'),
           },
-          image: lib.getElse(prev, 'spec.values.image.deployment.image', 'tidepool/platform-image:master-8c8d9b39182b9edd9bafd987f50b254470840a8d'),
-        },
-      }, lib.getElse(env, 'image', {})]),
+        }, lib.getElse(env, 'hydrophone', {})]),
 
-      jellyfish: lib.mergeList([common, {
-        extraContainers: extraContainers,
-        serviceAccount: {
-          name: 'jellyfish',
-        },
-        securityContext: {
-          fsGroup: 65534,  // To be able to read Kubernetes and AWS token files
-        },
-        deployment+: {
-          replicas: 3,
-          env: {
-            store: {
-              s3: {
-                bucket: virtualBucket(config, lib.getElse(env, 'buckets.data', dataBucket(config, namespace))),
+        image: lib.mergeList([common, {
+          extraContainers: extraContainers,
+          serviceAccount: {
+            name: 'image',
+          },
+          securityContext: {
+            fsGroup: 65534,  // To be able to read Kubernetes and AWS token files
+          },
+          deployment+: {
+            env: {
+              store: {
+                s3: {
+                  bucket: virtualBucket(config, lib.getElse(env, 'buckets.data', dataBucket(config, me.namespace))),
+                },
+                type: 's3',
               },
-              type: 's3',
             },
+            image: lib.getElse(prev, 'spec.values.image.deployment.image', 'tidepool/platform-image:master-8c8d9b39182b9edd9bafd987f50b254470840a8d'),
           },
-          image: lib.getElse(prev, 'spec.values.jellyfish.deployment.image', 'tidepool/jellyfish:master-737f1009a70fd3856e08c9b858ab86752a181b1d'),
-        },
-      }, lib.getElse(env, 'jellyfish', {})]),
+        }, lib.getElse(env, 'image', {})]),
 
-      linkerdsupport: {
-        serviceProfiles: {
-          enabled: global.isEnabled(config, 'linkerd'),
+        jellyfish: lib.mergeList([common, {
+          extraContainers: extraContainers,
+          serviceAccount: {
+            name: 'jellyfish',
+          },
+          securityContext: {
+            fsGroup: 65534,  // To be able to read Kubernetes and AWS token files
+          },
+          deployment+: {
+            replicas: 3,
+            env: {
+              store: {
+                s3: {
+                  bucket: virtualBucket(config, lib.getElse(env, 'buckets.data', dataBucket(config, me.namespace))),
+                },
+                type: 's3',
+              },
+            },
+            image: lib.getElse(prev, 'spec.values.jellyfish.deployment.image', 'tidepool/jellyfish:master-737f1009a70fd3856e08c9b858ab86752a181b1d'),
+          },
+        }, lib.getElse(env, 'jellyfish', {})]),
+
+        linkerdsupport: {
+          serviceProfiles: {
+            enabled: global.isEnabled(config, 'linkerd'),
+          },
         },
+
+        messageapi: lib.mergeList([common, {
+          extraContainers: extraContainers,
+          deployment+: {
+            image: lib.getElse(prev, 'spec.values.messageapi.deployment.image', 'tidepool/message-api:master-73e5dc0b12f03bc0ec1428cde45520317dbf4688'),
+          },
+        }, lib.getElse(env, 'messageapi', {})]),
+
+        migrations: lib.mergeList([common, {
+          extraContainers: extraContainers,
+          deployment+: {
+            replicas: 0,
+            image: lib.getElse(prev, 'spec.values.migrations.deployment.image', 'tidepool/platform-migrations:master-8c8d9b39182b9edd9bafd987f50b254470840a8d'),
+          },
+        }, lib.getElse(env, 'migrations', {})]),
+
+        mongodb: {
+          enabled: lib.isTrue(env, 'mongodb.enable'),
+        },
+
+        notification: lib.mergeList([common, {
+          extraContainers: extraContainers,
+          deployment+: {
+            image: lib.getElse(prev, 'spec.values.notification.deployment.image', 'tidepool/platform-notification:master-8c8d9b39182b9edd9bafd987f50b254470840a8d'),
+          },
+        }, lib.getElse(env, 'notification', {})]),
+
+        seagull: lib.mergeList([common, {
+          extraContainers: extraContainers,
+          deployment+: {
+            image: lib.getElse(prev, 'spec.values.seagull.deployment.image', 'tidepool/seagull:master-0ac202bfccc0994d264b5fe9fcc06d2a56c55977'),
+          },
+        }, lib.getElse(env, 'seagull', {})]),
+
+        shoreline: lib.mergeList([common, {
+          extraContainers: extraContainers,
+          priorityClassName: 'high-priority',
+          deployment+: {
+            isShadow: lib.isTrue(env, 'shadow.enabled') && (lib.getElse(env, 'shadow.sender', '') != ''),
+            image: lib.getElse(prev, 'spec.values.shoreline.deployment.image', 'tidepool/shoreline:master-66e766fffb4058781a24740b6a809bb12e2d08a9'),
+          },
+        }, lib.getElse(env, 'shoreline', {})]),
+
+        task: lib.mergeList([common, {
+          extraContainers: extraContainers,
+          deployment+: {
+            image: lib.getElse(prev, 'spec.values.task.deployment.image', 'tidepool/platform-task:master-8c8d9b39182b9edd9bafd987f50b254470840a8d'),
+          },
+        }, lib.getElse(env, 'task', {})]),
+
+        tidepool: {
+          namespace: {
+            create: false,
+          },
+        },
+
+        tidewhisperer: lib.mergeList([common, {
+          extraContainers: extraContainers,
+          deployment+: {
+            replicas: 3,
+            image: lib.getElse(prev, 'spec.values.tidewhisperer.deployment.image', 'tidepool/tide-whisperer:master-d64636a94823ceb329ade5ff8e0a7716a5108fef'),
+          },
+        }, lib.getElse(env, 'tidewhisperer', {})]),
+
+        tools: lib.mergeList([common, {
+          extraContainers: extraContainers,
+          deployment+: {
+            replicas: 0,
+            image: lib.getElse(prev, 'spec.values.tools.deployment.image', 'tidepool/platform-tools:master-8c8d9b39182b9edd9bafd987f50b254470840a8d'),
+          },
+        }, lib.getElse(env, 'tools', {})]),
+
+        user: lib.mergeList([common, {
+          extraContainers: extraContainers,
+          deployment+: {
+            image: lib.getElse(prev, 'spec.values.user.deployment.image', 'tidepool/platform-user:master-8c8d9b39182b9edd9bafd987f50b254470840a8d'),
+          },
+        }, lib.getElse(env, 'users', {})]),
+
       },
-
-      messageapi: lib.mergeList([common, {
-        extraContainers: extraContainers,
-        deployment+: {
-          image: lib.getElse(prev, 'spec.values.messageapi.deployment.image', 'tidepool/message-api:master-73e5dc0b12f03bc0ec1428cde45520317dbf4688'),
-        },
-      }, lib.getElse(env, 'messageapi', {})]),
-
-      migrations: lib.mergeList([common, {
-        extraContainers: extraContainers,
-        deployment+: {
-          replicas: 0,
-          image: lib.getElse(prev, 'spec.values.migrations.deployment.image', 'tidepool/platform-migrations:master-8c8d9b39182b9edd9bafd987f50b254470840a8d'),
-        },
-      }, lib.getElse(env, 'migrations', {})]),
-
-      mongodb: {
-        enabled: lib.isTrue(env, 'mongodb.enable'),
-      },
-
-      notification: lib.mergeList([common, {
-        extraContainers: extraContainers,
-        deployment+: {
-          image: lib.getElse(prev, 'spec.values.notification.deployment.image', 'tidepool/platform-notification:master-8c8d9b39182b9edd9bafd987f50b254470840a8d'),
-        },
-      }, lib.getElse(env, 'notification', {})]),
-
-      seagull: lib.mergeList([common, {
-        extraContainers: extraContainers,
-        deployment+: {
-          image: lib.getElse(prev, 'spec.values.seagull.deployment.image', 'tidepool/seagull:master-0ac202bfccc0994d264b5fe9fcc06d2a56c55977'),
-        },
-      }, lib.getElse(env, 'seagull', {})]),
-
-      shoreline: lib.mergeList([common, {
-        extraContainers: extraContainers,
-        priorityClassName: 'high-priority',
-        deployment+: {
-          isShadow: lib.isTrue(env, 'shadow.enabled') && (lib.getElse(env, 'shadow.sender', '') != ''),
-          image: lib.getElse(prev, 'spec.values.shoreline.deployment.image', 'tidepool/shoreline:master-66e766fffb4058781a24740b6a809bb12e2d08a9'),
-        },
-      }, lib.getElse(env, 'shoreline', {})]),
-
-      task: lib.mergeList([common, {
-        extraContainers: extraContainers,
-        deployment+: {
-          image: lib.getElse(prev, 'spec.values.task.deployment.image', 'tidepool/platform-task:master-8c8d9b39182b9edd9bafd987f50b254470840a8d'),
-        },
-      }, lib.getElse(env, 'task', {})]),
-
-      tidepool: {
-        namespace: {
-          create: false,
-        },
-      },
-
-      tidewhisperer: lib.mergeList([common, {
-        extraContainers: extraContainers,
-        deployment+: {
-          replicas: 3,
-          image: lib.getElse(prev, 'spec.values.tidewhisperer.deployment.image', 'tidepool/tide-whisperer:master-d64636a94823ceb329ade5ff8e0a7716a5108fef'),
-        },
-      }, lib.getElse(env, 'tidewhisperer', {})]),
-
-      tools: lib.mergeList([common, {
-        extraContainers: extraContainers,
-        deployment+: {
-          replicas: 0,
-          image: lib.getElse(prev, 'spec.values.tools.deployment.image', 'tidepool/platform-tools:master-8c8d9b39182b9edd9bafd987f50b254470840a8d'),
-        },
-      }, lib.getElse(env, 'tools', {})]),
-
-      user: lib.mergeList([common, {
-        extraContainers: extraContainers,
-        deployment+: {
-          image: lib.getElse(prev, 'spec.values.user.deployment.image', 'tidepool/platform-user:master-8c8d9b39182b9edd9bafd987f50b254470840a8d'),
-        },
-      }, lib.getElse(env, 'users', {})]),
-
     },
-  },
-};
+  };
 
-function(config, prev, namespace, pkg) helmrelease(expand.expand(config), prev, namespace)
+function(config, prev, namespace, pkg) helmrelease(expand.expand(config), lib.package(config, namespace, pkg), prev)

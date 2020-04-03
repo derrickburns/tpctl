@@ -2,7 +2,7 @@ local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
 local helmrelease(config, prev, me) =
-  k8s.githelmrelease('tidebot', me.namespace, 'git@github.com:tidepool-org/slack-tidebot', 'master', 'deploy') {
+  k8s.helmrelease(me, { git: 'git@github.com:tidepool-org/slack-tidebot', path: 'deploy' }) {
     metadata+: {
       annotations+: {
         'fluxcd.io/automated': 'true',

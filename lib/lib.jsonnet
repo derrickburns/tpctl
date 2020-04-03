@@ -1,9 +1,12 @@
+
 {
   isEnabled(x):: $.isTrue(x, 'enabled'),
 
   isEnabledAt(x, prop):: $.isTrue(x, prop + '.enabled'),
 
-  package(config, namespace, pkg):: config.namespaces[namespace][pkg] { namespace: $.kebabCase(namespace), pkg: $.kebabCase(pkg) },
+  package(config, namespace, pkg):: config.namespaces[namespace][pkg] { 
+    namespace: $.kebabCase(namespace), 
+    pkg: $.kebabCase($.getElse( config.namespaces[namespace][pkg], 'pkg',  pkg)) },
 
   namespaces(config):: std.set(std.objectFields(config.namespaces)),
 

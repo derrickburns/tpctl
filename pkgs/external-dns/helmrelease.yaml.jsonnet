@@ -1,8 +1,8 @@
+local global = import '../../lib/global.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
-local global = import '../../lib/global.jsonnet';
 
-local helmrelease(config, me) = k8s.helmrelease('external-dns', me.namespace, '2.20.8', 'https://charts.bitnami.com/bitnami') {
+local helmrelease(config, me) = k8s.helmrelease(me, { version: '2.20.8', repository: 'https://charts.bitnami.com/bitnami' }) {
   spec+: {
     values: {
       aws: {

@@ -1,7 +1,7 @@
 local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
-local helmrelease(config, me) = k8s.helmrelease('goldilocks', me.namespace, '2.2.3', 'https://charts.fairwinds.com/stable') {
+local helmrelease(config, me) = k8s.helmrelease(me, { version: '2.2.3', repository: 'https://charts.fairwinds.com/stable' }) {
   spec+: {
     values: {
       installVPA: true,

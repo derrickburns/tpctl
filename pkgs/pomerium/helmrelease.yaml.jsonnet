@@ -16,7 +16,7 @@ local getPoliciesForPackage(config, me) = {
 
 local getPolicy(config) = [getPoliciesForPackage(config, pkg) for pkg in global.packagesWithKey(config, 'sso')];
 
-local helmrelease(config, me) = k8s.helmrelease('pomerium', me.namespace, '5.0.3', 'https://helm.pomerium.io') {
+local helmrelease(config, me) = k8s.helmrelease(me, { version: '5.0.3', repository: 'https://helm.pomerium.io' }) {
   local domain = mylib.rootDomain(config),
   spec+: {
     values: {

@@ -1,7 +1,7 @@
 local k8s = import '../../lib/k8s.jsonnet';
+local lib = import '../../lib/lib.jsonnet';
 
-local helmrelease(namespace) = k8s.helmrelease('reloader', namespace, 'v0.0.51',
-    'https://stakater.github.io/stakater-charts') { 
+local helmrelease(config, me) = k8s.helmrelease(me, { version: 'v0.0.51', repository: 'https://stakater.github.io/stakater-charts' }) {
   spec+: {
     values+: {
       reloader: {
@@ -14,4 +14,4 @@ local helmrelease(namespace) = k8s.helmrelease('reloader', namespace, 'v0.0.51',
   },
 };
 
-function(config, prev, namespace, pkg) helmrelease(namespace)
+function(config, prev, namespace, pkg) helmrelease(config, lib.package(config, namespace, pkg))

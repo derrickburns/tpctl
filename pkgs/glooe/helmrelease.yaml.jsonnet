@@ -5,22 +5,22 @@ local lib = import '../../lib/lib.jsonnet';
 local helmrelease(config, me) = (
   local version = lib.getElse(me, 'version', '1.2.12');
   local glooVersion = lib.getElse(me, 'gloo.version', '1.2.23');
-  k8s.helmrelease('gloo-ee', me.namespace, version, 'http://storage.googleapis.com/gloo-ee-helm') {
+  k8s.helmrelease(me, { name: 'gloo-ee', version: version, repository: 'http://storage.googleapis.com/gloo-ee-helm' }) {
     spec+: {
       values: gloo.globalValues(config, me, glooVersion) + {
         gloo: gloo.glooValues(config, me, glooVersion),
         create_license_secret: false,
         persistence: {
-         storageClassName: "gp2-expanding",
+          storageClassName: 'gp2-expanding',
         },
         prometheus: {
           server: {
             resources: {
               limits: {
-                memory: "3Gi",
+                memory: '3Gi',
               },
               requests: {
-                memory: "2Gi",
+                memory: '2Gi',
               },
             },
           },
