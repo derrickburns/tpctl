@@ -1,7 +1,7 @@
 local k8s = import '../../lib/k8s.jsonnet';
 local p = import '../../lib/policy.jsonnet';
 
-local policy(namespace) = iam.metadata('cert-manager', namespace) + p.attachPolicy(
+local policy(namespace) = k8s.metadata('cert-manager', namespace) + p.attachPolicy(
   [
     p.statement('arn:aws:route53:::hostedzone/*', 'route53:ChangeResourceRecordSets'),
     p.statement('*', [
