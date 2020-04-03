@@ -65,7 +65,7 @@ local chart(me, values) = (
       labels: {
         app: me.pkg,
       },
-    }
+    },
     spec+: {
       strategy: {
         type: 'Recreate',
