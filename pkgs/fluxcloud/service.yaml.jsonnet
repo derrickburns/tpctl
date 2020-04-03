@@ -4,12 +4,12 @@ local service(config, me) = {
   apiVersion: 'v1',
   kind: 'Service',
   metadata: {
-    name: 'fluxcloud',
+    app: 'fluxcloud',
     namespace: me.namespace,
   },
   spec: {
     selector: {
-      name: 'fluxcloud',
+      app: 'fluxcloud',
     },
     ports: [
       {

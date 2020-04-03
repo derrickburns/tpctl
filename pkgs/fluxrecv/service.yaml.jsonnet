@@ -10,7 +10,7 @@ local service(me) = k8s.service(me.pkg, me.namespace) {
       targetPort: 8080,
     }],
     selector: {
-      name: if lib.isTrue(me, 'sidecar') then 'flux' else 'fluxrecv',
+      app: if lib.isTrue(me, 'sidecar') then 'flux' else 'fluxrecv',
     },
   },
 };
