@@ -1,3 +1,4 @@
+local lib = import '../../lib/lib.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 local p = import '../../lib/policy.jsonnet';
 
