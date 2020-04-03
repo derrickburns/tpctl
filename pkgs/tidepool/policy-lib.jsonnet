@@ -14,7 +14,7 @@ local tplib = import 'lib.jsonnet';
 
   bucketArn(bucket):: 'arn:aws:s3:::%s' % bucket,
 
-  contentsArn(bucket):: '%s/*' % p.bucketArn(bucket),
+  contentsArn(bucket):: '%s/*' % $.bucketArn(bucket),
 
   withEmailPolicy():: p.attachPolicy([$.statement('*', 'ses:*')]),
 
