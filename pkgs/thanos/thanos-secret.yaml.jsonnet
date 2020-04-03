@@ -13,7 +13,7 @@ local secret(config, me) = {
       type: 'S3',
       config: {
         bucket: lib.getElse(me, 'bucket', 'tidepool-thanos'),
-        endpoint: 's3.%s.amazonaws.com' % config.cluster.metadata.region,
+        endpoint: 'https://s3.%s.amazonaws.com' % config.cluster.metadata.region,
         region: config.cluster.metadata.region,
         insecure: false,
         signature_version2: false,
@@ -27,6 +27,7 @@ local secret(config, me) = {
         trace: {
           enable: false,  // XXX
         },
+	part_size: 0,
       },
     })),
   },
