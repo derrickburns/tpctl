@@ -97,9 +97,21 @@ local chart(me, values) = (
       },
     },
 
-  service(name, namespace, type='ClusterIP'):: $.k('v1', 'Service') + $.metadata(name, namespace) {
+  service(me, type='ClusterIP'):: $.k('v1', 'Service') + $.metadata(me.pkg, me.namespace) {
     spec+: {
       type: type,
+      selector: {
+        app: me.pkg,
+      },
     },
   },
+
+  port(port=8080, targetPort=8080, name='http', protocol='TCP'):: {
+    name: name,
+    port: port,
+    protocol: protocol,
+    targetPort: targetPort,
+  },
+
+  pod(me):: $.k('v1', 'Pod') + $.metadata(me.pkg, me.namespace),
 }
