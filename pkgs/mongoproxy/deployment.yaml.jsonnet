@@ -111,7 +111,6 @@ local deployment(config, prev, me) = k8s.deployment(me) {
             ],
           },
         ],
-        restartPolicy: 'Always',
       },
     },
   },

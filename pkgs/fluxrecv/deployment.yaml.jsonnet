@@ -35,7 +35,6 @@ local deployment(config, me) = k8s.deployment(me) {
             }],
           },
         ],
-        restartPolicy: 'Always',
         volumes: [
           {
             name: 'fluxrecv-config',
