@@ -1,5 +1,5 @@
-local lib = import '../../lib/lib.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
+local lib = import '../../lib/lib.jsonnet';
 
 local deployment(me) = k8s.deployment(me) {
   spec+: {
@@ -11,15 +11,15 @@ local deployment(me) = k8s.deployment(me) {
             imagePullPolicy: 'Always',
             name: 'external-auth',
             env: [
-                {
-                  name: 'API_SECRET',
-                  valueFrom: {
-                    secretKeyRef: {
-                      name: 'shoreline',
-                      key: 'ServiceAuth',
-                    },
+              {
+                name: 'API_SECRET',
+                valueFrom: {
+                  secretKeyRef: {
+                    name: 'shoreline',
+                    key: 'ServiceAuth',
                   },
                 },
+              },
             ],
             ports: [{
               containerPort: 4000,

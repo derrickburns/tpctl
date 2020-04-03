@@ -1,24 +1,10 @@
+local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
-local service(config, me) = {
-  apiVersion: 'v1',
-  kind: 'Service',
-  metadata: {
-    app: 'fluxcloud',
-    namespace: me.namespace,
-  },
-  spec: {
-    selector: {
-      app: 'fluxcloud',
-    },
-    ports: [
-      {
-        protocol: 'TCP',
-        port: 80,
-        targetPort: 3032,
-      },
-    ],
+local service(me) = k8s.service(me) {
+  spec+: {
+    ports: [ k8s.port(80, 3032) ],
   },
 };
 
-function(config, prev, namespace, pkg) service(config, lib.package(config, namespace, pkg))
+function(config, prev, namespace, pkg) service(lib.package(config, namespace, pkg))

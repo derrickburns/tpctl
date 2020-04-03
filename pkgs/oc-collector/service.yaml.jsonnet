@@ -1,39 +1,13 @@
+local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
-local service(me) = {
-  apiVersion: 'v1',
-  kind: 'Service',
-  metadata: {
-    labels: {
-      app: me.pkg,
-    },
-    name: me.pkg,
-    namespace: me.namespace,
-  },
-  spec: {
+local service(me) = k8s.service(me) {
+  spec+: {
     ports: [
-      {
-        name: 'opencensus',
-        port: 55678,
-        protocol: 'TCP',
-        targetPort: 55678,
-      },
-      {
-        name: 'zipkin',
-        port: 9411,
-        protocol: 'TCP',
-        targetPort: 9411,
-      },
-      {
-        name: 'metrics',
-        port: 8888,
-        protocol: 'TCP',
-        targetPort: 8888,
-      },
+      k8s.port( 55678, 55678, 'opencensus'),
+      k8s.port( 9411, 9411, 'zipkin'),
+      k8s.port( 8888, 8888, 'metrics'),
     ],
-    selector: {
-      app: me.pkg,
-    },
   },
 };
 

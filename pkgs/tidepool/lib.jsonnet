@@ -1,10 +1,10 @@
 local lib = import '../../lib/lib.jsonnet';
 
 {
-  shadowNames(names):: std.map( function (x) "%s-shadow" % x, names),
+  shadowNames(names):: std.map(function(x) '%s-shadow' % x, names),
 
   tpFor(config, name):: (
-    assert lib.getElse(config.namespaces, name + '.tidepool', null) != null : std.manifestJson( { c: config, n: name});
+    assert lib.getElse(config.namespaces, name + '.tidepool', null) != null : std.manifestJson({ c: config, n: name });
     lib.getElse(config.namespaces, name + '.tidepool', null)
   ),
 
@@ -22,7 +22,7 @@ local lib = import '../../lib/lib.jsonnet';
 
   internalGatewayUpstream: {
     name: 'gloo-system-internal-gateway-proxy-80',
-    namespace: 'gloo-system', // XXX 
+    namespace: 'gloo-system',  // XXX
   },
 
   expandEnvironment(config, name, env):: (
@@ -32,7 +32,7 @@ local lib = import '../../lib/lib.jsonnet';
         virtualServices: {
           http: {
             dnsNames: dnsNames,
-            enabled: ! $.isShadow($.tpFor(config, name)),
+            enabled: !$.isShadow($.tpFor(config, name)),
             labels: {
               protocol: 'http',
               type: 'external',
@@ -47,7 +47,7 @@ local lib = import '../../lib/lib.jsonnet';
           },
           https: {
             dnsNames: dnsNames,
-            enabled: ! $.isShadow($.tpFor(config, name)),
+            enabled: !$.isShadow($.tpFor(config, name)),
             timeout: lib.getElse(env, 'tidepool.maxTimeout', '120s'),
             hsts: {
               enabled: true,
@@ -82,4 +82,3 @@ local lib = import '../../lib/lib.jsonnet';
     }
   ),
 }
-

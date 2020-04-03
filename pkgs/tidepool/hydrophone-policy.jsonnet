@@ -1,6 +1,6 @@
 local lib = import '../../lib/lib.jsonnet';
-local tplib = import 'lib.jsonnet';
 local basepolicy = import '../../lib/policy.jsonnet';
+local tplib = import 'lib.jsonnet';
 local mylib = import 'policy-lib.jsonnet';
 
 local withEmailPolicy(me) =

@@ -1,5 +1,5 @@
-local lib = import '../../lib/lib.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
+local lib = import '../../lib/lib.jsonnet';
 
 local deployment(me) = k8s.deployment(me) {
   spec+: {

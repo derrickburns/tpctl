@@ -24,7 +24,7 @@ local lib = import '../../lib/lib.jsonnet';
 
   expand(config, pkg, name):: (
     local dnsNames = lib.getElse(pkg, 'dnsNames', []);
-    local result = pkg + {
+    local result = pkg {
       virtualServices: {
         http: {
           dnsNames: dnsNames,

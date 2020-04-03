@@ -5,7 +5,7 @@ local configmap(config, namespace) = {
       @include containers.conf
       @include systemd.conf
       @include host.conf
-      
+
       <match fluent.**>
         @type null
       </match>
@@ -71,7 +71,7 @@ local configmap(config, namespace) = {
         read_from_head true
         tag kubelet.service
       </source>
-      
+
       <source>
         @type systemd
         @id in_systemd_kubeproxy
@@ -86,7 +86,7 @@ local configmap(config, namespace) = {
         read_from_head true
         tag kubeproxy.service
       </source>
-      
+
       <source>
         @type systemd
         @id in_systemd_docker
@@ -101,7 +101,7 @@ local configmap(config, namespace) = {
         read_from_head true
         tag docker.service
       </source>
-      
+
       <label @systemd>
         <filter **>
           @type kubernetes_metadata
@@ -146,7 +146,7 @@ local configmap(config, namespace) = {
           @type syslog
         </parse>
       </source>
-      
+
       <source>
         @type tail
         @id in_tail_secure
@@ -159,7 +159,7 @@ local configmap(config, namespace) = {
           @type syslog
         </parse>
       </source>
-      
+
       <source>
         @type tail
         @id in_tail_messages
@@ -172,7 +172,7 @@ local configmap(config, namespace) = {
           @type syslog
         </parse>
       </source>
-      
+
       <label @hostlogs>
         <filter **>
           @type kubernetes_metadata

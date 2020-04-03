@@ -1,5 +1,5 @@
-local lib = import '../../lib/lib.jsonnet';
 local global = import '../../lib/global.jsonnet';
+local lib = import '../../lib/lib.jsonnet';
 
 local servicemonitor(namespace) = {
   apiVersion: 'monitoring.coreos.com/v1',
@@ -52,7 +52,7 @@ local servicemonitor(namespace) = {
   },
 };
 
-function(config, prev, namespace, pkg) 
+function(config, prev, namespace, pkg)
   if global.isEnabled(config, 'prometheus-operator')
   then servicemonitor(namespace)
   else {}

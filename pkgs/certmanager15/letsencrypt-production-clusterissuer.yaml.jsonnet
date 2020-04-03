@@ -14,7 +14,7 @@ local ClusterIssuer(config) = {
       solvers: [
         {
           dns01: {
-            route53: { // XXX AWS dependency
+            route53: {  // XXX AWS dependency
               region: config.cluster.metadata.region,
             },
           },

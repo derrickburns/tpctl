@@ -39,7 +39,7 @@ local daemonset(config, me) = {
               },
               {
                 name: 'CLUSTER_NAME',
-		value: config.cluster.metadata.name,
+                value: config.cluster.metadata.name,
               },
             ],
             image: 'fluent/fluentd-kubernetes-daemonset:v1.9.2-debian-cloudwatch-1.0',

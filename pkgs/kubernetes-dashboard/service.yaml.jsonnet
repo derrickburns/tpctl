@@ -1,25 +1,10 @@
-local service(namespace) = {
-  apiVersion: 'v1',
-  kind: 'Service',
-  metadata: {
-    labels: {
-      'k8s-app': 'kubernetes-dashboard',
-    },
-    name: 'kubernetes-dashboard',
-    namespace: namespace,
-  },
-  spec: {
-    ports: [
-      {
-        port: 443,
-        targetPort: 8443,
-      },
-    ],
-    selector: {
-      'k8s-app': 'kubernetes-dashboard',
-    },
+local k8s = import '../../lib/k8s.jsonnet';
+local lib = import '../../lib/lib.jsonnet';
+
+local service(me) = k8s.service(me) {
+  spec+: {
+    ports: [ k8s.port(443, 8443) ],
   },
 };
 
-function(config, prev, namespace, pkg) service(namespace)
-
+function(config, prev, namespace, pkg) service(lib.package(config, namespace, pkg))

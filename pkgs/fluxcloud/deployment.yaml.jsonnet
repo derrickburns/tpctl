@@ -1,5 +1,5 @@
-local lib = import '../../lib/lib.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
+local lib = import '../../lib/lib.jsonnet';
 
 local Deployment(config, me) = k8s.deployment(me) {
   local secretName = lib.getElse(me, 'secret', 'slack'),
