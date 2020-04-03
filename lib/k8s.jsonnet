@@ -98,7 +98,7 @@ local chart(me, values) = (
     },
 
   service(me, type='ClusterIP'):: $.k('v1', 'Service') + $.metadata(me.pkg, me.namespace) {
-    metadata: {
+    metadata+: {
       labels: {
         app: me.pkg
       },
