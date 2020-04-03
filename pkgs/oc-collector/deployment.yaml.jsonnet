@@ -3,16 +3,10 @@ local k8s = import '../../lib/k8s.jsonnet';
 local global = import '../../lib/global.jsonnet';
 
 local deployment(config, me) = k8s.deployment(me) {
-  spec: {
+  spec+: {
     minReadySeconds: 5,
     progressDeadlineSeconds: 120,
-    replicas: 1,
-    selector: {
-      matchLabels: {
-        app: me.pkg,
-      },
-    },
-    template: {
+    template+: {
       metadata: {
         annotations:
           (if global.isEnabled(config, 'prometheus')
@@ -27,11 +21,8 @@ local deployment(config, me) = k8s.deployment(me) {
              'linkerd.io/inject': 'enabled',
            }
            else {}),
-        labels: {
-          app: me.pkg,
-        },
       },
-      spec: {
+      spec+: {
         containers: [
           {
             command: [

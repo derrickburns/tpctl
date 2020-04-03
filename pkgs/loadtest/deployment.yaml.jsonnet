@@ -2,20 +2,9 @@ local lib = import '../../lib/lib.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 
 local deployment(me) = k8s.deployment(me) {
-  spec: {
-    replicas: 1,
-    selector: {
-      matchLabels: {
-        app: me.pkg,
-      },
-    },
-    template: {
-      metadata: {
-        labels: {
-          app: me.pkg,
-        },
-      },
-      spec: {
+  spec+: {
+    template+: {
+      spec+: {
         containers: [
           {
             image: 'tidepool/loadtest:latest',

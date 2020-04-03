@@ -66,6 +66,24 @@ local chart(me, values) = (
         app: me.pkg,
       },
     }
+    spec+: {
+      strategy: {
+        type: 'Recreate',
+      },
+      replicas: 1,
+      selector+: {
+        matchLabels: {
+          app: me.pkg,
+        },
+      },
+      template+: {
+        metadata+: {
+          labels: {
+            app: me.pkg,
+          },
+        },
+      },
+    },
   },
 
   helmrelease(me, chartValues):: 

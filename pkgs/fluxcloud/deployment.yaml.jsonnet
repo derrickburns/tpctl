@@ -8,21 +8,9 @@ local Deployment(config, me) = k8s.deployment(me) {
       'secret.reloader.stakater.com/reload': secretName,
     },
   },
-  spec: {
-    selector: {
-      matchLabels: {
-        name: me.pkg,
-      },
-    },
-    replicas: 1,
-    strategy: {},
-    template: {
-      metadata: {
-        labels: {
-          name: me.pkg,
-        },
-      },
-      spec: {
+  spec+: {
+    template+: {
+      spec+: {
         containers: [
           {
             name: me.pkg,

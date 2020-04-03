@@ -9,23 +9,9 @@ local deployment(config, prev, me) = k8s.deployment(me) {
       'secret.reloader.stakater.com/reload': 'mongoproxy',
     },
   },
-  spec: {
-    replicas: 1,
-    selector: {
-      matchLabels: {
-        name: 'mongoproxy',
-      },
-    },
-    strategy: {
-      type: 'Recreate',
-    },
-    template: {
-      metadata: {
-        labels: {
-          name: 'mongoproxy',
-        },
-      },
-      spec: {
+  spec+: {
+    template+: {
+      spec+: {
         local containers = lib.getElse(prev, 'spec.template.spec.containers', []),
         local image = if containers == [] then 'tidepool/mongoproxy:latest' else containers[0].image,
         containers: [

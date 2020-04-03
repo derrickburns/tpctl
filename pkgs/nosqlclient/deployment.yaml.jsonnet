@@ -7,23 +7,9 @@ local deployment(me) = k8s.deployment(me) {
       'secret.reloader.stakater.com/reload': 'mongo',
     },
   },
-  spec: {
-    replicas: 1,
-    selector: {
-      matchLabels: {
-        app: me.pkg,
-      },
-    },
-    strategy: {
-      type: 'Recreate',
-    },
-    template: {
-      metadata: {
-        labels: {
-          app: me.pkg,
-        },
-      },
-      spec: {
+  spec+: {
+    template+: {
+      spec+: {
         containers: [
           {
             env: [
