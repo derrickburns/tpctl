@@ -1,28 +1,16 @@
-local iam = import '../../lib/k8s.jsonnet';
+local k8s = import '../../lib/k8s.jsonnet';
+local p = import '../../lib/policy.jsonnet';
 
-local policy(namespace) = iam.metadata('cert-manager', namespace) + {
-  attachPolicy: {
-    Statement: [
-      {
-        Action: [
-          'route53:ChangeResourceRecordSets',
-        ],
-        Effect: 'Allow',
-        Resource: 'arn:aws:route53:::hostedzone/*',
-      },
-      {
-        Action: [
-          'route53:GetChange',
-          'route53:ListHostedZones',
-          'route53:ListResourceRecordSets',
-          'route53:ListHostedZonesByName',
-        ],
-        Effect: 'Allow',
-        Resource: '*',
-      },
-    ],
-    Version: '2012-10-17',
-  },
-};
+local policy(namespace) = iam.metadata('cert-manager', namespace) + p.attachPolicy(
+  [
+    p.statement('arn:aws:route53:::hostedzone/*', 'route53:ChangeResourceRecordSets'),
+    p.statement('*', [
+      'route53:GetChange',
+      'route53:ListHostedZones',
+      'route53:ListResourceRecordSets',
+      'route53:ListHostedZonesByName',
+    ]),
+  ]
+);
 
 function(config, namespace, pkg) policy(namespace)

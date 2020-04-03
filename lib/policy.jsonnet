@@ -1,62 +1,36 @@
-local iam = import 'k8s.jsonnet';
+local k8s = import 'k8s.jsonnet';
 local lib = import 'lib.jsonnet';
 
 {
-  withEmailPolicy():: {
+  attachPolicy(allowed):: {
     attachPolicy+: {
-      Statement+: [
-        {
-          Effect: 'Allow',
-          Action: 'ses:*',
-          Resource: '*',
-        },
-      ],
+      Statement+: allowed,
       Version: '2012-10-17',
     },
   },
 
-  withBucketWritingPolicy(bucket):: {
-    attachPolicy+: {
-      Statement+: [
-        {
-          Effect: 'Allow',
-          Action: 's3:ListBucket',
-          Resource: 'arn:aws:s3:::%s' % bucket,
-        },
-        {
-          Effect: 'Allow',
-          Action: [
-            's3:GetObject',
-            's3:PutObject',
-            's3:DeleteObject',
-          ],
-          Resource: 'arn:aws:s3:::%s/*' % bucket,
-        },
-      ],
-      Version: '2012-10-17',
-    },
+  statement(resources, actions):: {
+    Effect: 'Allow',
+    Resource: resources,
+    Action: actions,
   },
 
+  bucketArn(bucket):: 'arn:aws:s3:::%s' % bucket,
 
-  withBucketReadingPolicy(bucket):: {
-    attachPolicy+: {
-      Statement+: [
-        {
-          Effect: 'Allow',
-          Action: 's3:ListBucket',
-          Resource: 'arn:aws:s3:::%s' % bucket,
-        },
-        {
-          Effect: 'Allow',
-          Action: [
-            's3:GetObject',
-          ],
-          Resource: 'arn:aws:s3:::%s/*' % bucket,
-        },
-      ],
-      Version: '2012-10-17',
-    },
-  },
+  contentsArn(bucket):: '%s/*' % $.bucketArn(bucket),
 
-  policyAndMetadata(name, namespace, policy):: policy + iam.metadata(name, namespace),
+  withEmailPolicy():: $.attachPolicy([$.statement('*', 'ses:*')]),
+
+  withBucketWritingPolicy(bucket):: $.attachPolicy([
+    $.statement($.bucketArn(bucket), 's3:ListBucket'),
+    $.statement($.contentsArn(bucket), ['s3:GetObject', 's3:PutObject', 's3:DeleteObject']),
+  ]),
+
+
+  withBucketReadingPolicy(bucket):: $.attachPolicy([
+    $.statement($.bucketArn(bucket), 's3:ListBucket'),
+    $.statement($.contentsArn(bucket), 's3:GetObject'),
+  ]),
+
+  policyAndMetadata(name, namespace, policy):: policy + k8s.metadata(name, namespace),
 }

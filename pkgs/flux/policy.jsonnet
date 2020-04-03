@@ -1,19 +1,8 @@
-local iam = import '../../lib/k8s.jsonnet';
+local k8s = import '../../lib/k8s.jsonnet';
+local p = import '../../lib/policy.jsonnet';
 
-local policy(config, namespace) = iam.metadata('flux', namespace) + {
-  attachPolicy: {
-    Statement: [
-      {
-        Action: [
-          'kms:Decrypt',
-          'kms:DescribeKey',
-        ],
-        Effect: 'Allow',
-        Resource: config.general.sops.keys.arn,
-      },
-    ],
-    Version: '2012-10-17',
-  },
-};
+local policy(config, namespace) = k8s.metadata('flux', namespace) + p.attachPolicy(
+  p.statement(config.general.sops.keys.arn, [ 'kms:Decrypt', 'kms:DescribeKey' ])
+);
 
 function(config, namespace, pkg) policy(config, namespace)
