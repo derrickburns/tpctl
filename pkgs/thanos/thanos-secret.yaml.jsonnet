@@ -5,11 +5,11 @@ local secret(config, me) = {
   apiVersion: 'v1',
   kind: 'Secret',
   metadata: {
-    name: lib.getElse(me, 'secret', 'thanos-objstore-config'),
+    name: lib.getElse(me, 'secret', 'thanos'),
     namespace: me.namespace,
   },
   data: {
-    'thanos.yaml': std.base64(std.manifestYamlDoc({
+    'object-store.yaml': std.base64(std.manifestYamlDoc({
       type: 'S3',
       config: {
         bucket: lib.getElse(me, 'bucket', 'tidepool-thanos'),
