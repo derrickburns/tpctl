@@ -1,7 +1,7 @@
 local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
-local helmrelease(config, me) = k8s.helmrelease(me, { version: '0.3.12', repository: 'https://kubernetes-charts.banzaicloud.com' }) {
+local helmrelease(config, me) = k8s.helmrelease(me, { version: '0.3.18', repository: 'https://kubernetes-charts.banzaicloud.com' }) {
   spec+: {
     values: {
       bucket: {
