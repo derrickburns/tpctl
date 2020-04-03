@@ -4,7 +4,7 @@ local lib = import '../../lib/lib.jsonnet';
 local helmrelease(config, me) = k8s.helmrelease(me, { version: '0.3.18', repository: 'https://kubernetes-charts.banzaicloud.com' }) {
   spec+: {
     values: {
-      objstoreSecretOverride: true,
+      objstoreSecretOverride: "true",
       bucket: {
         logLevel: lib.getElse(config, 'general.loglevel', 'info'),
       },
