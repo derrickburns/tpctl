@@ -1,11 +1,8 @@
-local pod(namespace) = {
-  apiVersion: 'v1',
-  kind: 'Pod',
-  metadata: {
-    name: 'dnsutils',
-    namespace: namespace,
-  },
-  spec: {
+local lib = import '../../lib/lib.jsonnet';
+local k8s = import '../../lib/k8s.jsonnet';
+
+local pod(me) = k8s.pod(me) {
+  spec+: {
     containers: [
       {
         command: [
@@ -21,4 +18,4 @@ local pod(namespace) = {
   },
 };
 
-function(config, prev, namespace, pkg) pod(namespace)
+function(config, prev, namespace, pkg) pod(lib.package(config, namespace, pkg))
