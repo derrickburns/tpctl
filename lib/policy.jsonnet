@@ -14,5 +14,9 @@ local k8s = import 'k8s.jsonnet';
     Action: actions,
   },
 
+  bucketArn(bucket):: 'arn:aws:s3:::%s' % bucket,
+
+  contentsArn(bucket):: '%s/*' % $.bucketArn(bucket),
+
   policyAndMetadata(name, namespace, policy):: policy + k8s.metadata(name, namespace),
 }
