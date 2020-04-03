@@ -4,7 +4,7 @@ local lib = import '../../lib/lib.jsonnet';
 local helmrelease(config, me) =
   k8s.helmrelease(me, { name: 'cert-manager', version: 'v0.14.1', repository: 'https://charts.jetstack.io' }) {
     spec+: {
-      values: {
+      values+: {
         serviceAccount: {
           create: false,
         },

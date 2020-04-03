@@ -1,12 +1,9 @@
 local lib = import '../../lib/lib.jsonnet';
+local k8s = import '../../lib/k8s.jsonnet';
 
-local Deployment(config, me) = {
+local Deployment(config, me) = k8s.deployment(me) {
   local secretName = lib.getElse(me, 'secret', 'slack'),
-  apiVersion: 'apps/v1',
-  kind: 'Deployment',
-  metadata: {
-    name: me.pkg,
-    namespace: me.namespace,
+  metadata+: {
     annotations: {
       'secret.reloader.stakater.com/reload': secretName,
     },

@@ -1,15 +1,12 @@
 local lib = import '../../lib/lib.jsonnet';
+local k8s = import '../../lib/k8s.jsonnet';
 local global = import '../../lib/global.jsonnet';
 
-local deployment(config, me) = {
-  apiVersion: 'apps/v1',
-  kind: 'Deployment',
-  metadata: {
+local deployment(config, me) = k8s.deployment(me) {
+  metadata+: {
     labels: {
       app: me.pkg,
     },
-    name: me.pkg,
-    namespace: me.namespace,
   },
   spec: {
     minReadySeconds: 5,

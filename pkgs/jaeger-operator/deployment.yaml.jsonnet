@@ -1,12 +1,7 @@
 local lib = import '../../lib/lib.jsonnet';
+local k8s = import '../../lib/k8s.jsonnet';
 
-local deployment(me) = {
-  apiVersion: 'apps/v1',
-  kind: 'Deployment',
-  metadata: {
-    name: me.pkg,
-    namespace: me.namespace,
-  },
+local deployment(me) = k8s.deployment(me) {
   spec: {
     replicas: 1,
     selector: {

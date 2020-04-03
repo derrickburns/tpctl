@@ -60,6 +60,8 @@ local chart(me, values) = (
     ],
   },
 
+  deployment(me):: $.k('apps/v1', 'Deployment') + $.metadata(me.pkg, me.namespace),
+
   helmrelease(me, chartValues):: 
     $.k('helm.fluxcd.io/v1', 'HelmRelease') + $.metadata(me.pkg, me.namespace) {
       spec+: {
