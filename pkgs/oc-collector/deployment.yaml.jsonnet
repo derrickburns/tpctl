@@ -7,7 +7,7 @@ local deployment(config, me) = k8s.deployment(me) {
     minReadySeconds: 5,
     progressDeadlineSeconds: 120,
     template+: {
-      metadata: {
+      metadata+: {
         annotations:
           (if global.isEnabled(config, 'prometheus')
            then {
