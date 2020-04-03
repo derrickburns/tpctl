@@ -6,9 +6,6 @@ local deployment(me) = k8s.deployment(me) {
     annotations: {
       'secret.reloader.stakater.com/reload': 'mongo',
     },
-    labels: {
-      app: me.pkg,
-    },
   },
   spec: {
     replicas: 1,

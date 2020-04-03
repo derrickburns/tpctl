@@ -2,11 +2,6 @@ local lib = import '../../lib/lib.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 
 local deployment(me) = k8s.deployment(me) {
-  metadata+: {
-    labels: {
-      app: me.pkg,
-    },
-  },
   spec: {
     replicas: 1,
     selector: {
