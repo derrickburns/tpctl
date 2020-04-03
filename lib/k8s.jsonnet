@@ -82,6 +82,9 @@ local chart(me, values) = (
             app: me.pkg,
           },
         },
+        spec+: {
+          restartPolicy: 'Always',
+        },
       },
     },
   },
