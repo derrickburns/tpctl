@@ -2,12 +2,12 @@ local global = import '../../lib/global.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
-local helmrelease(config, me) = k8s.helmrelease(me, { version: '1.3.0', repository: 'https://charts.fluxcd.io' }) {
+local helmrelease(config, me) = k8s.helmrelease(me, { version: '1.2.0', repository: 'https://charts.fluxcd.io' }) {
   spec+: {
     values: {
       local ns = config.namespaces[me.namespace],
       image: {
-        tag: lib.getElse(me, 'version', '1.19.0'),
+        tag: lib.getElse(me, 'version', '1.18.0'),
       },
 
       helm: {
