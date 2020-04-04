@@ -311,12 +311,14 @@ function set_template_dir() {
   fi
 }
 
-# get values file
-function get_config() {
-  yq r values.yaml -j
+# convert values file into json, return name of json file
+function get_values() {
+  local out=$TMP_DIR/values.json
+  yq r values.yaml -j > $out
   if [ $? -ne 0 ]; then
     panic "cannot parse values.yaml"
   fi
+  echo $out
 }
 
 # retrieve value from values file, or return the second argument if the value is not found
@@ -451,9 +453,9 @@ function get_kubeconfig() {
 
 function update_kubeconfig() {
   start "updating kubeconfig"
-  local config=$(get_config)
+  local values=$(get_values)
   yq r ./kubeconfig.yaml -j >$TMP_DIR/kubeconfig.yaml
-  jsonnet --tla-code-file prev=${TMP_DIR}/kubeconfig.yaml --tla-code config="$config" ${TEMPLATE_DIR}/eksctl/kubeconfig.jsonnet | yq r -P - >kubeconfig.yaml
+  jsonnet --tla-code-file prev=${TMP_DIR}/kubeconfig.yaml --tla-code-file config="$values" ${TEMPLATE_DIR}/eksctl/kubeconfig.jsonnet | yq r -P - >kubeconfig.yaml
   expect_success "updating kubeconfig failed"
   complete "updated kubeconfig"
 }
@@ -536,7 +538,6 @@ function enabled_pkgs() {
 # make K8s manifest files for shared services
 function make_shared_config() {
   start "creating package manifests"
-  local config=$(get_config)
   cp -r pkgs $TMP_DIR
   rm -rf flux gloo
   rm -rf pkgs
@@ -547,12 +548,12 @@ function make_shared_config() {
 
 # make EKSCTL manifest file
 function make_cluster_config() {
-  local config=$(get_config)
+  local values=$(get_values)
   start "creating eksctl manifest"
   add_file "config.yaml"
   serviceAccountFile=$TMP_DIR/serviceaccounts
   make_policy_manifests | yq r - -j | jq >$serviceAccountFile
-  jsonnet --tla-code config="$config" --tla-code-file serviceaccounts="$serviceAccountFile" ${TEMPLATE_DIR}/eksctl/cluster_config.jsonnet | yq r -P - >config.yaml
+  jsonnet --tla-code-file config="$values" --tla-code-file serviceaccounts="$serviceAccountFile" ${TEMPLATE_DIR}/eksctl/cluster_config.jsonnet | yq r -P - >config.yaml
   expect_success "Templating failure eksctl/cluster_config.jsonnet"
   complete "created eksctl manifest"
 }
@@ -574,7 +575,7 @@ function as_json_else() {
 
 # make service accounts  for namespace given config, path, prefix, and environment name
 function template_service_accounts() {
-  local config=$1
+  local values=$1
   local path=$2
   local prefix=$3
   local namespace=$4
@@ -588,7 +589,7 @@ function template_service_accounts() {
       local newbasename=${file%.jsonnet}
       local out=$dir/${newbasename}
       add_file ${out}
-      jsonnet --tla-code config="$config" --tla-str namespace=$namespace $fullpath --tla-str pkg="$pkg" | jq '[.]' | yq r - --prettyPrint >$out
+      jsonnet --tla-code-file config=$values --tla-str namespace=$namespace $fullpath --tla-str pkg="$pkg" | jq '[.]' | yq r - --prettyPrint >$out
       cat $out
       expect_success "Templating failure $dir/$filename"
     fi
@@ -596,7 +597,7 @@ function template_service_accounts() {
 }
 
 # template_files $1 $2 $3 $4 - instantiates template for pkg in given namespace
-# $1 - config (values.yaml file as string)
+# $1 - json values file  (values file name)
 # $2 - the absolute path to the template directory
 # $3 - the target namespace for the instantiated templates
 # $4 - the name of the package to instantiate
@@ -606,10 +607,11 @@ function template_service_accounts() {
 # lists files created to stderr
 #
 function template_files() {
-  local config=$1
+  local values=$1
   local absoluteTemplateDir=$2
   local namespace=$3
   local pkg=$4
+
 
   local absoluteTemplatePkgPath=$absoluteTemplateDir/$4
 
@@ -635,7 +637,7 @@ function template_files() {
       local tmpPreviousTarget=$TMP_DIR/foo
       as_json_else ${previousTarget} $tmpPreviousTarget "{}"
       jsonnet --tla-code-file prev=$tmpPreviousTarget \
-              --tla-code config="$config" \
+              --tla-code-file config=$values \
               --tla-str namespace=$namespace \
               --tla-str pkg=$pkg $absoluteTemplateFilePath | \
               yq r - --prettyPrint >${relativeTarget}
@@ -647,13 +649,13 @@ function template_files() {
 
 # make policy manifests
 function make_policy_manifests() {
-  local config=$(get_config)
+  local values=$(get_values)
   local ns
   for ns in $(get_namespaces); do
     start "creating $ns policy files "
     local pkg
     for pkg in $(enabled_pkgs $TEMPLATE_DIR/pkgs namespaces.$ns); do
-      template_service_accounts "$config" $TEMPLATE_DIR/pkgs/$pkg $TEMPLATE_DIR/pkgs/ $ns
+      template_service_accounts "$values" $TEMPLATE_DIR/pkgs/$pkg $TEMPLATE_DIR/pkgs/ $ns
     done
     complete "created $ns policy files"
   done
@@ -663,30 +665,30 @@ function make_policy_manifests() {
 function create_namespace() {
   local template=$TEMPLATE_DIR/lib/namespace.jsonnet
   local ns=$1
-  local config="$2"
-  local create=$(echo "$config" | yq r - "namespaces.${ns}.config.create")
+  local values=$2
+  local create=$(cat "$values" | yq r - "namespaces.${ns}.config.create")
   create=${create:-true}
   if [ "$create" == "true" ]; then
     local out=pkgs/${ns}/namespace.yaml
     mkdir -p pkgs/${ns}
-    jsonnet --tla-code config="$config" --tla-str namespace=$ns $template | yq r - --prettyPrint >${out}
+    jsonnet --tla-code-file config=$values --tla-str namespace=$ns $template | yq r - --prettyPrint >${out}
     add_file $out
   fi
 }
 
 # make K8s manifests
 function make_namespace_config() {
-  local config=$(get_config)
+  local values=$(get_values)
   local ns
   if [ -d environments ]; then # XXX rename to namespaces after fixing tidebot
     mv environments $TMP_DIR
   fi
   for ns in $(get_namespaces); do
     start "creating manifests for namespace $ns"
-    create_namespace $ns "$config"
+    create_namespace $ns "$values"
     local pkg
     for pkg in $(enabled_pkgs $TEMPLATE_DIR/pkgs namespaces.$ns); do
-      template_files "$config" $TEMPLATE_DIR/pkgs $ns $pkg
+      template_files "$values" $TEMPLATE_DIR/pkgs $ns $pkg
     done
     complete "created manifests for namespace $ns"
   done
