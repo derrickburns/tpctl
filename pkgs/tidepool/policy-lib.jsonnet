@@ -12,20 +12,16 @@ local tplib = import 'lib.jsonnet';
     then $.withBucketReadingPolicy(bucket)
     else $.withBucketWritingPolicy(bucket),
 
-  bucketArn(bucket):: 'arn:aws:s3:::%s' % bucket,
-
-  contentsArn(bucket):: '%s/*' % $.bucketArn(bucket),
-
   withEmailPolicy():: p.attachPolicy([p.statement('*', 'ses:*')]),
 
   withBucketWritingPolicy(bucket):: p.attachPolicy([
-    p.statement($.bucketArn(bucket), 's3:ListBucket'),
-    p.statement($.contentsArn(bucket), ['s3:GetObject', 's3:PutObject', 's3:DeleteObject']),
+    p.statement(p.bucketArn(bucket), 's3:ListBucket'),
+    p.statement(p.contentsArn(bucket), ['s3:GetObject', 's3:PutObject', 's3:DeleteObject']),
   ]),
 
 
   withBucketReadingPolicy(bucket):: p.attachPolicy([
-    p.statement($.bucketArn(bucket), 's3:ListBucket'),
-    p.statement($.contentsArn(bucket), 's3:GetObject'),
+    p.statement(p.bucketArn(bucket), 's3:ListBucket'),
+    p.statement(p.contentsArn(bucket), 's3:GetObject'),
   ]),
 }
