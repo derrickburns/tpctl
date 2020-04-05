@@ -40,8 +40,8 @@ local chart(me, values) = (
 
   flattenWithName(o, name):: 
     if $.isResource(o) then { name: o }
-    else if std.isObject(o) then lib.mergeList(lib.values(std.mapWithKey(   function(key,   x) $.flatten(x, '%s:%s" % [name, key  ]), o)))
-    else if std.isArray(o)  then lib.mergeList(           std.mapWithIndex( function(index, x) $.flatten(x, '%s:%s" % [name, index]), o)))
+    else if std.isObject(o) then lib.mergeList(lib.values(std.mapWithKey(   function(key,   x) $.flatten(x, '%s:%s' % [name, key  ]), o)))
+    else if std.isArray(o)  then lib.mergeList(           std.mapWithIndex( function(index, x) $.flatten(x, '%s:%s' % [name, index]), o)))
     else {},
 
   k(apiVersion, kind):: {
