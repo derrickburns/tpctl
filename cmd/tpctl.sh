@@ -314,9 +314,12 @@ function set_template_dir() {
 # convert values file into json, return name of json file
 function get_values() {
   local out=$TMP_DIR/values.json
-  yq r values.yaml -j > $out
-  if [ $? -ne 0 ]; then
-    panic "cannot parse values.yaml"
+  if [ ! -f "$out" ]
+  then
+    yq r values.yaml -j > $out
+    if [ $? -ne 0 ]; then
+      panic "cannot parse values.yaml"
+    fi
   fi
   echo $out
 }
@@ -520,13 +523,24 @@ function reset_config_dir() {
   mv $TMP_DIR/values.yaml .
 }
 
+function get_valid_packages() {
+  if [ -z "$VALID_PACKAGES" ]
+  then
+    local pkgs=""
+    for dir in $(ls $TEMPLATE_DIR/pkgs); do
+      local pkg=$(basename $dir)
+      pkgs="${pkgs} $pkg"
+    done
+    VALID_PACKAGES="$pkgs"
+  fi
+  echo $VALID_PACKAGES
+}
+
 # return list of enabled packages
 function enabled_pkgs() {
+  local key=$1
   local pkgs=""
-  local directory=$1
-  local key=$2
-  for dir in $(ls $directory); do
-    local pkg=$(basename $dir)
+  for pkg in $(get_valid_packages); do
     local enabled=$(yq r values.yaml $key.${pkg}.enabled)
     if [ "$enabled" == "true" ]; then
       pkgs="${pkgs} $pkg"
@@ -611,7 +625,7 @@ function template_files() {
   local absoluteTemplateDir=$2
   local namespace=$3
   local pkg=$4
-
+  local dest=$5
 
   local absoluteTemplatePkgPath=$absoluteTemplateDir/$4
 
@@ -634,15 +648,26 @@ function template_files() {
       local relativeTarget=$relativeTargetDir/${targetBasename}
       local previousTarget=${TMP_DIR}/$relativeTarget
       add_file ${relativeTarget}
-      local tmpPreviousTarget=$TMP_DIR/foo
+      local tmpPreviousTarget=$TMP_DIR/prev/$relativeTarget
+      mkdir -p $(basename $tmpPreviousTarget)
       as_json_else ${previousTarget} $tmpPreviousTarget "{}"
+      cat <<! >>$dest
+   + (
+      local prev=import '$tmpPreviousTarget';
+      local config=import '$values';
+      local namespace='$namespace';
+      local pkg='$pkg';
+      local f=import '$absoluteTemplateFilePath';
+      { '${relativeTarget}' : f(config, prev, namespace, pkg) }
+    )
+!
       jsonnet --tla-code-file prev=$tmpPreviousTarget \
               --tla-code-file config=$values \
               --tla-str namespace=$namespace \
               --tla-str pkg=$pkg $absoluteTemplateFilePath | \
               yq r - --prettyPrint >${relativeTarget}
       expect_success "Templating failure ${relativeFilePath}"
-      rm ${tmpPreviousTarget}
+      #rm ${tmpPreviousTarget}
     fi
   done
 }
@@ -654,7 +679,7 @@ function make_policy_manifests() {
   for ns in $(get_namespaces); do
     start "creating $ns policy files "
     local pkg
-    for pkg in $(enabled_pkgs $TEMPLATE_DIR/pkgs namespaces.$ns); do
+    for pkg in $(enabled_pkgs namespaces.$ns); do
       template_service_accounts "$values" $TEMPLATE_DIR/pkgs/$pkg $TEMPLATE_DIR/pkgs/ $ns
     done
     complete "created $ns policy files"
@@ -683,15 +708,19 @@ function make_namespace_config() {
   if [ -d environments ]; then # XXX rename to namespaces after fixing tidebot
     mv environments $TMP_DIR
   fi
+  local out=$TMP_DIR/output
+  echo "{}" >$out
   for ns in $(get_namespaces); do
     start "creating manifests for namespace $ns"
     create_namespace $ns "$values"
     local pkg
-    for pkg in $(enabled_pkgs $TEMPLATE_DIR/pkgs namespaces.$ns); do
-      template_files "$values" $TEMPLATE_DIR/pkgs $ns $pkg
+    for pkg in $(enabled_pkgs namespaces.$ns); do
+      template_files "$values" $TEMPLATE_DIR/pkgs $ns $pkg $out
     done
     complete "created manifests for namespace $ns"
   done
+  #cat $out
+  #jsonnet $out
 }
 
 # create all K8s manifests and EKSCTL manifest
@@ -1284,9 +1313,7 @@ main() {
       setup_tmpdir
       set_template_dir
       clone_remote
-      make_shared_config
-      make_cluster_config
-      make_namespace_config
+      make_config
       bootstrap_flux
       confirm_matching_cluster
       ;;

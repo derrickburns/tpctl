@@ -1,4 +1,6 @@
-local ClusterIssuer(config) = {
+local lib = import '../../lib/lib.jsonnet';
+
+local ClusterIssuer(config, me) = lib.E(me, {
   apiVersion: 'cert-manager.io/v1alpha2',
   kind: 'ClusterIssuer',
   metadata: {
@@ -28,6 +30,6 @@ local ClusterIssuer(config) = {
       ],
     },
   },
-};
+});
 
-function(config, prev, namespace, pkg) ClusterIssuer(config)
+function(config, prev, namespace, pkg) ClusterIssuer(config, lib.package(config, namespace, pkg))

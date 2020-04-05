@@ -1,7 +1,8 @@
 local k8s = import '../../lib/k8s.jsonnet';
+local lib = import '../../lib/lib.jsonnet';
 local p = import '../../lib/policy.jsonnet';
 
-local policy(namespace) = k8s.metadata('cert-manager', namespace) + p.attachPolicy(
+local policy(me) = lib.E(me, k8s.metadata('cert-manager', me.namespace) + p.attachPolicy(
   [
     p.statement('arn:aws:route53:::hostedzone/*', 'route53:ChangeResourceRecordSets'),
     p.statement('*', [
@@ -11,6 +12,6 @@ local policy(namespace) = k8s.metadata('cert-manager', namespace) + p.attachPoli
       'route53:ListHostedZonesByName',
     ]),
   ]
-);
+));
 
-function(config, namespace, pkg) policy(namespace)
+function(config, namespace, pkg) policy(lib.package(config, namespace, pkg))

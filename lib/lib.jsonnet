@@ -2,6 +2,8 @@
 {
   isEnabled(x):: $.isTrue(x, 'enabled'),
 
+  E(me, val):: if $.isEnabled(me) then val else null,
+
   isEnabledAt(x, prop):: $.isTrue(x, prop + '.enabled'),
 
   package(config, namespace, pkg):: config.namespaces[namespace][pkg] { 
