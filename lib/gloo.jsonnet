@@ -8,10 +8,28 @@ local pom = import 'pom.jsonnet';
 local tracing = import 'tracing.jsonnet';
 
 {
+
+  withDefault(obj, field, default)::
+    if obj == null || std.objectHas(obj, field)
+    then obj
+    else obj { [field]: default },
+
+  // add a default name to an object if it does not have one
+  withName(obj, default):: $.withDefault(obj, 'name', default),
+
+  // add a default namespace to an object if it does not have one
+  withNamespace(obj, default):: $.withDefault(obj, 'namespace', default),
+
+  // add namespace field to each object under a map if it does not already have one
+  addNamespace(map, ns):: std.mapWithKey(function(n, v) $.withNamespace(v, ns), map),
+
+  // add a name field to each entry of a map, where the name is the key
+  addName(map):: std.mapWithKey(function(n, v) $.withName(v, n), map),
+
   vsForNamespacedPackage(name, pkg, package):: (
 
     // add virtual service name and namespace as key/value pairs in each virtual service
-    local taggedVsList(vsmap) = lib.addName(lib.addNamespace(vsmap, name));
+    local taggedVsList(vsmap) = $.addName($.addNamespace(vsmap, name));
 
     // flatten tagged virtual service map into a simple list
     local taggedVsMap(vsmap) = lib.values(taggedVsList(vsmap));
@@ -166,7 +184,7 @@ local tracing = import 'tracing.jsonnet';
   },
 
   virtualService(vsin, defaultName, defaultNamespace):: {
-    local vs = lib.withNamespace(lib.withName(vsin, defaultName), defaultNamespace),
+    local vs = $.withNamespace($.withName(vsin, defaultName), defaultNamespace),
     apiVersion: 'gateway.solo.io/v1',
     kind: 'VirtualService',
     metadata: {
@@ -182,9 +200,9 @@ local tracing = import 'tracing.jsonnet';
 
   gateways(config):: (
     local vss = $.virtualServices(config);
-    local gloo = lib.withNamespace(config.pkgs.gloo, 'gloo-system');
-    local gws = lib.values(std.mapWithKey(function(n, v) lib.withName(v, n), gloo.gateways));
-    [$.gateway(lib.withNamespace(gw, gloo.namespace), vss) for gw in gws]
+    local gloo = $.withNamespace(config.pkgs.gloo, 'gloo-system');
+    local gws = lib.values(std.mapWithKey(function(n, v) $.withName(v, n), gloo.gateways));
+    [$.gateway($.withNamespace(gw, gloo.namespace), vss) for gw in gws]
   ),
 
   dnsNames(config, selector={ type: 'external' }):: (
@@ -287,7 +305,7 @@ local tracing = import 'tracing.jsonnet';
   certificateSecretName(base, namespace):: namespace + '-' + base + '-certificate',
 
   certificate(config, vsin, defaultName, defaultNamespace):: (
-    local vs = lib.withNamespace(lib.withName(vsin, defaultName), defaultNamespace);
+    local vs = $.withNamespace($.withName(vsin, defaultName), defaultNamespace);
     if global.isEnabled(config, 'certmanager')
        && $.isHttps(vs)
        && std.length(vs.dnsNames) > 0

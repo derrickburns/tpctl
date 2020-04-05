@@ -23,23 +23,6 @@
     std.set(std.filter(function(x) $.getElse(config.namespaces[x], 'namespace.' + prop, default), all))
   ),
 
-  withDefault(obj, field, default)::
-    if obj == null || std.objectHas(obj, field)
-    then obj
-    else obj { [field]: default },
-
-  // add a default name to an object if it does not have one
-  withName(obj, default):: $.withDefault(obj, 'name', default),
-
-  // add a default namespace to an object if it does not have one
-  withNamespace(obj, default):: $.withDefault(obj, 'namespace', default),
-
-  // add namespace field to each object under a map if it does not already have one
-  addNamespace(map, ns):: std.mapWithKey(function(n, v) $.withNamespace(v, ns), map),
-
-  // add a name field to each entry of a map, where the name is the key
-  addName(map):: std.mapWithKey(function(n, v) $.withName(v, n), map),
-
   matches(labels, selector)::
     std.foldl(function(a, b) a && b, [$.getElse(labels, x, false) == selector[x] for x in std.objectFields(selector)], true),
 
