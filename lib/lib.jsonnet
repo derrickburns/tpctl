@@ -20,7 +20,7 @@
 
   namespacesWith(config, prop, default):: (
     local all = $.namespaces(config);
-    std.set(std.filter(function(x) $.getElse(config.namespaces[x], 'config.' + prop, default), all))
+    std.set(std.filter(function(x) $.getElse(config.namespaces[x], 'namespace.' + prop, default), all))
   ),
 
   withDefault(obj, field, default)::
