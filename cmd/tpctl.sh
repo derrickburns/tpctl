@@ -686,33 +686,14 @@ function make_policy_manifests() {
   done
 }
 
-# create a namespace given a configuration
-function create_namespace() {
-  local template=$TEMPLATE_DIR/lib/namespace.jsonnet
-  local ns=$1
-  local values=$2
-  local create=$(cat "$values" | yq r - "namespaces.${ns}.config.create")
-  create=${create:-true}
-  if [ "$create" == "true" ]; then
-    local out=pkgs/${ns}/namespace.yaml
-    mkdir -p $(basename $out)
-    jsonnet --tla-code-file config=$values --tla-str namespace=$ns $template | yq r - --prettyPrint >${out}
-    add_file $out
-  fi
-}
-
 # make K8s manifests
 function make_namespace_config() {
   local values=$(get_values)
   local ns
-  if [ -d environments ]; then # XXX rename to namespaces after fixing tidebot
-    mv environments $TMP_DIR
-  fi
   local out=$TMP_DIR/output
   echo "{}" >$out
   for ns in $(get_namespaces); do
     start "creating manifests for namespace $ns"
-    create_namespace $ns "$values"
     local pkg
     for pkg in $(enabled_pkgs namespaces.$ns); do
       template_files "$values" $TEMPLATE_DIR/pkgs $ns $pkg $out
