@@ -24,7 +24,6 @@ local helmrelease(config, me) = k8s.helmrelease(me, { version: '1.2.0', reposito
         label: config.cluster.metadata.name,
         email: config.general.email,
         url: '%s.git' % config.general.github.git,
-        path: 'pkgs',
       },
 
       prometheus: {
@@ -44,8 +43,6 @@ local helmrelease(config, me) = k8s.helmrelease(me, { version: '1.2.0', reposito
       },
 
       additionalArgs: [
-        "--git-path=secrets",
-        "--git-path=configmaps",
       ] + if lib.isTrue(ns, 'fluxcloud.enabled') then ['--connect=ws://fluxcloud'] else [],
 
       extraContainers:
