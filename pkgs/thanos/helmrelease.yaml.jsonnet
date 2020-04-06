@@ -5,6 +5,9 @@ local helmrelease(config, me) = k8s.helmrelease(me, { version: '0.3.18', reposit
   spec+: {
     values: {
       objstoreSecretOverride: "thanos",
+      image: {
+        tag: "v0.11.0",
+      },
       bucket: {
         logLevel: lib.getElse(config, 'general.loglevel', 'info'),
       },
