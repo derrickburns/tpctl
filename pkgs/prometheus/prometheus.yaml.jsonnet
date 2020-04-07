@@ -37,8 +37,8 @@ local prometheus(config, me) = {
     thanos: if global.isEnabled(config, 'thanos') then {
       local thanos = global.package(config, 'thanos'),
       objectStorageConfig: {
-        key: 'thanos.yaml',
-        name: lib.getElse(thanos, 'secret', 'thanos-objstore-secret'),
+        key: 'object-store.yaml',
+        name: lib.getElse(thanos, 'secret', 'thanos'),
       },
       image:  {
         tag: "v0.11.0",
