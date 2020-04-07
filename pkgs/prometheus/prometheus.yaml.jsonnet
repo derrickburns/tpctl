@@ -40,10 +40,10 @@ local prometheus(config, me) = {
         key: 'thanos.yaml',
         name: lib.getElse(thanos, 'secret', 'thanos-objstore-secret'),
       },
-      version: 'v0.5.0',
-    } else {
-      test: global.isEnabled(config, 'thanos')
-    },
+      image:  {
+        tag: "v0.11.0",
+      },
+    } else {},
   },
 };
 
