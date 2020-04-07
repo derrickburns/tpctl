@@ -1,11 +1,7 @@
 local lib = import '../../lib/lib.jsonnet';
+local k8s = import '../../lib/k8s.jsonnet';
 
-local clusterrole(me) = {
-  apiVersion: 'rbac.authorization.k8s.io/v1beta1',
-  kind: 'ClusterRole',
-  metadata: {
-    name: me.pkg,
-  },
+local clusterrole(me) = k8s.clusterrole(me) {
   rules: [
     {
       apiGroups: [

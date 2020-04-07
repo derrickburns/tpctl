@@ -32,16 +32,16 @@ local chart(me, values) = (
 
   isResource(o):: std.isObject(o) && std.objectHas(o, 'apiVersion') && std.objectHas(o, 'kind'),
 
-  flatten(o):: 
+  flatten(o)::
     if $.isResource(o) then [o]
-    else if std.isObject(o) then std.flattenArrays( std.map( $.flatten, lib.values(o)))
-    else if std.isArray(o)  then std.flattenArrays( std.map( $.flatten, o))
+    else if std.isObject(o) then std.flattenArrays(std.map($.flatten, lib.values(o)))
+    else if std.isArray(o) then std.flattenArrays(std.map($.flatten, o))
     else [],
 
-  flattenWithName(o, name):: 
+  flattenWithName(o, name)::
     if $.isResource(o) then { name: o }
-    else if std.isObject(o) then lib.mergeList(lib.values(std.mapWithKey(   function(key,   x) $.flatten(x, '%s:%s' % [name, key  ]), o)))
-    else if std.isArray(o)  then lib.mergeList(           std.mapWithIndex( function(index, x) $.flatten(x, '%s:%s' % [name, index]), o))
+    else if std.isObject(o) then lib.mergeList(lib.values(std.mapWithKey(function(key, x) $.flatten(x, '%s:%s' % [name, key]), o)))
+    else if std.isArray(o) then lib.mergeList(std.mapWithIndex(function(index, x) $.flatten(x, '%s:%s' % [name, index]), o))
     else {},
 
   k(apiVersion, kind):: {
@@ -52,6 +52,9 @@ local chart(me, values) = (
   metadata(name, namespace=''):: {
     metadata: {
                 name: name,
+                labels: {
+                  app: name,
+                },
               } +
               if namespace != '' then { namespace: namespace } else {},
   },
@@ -59,6 +62,8 @@ local chart(me, values) = (
   serviceaccount(me):: $.k('v1', 'ServiceAccount') + $.metadata(me.pkg, me.namespace),
 
   configmap(me):: $.k('v1', 'ConfigMap') + $.metadata(me.pkg, me.namespace),
+
+  clusterrole(me):: $.k('rbac.authorization.k8s.io/v1', 'ClusterRole') + $.metadata(me.pkg),
 
   clusterrolebinding(me):: $.k('rbac.authorization.k8s.io/v1', 'ClusterRoleBinding') + $.metadata(me.pkg) {
     roleRef: {
@@ -76,11 +81,6 @@ local chart(me, values) = (
   },
 
   deployment(me):: $.k('apps/v1', 'Deployment') + $.metadata(me.pkg, me.namespace) {
-    metadata+: {
-      labels: {
-        app: me.pkg,
-      },
-    },
     spec+: {
       strategy: {
         type: 'Recreate',
@@ -104,20 +104,14 @@ local chart(me, values) = (
     },
   },
 
-  helmrelease(me, chartValues):: 
-    $.k('helm.fluxcd.io/v1', 'HelmRelease') + $.metadata(me.pkg, me.namespace) {
-      spec+: {
-        releaseName: lib.getElse(me, 'releaseName', me.pkg),
-        chart: chart(me, chartValues),
-      },
+  helmrelease(me, chartValues):: $.k('helm.fluxcd.io/v1', 'HelmRelease') + $.metadata(me.pkg, me.namespace) {
+    spec+: {
+      releaseName: lib.getElse(me, 'releaseName', me.pkg),
+      chart: chart(me, chartValues),
     },
+  },
 
   service(me, type='ClusterIP'):: $.k('v1', 'Service') + $.metadata(me.pkg, me.namespace) {
-    metadata+: {
-      labels: {
-        app: me.pkg
-      },
-    },
     spec+: {
       type: type,
       selector: {
