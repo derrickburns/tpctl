@@ -40,8 +40,8 @@ local prometheus(config, me) = {
         key: 'object-store.yaml',
         name: lib.getElse(thanos, 'secret', 'thanos'),
       },
-      image: quay.io/thanos/thanos:v0.11.0,
-      version: v0.11.0,
+      image: 'quay.io/thanos/thanos:v0.11.0',
+      version: 'v0.11.0',
     } else {},
   },
 };
