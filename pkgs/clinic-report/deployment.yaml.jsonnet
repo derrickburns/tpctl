@@ -9,76 +9,16 @@ local deployment(me) = lib.E(me, k8s.deployment(me) {
           {
             image: 'tidepool/clinic-report:latest',
             imagePullPolicy: 'Always',
-            name: 'mongo',
+            name: me.pkg,
             env: [
-              {
-                name: 'SALT_DEPLOY',
-                valueFrom: {
-                  secretKeyRef: {
-                    key: 'UserIdSalt',
-                    name: 'userdata',
-                  },
-                },
-              },
-              {
-                name: 'MONGO_SCHEME',
-                valueFrom: {
-                  secretKeyRef: {
-                    key: 'Scheme',
-                    name: 'mongo',
-                  },
-                },
-              },
-              {
-                name: 'MONGO_USERNAME',
-                valueFrom: {
-                  secretKeyRef: {
-                    key: 'Username',
-                    name: 'mongo',
-                  },
-                },
-              },
-              {
-                name: 'MONGO_PASSWORD',
-                valueFrom: {
-                  secretKeyRef: {
-                    key: 'Password',
-                    name: 'mongo',
-                    optional: true,
-                  },
-                },
-              },
-              {
-                name: 'MONGO_ADDRESSES',
-                valueFrom: {
-                  secretKeyRef: {
-                    key: 'Addresses',
-                    name: 'mongo',
-                  },
-                },
-              },
-              {
-                name: 'MONGO_DATABASE',
-                value: 'user',
-              },
-              {
-                name: 'MONGO_OPT_PARAMS',
-                valueFrom: {
-                  secretKeyRef: {
-                    key: 'OptParams',
-                    name: 'mongo',
-                  },
-                },
-              },
-              {
-                name: 'MONGO_SSL',
-                valueFrom: {
-                  secretKeyRef: {
-                    key: 'Tls',
-                    name: 'mongo',
-                  },
-                },
-              },
+              k8s.envSecret('SALT_DEPLOY', 'userdata', 'UserIdSalt'),
+              k8s.envSecret('MONGO_SCHEME', 'mongo', 'Scheme'),
+              k8s.envSecret('MONGO_USERNAME', 'mongo', 'Username'),
+              k8s.envSecret('MONGO_PASSWORD', 'mongo', 'Password'),
+              k8s.envSecret('MONGO_ADDRESSES', 'mongo', 'Addresses'),
+              k8s.envSecret('MONGO_OPT_PARAMS', 'mongo', 'OptParams'),
+              k8s.envSecret('MONGO_SSL', 'mongo', 'Tls'),
+              k8s.envVar('MONGO_DATABASE', 'user'),
             ],
             ports: [
               {

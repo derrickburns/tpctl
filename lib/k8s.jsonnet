@@ -128,4 +128,19 @@ local chart(me, values) = (
   },
 
   pod(me):: $.k('v1', 'Pod') + $.metadata(me.pkg, me.namespace),
+
+  envVar(env, value):: {
+    name: env,
+    value: value,
+  },
+
+  envSecret(env, secret, key):: {
+    name: env,
+    valueFrom: {
+      secretKeyRef: {
+        name: secret,
+        key: key,
+      },
+    },
+  },
 }

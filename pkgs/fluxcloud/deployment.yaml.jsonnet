@@ -21,35 +21,12 @@ local Deployment(config, me) = k8s.deployment(me) {
               },
             ],
             env: [
-              {
-                name: 'SLACK_URL',
-                valueFrom: {
-                  secretKeyRef: {
-                    name: secretName,
-                    key: 'url',
-                  },
-                },
-              },
-              {
-                name: 'SLACK_CHANNEL',
-                value: lib.getElse(me, 'channel', '#flux-%s' % config.cluster.metadata.name),
-              },
-              {
-                name: 'SLACK_USERNAME',
-                value: lib.getElse(me, 'username', 'derrickburns'),
-              },
-              {
-                name: 'SLACK_ICON_EMOJI',
-                value: ':heart:',
-              },
-              {
-                name: 'GITHUB_URL',
-                value: config.general.github.https,
-              },
-              {
-                name: 'LISTEN_ADDRESS',
-                value: ':3032',
-              },
+              k8s.envSecret('SLACK_URL', secretName, 'url'),
+              k8s.envVar('SLACK_CHANNEL', lib.getElse(me, 'channel', '#flux-%s' % config.cluster.metadata.name)),
+              k8s.envVar('SLACK_USERNAME', lib.getElse(me, 'username', 'derrickburns')),
+              k8s.envVar('SLACK_ICON_EMOJI', ':heart:'),
+              k8s.envVar('GITHUB_URL', config.general.github.https),
+              k8s.envVar('LISTEN_ADDRESS', ':3032'),
             ],
           },
         ],
