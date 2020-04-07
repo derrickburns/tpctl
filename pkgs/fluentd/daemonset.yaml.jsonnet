@@ -7,9 +7,9 @@ local daemonset(config, me) = k8s.daemonset(me) {
       'configmap.reloader.stakater.com/reload': 'fluentd-config',
     },
   },
-  spec: {
-    template: {
-      spec: {
+  spec+: {
+    template+: {
+      spec+: {
         containers: [
           {
             env: [
