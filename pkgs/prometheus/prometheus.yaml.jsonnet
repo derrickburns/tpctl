@@ -42,7 +42,7 @@ local prometheus(config, me) = {
       },
       version: 'v0.5.0',
     } else {
-      test: 'test',
+      test: global.isEnabled(config, 'thanos')
     },
   },
 };
