@@ -162,6 +162,20 @@ local helmrelease(config, me, prev) =
       podAnnotations: linkerd.annotations(config) + {
         'cluster-autoscaler.kubernetes.io/safe-to-evict': 'true',  // XXX
       },
+      podSecurityContext: {
+        allowPrivilegeEscalation: false,
+        capabilities: {
+          add: [
+            'NET_BIND_SERVICE',
+          ],
+          drop: [
+            'ALL',
+          ],
+        },
+        readOnlyRootFilesystem: true,
+        runAsNonRoot: true,
+        runAsUser: 65534,
+      },
       hpa: lib.getElse(env, 'hpa', { enabled: false }),
       deployment+: {
         replicas: lib.getElse(env, 'deployment.replicas', 1),
