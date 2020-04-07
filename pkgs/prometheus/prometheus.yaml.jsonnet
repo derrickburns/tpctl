@@ -41,7 +41,9 @@ local prometheus(config, me) = {
         name: lib.getElse(thanos, 'secret', 'thanos-objstore-secret'),
       },
       version: 'v0.5.0',
-    } else {},
+    } else {
+      test: 'test',
+    },
   },
 };
 
