@@ -1,9 +1,7 @@
-local clusterrole() = {
-  apiVersion: 'rbac.authorization.k8s.io/v1',
-  kind: 'ClusterRole',
-  metadata: {
-    name: 'jaeger-operator',
-  },
+local k8s = import '../../lib/k8s.jsonnet';
+local lib = import '../../lib/lib.jsonnet';
+
+local clusterrole(me) = k8s.clusterrole(me) {
   rules: [
     {
       apiGroups: [
@@ -150,4 +148,4 @@ local clusterrole() = {
   ],
 };
 
-function(config, prev, namespace, pkg) clusterrole()
+function(config, prev, namespace, pkg) clusterrole(lib.package(config, namespace, pkg))
