@@ -1,30 +1,14 @@
 local lib = import '../../lib/lib.jsonnet';
+local k8s = import '../../lib/k8s.jsonnet';
 
-local daemonset(config, me) = {
-  apiVersion: 'apps/v1',
-  kind: 'DaemonSet',
-  metadata: {
-    labels: {
-      'k8s-app': me.pkg,
+local daemonset(config, me) = k8s.daemonset(me) {
+  metadata+: {
+    annotations+: {
+      'configmap.reloader.stakater.com/reload': 'fluentd-config',
     },
-    name: me.pkg,
-    namespace: me.namespace,
   },
   spec: {
-    selector: {
-      matchLabels: {
-        'k8s-app': me.pkg,
-      },
-    },
     template: {
-      metadata: {
-        annotations: {
-          configHash: '8915de4cf9c3551a8dc74c0137a3e83569d28c71044b0359c2578d2e0461825',
-        },
-        labels: {
-          'k8s-app': me.pkg,
-        },
-      },
       spec: {
         containers: [
           {
