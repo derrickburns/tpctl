@@ -82,9 +82,6 @@ local chart(me, values) = (
 
   daemonset(me):: $.k('apps/v1', 'DaemonSet') + $.metadata(me.pkg, me.namespace) {
     spec+: {
-      strategy: {
-        type: 'Recreate',
-      },
       selector+: {
         matchLabels: {
           app: me.pkg,
