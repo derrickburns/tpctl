@@ -340,7 +340,7 @@ local ExternalDnsHosts(hosts) = {
       floatingUserId: false,
       probes: false,
       image: {
-        repository: 'gloo-envoy-wrapper',
+        repository: if me.pkg == 'gloo' then 'gloo-envoy-wrapper' else 'gloo-ee-envoy-wrapper',
         tag: lib.getElse(me, 'gloo.version', lib.getElse(me, 'version', '1.3.15')),
       },
       httpPort: 8080,
