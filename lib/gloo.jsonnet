@@ -7,6 +7,18 @@ local linkerd = import 'linkerd.jsonnet';
 local pom = import 'pom.jsonnet';
 local tracing = import 'tracing.jsonnet';
 
+local AwsTcpLoadBalancer(config) = {  // XXX AWS dependency
+  'service.beta.kubernetes.io/aws-load-balancer-proxy-protocol': '*',
+  'service.beta.kubernetes.io/aws-load-balancer-backend-protocol': 'tcp',
+  'service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled': 'true',
+  'service.beta.kubernetes.io/aws-load-balancer-additional-resource-tags': 'cluster:%s' % config.cluster.metadata.name,
+};
+
+local ExternalDnsHosts(hosts) = {
+  'external-dns.alpha.kubernetes.io/alias': 'true',
+  'external-dns.alpha.kubernetes.io/hostname': std.join(',', hosts),
+};
+
 {
 
   withDefault(obj, field, default)::
@@ -428,18 +440,9 @@ local tracing = import 'tracing.jsonnet';
       pomeriumGatewayProxy: $.baseGatewayProxy(config, me, 'pomeriumGatewayProxy') {
         service+: {
           type: 'LoadBalancer',
-          extraAnnotations+: {
-            'service.beta.kubernetes.io/aws-load-balancer-proxy-protocol': '*',
-            'service.beta.kubernetes.io/aws-load-balancer-backend-protocol': 'tcp',
-            'service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled': 'true',
-            'external-dns.alpha.kubernetes.io/alias': 'true',
-            'external-dns.alpha.kubernetes.io/hostname': std.join(
-              ',',
-              $.dnsNames(expand.expand(config), { type: 'pomerium' })
-              + pom.dnsNames(expand.expand(config))
-            ),
-            'service.beta.kubernetes.io/aws-load-balancer-additional-resource-tags': 'cluster:%s' % config.cluster.metadata.name,
-          },
+          extraAnnotations+:
+            AwsTcpLoadBalancer(config) +
+            ExternalDnsHosts($.dnsNames(expand.expand(config), { type: 'pomerium' }) + pom.dnsNames(expand.expand(config))),
         },
       },
       internalGatewayProxy: $.baseGatewayProxy(config, me, 'internalGatewayProxy') {
@@ -450,17 +453,9 @@ local tracing = import 'tracing.jsonnet';
       gatewayProxy: $.baseGatewayProxy(config, me, 'gatewayProxy') {
         service+: {
           type: 'LoadBalancer',
-          extraAnnotations+: {
-            'service.beta.kubernetes.io/aws-load-balancer-proxy-protocol': '*',
-            'service.beta.kubernetes.io/aws-load-balancer-backend-protocol': 'tcp',
-            'service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled': 'true',
-            'external-dns.alpha.kubernetes.io/alias': 'true',
-            'external-dns.alpha.kubernetes.io/hostname': std.join(
-              ',',
-              $.dnsNames(expand.expand(config), { type: 'external' })
-            ),
-            'service.beta.kubernetes.io/aws-load-balancer-additional-resource-tags': 'cluster:%s' % config.cluster.metadata.name,
-          },
+          extraAnnotations+:
+            AwsTcpLoadBalancer(config) +
+            ExternalDnsHosts($.dnsNames(expand.expand(config), { type: 'external' })),
         },
       },
     },
