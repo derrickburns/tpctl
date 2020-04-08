@@ -729,8 +729,8 @@ function save_changes() {
   local branch="tpctl-$(date '+%Y-%m-%d-%H-%M-%S')"
   establish_ssh
   start "saving changes to config repo"
-  read -p "${GREEN}PR Message? ${RESET} " -r
-  local message=$REPLY
+  read -p "${GREEN}Commit Message [$1]? ${RESET} " -r
+  local message=${REPLY:-$1}
   git add .
   expect_success "git add failed"
   if [ "$branch" != "master" ]; then
@@ -738,16 +738,19 @@ function save_changes() {
     expect_success "git checkout failed"
   fi
   expect_success "git checkout failed"
-  git commit -m "$1"
+  git commit -m "$message"
   expect_success "git commit failed"
   complete "committed changes to config repo"
+  if [ "$SKIP_REVIEW" == true ]; then
+    echo "Skipping review"
+    git checkout master
+    git merge $branch
+    git push
+    return
+  fi
   git push origin $branch
   expect_success "git push failed"
   complete "pushed changes to config repo branch $branch"
-  if [ "$SKIP_REVIEW" == true ]; then
-    echo "Skipping review"
-    return
-  fi
   info "Please select PR reviewer: "
   select REVIEWER in none $REVIEWERS; do
     if [ "$REVIEWER" == "none" ]; then
