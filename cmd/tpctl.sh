@@ -182,7 +182,7 @@ function error() {
 
 # irrecoverable error. Show message and exit.
 function panic() {
-  error ${1}
+  error "${1}"
   kill 0
 }
 
