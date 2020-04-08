@@ -877,7 +877,7 @@ function make_mesh_with_helm() {
 }
 
 # create service mesh
-# do NOT add linkerd to GitOps because upgrade path is can be complex
+# do NOT add linkerd to GitOps because upgrade path can be complex
 function make_mesh() {
   install_mesh_client
   linkerd install --ignore-cluster | kubectl delete -f -
@@ -979,13 +979,6 @@ general:
     ${EDITOR:-vi} values.yaml
   fi
   complete "created values.yaml"
-}
-
-# enter into bash to allow manual editing of config repo
-function edit_config() {
-  info "exit shell when done making changes."
-  bash
-  confirm "Are you sure you want to commit changes?"
 }
 
 # show recent diff
