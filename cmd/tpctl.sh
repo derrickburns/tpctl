@@ -10,6 +10,17 @@ export APPROVE=false
 export USE_LOCAL_FILESYSTEM=false
 export SKIP_REVIEW=false
 export GITHUB_ORG=${GITHUB_ORG:-tidepool-org}
+REPOS='
+cluster-dev
+cluster-qa2
+cluster-integration
+cluster-shared
+cluster-production
+'
+
+function useFzf() {
+  command -v fzf >/dev/null 2>&1
+}
 
 function envoy() {
   glooctl proxy served-config
@@ -242,7 +253,11 @@ function confirm() {
 function check_remote_repo() {
 
   if [ -z "$REMOTE_REPO" ]; then
-    panic "must provide REMOTE_REPO"
+    if useFzf; then
+      REMOTE_REPO=$(echo "$REPOS" | fzf)
+    else
+      panic "must provide REMOTE_REPO"
+    fi
   fi
 
   if [[ $REMOTE_REPO != */* ]]; then
@@ -1413,7 +1428,7 @@ main() {
       get_vpc
       ;;
     *)
-      if command -v fzf >/dev/null 2>&1; then
+      if useFzf; then
         choices=$(echo "$HELP" | fzf -f $cmd)
         error "Unknown command: \"$cmd\", perhaps you meant one of these: "
         echo
