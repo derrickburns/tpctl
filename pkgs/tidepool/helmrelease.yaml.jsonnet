@@ -172,7 +172,7 @@ local helmrelease(config, me, prev) =
             'ALL',
           ],
         },
-        readOnlyRootFilesystem: true,
+        //readOnlyRootFilesystem: true, 
         runAsNonRoot: true,
         runAsUser: 65534,
       },
