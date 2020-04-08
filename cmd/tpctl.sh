@@ -175,9 +175,14 @@ function define_colors() {
   RESET=$(tput sgr0)
 }
 
+# recoverable error. Show message .
+function error() {
+  echo >&2 "${RED}[✖] ${1}${RESET}"
+}
+
 # irrecoverable error. Show message and exit.
 function panic() {
-  echo >&2 "${RED}[✖] ${1}${RESET}"
+  error ${1}
   kill 0
 }
 
@@ -1137,42 +1142,44 @@ function await_deletion() {
   complete "cluster $cluster deleted"
 }
 
+HELP='
+----- Repo Commands (safe)
+config                              - create K8s and eksctl K8s manifest files
+envrc                               - create .envrc file for direnv to change kubecontexts and to set REMOTE_REPO
+fluxkey                             - copy public key from Flux to GitHub config repo
+repo  \$ORG/\$REPO_NAME             - create config repo on GitHub
+secrets                             - generate new secrets for all tidepool environments
+sync                                - cause flux to sync with the config repo
+values                              - create initial values.yaml file
+      
+----- Query Commands (safe)
+envoy                               - show envoy config
+linkerd_check                       - check Linkerd status
+peering                             - list peering relationships
+vpc                                 - identify the VPC
+      
+----- Cluster Commands
+await_deletion                      - await completion of deletion of the AWS EKS cluster
+cluster                             - create AWS EKS cluster, add system:master USERS
+delete_cluster                      - (initiate) deletion of the AWS EKS cluster
+flux                                - install flux GitOps controller and deploy flux public key into GitHub
+mesh                                - install service mesh
+service_account \$namespace \$name  - recreate a single service account in current context
+users                               - add system:master USERS to K8s cluster
+utils                               - update coredns, aws-node, and kube-proxy services in current context
+vpa                                 - install vertical pod autoscaler
+      
+----- Other Commands
+buckets                             - create S3 buckets if needed and copy assets if does not exist
+kmskey                              - create a new Amazon KMS key for the cluster
+merge_kubeconfig                    - copy the KUBECONFIG into the local $KUBECONFIG file
+remove_mesh                         - uninstall the service mesh
+update_kubeconfig                   - modify context and user for kubeconfig
+'
+
 # show help
 function help() {
-  cat << EOF
------ Repo Commands (safe)"
-config                              - create K8s and eksctl K8s manifest files"
-envrc                               - create .envrc file for direnv to change kubecontexts and to set REMOTE_REPO"
-fluxkey                             - copy public key from Flux to GitHub config repo"
-repo  \$ORG/\$REPO_NAME             - create config repo on GitHub"
-secrets                             - generate new secrets for all tidepool environments"
-sync                                - cause flux to sync with the config repo"
-values                              - create initial values.yaml file"
-      
------ Query Commands (safe)"
-envoy                               - show envoy config"
-linkerd_check                       - check Linkerd status"
-peering                             - list peering relationships"
-vpc                                 - identify the VPC"
-      
------ Cluster Commands"
-await_deletion                      - await completion of deletion of the AWS EKS cluster"
-cluster                             - create AWS EKS cluster, add system:master USERS"
-delete_cluster                      - (initiate) deletion of the AWS EKS cluster"
-flux                                - install flux GitOps controller and deploy flux public key into GitHub"
-mesh                                - install service mesh"
-service_account \$namespace \$name  - recreate a single service account in current context"
-users                               - add system:master USERS to K8s cluster"
-utils                               - update coredns, aws-node, and kube-proxy services in current context"
-vpa                                 - install vertical pod autoscaler"
-      
------ Other Commands"
-buckets                             - create S3 buckets if needed and copy assets if don't exist"
-kmskey                              - create a new Amazon KMS key for the cluster"
-merge_kubeconfig                    - copy the KUBECONFIG into the local $KUBECONFIG file"
-remove_mesh                         - uninstall the service mesh"
-update_kubeconfig                   - modify context and user for kubeconfig"
-EOF
+  echo "$HELP"
 }
 
 
@@ -1406,7 +1413,14 @@ main() {
       get_vpc
       ;;
     *)
-      panic "unknown command: $*"
+      if command -v fzf >/dev/null 2>&1; then
+        choices=$(echo "$HELP" | fzf -f $cmd)
+        error "Unknown command: \"$cmd\", perhaps you meant one of these: "
+        echo
+        echo "$choices"
+      else
+	panic "Unknown command: $cmd"
+      fi
       ;;
   esac
 }
