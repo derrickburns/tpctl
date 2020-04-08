@@ -16,6 +16,12 @@ local prometheus(config, me) = {
       region: config.cluster.metadata.region,
     },
     externalUrl: 'http://%s.%s' % [me.pkg, me.namespace],  // XXX Check
+    podMetadata: {
+      labels: {
+        instance: me.pkg,
+        namespace: me.namespace,
+      },
+    },
     podMonitorSelector: {
       matchLabels: {},
     },
