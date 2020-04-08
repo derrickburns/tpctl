@@ -336,6 +336,7 @@ local ExternalDnsHosts(hosts) = {
       data: null,
     },
     podTemplate: {
+      probes: true,
       disableNetBind: false,
       floatingUserId: false,
       probes: false,
