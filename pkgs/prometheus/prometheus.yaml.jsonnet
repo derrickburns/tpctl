@@ -2,7 +2,6 @@ local global = import '../../lib/global.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
 local prometheus(config, me) = {
-  local ns = config.namespaces[me.namespace],
   apiVersion: 'monitoring.coreos.com/v1',
   kind: 'Prometheus',
   metadata: {
