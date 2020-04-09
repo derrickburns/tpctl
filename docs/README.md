@@ -659,6 +659,7 @@ You also provide the configuration of your Tidepool environments in the `namespa
 namespaces:
   dev1:
     namespace:
+      enabled: true
       logging: true
       meshed: true
     tidepool:
