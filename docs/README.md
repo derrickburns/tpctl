@@ -36,6 +36,7 @@ brew "hub"
 brew "kubecfg"
 brew "cfssl"
 brew "weaveworks/tap/eksctl"
+brew "fzf"
 ```
 
 In addition, you will need to install `python3` with three packages:
@@ -478,27 +479,39 @@ Kubernetes services run in namespaces. Within each namespace, you may configure 
 ```yaml
 namespaces:
   amazon-cloudwatch:
+    namespace:
+      enabled: true
     cloudwatch-agent:
       enabled: true
     fluentd:
       enabled: true
   cadvisor:
+    namespace:
+      enabled: true
     cadvisor:
       enabled: true
   cert-manager:
+    namespace:
+      enabled: true
     config:
       create: false
     certmanager:
       enabled: true
       global: true
   elastic-system:
+    namespace:
+      enabled: true
     elastic-operator:
       enabled: true
       storage: 20Gi
   external-dns:
+    namespace:
+      enabled: true
     external-dns:
       enabled: true
   flux:
+    namespace:
+      enabled: true
     flux:
       enabled: true
     fluxcloud:
@@ -509,9 +522,10 @@ namespaces:
       export: true
       sidecar: false
   gloo-system:
-    config:
+    namespace:
       goldilocks: true
       meshed: true
+      enabled: true
     gloo:
       enabled: true
       global: true
@@ -535,6 +549,8 @@ namespaces:
         port: 80
       storage: 64Gi
   goldilocks:
+    namespace:
+      enabled: true
     goldilocks:
       enabled: true
       sso:
@@ -542,10 +558,13 @@ namespaces:
         serviceName: goldilocks-dashboard
         port: 80
   jaeger-operator:
+    namespace:
+      enabled: true
     jaeger-operator:
       enabled: true
   kube-system:
-    config:
+    namespace:
+      enabled: true
       logging: true
       labels:
         config.linkerd.io/admission-webhooks: disabled
@@ -554,10 +573,13 @@ namespaces:
     metrics-server:
       enabled: true
   kubernetes-dashboard:
+    namespace:
+      enabled: true
     kubernetes-dashboard:
       enabled: true
   linkerd:
-    config:
+    namespace:
+      enabled: true
       labels:
         config.linkerd.io/admission-webhooks: disabled
         linkerd.io/is-control-plane: "true"
@@ -569,7 +591,8 @@ namespaces:
       sso:
         port: 8084
   monitoring:
-    config:
+    namespace:
+      enabled: true
       goldilocks: true
     grafana:
       enabled: true
@@ -592,22 +615,27 @@ namespaces:
       bucket: tidepool-thanos
       enabled: false
   none:
-    config:
-      create: false
     common:
       enabled: true
   pomerium:
-    config:
+    namespace:
       meshed: true
+      enabled: true
     pomerium:
       enabled: true
   reloader:
+    namespace:
+      enabled: true
     reloader:
       enabled: true
   sumologic:
+    namespace:
+      enabled: true
     sumologic:
       enabled: true
   tracing:
+    namespace:
+      enabled: true
     jaeger:
       enabled: true
       sso:
@@ -620,8 +648,6 @@ namespaces:
       storage: 15Gi
       enabled: true
   velero:
-    config:
-      create: false
     velero:
       enabled: false
 ```
@@ -632,7 +658,7 @@ You also provide the configuration of your Tidepool environments in the `namespa
 ```yaml
 namespaces:
   dev1:
-    config:
+    namespace:
       logging: true
       meshed: true
     tidepool:
