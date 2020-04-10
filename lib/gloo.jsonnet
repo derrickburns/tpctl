@@ -470,7 +470,7 @@ local ExternalDnsHosts(hosts) = {
     spec: {
       extensions: {
         configs: {
-          envoy-rate-limit: {
+          'envoy-rate-limit': {
             customConfig: {
               descriptors: [
                 {
