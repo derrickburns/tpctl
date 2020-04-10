@@ -468,32 +468,43 @@ local ExternalDnsHosts(hosts) = {
       },
     },
     spec: {
-      ratelimit: {
-        descriptors: [
-          {
-            key: 'Unauthenticated',
-            rateLimit: {
-              requestsPerUnit: 60,
-              unit: 'MINUTE',
+      extensions: {
+        configs: {
+          envoy-rate-limit: {
+            customConfig: {
+              descriptors: [
+                {
+                  key: 'Unauthenticated',
+                  rateLimit: {
+                    requestsPerUnit: 60,
+                    unit: 'MINUTE',
+                  },
+                },
+                {
+                  key: 'Individual',
+                  rateLimit: {
+                    requestsPerUnit: 10,
+                    unit: 'MINUTE',
+                  },
+                },
+                {
+                  key: 'SmallClinic',
+                  rateLimit: {
+                    requestsPerUnit: 30,
+                    unit: 'MINUTE',
+                  },
+                },
+              ],
             },
           },
-          {
-            key: 'Individual',
-            rateLimit: {
-              requestsPerUnit: 10,
-              unit: 'MINUTE',
+          extauth: {
+            extauthzServerRef: {
+              name: 'external-auth',
+              namespace: 'gloo-system',
             },
           },
-          {
-            key: 'SmallClinic',
-            rateLimit: {
-              requestsPerUnit: 30,
-              unit: 'MINUTE',
-            },
-          },
-        ],
+        },
       },
-
       discovery: {
         fdsMode: 'WHITELIST',
       },
