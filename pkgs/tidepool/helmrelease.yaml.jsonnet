@@ -256,8 +256,8 @@ local helmrelease(config, me, prev) = k8s.helmrelease(me, {
         discovery: {
           namespace: 'gloo-system',
         },
-        virtualServices: {
-          http: {
+        virtualServices+: {
+          http+: {
             name: 'http-internal',
             dnsNames: mylib.genDnsNames(config, me.namespace),
             enabled: true,
@@ -265,6 +265,11 @@ local helmrelease(config, me, prev) = k8s.helmrelease(me, {
               protocol: 'http',
               type: 'internal',
               namespace: me.namespace,
+            },
+            options: {
+              stats: {
+                virtualClusters: lib.getElse(me, 'virtualClusters', []),
+              },
             },
           },
           https: {
