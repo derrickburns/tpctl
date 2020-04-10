@@ -478,7 +478,7 @@ function update_kubeconfig() {
   start "updating kubeconfig"
   local values=$(get_values)
   yq r ./kubeconfig.yaml -j >$TMP_DIR/kubeconfig.yaml
-  kubecfg show --tla-code-file prev=${TMP_DIR}/kubeconfig.yaml --tla-code-file config="$values" ${TEMPLATE_DIR}/eksctl/kubeconfig.jsonnet >kubeconfig.yaml
+  jsonnet --tla-code-file prev=${TMP_DIR}/kubeconfig.yaml --tla-code-file config="$values" ${TEMPLATE_DIR}/eksctl/kubeconfig.jsonnet | yq r -P - >kubeconfig.yaml
   expect_success "updating kubeconfig failed"
   complete "updated kubeconfig"
 }
@@ -587,7 +587,7 @@ function make_cluster_config() {
   add_file "config.yaml"
   serviceAccountFile=$TMP_DIR/serviceaccounts
   make_policy_manifests | yq r - -j | jq >$serviceAccountFile
-  kubecfg show --tla-code-file config="$values" --tla-code-file serviceaccounts="$serviceAccountFile" ${TEMPLATE_DIR}/eksctl/cluster_config.jsonnet >config.yaml
+  jsonnet --tla-code-file config="$values" --tla-code-file serviceaccounts="$serviceAccountFile" ${TEMPLATE_DIR}/eksctl/cluster_config.jsonnet | yq r -P - >config.yaml
   expect_success "Templating failure eksctl/cluster_config.jsonnet"
   complete "created eksctl manifest"
 }
@@ -623,7 +623,7 @@ function template_service_accounts() {
       local newbasename=${file%.jsonnet}
       local out=$dir/${newbasename}
       add_file ${out}
-      kubecfg show --tla-code-file config=$values --tla-str namespace=$namespace $fullpath --tla-str pkg="$pkg" | jq '[.]' >$out
+      jsonnet --tla-code-file config=$values --tla-str namespace=$namespace $fullpath --tla-str pkg="$pkg" | jq '[.]' | yq r - --prettyPrint >$out
       cat $out
       expect_success "Templating failure $dir/$filename"
     fi
