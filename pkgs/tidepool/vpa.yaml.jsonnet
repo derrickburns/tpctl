@@ -47,4 +47,4 @@ local vpas(config, me) = (
   [vpa(svc, me.namespace) for svc in svcs if lib.getElse(me, svc + '.vpa.enabled', lib.getElse(me, 'vpa.enabled', 'false') == 'true')]
 );
 
-function(config, prev, namespace, pkg) std.manifestYamlStream(vpas(config, lib.package(config, namespace, pkg)))
+function(config, prev, namespace, pkg) vpas(config, lib.package(config, namespace, pkg))

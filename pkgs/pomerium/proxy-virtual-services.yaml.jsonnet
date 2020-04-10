@@ -86,4 +86,4 @@ local httpVirtualService(config, namespace) = {
 };
 
 function(config, prev, namespace, pkg)
-  std.manifestYamlStream([httpVirtualService(config, namespace), proxyVirtualService(config, namespace)])
+  [httpVirtualService(config, namespace), proxyVirtualService(config, namespace)]
