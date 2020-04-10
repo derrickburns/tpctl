@@ -20,9 +20,9 @@ local helmrelease(config, me) = k8s.helmrelease(me, { version: '7.1.0' }) {
       },
       rbac+: {
         create: true,
-        name: me.pkg,
         serviceAccount: {
           create: false,
+          name: me.pkg,
         },
       },
       fullnameOverride: me.pkg,
