@@ -176,15 +176,15 @@ local helmrelease(config, me, prev) = k8s.helmrelease(me, {
     },
   },
 
-  spec: {
-    rollback: {
+  spec+: {
+    rollback+: {
       enable: true,
       force: true,
       retry: true,
       maxRetries: 0,
     },
     releaseName: 'tidepool-%s' % me.namespace,
-    values: {
+    values+: {
       //local extraContainers = if lib.isTrue(me, 'shadow.enabled') && (lib.getElse(me, "shadow.sender", "") != "") then proxyContainers else [],
       local extraContainers = [],
 
