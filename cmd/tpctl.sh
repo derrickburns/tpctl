@@ -1205,7 +1205,7 @@ main() {
         APPROVE=true
         shift 1
         ;;
-      --skip-review)
+      -s | --skip-review)
         SKIP_REVIEW=true
         shift 1
         ;;
