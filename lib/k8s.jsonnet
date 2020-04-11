@@ -163,4 +163,10 @@ local chart(me, values) = (
       },
     },
   },
+
+  podSecurityContext:: {
+    sysctls:
+    - name: net.netfilter.nf_conntrack_tcp_timeout_close_wait
+      value: "240"
+  },
 }
