@@ -118,6 +118,7 @@ local chart(me, values) = (
           },
         },
         spec+: {
+          securityContext+: $.podSecurityContext,
           restartPolicy: 'Always',
         },
       },
@@ -147,7 +148,11 @@ local chart(me, values) = (
     targetPort: targetPort,
   },
 
-  pod(me):: $.k('v1', 'Pod') + $.metadata(me.pkg, me.namespace),
+  pod(me):: $.k('v1', 'Pod') + $.metadata(me.pkg, me.namespace) {
+    spec+: {
+      securityContext+: $.podSecurityContext,
+    },
+  },
 
   envVar(env, value):: {
     name: env,
