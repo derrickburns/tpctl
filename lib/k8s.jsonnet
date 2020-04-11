@@ -118,7 +118,7 @@ local chart(me, values) = (
           },
         },
         spec+: {
-          securityContext+: $.podSecurityContext,
+          securityContext+: $.securityContext,
           restartPolicy: 'Always',
         },
       },
@@ -150,7 +150,7 @@ local chart(me, values) = (
 
   pod(me):: $.k('v1', 'Pod') + $.metadata(me.pkg, me.namespace) {
     spec+: {
-      securityContext+: $.podSecurityContext,
+      securityContext+: $.securityContext,
     },
   },
 
@@ -169,7 +169,7 @@ local chart(me, values) = (
     },
   },
 
-  podSecurityContext:: {
+  securityContext:: {
     sysctls: [ {
       name: "net.netfilter.nf_conntrack_tcp_timeout_close_waits",
       value: "240",

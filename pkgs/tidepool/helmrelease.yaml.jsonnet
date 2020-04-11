@@ -156,7 +156,8 @@ local helmrelease(config, me, prev) = k8s.helmrelease(me, {
     podAnnotations: linkerd.annotations(config) + {
       'cluster-autoscaler.kubernetes.io/safe-to-evict': 'true',  // XXX
     },
-    podSecurityContext: k8s.podSecurityContext + {
+    securityContext: k8s.securityContext,
+    podSecurityContext: {
       allowPrivilegeEscalation: false,
       capabilities: {
         add: [
