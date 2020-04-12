@@ -28,7 +28,7 @@ local helmrelease(config, me) = k8s.helmrelease(me, { name: 'helm-operator', ver
       configureRepositories: {
         enabled: true,
         volumeName: 'repositories-yaml',
-        secretName: $.secretNames[1],
+        secretName: $._secretNames[1],
         cacheVolumeName: 'repositories-cache',
       },
 
