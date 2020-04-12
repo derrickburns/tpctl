@@ -1,21 +1,16 @@
-local helmrelease(config, namespace) = {  // XXX use helmrelease lib func
-  apiVersion: 'helm.fluxcd.io/v1',
-  kind: 'HelmRelease',
+local k8s = import '../../lib/k8s.jsonnet';
+
+local helmrelease(config, me) = k8s.helmrelease(me, {
+  name: 'sumologic-fluentd',
+  repository: 'https://sumologic.github.io/sumologic-kubernetes-collection',
+  version: '0.13.0',
+}) {
+  _secretNames:: ['sumologic'],
+
   metadata: {
-    annotations: {
-      'fluxcd.io/automated': 'true',
-    },
     name: 'sumologic-fluentd',
-    namespace: namespace,
   },
   spec: {
-    chart: {
-      name: 'sumologic-fluentd',
-      repository: 'https://sumologic.github.io/sumologic-kubernetes-collection',
-      version: '0.13.0',
-    },
-    releaseName: 'collection',
-
     'prometheus-operator': {
       prometheus: {
         prometheusSpec: {
@@ -35,8 +30,8 @@ local helmrelease(config, namespace) = {  // XXX use helmrelease lib func
       tag: '0.13.0',
     },
     sumologic: {
-      envFromSecret: 'sumologic',
-      excludeNamespaceRegex: 'amazon-cloudwatch|external-dns|external-secrets|flux|kube-.*|linkerd|monitoring|reloader|sumologic',  // XXX generate
+      envFromSecret: $._secretNames[0],
+      excludeNamespaceRegex: std.join('|', lib.namespacesWithout(config, 'logging', false)),
       readFromHead: false,
       sourceCategoryPrefix: 'kubernetes/%s/' % config.cluster.metadata.name,
 
@@ -44,4 +39,4 @@ local helmrelease(config, namespace) = {  // XXX use helmrelease lib func
   },
 };
 
-function(config, prev, namespace, pkg) helmrelease(config, namespace)
+function(config, prev, namespace, pkg) helmrelease(config, lib.package(config, namespace, pkg))

@@ -2,11 +2,13 @@ local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
 local helmrelease(config, me) = k8s.helmrelease(me, { version: '0.3.18', repository: 'https://kubernetes-charts.banzaicloud.com' }) {
+  _secretNames:: [ 'thanos' ],
+
   spec+: {
     values: {
-      objstoreSecretOverride: "thanos",
+      objstoreSecretOverride: $.secretNames[0],
       image: {
-        tag: "v0.11.0",
+        tag: 'v0.11.0',
       },
       bucket: {
         logLevel: lib.getElse(config, 'general.loglevel', 'info'),

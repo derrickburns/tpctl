@@ -17,13 +17,11 @@ local getPoliciesForPackage(config, me) = {
 local getPolicy(config) = [getPoliciesForPackage(config, pkg) for pkg in global.packagesWithKey(config, 'sso')];
 
 local helmrelease(config, me) = k8s.helmrelease(me, { version: '5.0.3', repository: 'https://helm.pomerium.io' }) {
+  _secretNames:: ['pomerium'],
+  _configmapNames:: ['pomerium'],
   local domain = mylib.rootDomain(config),
   spec+: {
     values: {
-      annotations: {
-        'secret.reloader.stakater.com/reload': 'pomerium',
-        'configmap.reloader.stakater.com/reload': 'pomerium',
-      },
       authenticate: {
         idp: {
           serviceAccount: true,
@@ -37,7 +35,7 @@ local helmrelease(config, me) = k8s.helmrelease(me, { version: '5.0.3', reposito
       },
       config: {
         rootDomain: domain,
-        existingSecret: 'pomerium',
+        existingSecret: $._secretNames[0],
         policy: getPolicy(config),
       },
       forwardAuth: {

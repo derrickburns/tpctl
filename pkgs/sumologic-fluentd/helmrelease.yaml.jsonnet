@@ -2,13 +2,14 @@ local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
 local helmrelease(config, me) = k8s.helmrelease(me, { name: 'sumologic-fluentd', version: '1.1.1' }) {
+  _secretNames:: ['sumologic'],
   spec+: {
     values: {
       rbac: {
         create: true,
       },
       sumologic: {
-        collectorUrlExistingSecret: 'sumologic',
+        collectorUrlExistingSecret: $._secretNames[0],
         readFromHead: false,
         sourceCategoryPrefix: 'kubernetes/%s/' % config.cluster.metadata.name,
         excludeNamespaceRegex: std.join('|', lib.namespacesWithout(config, 'logging', false)),

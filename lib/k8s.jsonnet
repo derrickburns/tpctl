@@ -28,6 +28,14 @@ local chart(me, values) = (
   else {}
 );
 
+local reloaderAnnotations(this) =
+  (if std.objectHas(this, '_secretNames')
+   then { 'secret.reloader.stakater.com/reload': std.join(',', this._secretNames) }
+   else {}) +
+  (if std.objectHas(this, '_configmapNames')
+   then { 'configmap.reloader.stakater.com/reload': std.join(',', this._configmapNames) }
+   else {});
+
 {
 
   isResource(o):: std.isObject(o) && std.objectHas(o, 'apiVersion') && std.objectHas(o, 'kind'),
@@ -126,7 +134,11 @@ local chart(me, values) = (
   },
 
   helmrelease(me, chartValues):: $.k('helm.fluxcd.io/v1', 'HelmRelease') + $.metadata(me.pkg, me.namespace) {
+    local this = $,
     spec+: {
+      values+: {
+        annotations+: reloaderAnnotations(this),
+      },
       releaseName: lib.getElse(me, 'releaseName', me.pkg),
       chart: chart(me, chartValues),
     },
@@ -170,9 +182,9 @@ local chart(me, values) = (
   },
 
   securityContext:: {
-   // sysctls: [ {
-      //name: "net.netfilter.nf_conntrack_tcp_timeout_close_waits",
-      //value: "240",
+    // sysctls: [ {
+    //name: "net.netfilter.nf_conntrack_tcp_timeout_close_waits",
+    //value: "240",
     //} ],
   },
 }

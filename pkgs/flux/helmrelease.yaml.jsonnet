@@ -2,7 +2,13 @@ local global = import '../../lib/global.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
-local helmrelease(config, me) = k8s.helmrelease(me, { version: '1.2.0', repository: 'https://charts.fluxcd.io' }) {
+local helmrelease(config, me) = k8s.helmrelease(me, {
+  version: '1.2.0',
+  repository: 'https://charts.fluxcd.io',
+}) {
+
+  _secretNames:: if lib.isEnabledAt(ns, 'fluxrecv') && lib.isTrue(ns, 'fluxrecv.sidecar') then ['fluxrecv-config'] else [],
+
   spec+: {
     values: {
       local ns = config.namespaces[me.namespace],
@@ -63,11 +69,11 @@ local helmrelease(config, me) = k8s.helmrelease(me, { version: '1.2.0', reposito
         else [],
 
       extraVolumes:
-        if lib.isEnabledAt(ns, 'fluxrecv') && lib.isTrue(ns, 'fluxrecv.sidecar')
+        if std.length($._secretNames) > 0
         then [{
           name: 'fluxrecv-config',
           secret: {
-            secretName: 'fluxrecv-config',
+            secretName: $._secretNames[0],
             defaultMode: std.parseOctal('0400'),
           },
         }]

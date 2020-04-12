@@ -3,9 +3,9 @@ local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
 local helmrelease(config, me) = k8s.helmrelease(me, { name: 'helm-operator', version: '0.6.0', repository: 'https://charts.fluxcd.io' }) {
+  _secretNames:: ['flux-git-deploy', 'flux-helm-repositories'],
   spec+: {
     values: {
-      local secretName = 'flux-helm-repositories',
 
       createCRD: false,
       helm: {
@@ -21,18 +21,14 @@ local helmrelease(config, me) = k8s.helmrelease(me, { name: 'helm-operator', ver
 
       git: {
         ssh: {
-          secretName: 'flux-git-deploy',
+          secretName: $._secretNames[0],
         },
-      },
-
-      annotations: {
-        'secret.reloader.stakater.com/reload': secretName,
       },
 
       configureRepositories: {
         enabled: true,
         volumeName: 'repositories-yaml',
-        secretName: secretName,
+        secretName: $.secretNames[1],
         cacheVolumeName: 'repositories-cache',
       },
 
