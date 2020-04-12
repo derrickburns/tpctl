@@ -6,7 +6,7 @@ local helmrelease(config, me) = k8s.helmrelease(me, { version: '0.3.18', reposit
 
   spec+: {
     values: {
-      objstoreSecretOverride: $.secretNames[0],
+      objstoreSecretOverride: $._secretNames[0],
       image: {
         tag: 'v0.11.0',
       },
