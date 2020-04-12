@@ -7,11 +7,11 @@ local helmrelease(config, me) = k8s.helmrelease(me, {
   repository: 'https://charts.fluxcd.io',
 }) {
 
+  local ns = config.namespaces[me.namespace],
   _secretNames:: if lib.isEnabledAt(ns, 'fluxrecv') && lib.isTrue(ns, 'fluxrecv.sidecar') then ['fluxrecv-config'] else [],
 
   spec+: {
     values: {
-      local ns = config.namespaces[me.namespace],
       image: {
         tag: lib.getElse(me, 'version', '1.18.0'),
       },
