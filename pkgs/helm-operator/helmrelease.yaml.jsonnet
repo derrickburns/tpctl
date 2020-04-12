@@ -5,7 +5,7 @@ local lib = import '../../lib/lib.jsonnet';
 local helmrelease(config, me) = k8s.helmrelease(me, { name: 'helm-operator', version: '0.6.0', repository: 'https://charts.fluxcd.io' }) {
   _secretNames:: ['flux-git-deploy', 'flux-helm-repositories'],
   spec+: {
-    values: {
+    values+: {
 
       createCRD: false,
       helm: {

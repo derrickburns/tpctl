@@ -21,7 +21,7 @@ local helmrelease(config, me) = k8s.helmrelease(me, { version: '5.0.3', reposito
   _configmapNames:: ['pomerium'],
   local domain = mylib.rootDomain(config),
   spec+: {
-    values: {
+    values+: {
       authenticate: {
         idp: {
           serviceAccount: true,
