@@ -85,7 +85,7 @@ namespaces:
     gloo:
       enabled: true
       validation: false
-      version: 1.3.14
+      version: 1.3.17
     glooe-monitoring:
       enabled: true
       sso:
