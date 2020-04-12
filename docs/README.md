@@ -288,7 +288,7 @@ tpctl secrets
 If you have additional `system:master` users to add to your cluster, you may add them to your `values.yaml` file and run this command to install them in your cluster:
 
 ```bash
-tpctl _users
+tpctl users
 ```
 
 This operation is idempotent. 
