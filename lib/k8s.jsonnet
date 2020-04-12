@@ -170,9 +170,9 @@ local chart(me, values) = (
   },
 
   securityContext:: {
-    sysctls: [ {
-      name: "net.netfilter.nf_conntrack_tcp_timeout_close_waits",
-      value: "240",
-    } ],
+   // sysctls: [ {
+      //name: "net.netfilter.nf_conntrack_tcp_timeout_close_waits",
+      //value: "240",
+    //} ],
   },
 }
