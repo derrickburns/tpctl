@@ -16,8 +16,8 @@ local jaeger(config, namespace) = {
       type: "memory",
       options: {
         memory: {
-          max-traces: 100000,
-        }
+          'max-traces': 100000,
+        },
       },
       //options: {
         //es: {
