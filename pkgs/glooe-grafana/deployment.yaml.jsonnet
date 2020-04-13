@@ -2,7 +2,7 @@ local lib = import '../../lib/lib.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 
 local deployment(me) = k8s.deployment(me) {
-  metadata: {
+  metadata+: {
     labels: {
       app: 'glooe-grafana',
       chart: 'grafana-4.0.1',
@@ -11,7 +11,7 @@ local deployment(me) = k8s.deployment(me) {
     },
     name: 'glooe-grafana',
   },
-  spec: {
+  spec+: {
     replicas: 1,
     selector: {
       matchLabels: {
@@ -22,8 +22,8 @@ local deployment(me) = k8s.deployment(me) {
     strategy: {
       type: 'RollingUpdate',
     },
-    template: {
-      metadata: {
+    template+: {
+      metadata+: {
         labels: {
           app: 'glooe-grafana',
           release: 'glooe',
