@@ -1,34 +1,10 @@
-local deployment(namespace) = {
-  apiVersion: 'apps/v1',
-  kind: 'Deployment',
-  metadata: {
-    annotations: {
-      'configmap.reloader.stakater.com/reload': 'glooe-observability-config',
-      'secret.reloader.stakater.com/reload': 'license,glooe-observability-secrets',
-    },
-    labels: {
-      app: 'gloo',
-      gloo: 'observability',
-    },
-    name: 'observability',
-    namespace: namespace,
-  },
-  spec: {
-    replicas: 1,
-    selector: {
-      matchLabels: {
-        app: 'gloo',
-        gloo: 'observability',
-      },
-    },
-    template: {
-      metadata: {
-        labels: {
-          app: 'gloo',
-          gloo: 'observability',
-        },
-      },
-      spec: {
+local k8s = import '../../lib/k8s.jsonnet';
+local lib = import '../../lib/lib.jsonnet';
+
+local deployment(me) = k8s.deployment(me) {
+  spec+: {
+    template+: {
+      spec+: {
         containers: [
           {
             env: [
@@ -53,12 +29,12 @@ local deployment(namespace) = {
             envFrom: [
               {
                 configMapRef: {
-                  name: 'glooe-observability-config',
+                  name: me.pkg,
                 },
               },
               {
                 secretRef: {
-                  name: 'glooe-observability-secrets',
+                  name: me.pkg,
                 },
               },
             ],
@@ -74,7 +50,7 @@ local deployment(namespace) = {
             ],
           },
         ],
-        serviceAccountName: 'observability',
+        serviceAccountName: me.pkg,
         volumes: [
           {
             configMap: {
@@ -84,7 +60,7 @@ local deployment(namespace) = {
                   path: 'dashboard-template.json',
                 },
               ],
-              name: 'glooe-observability-config',
+              name: me.pkg,
             },
             name: 'upstream-dashboard-template',
           },
