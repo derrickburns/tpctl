@@ -70,4 +70,4 @@ local deployment(me) = k8s.deployment(me) {
   },
 };
 
-function(config, prev, namespace, pkg) deployment(lib.package(config,namepsace,pkg))
+function(config, prev, namespace, pkg) deployment(lib.package(config,namespace,pkg))
