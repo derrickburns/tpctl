@@ -1,16 +1,6 @@
-local serviceaccount(namespace) = {
-  apiVersion: 'v1',
-  kind: 'ServiceAccount',
-  metadata: {
-    labels: {
-      app: 'glooe-grafana',
-      chart: 'grafana-4.0.1',
-      heritage: 'Helm',
-      release: 'glooe',
-    },
-    name: 'glooe-grafana',
-    namespace: namespace,
-  },
-};
+local k8s = import '../../lib/k8s.jsonnet';
+local lib = import '../../lib/lib.jsonnet';
 
-function(config, prev, namespace, pkg) serviceaccount(namespace)
+local serviceaccount(me) = k8s.serviceaccount(me);
+
+function(config, prev, namespace, pkg) serviceaccount(lib.package(config, namespace, pkg))

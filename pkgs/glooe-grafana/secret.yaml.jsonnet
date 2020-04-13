@@ -1,22 +1,12 @@
-local secret(namespace) = {
-  apiVersion: 'v1',
+local k8s = import '../../lib/k8s.jsonnet';
+local lib = import '../../lib/lib.jsonnet';
+
+local secret(me) = k8s.secret(me) {
   data: {
     'admin-password': 'dGlkZXBvb2w=',
     'admin-user': 'YWRtaW4=',
     'ldap-toml': '',
   },
-  kind: 'Secret',
-  metadata: {
-    labels: {
-      app: 'glooe-grafana',
-      chart: 'grafana-4.0.1',
-      heritage: 'Helm',
-      release: 'glooe',
-    },
-    name: 'glooe-grafana',
-    namespace: namespace,
-  },
-  type: 'Opaque',
 };
 
-function(config, prev, namespace, pkg) secret(namespace)
+function(config, prev, namespace, pkg) secret(lib.package(config, namespace, pkg))

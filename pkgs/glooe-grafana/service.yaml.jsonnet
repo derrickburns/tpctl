@@ -1,31 +1,10 @@
-local service(namespace) = {
-  apiVersion: 'v1',
-  kind: 'Service',
-  metadata: {
-    labels: {
-      app: 'glooe-grafana',
-      chart: 'grafana-4.0.1',
-      heritage: 'Helm',
-      release: 'glooe',
-    },
-    name: 'glooe-grafana',
-    namespace: namespace,
-  },
-  spec: {
-    ports: [
-      {
-        name: 'service',
-        port: 80,
-        protocol: 'TCP',
-        targetPort: 3000,
-      },
-    ],
-    selector: {
-      app: 'glooe-grafana',
-      release: 'glooe',
-    },
-    type: 'ClusterIP',
+local k8s = import '../../lib/k8s.jsonnet';
+local lib = import '../../lib/lib.jsonnet';
+
+local service(me) = k8s.service(me) {
+  spec+: {
+    ports: [k8s.port(80, 3000, 'service')],
   },
 };
 
-function(config, prev, namespace, pkg) service(namespace)
+function(config, prev, namespace, pkg) service(lib.package(config, namespace, pkg))

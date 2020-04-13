@@ -94,6 +94,10 @@ local configmapNamesFromPod(pod) = lib.pruneList(
 
   serviceaccount(me):: $.k('v1', 'ServiceAccount') + $.metadata(me.pkg, me.namespace),
 
+  secret(me, name=''):: $.k('v1', 'Secret') + $.metadata(if name == '' then me.pkg else name, me.namespace) {
+    type: 'Opaque',
+  },
+
   configmap(me, name=''):: $.k('v1', 'ConfigMap') + $.metadata(if name == '' then me.pkg else name, me.namespace),
 
   clusterrole(me):: $.k('rbac.authorization.k8s.io/v1', 'ClusterRole') + $.metadata(me.pkg),
@@ -191,6 +195,22 @@ local configmapNamesFromPod(pod) = lib.pruneList(
         app: me.pkg,
       },
     },
+  },
+
+  pvc(me, storage=''):: $.k('v1', 'PersistentVolumeClaim') + $.metadata(me.pkg, me.namespace) {
+    spec+: {
+      accessModes: [
+        'ReadWriteOnce',
+      ],
+    } + if storage != '' 
+        then {
+          resources: {
+            requests: {
+              storage: storage,
+            },
+          }
+        }
+        else {},
   },
 
   port(port=8080, targetPort=8080, name='http', protocol='TCP'):: {

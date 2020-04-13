@@ -27,7 +27,7 @@ local configmap(me) = k8s.configmap(me) {
           isDefault: true,
           name: 'gloo',
           type: 'prometheus',
-          url: 'http://glooe-prometheus-server:80', // XXX remove hardcoding
+          url: 'http://glooe-prometheus-server:80',  // XXX remove hardcoding
         },
       ],
     }, '  '),
