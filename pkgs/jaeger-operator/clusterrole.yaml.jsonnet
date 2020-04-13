@@ -153,7 +153,8 @@ local clusterrole(me) = k8s.clusterrole(me) {
         'horizontalpodautoscalers'
       ],
       verbs: [
-        'list'
+        'list',
+        'watch',
       ],
     },
   ],
