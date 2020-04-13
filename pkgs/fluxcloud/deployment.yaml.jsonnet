@@ -2,12 +2,6 @@ local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
 local Deployment(config, me) = k8s.deployment(me) {
-  local secretName = lib.getElse(me, 'secret', 'slack'),
-  metadata+: {
-    annotations: {
-      'secret.reloader.stakater.com/reload': secretName,
-    },
-  },
   spec+: {
     template+: {
       spec+: {
@@ -21,7 +15,7 @@ local Deployment(config, me) = k8s.deployment(me) {
               },
             ],
             env: [
-              k8s.envSecret('SLACK_URL', secretName, 'url'),
+              k8s.envSecret('SLACK_URL', lib.getElse(me, 'secret', 'slack'), 'url'),
               k8s.envVar('SLACK_CHANNEL', lib.getElse(me, 'channel', '#flux-%s' % config.cluster.metadata.name)),
               k8s.envVar('SLACK_USERNAME', lib.getElse(me, 'username', 'derrickburns')),
               k8s.envVar('SLACK_ICON_EMOJI', ':heart:'),

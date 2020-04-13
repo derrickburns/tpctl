@@ -6,7 +6,6 @@ local deployment(config, prev, me) = k8s.deployment(me) {
     annotations: {
       'fluxcd.io/automated': 'true',
       'fluxcd.io/tag.mongoproxy': 'glob:master-*',
-      'secret.reloader.stakater.com/reload': 'mongoproxy',
     },
   },
   spec+: {

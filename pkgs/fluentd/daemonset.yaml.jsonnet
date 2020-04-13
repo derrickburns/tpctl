@@ -2,11 +2,6 @@ local lib = import '../../lib/lib.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 
 local daemonset(config, me) = k8s.daemonset(me) {
-  metadata+: {
-    annotations+: {
-      'configmap.reloader.stakater.com/reload': 'fluentd-config',
-    },
-  },
   spec+: {
     template+: {
       spec+: {

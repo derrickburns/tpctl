@@ -2,11 +2,6 @@ local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
 local deployment(me) = k8s.deployment(me) {
-  metadata+: {
-    annotations: {
-      'secret.reloader.stakater.com/reload': 'mongo',
-    },
-  },
   spec+: {
     template+: {
       spec+: {

@@ -1,11 +1,8 @@
-local deployment(namespace) = {
-  apiVersion: 'apps/v1',
-  kind: 'Deployment',
+local lib = import '../../lib/lib.jsonnet';
+local k8s = import '../../lib/k8s.jsonnet';
+
+local deployment(me) = k8s.deployment(me) {
   metadata: {
-    annotations: {
-      'configmap.reloader.stakater.com/reload': 'glooe-grafana,glooe-grafana-custom-dashboards',
-      'secret.reloader.stakater.com/reload': 'glooe-grafana',
-    },
     labels: {
       app: 'glooe-grafana',
       chart: 'grafana-4.0.1',
@@ -13,7 +10,6 @@ local deployment(namespace) = {
       release: 'glooe',
     },
     name: 'glooe-grafana',
-    namespace: namespace,
   },
   spec: {
     replicas: 1,
@@ -28,12 +24,6 @@ local deployment(namespace) = {
     },
     template: {
       metadata: {
-        annotations: {
-          'checksum/config': '8e075c8327d7929162f2791f64196563f7f7f8846ce6b72aec6692ff546ab12e',
-          'checksum/dashboards-json-config': '01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b',
-          'checksum/sc-dashboard-provider-config': '01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b',
-          'checksum/secret': '48c555f93471f6da4fd28c8c25aa6fa6fea6609e9b049357364ffc67df191660',
-        },
         labels: {
           app: 'glooe-grafana',
           release: 'glooe',
@@ -173,4 +163,4 @@ local deployment(namespace) = {
   },
 };
 
-function(config, prev, namespace, pkg) deployment(namespace)
+function(config, prev, namespace, pkg) deployment(lib.package(config, namespace, pkg))
