@@ -38,13 +38,28 @@ local reloaderAnnotations(this) = (
 
 local secretNameFromVolume(v) = lib.getElse(v, 'secret.secretName', null);
 
+local configmapNameFromVolume(v) = lib.getElse(v, 'configMap.name', null);
+
 local secretNameFromEnvVar(e) = lib.getElse(e, 'valueFrom.secretKeyRef.name', null);
 
-local secretNamesFromContainer(c) = [ secretNameFromEnvVar(e) for e in lib.getElse(c, 'env', []) ];
+local configmapNameFromEnvVar(e) = lib.getElse(e, 'valueFrom.configMapKeyRef.name', null);
+
+local secretNamesFromContainer(c) =
+   [ secretNameFromEnvVar(e) for e in lib.getElse(c, 'env', []) ]
+ + [ secretNameFromEnvVar(e) for e in lib.getElse(c, 'envFrom', []) ];
+
+local configmapNamesFromContainer(c) =
+   [ configmapFromEnvVar(e) for e in lib.getElse(c, 'env', []) ]
+ + [ configmapFromEnvVar(e) for e in lib.getElse(c, 'envFrom', []) ];
+ 
 
 local secretNamesFromPod(pod) = lib.pruneList(
    [ secretNameFromVolume(v)      for v in lib.getElse(pod, 'volumes', []) ]
  + std.flattenArrays([ secretNamesFromContainer(c) for c in lib.getElse(pod, 'containers', []) ]));
+
+local configmapNamesFromPod(pod) = lib.pruneList(
+   [ configmapNameFromVolume(v)      for v in lib.getElse(pod, 'volumes', []) ]
+ + std.flattenArrays([ configmapNamesFromContainer(c) for c in lib.getElse(pod, 'containers', []) ]));
 
 {
 
@@ -121,6 +136,7 @@ local secretNamesFromPod(pod) = lib.pruneList(
   deployment(me):: $.k('apps/v1', 'Deployment') + $.metadata(me.pkg, me.namespace) {
     local this = self,
     _secretNames:: secretNamesFromPod(this.spec.template.spec),
+    _configmapNames:: configmapNamesFromPod(this.spec.template.spec),
     metadata+:
       (if reloaderAnnotations(this) != {}
       then { annotations+: reloaderAnnotations(this) }
