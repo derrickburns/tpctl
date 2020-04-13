@@ -19,6 +19,7 @@ local jaeger(config, namespace) = {
           'max-traces': 100000,
         },
       },
+      //type: 'elasticsearch',
       //options: {
         //es: {
           //'server-urls': 'https://jaeger-es-http.%s:9200' % namespace,
@@ -31,7 +32,6 @@ local jaeger(config, namespace) = {
         enabled: false,
       },
       secretName: 'jaeger-secret',
-      type: 'elasticsearch',
     },
     volumeMounts: [
       {
