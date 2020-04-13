@@ -145,6 +145,17 @@ local clusterrole(me) = k8s.clusterrole(me) {
         '*',
       ],
     },
+    {
+      apiGroups: [ 
+       'autoscaling',
+      ],
+      resources: [
+        'horizontalpodautoscalers'
+      ],
+      verbs: [
+        'list'
+      ],
+    },
   ],
 };
 
