@@ -36,13 +36,13 @@ local reloaderAnnotations(this) = (
    then { 'configmap.reloader.stakater.com/reload': std.join(',', this._configmapNames) }
    else {}));
 
-local secretNamesFromVolume(v) lib.getElse(v, 'secret.secretName', null);
+local secretNamesFromVolume(v) = lib.getElse(v, 'secret.secretName', null);
 
-local secretNameFromEnvVar(e) lib.getElse(e, 'valueFrom.secretKeyRef.name', null);
+local secretNameFromEnvVar(e) = lib.getElse(e, 'valueFrom.secretKeyRef.name', null);
 
-local secretNamesFromContainer(c) [ secretNameFromEnvVar(e) for e in lib.getElse(c, 'env', []) ];
+local secretNamesFromContainer(c) = [ secretNameFromEnvVar(e) for e in lib.getElse(c, 'env', []) ];
 
-local secretNamesFromPod(pod) lib.pruneList(
+local secretNamesFromPod(pod) = lib.pruneList(
    [ secretNameFromVolume(v)      for v in lib.getElse(pod, 'volumes', []) ]
  + [ secretNamesFromContainers(c) for c in lib.getElse(pod, 'containers', []) ]);
 

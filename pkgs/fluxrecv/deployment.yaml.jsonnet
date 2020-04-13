@@ -6,11 +6,6 @@ local deployment(config, me) = k8s.deployment(me) {
     if lib.isTrue(me, 'sidecar')
     then 'fluxrecv-config'
     else 'fluxrecv-config-separate',
-  metadata+: {
-    annotations: {
-      'secret.reloader.stakater.com/reload': secretName,
-    },
-  },
   spec+: {
     template+: {
       spec+: {
