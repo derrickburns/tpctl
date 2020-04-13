@@ -1,4 +1,4 @@
-local lib = import '../../../../lib/lib.jsonnet';
+local lib = import '../../lib/lib.jsonnet';
 
 local deployment(config, namespace) = {
   apiVersion: 'apps/v1',
