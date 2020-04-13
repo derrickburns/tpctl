@@ -36,6 +36,16 @@ local reloaderAnnotations(this) = (
    then { 'configmap.reloader.stakater.com/reload': std.join(',', this._configmapNames) }
    else {}));
 
+local secretNamesFromVolume(v) lib.getElse(v, 'secret.secretName', null);
+
+local secretNameFromEnvVar(e) lib.getElse(e, 'valueFrom.secretKeyRef.name', null);
+
+local secretNamesFromContainer(c) [ secretNameFromEnvVar(e) for e in lib.getElse(c, 'env', []) ];
+
+local secretNamesFromPod(pod) lib.pruneList(
+   [ secretNameFromVolume(v)      for v in lib.getElse(pod, 'volumes', []) ]
+ + [ secretNamesFromContainers(c) for c in lib.getElse(pod, 'containers', []) ]);
+
 {
 
   isResource(o):: std.isObject(o) && std.objectHas(o, 'apiVersion') && std.objectHas(o, 'kind'),
@@ -109,6 +119,11 @@ local reloaderAnnotations(this) = (
   },
 
   deployment(me):: $.k('apps/v1', 'Deployment') + $.metadata(me.pkg, me.namespace) {
+    local this = self,
+    _secretNames:: secretNamesFromPod(this.spec.template.spec),
+    metadata+: {
+      annotations+: reloaderAnnotations(this),
+    },
     spec+: {
       strategy: {
         type: 'Recreate',
