@@ -124,8 +124,7 @@ local secretNamesFromPod(pod) = lib.pruneList(
     metadata+:
       (if reloaderAnnotations(this) != {}
       then { annotations+: reloaderAnnotations(this) }
-      else {})
-    }, 
+      else {}),
     spec+: {
       strategy: {
         type: 'Recreate',
