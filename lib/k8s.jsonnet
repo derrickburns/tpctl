@@ -28,13 +28,13 @@ local chart(me, values) = (
   else {}
 );
 
-local reloaderAnnotations(this) =
+local reloaderAnnotations(this) = (
   (if std.objectHasAll(this, '_secretNames')
    then { 'secret.reloader.stakater.com/reload': std.join(',', this._secretNames) }
-   else {}) +
+   else ) +
   (if std.objectHasAll(this, '_configmapNames')
    then { 'configmap.reloader.stakater.com/reload': std.join(',', this._configmapNames) }
-   else {});
+   else {}));
 
 {
 
@@ -134,7 +134,7 @@ local reloaderAnnotations(this) =
   },
 
   helmrelease(me, chartValues):: $.k('helm.fluxcd.io/v1', 'HelmRelease') + $.metadata(me.pkg, me.namespace) {
-    local this = $,
+    local this = self,
     spec+: {
       values+: {
         annotations+: reloaderAnnotations(this),
