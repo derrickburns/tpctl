@@ -31,7 +31,7 @@ local chart(me, values) = (
 local reloaderAnnotations(this) = (
   (if std.objectHasAll(this, '_secretNames')
    then { 'secret.reloader.stakater.com/reload': std.join(',', this._secretNames) }
-   else ) +
+   else {} ) +
   (if std.objectHasAll(this, '_configmapNames')
    then { 'configmap.reloader.stakater.com/reload': std.join(',', this._configmapNames) }
    else {}));
