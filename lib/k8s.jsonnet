@@ -29,10 +29,10 @@ local chart(me, values) = (
 );
 
 local reloaderAnnotations(this) = (
-  (if std.objectHasAll(this, '_secretNames')
+  (if std.objectHasAll(this, '_secretNames') && std.length(this._secretNames) > 0)
    then { 'secret.reloader.stakater.com/reload': std.join(',', this._secretNames) }
    else {} ) +
-  (if std.objectHasAll(this, '_configmapNames')
+  (if std.objectHasAll(this, '_configmapNames') && std.length(this._configmapNames) > 0)
    then { 'configmap.reloader.stakater.com/reload': std.join(',', this._configmapNames) }
    else {}));
 
