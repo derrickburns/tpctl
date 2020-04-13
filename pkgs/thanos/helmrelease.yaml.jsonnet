@@ -12,6 +12,7 @@ local helmrelease(config, me) = k8s.helmrelease(me, { version: '0.3.18', reposit
       },
       bucket: {
         logLevel: lib.getElse(config, 'general.loglevel', 'info'),
+        serviceAccount: me,pkg,
       },
       store: {
         logLevel: lib.getElse(config, 'general.loglevel', 'info'),
