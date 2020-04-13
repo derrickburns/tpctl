@@ -117,6 +117,10 @@ local configmapNamesFromPod(pod) = lib.pruneList(
     local this = self,
     _secretNames:: secretNamesFromPod(this.spec.template.spec),
     _configmapNames:: configmapNamesFromPod(this.spec.template.spec),
+   metadata+:
+      (if reloaderAnnotations(this) != {}
+      then { annotations+: reloaderAnnotations(this) }
+      else {}),
     spec+: {
       selector+: {
         matchLabels: {
