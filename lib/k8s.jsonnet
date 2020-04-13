@@ -30,10 +30,10 @@ local chart(me, values) = (
 
 local reloaderAnnotations(this) = (
   (if std.objectHasAll(this, '_secretNames') && std.length(this._secretNames) > 0
-   then { 'secret.reloader.stakater.com/reload': std.join(',', this._secretNames) }
+   then { 'secret.reloader.stakater.com/reload': std.join(',', std.set(this._secretNames)) }
    else {} ) +
   (if std.objectHasAll(this, '_configmapNames') && std.length(this._configmapNames) > 0
-   then { 'configmap.reloader.stakater.com/reload': std.join(',', this._configmapNames) }
+   then { 'configmap.reloader.stakater.com/reload': std.join(',', std.set(this._configmapNames)) }
    else {}));
 
 local secretNameFromVolume(v) = lib.getElse(v, 'secret.secretName', null);
