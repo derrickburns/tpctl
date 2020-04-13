@@ -1,39 +1,10 @@
+local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
-local deployment(config, namespace) = {
-  apiVersion: 'apps/v1',
-  kind: 'Deployment',
-  metadata: {
-    labels: {
-      app: 'glooe-prometheus',
-      chart: 'prometheus-9.5.1',
-      component: 'server',
-      heritage: 'Helm',
-      release: 'glooe',
-    },
-    name: 'glooe-prometheus-server',
-    namespace: namespace,
-  },
-  spec: {
-    replicas: 1,
-    selector: {
-      matchLabels: {
-        app: 'glooe-prometheus',
-        component: 'server',
-        release: 'glooe',
-      },
-    },
-    template: {
-      metadata: {
-        labels: {
-          app: 'glooe-prometheus',
-          chart: 'prometheus-9.5.1',
-          component: 'server',
-          heritage: 'Helm',
-          release: 'glooe',
-        },
-      },
-      spec: {
+local deployment(me) = k8s.deployment(me) {
+  spec+: {
+    template+: {
+      spec+: {
         containers: [
           {
             args: [
@@ -71,7 +42,7 @@ local deployment(config, namespace) = {
               initialDelaySeconds: 180,
               timeoutSeconds: 30,
             },
-            name: 'glooe-prometheus-server',
+            name: me.pkg,
             ports: [
               {
                 containerPort: 9090,
@@ -105,19 +76,19 @@ local deployment(config, namespace) = {
           runAsNonRoot: true,
           runAsUser: 65534,
         },
-        serviceAccountName: 'glooe-prometheus-server',
+        serviceAccountName: me.pkg,
         terminationGracePeriodSeconds: 300,
         volumes: [
           {
             configMap: {
-              name: 'glooe-prometheus-server',
+              name: me.pkg,
             },
             name: 'config-volume',
           },
           {
             name: 'storage-volume',
             persistentVolumeClaim: {
-              claimName: 'glooe-prometheus-server',
+              claimName: me.pkg,
             },
           },
         ],
@@ -126,5 +97,4 @@ local deployment(config, namespace) = {
   },
 };
 
-function(config, prev, namespace, pkg) deployment(config, namespace)
-
+function(config, prev, namespace, pkg) deployment(lib.package(config, namespace, pkg))

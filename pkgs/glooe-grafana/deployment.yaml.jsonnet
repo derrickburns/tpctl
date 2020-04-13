@@ -3,7 +3,7 @@ local lib = import '../../lib/lib.jsonnet';
 
 local deployment(me) = k8s.deployment(me) {
   spec+: {
-    strategy: {
+    strategy+: {
       type: 'RollingUpdate',
     },
     template+: {
