@@ -134,9 +134,10 @@ local reloaderAnnotations(this) =
   },
 
   helmrelease(me, chartValues):: $.k('helm.fluxcd.io/v1', 'HelmRelease') + $.metadata(me.pkg, me.namespace) {
+    local this = $,
     spec+: {
       values+: {
-        annotations+: reloaderAnnotations($),
+        annotations+: reloaderAnnotations(this),
       },
       releaseName: lib.getElse(me, 'releaseName', me.pkg),
       chart: chart(me, chartValues),
