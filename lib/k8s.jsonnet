@@ -121,9 +121,11 @@ local secretNamesFromPod(pod) = lib.pruneList(
   deployment(me):: $.k('apps/v1', 'Deployment') + $.metadata(me.pkg, me.namespace) {
     local this = self,
     _secretNames:: secretNamesFromPod(this.spec.template.spec),
-    metadata+: {
-      annotations+: reloaderAnnotations(this),
-    },
+    metadata+:
+      (if reloaderAnnotations(this) != {}
+      then { annotations+: reloaderAnnotations(this) }
+      else {})
+    }, 
     spec+: {
       strategy: {
         type: 'Recreate',
@@ -151,9 +153,10 @@ local secretNamesFromPod(pod) = lib.pruneList(
   helmrelease(me, chartValues):: $.k('helm.fluxcd.io/v1', 'HelmRelease') + $.metadata(me.pkg, me.namespace) {
     local this = self,
     spec+: {
-      values+: {
-        annotations+: reloaderAnnotations(this),
-      },
+      values+: 
+        if reloaderAnnotations(this) != {}
+        then { annotations+: reloaderAnnotations(this) }
+        else {},
       releaseName: lib.getElse(me, 'releaseName', me.pkg),
       chart: chart(me, chartValues),
     },
