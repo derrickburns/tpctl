@@ -34,7 +34,7 @@ local deployment(namespace) = {
       spec: {
         containers: [
           {
-            image: 'quay.io/coreos/kube-state-metrics:v1.6.0',
+            image: 'quay.io/coreos/kube-state-metrics:v1.8.0',
             imagePullPolicy: 'IfNotPresent',
             name: 'glooe-prometheus-kube-state-metrics',
             ports: [
