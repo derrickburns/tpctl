@@ -44,7 +44,7 @@ local secretNamesFromContainer(c) = [ secretNameFromEnvVar(e) for e in lib.getEl
 
 local secretNamesFromPod(pod) = lib.pruneList(
    [ secretNameFromVolume(v)      for v in lib.getElse(pod, 'volumes', []) ]
- + [ secretNamesFromContainer(c) for c in lib.getElse(pod, 'containers', []) ]);
+ + std.flattenArrays([ secretNamesFromContainer(c) for c in lib.getElse(pod, 'containers', []) ]));
 
 {
 
