@@ -49,8 +49,8 @@ local secretNamesFromContainer(c) =
  + [ secretNameFromEnvVar(e) for e in lib.getElse(c, 'envFrom', []) ];
 
 local configmapNamesFromContainer(c) =
-   [ configmapFromEnvVar(e) for e in lib.getElse(c, 'env', []) ]
- + [ configmapFromEnvVar(e) for e in lib.getElse(c, 'envFrom', []) ];
+   [ configmapNameFromEnvVar(e) for e in lib.getElse(c, 'env', []) ]
+ + [ configmapNameFromEnvVar(e) for e in lib.getElse(c, 'envFrom', []) ];
  
 
 local secretNamesFromPod(pod) = lib.pruneList(
