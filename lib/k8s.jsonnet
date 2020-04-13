@@ -42,11 +42,11 @@ local configmapNameFromVolume(v) = lib.getElse(v, 'configMap.name', null);
 
 local secretNameFromEnvVar(e) = lib.getElse(e, 'valueFrom.secretKeyRef.name', null);
 
-local secretNameFromEnv(e) = lib.getElse(e, 'valueFrom.secretRef.name', null);
+local secretNameFromEnv(e) = lib.getElse(e, 'secretRef.name', null);
 
 local configmapNameFromEnvVar(e) = lib.getElse(e, 'valueFrom.configMapKeyRef.name', null);
 
-local configmapNameFromEnv(e) = lib.getElse(e, 'valueFrom.configMapRef.name', null);
+local configmapNameFromEnv(e) = lib.getElse(e, 'configMapRef.name', null);
 
 local secretNamesFromContainer(c) =
    [ secretNameFromEnvVar(e) for e in lib.getElse(c, 'env', []) ]
