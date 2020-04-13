@@ -13,14 +13,20 @@ local jaeger(config, namespace) = {
       enabled: false,
     },
     storage: {
+      type: "memory",
       options: {
-        es: {
-          'server-urls': 'https://jaeger-es-http.%s:9200' % namespace,
-          tls: {
-            ca: '/es/certificates/ca.crt',
-          },
-        },
+        memory: {
+          max-traces: 100000,
+        }
       },
+      //options: {
+        //es: {
+          //'server-urls': 'https://jaeger-es-http.%s:9200' % namespace,
+          //tls: {
+            //ca: '/es/certificates/ca.crt',
+          //},
+        //},
+      //},
       esIndexCleaner: {
         enabled: false,
       },
