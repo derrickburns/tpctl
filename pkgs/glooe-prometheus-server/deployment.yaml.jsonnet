@@ -1,7 +1,7 @@
 local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
-local deployment(config,me) = k8s.deployment(me) {
+local deployment(me) = k8s.deployment(me) {
   spec+: {
     template+: {
       spec+: {
@@ -25,7 +25,7 @@ local deployment(config,me) = k8s.deployment(me) {
           },
           {
             args: [
-              '--storage.tsdb.retention.time=%s' % lib.getElse(config.namespaces[namespace], 'glooe-prometheus-server.retention', '2d'),
+              '--storage.tsdb.retention.time=%s' % lib.getElse(me, 'retention', '2d'),
               '--config.file=/etc/config/prometheus.yml',
               '--storage.tsdb.path=/data',
               '--web.console.libraries=/etc/prometheus/console_libraries',
@@ -97,4 +97,4 @@ local deployment(config,me) = k8s.deployment(me) {
   },
 };
 
-function(config, prev, namespace, pkg) deployment(config,lib.package(config, namespace, pkg))
+function(config, prev, namespace, pkg) deployment(lib.package(config, namespace, pkg))
