@@ -94,7 +94,7 @@ local configmapNamesFromPod(pod) = lib.pruneList(
 
   serviceaccount(me):: $.k('v1', 'ServiceAccount') + $.metadata(me.pkg, me.namespace),
 
-  configmap(me):: $.k('v1', 'ConfigMap') + $.metadata(me.pkg, me.namespace),
+  configmap(me, name=''):: $.k('v1', 'ConfigMap') + $.metadata(if name == '' then me.pkg else name, me.namespace),
 
   clusterrole(me):: $.k('rbac.authorization.k8s.io/v1', 'ClusterRole') + $.metadata(me.pkg),
 
