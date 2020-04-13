@@ -326,7 +326,7 @@ local configmap(me) = k8s.configmap(me) {
         },
       }, '  '
     ),
-    GRAFANA_URL: 'http://glooe-grafana.gloo-system.svc.cluster.local:80',  // XXX fix hardcoding
+    GRAFANA_URL: 'http://glooe-grafana.%s.svc.cluster.local:80' % me.namespace,  // XXX fix hardcoding
   },
 };
 
