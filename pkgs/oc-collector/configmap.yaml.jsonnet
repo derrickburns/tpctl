@@ -3,7 +3,7 @@ local lib = import '../../lib/lib.jsonnet';
 
 local configmap(config, me) = k8s.configmap(me) {
   data: {
-    'oc-collector-config': std.manifestYamlDoc(
+    'oc-collector-config': std.manifestJsonEx(
       {
         'queued-exporters': {
           'jaeger-all-in-one': {
@@ -22,8 +22,7 @@ local configmap(config, me) = k8s.configmap(me) {
             port: 55678,
           },
         },
-      }
-    ),
+      }, "  "),
   },
 };
 
