@@ -442,7 +442,6 @@ local helmrelease(config, me, prev) = k8s.helmrelease(me, {
       tools: lib.mergeList([common, {
         extraContainers: extraContainers,
         deployment+: {
-          replicas: 0,
           image: lib.getElse(prev, 'spec.values.tools.deployment.image', 'tidepool/platform-tools:master-8c8d9b39182b9edd9bafd987f50b254470840a8d'),
         },
       }, lib.getElse(me, 'tools', {})]),
