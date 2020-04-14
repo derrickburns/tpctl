@@ -1,13 +1,8 @@
 local global = import '../../lib/global.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
+local k8s = import '../../lib/k8s.jsonnet';
 
-local secret(config, me) = {
-  apiVersion: 'v1',
-  kind: 'Secret',
-  metadata: {
-    name: lib.getElse(me, 'secret', 'thanos'),
-    namespace: me.namespace,
-  },
+local secret(config, me) = k8s.secret(me) {
   data: {
     'object-store.yaml': std.base64(std.manifestYamlDoc({
       type: 'S3',
@@ -33,7 +28,4 @@ local secret(config, me) = {
   },
 };
 
-function(config, prev, namespace, pkg)
-  if global.isEnabled(config, 'prometheus')
-  then secret(config, lib.package(config, namespace, pkg))
-  else {}
+function(config, prev, namespace, pkg) secret(config, lib.package(config, namespace, pkg))
