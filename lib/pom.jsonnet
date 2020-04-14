@@ -4,7 +4,7 @@ local global = import 'global.jsonnet';
 {
   rootDomain(config):: config.cluster.metadata.domain,
 
-  ssoList(me);
+  ssoList(me):
     if ! std.objectHas(me, 'sso') then []
     else if std.isArray(me.sso) then me.sso,
     else [ me.sso ];
