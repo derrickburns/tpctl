@@ -6,6 +6,7 @@ local lib = import 'lib.jsonnet';
 local linkerd = import 'linkerd.jsonnet';
 local pom = import 'pom.jsonnet';
 local tracing = import 'tracing.jsonnet';
+local init = import 'init.jsonnet';
 
 local AwsTcpLoadBalancer(config) = {  // XXX AWS dependency
   'service.beta.kubernetes.io/aws-load-balancer-proxy-protocol': '*',
@@ -325,8 +326,8 @@ local ExternalDnsHosts(hosts) = {
     else {}
   ),
 
-
   baseGatewayProxy(config, me, name):: {
+    extraInitContainersHelper: [ init.sysctl ],
     kind: {
       deployment: {
         replicas: lib.getElse(me, 'proxies.' + name + '.replicas', 2),
