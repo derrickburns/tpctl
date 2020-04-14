@@ -6,7 +6,7 @@ local global = import 'global.jsonnet';
 
   ssoList(me):
     if ! std.objectHas(me, 'sso') then []
-    else if std.isArray(me.sso) then me.sso,
+    else if std.isArray(me.sso) then me.sso
     else [ me.sso ];
 
   dnsNameForSso(config, me, sso):: 
