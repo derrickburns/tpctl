@@ -4,10 +4,17 @@ local global = import 'global.jsonnet';
 {
   rootDomain(config):: config.cluster.metadata.domain,
 
-  dnsNameForPkg(config, me)::
-    lib.getElse(me, 'sso.dnsName', '%s.%s' % [ lib.getElse(me, 'sso.externalName', me.pkg), config.cluster.metadata.domain]),
+  ssoList(me);
+    if ! std.objectHas(me, 'sso') then []
+    else if std.isArray(me.sso) then me.sso,
+    else [ me.sso ];
 
-  dnsNames(config):: [$.dnsNameForPkg(config, pkg) for pkg in global.packagesWithKey(config, 'sso')],
+  dnsNameForSso(config, me, sso):: 
+    lib.getElse(sso, 'dnsName', '%s.%s' % [ lib.getElse(sso, 'externalName', me.pkg), config.cluster.metadata.domain]),
+
+  dnsNamesForPkg(config, me):: [ dnsNameForSso(config, me, sso) for sso in me.ssoList(me) ];
+
+  dnsNames(config):: std.flattenArrays([$.dnsNamesForPkg(config, pkg) for pkg in global.packagesWithKey(config, 'sso')]),
 
   expand(config, pkg, namespace):: pkg + $.expandPomeriumVirtualServices($.rootDomain(config)),
 
