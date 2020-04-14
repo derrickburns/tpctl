@@ -12,7 +12,7 @@ local global = import 'global.jsonnet';
   dnsNameForSso(config, me, sso):: 
     lib.getElse(sso, 'dnsName', '%s.%s' % [ lib.getElse(sso, 'externalName', me.pkg), config.cluster.metadata.domain]),
 
-  dnsNamesForPkg(config, me):: [ $.dnsNameForSso(config, me, sso) for sso in me.ssoList(me) ],
+  dnsNamesForPkg(config, me):: [ $.dnsNameForSso(config, me, sso) for sso in $.ssoList(me) ],
 
   dnsNames(config):: std.flattenArrays([$.dnsNamesForPkg(config, pkg) for pkg in global.packagesWithKey(config, 'sso')]),
 
