@@ -12,7 +12,7 @@ local getPoliciesForPackage(config, me) = [
   allowed_groups: lib.getElse(me, 'allowed_groups', lib.getElse(config, 'general.sso.allowed_groups', [])),
   allowed_users: lib.getElse(me, 'allowed_users', lib.getElse(config, 'general.sso.allowed_users', [])),
   allow_websockets: lib.getElse(me, 'allow_websockets', lib.getElse(config, 'general.sso.allow_websockets', true)),
-} for sso in pom.ssoList(me) ];
+} for sso in mylib.ssoList(me) ];
 
 local getPolicy(config) = std.flattenArrays([getPoliciesForPackage(config, pkg) for pkg in global.packagesWithKey(config, 'sso')]);
 
