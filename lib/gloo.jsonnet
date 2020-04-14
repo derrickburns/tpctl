@@ -327,7 +327,7 @@ local ExternalDnsHosts(hosts) = {
   ),
 
   baseGatewayProxy(config, me, name):: {
-    extraInitContainersHelper: std.manifestJsonEx( [ init.sysctl ], "  " ),
+    //extraInitContainersHelper: std.manifestJsonEx( [ init.sysctl ], "  " ),
     kind: {
       deployment: {
         replicas: lib.getElse(me, 'proxies.' + name + '.replicas', 2),
