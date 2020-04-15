@@ -7,7 +7,7 @@ local helmrelease(config, me) = k8s.helmrelease(me, { version: 'v0.0.51', reposi
       reloader: {
         serviceAccount: {
           create: false,
-          name: 'reloader',
+          name: me.pkg,
         },
       },
     },
