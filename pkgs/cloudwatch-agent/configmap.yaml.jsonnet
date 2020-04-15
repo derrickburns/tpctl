@@ -1,5 +1,7 @@
-local configmap(config, namespace) = {
-  apiVersion: 'v1',
+local k8s = import '../../lib/k8s.jsonnet';
+local lib = import '../../lib/lib.jsonnet';
+
+local configmap(config, me) = k8s.configmap(me, 'cwagentconfig') {
   data: {
     'cwagentconfig.json': std.manifestJson(
       {
@@ -18,11 +20,6 @@ local configmap(config, namespace) = {
       }
     ),
   },
-  kind: 'ConfigMap',
-  metadata: {
-    name: 'cwagentconfig',
-    namespace: namespace,
-  },
 };
 
-function(config, prev, namespace, pkg) configmap(config, namespace)
+function(config, prev, namespace, pkg) configmap(config, lib.package(config, namespace, pkg))

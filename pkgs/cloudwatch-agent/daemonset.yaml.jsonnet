@@ -1,56 +1,17 @@
+local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
-local daemonset(config, me) = {
-  apiVersion: 'apps/v1',
-  kind: 'DaemonSet',
-  metadata: {
-    name: me.pkg,
-    namespace: me.namespace,
-  },
-  spec: {
-    selector: {
-      matchLabels: {
-        name: me.pkg,
-      },
-    },
-    template: {
-      metadata: {
-        labels: {
-          name: me.pkg,
-        },
-      },
-      spec: {
+local daemonset(config, me) = k8s.daemonset(me) {
+  spec+: {
+    template+: {
+      spec+: {
         containers: [
           {
             env: [
-              {
-                name: 'CLUSTER_NAME',
-                value: config.cluster.metadata.name,
-              },
-              {
-                name: 'HOST_IP',
-                valueFrom: {
-                  fieldRef: {
-                    fieldPath: 'status.hostIP',
-                  },
-                },
-              },
-              {
-                name: 'HOST_NAME',
-                valueFrom: {
-                  fieldRef: {
-                    fieldPath: 'spec.nodeName',
-                  },
-                },
-              },
-              {
-                name: 'K8S_NAMESPACE',
-                valueFrom: {
-                  fieldRef: {
-                    fieldPath: 'metadata.namespace',
-                  },
-                },
-              },
+              k8s.envVar('CLUSTER_NAME', config.cluster.metadata.name),
+              k8s.envField('HOST_IP', 'status.hostIP'),
+              k8s.envField('HOST_NAME', 'spec.nodeName'),
+              k8s.envField('K8S_NAMESPACE', 'metadata.namespace'),
             ],
             image: 'amazon/cloudwatch-agent:latest',
             imagePullPolicy: 'Always',
