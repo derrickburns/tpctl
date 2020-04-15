@@ -11,24 +11,8 @@ local deployment(me) = k8s.deployment(me) {
         containers: [
           {
             env: [
-              {
-                name: 'GF_SECURITY_ADMIN_USER',
-                valueFrom: {
-                  secretKeyRef: {
-                    key: 'admin-user',
-                    name: 'glooe-grafana',
-                  },
-                },
-              },
-              {
-                name: 'GF_SECURITY_ADMIN_PASSWORD',
-                valueFrom: {
-                  secretKeyRef: {
-                    key: 'admin-password',
-                    name: 'glooe-grafana',
-                  },
-                },
-              },
+              k8s.envSecret('GF_SECURITY_ADMIN_USER', me.pkg, 'admin-user'),
+              k8s.envSecret('GF_SECURITY_ADMIN_PASSWORD', me.pkg, 'admin-password'),
             ],
             image: 'grafana/grafana:6.4.2',
             imagePullPolicy: 'IfNotPresent',
@@ -41,7 +25,7 @@ local deployment(me) = k8s.deployment(me) {
               initialDelaySeconds: 60,
               timeoutSeconds: 30,
             },
-            name: 'grafana',
+            name: me.pkg,
             ports: [
               {
                 containerPort: 80,

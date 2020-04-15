@@ -11,30 +11,10 @@ local deployment(me) = k8s.deployment(me) {
               'start',
             ],
             env: [
-              {
-                name: 'WATCH_NAMESPACE',
-                value: '',
-              },
-              {
-                name: 'POD_NAME',
-                valueFrom: {
-                  fieldRef: {
-                    fieldPath: 'metadata.name',
-                  },
-                },
-              },
-              {
-                name: 'POD_NAMESPACE',
-                valueFrom: {
-                  fieldRef: {
-                    fieldPath: 'metadata.namespace',
-                  },
-                },
-              },
-              {
-                name: 'OPERATOR_NAME',
-                value: me.pkg,
-              },
+              k8s.envVar('WATCH_NAMESPACE', ''),
+              k8s.envField('POD_NAME', 'metadata.name'),
+              k8s.envField('POD_NAMESPACE', 'metadata.namespace'),
+              k8s.envVar('OPERATOR_NAME', me.pkg),
             ],
             image: 'jaegertracing/jaeger-operator:1.17.0',
             imagePullPolicy: 'Always',

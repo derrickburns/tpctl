@@ -8,15 +8,7 @@ local deployment(me) = k8s.deployment(me) {
         containers: [
           {
             env: [
-              {
-                name: 'GLOO_LICENSE_KEY',
-                valueFrom: {
-                  secretKeyRef: {
-                    key: 'license-key',
-                    name: 'license',
-                  },
-                },
-              },
+              k8s.envSecret('GLOO_LICENSE_KEY', 'license', 'license-key'),
               {
                 name: 'POD_NAMESPACE',
                 valueFrom: {
@@ -70,4 +62,4 @@ local deployment(me) = k8s.deployment(me) {
   },
 };
 
-function(config, prev, namespace, pkg) deployment(lib.package(config,namespace,pkg))
+function(config, prev, namespace, pkg) deployment(lib.package(config, namespace, pkg))

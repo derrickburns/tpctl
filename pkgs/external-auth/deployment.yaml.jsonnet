@@ -9,21 +9,9 @@ local deployment(me) = k8s.deployment(me) {
           {
             image: 'tidepool/external-auth:latest',
             imagePullPolicy: 'Always',
-            name: 'external-auth',
-            env: [
-              {
-                name: 'API_SECRET',
-                valueFrom: {
-                  secretKeyRef: {
-                    name: 'shoreline',
-                    key: 'ServiceAuth',
-                  },
-                },
-              },
-            ],
-            ports: [{
-              containerPort: 4000,
-            }],
+            name: me.pkg,
+            env: [k8s.envSecret('API_SECRET', 'shoreline', 'ServiceAuth')],
+            ports: [{ containerPort: 4000 }],
           },
         ],
       },

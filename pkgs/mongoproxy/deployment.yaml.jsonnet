@@ -22,91 +22,16 @@ local deployment(config, prev, me) = k8s.deployment(me) {
               containerPort: 27017,
             }],
             env: [
-              {
-                name: 'MONGO_SCHEME',
-                valueFrom: {
-                  secretKeyRef: {
-                    name: 'mongoproxy',
-                    key: 'Scheme',
-                  },
-                },
-              },
-              {
-                name: 'MONGO_ADDRESSES',
-                valueFrom: {
-                  secretKeyRef: {
-                    name: 'mongoproxy',
-                    key: 'Addresses',
-                  },
-                },
-              },
-              {
-                name: 'MONGO_USERNAME',
-                valueFrom: {
-                  secretKeyRef: {
-                    name: 'mongoproxy',
-                    key: 'Username',
-                  },
-                },
-              },
-              {
-                name: 'MONGO_PASSWORD',
-                valueFrom: {
-                  secretKeyRef: {
-                    name: 'mongoproxy',
-                    key: 'Password',
-                  },
-                },
-              },
-              {
-                name: 'MONGO_DATABASE',
-                valueFrom: {
-                  secretKeyRef: {
-                    name: 'mongoproxy',
-                    key: 'Database',
-                  },
-                },
-              },
-              {
-                name: 'MONGO_OPT_PARAMS',
-                valueFrom: {
-                  secretKeyRef: {
-                    name: 'mongoproxy',
-                    key: 'OptParams',
-                  },
-                },
-              },
-              {
-                name: 'MONGO_TLS',
-                valueFrom: {
-                  secretKeyRef: {
-                    name: 'mongoproxy',
-                    key: 'Tls',
-                  },
-                },
-              },
-              {
-                name: 'MONGOPROXY_TIMEOUT',
-                valueFrom: {
-                  secretKeyRef: {
-                    name: 'mongoproxy',
-                    key: 'Timeout',
-                  },
-                },
-              },
-              {
-                name: 'MONGOPROXY_READONLY',
-                valueFrom: {
-                  secretKeyRef: {
-                    name: 'mongoproxy',
-                    key: 'Readonly',
-                  },
-                },
-              },
-              {
-                name: 'MONGOPROXY_PORT',
-                value: '27017',
-              },
+              me.envSecret('MONGO_SCHEME', me.pkg, 'Scheme'),
+              me.envSecret('MONGO_ADDRESSES', me.pkg, 'Addresses'),
+              me.envSecret('MONGO_USERNAME', me.pkg, 'Username'),
+              me.envSecret('MONGO_PASSWORD', me.pkg, 'Password'),
+              me.envSecret('MONGO_DATABASE', me.pkg, 'Database'),
+              me.envSecret('MONGO_OPT_PARAMS', me.pkg, 'OptParams'),
+              me.envSecret('MONGO_TLS', me.pkg, 'Tls'),
+              me.envSecret('MONGO_TIMEOUT', me.pkg, 'Timeout'),
+              me.envSecret('MONGO_READONLY', me.pkg, 'Readonly'),
+              me.envVar('MONGOPROXY_PORT', '27017'),
             ],
           },
         ],

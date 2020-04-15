@@ -31,10 +31,11 @@ local chart(me, values) = (
 local reloaderAnnotations(this) = (
   (if std.objectHasAll(this, '_secretNames') && std.length(this._secretNames) > 0
    then { 'secret.reloader.stakater.com/reload': std.join(',', std.set(this._secretNames)) }
-   else {} ) +
+   else {}) +
   (if std.objectHasAll(this, '_configmapNames') && std.length(this._configmapNames) > 0
    then { 'configmap.reloader.stakater.com/reload': std.join(',', std.set(this._configmapNames)) }
-   else {}));
+   else {})
+);
 
 local secretNameFromVolume(v) = lib.getElse(v, 'secret.secretName', null);
 
@@ -49,21 +50,23 @@ local configmapNameFromEnvVar(e) = lib.getElse(e, 'valueFrom.configMapKeyRef.nam
 local configmapNameFromEnv(e) = lib.getElse(e, 'configMapRef.name', null);
 
 local secretNamesFromContainer(c) =
-   [ secretNameFromEnvVar(e) for e in lib.getElse(c, 'env', []) ]
- + [ secretNameFromEnv(e) for e in lib.getElse(c, 'envFrom', []) ];
+  [secretNameFromEnvVar(e) for e in lib.getElse(c, 'env', [])]
+  + [secretNameFromEnv(e) for e in lib.getElse(c, 'envFrom', [])];
 
 local configmapNamesFromContainer(c) =
-   [ configmapNameFromEnvVar(e) for e in lib.getElse(c, 'env', []) ]
- + [ configmapNameFromEnv(e) for e in lib.getElse(c, 'envFrom', []) ];
- 
+  [configmapNameFromEnvVar(e) for e in lib.getElse(c, 'env', [])]
+  + [configmapNameFromEnv(e) for e in lib.getElse(c, 'envFrom', [])];
+
 
 local secretNamesFromPod(pod) = lib.pruneList(
-   [ secretNameFromVolume(v)      for v in lib.getElse(pod, 'volumes', []) ]
- + std.flattenArrays([ secretNamesFromContainer(c) for c in lib.getElse(pod, 'containers', []) ]));
+  [secretNameFromVolume(v) for v in lib.getElse(pod, 'volumes', [])]
+  + std.flattenArrays([secretNamesFromContainer(c) for c in lib.getElse(pod, 'containers', [])])
+);
 
 local configmapNamesFromPod(pod) = lib.pruneList(
-   [ configmapNameFromVolume(v)      for v in lib.getElse(pod, 'volumes', []) ]
- + std.flattenArrays([ configmapNamesFromContainer(c) for c in lib.getElse(pod, 'containers', []) ]));
+  [configmapNameFromVolume(v) for v in lib.getElse(pod, 'volumes', [])]
+  + std.flattenArrays([configmapNamesFromContainer(c) for c in lib.getElse(pod, 'containers', [])])
+);
 
 {
 
@@ -125,10 +128,10 @@ local configmapNamesFromPod(pod) = lib.pruneList(
     local this = self,
     _secretNames:: secretNamesFromPod(this.spec.template.spec),
     _configmapNames:: configmapNamesFromPod(this.spec.template.spec),
-   metadata+:
+    metadata+:
       (if reloaderAnnotations(this) != {}
-      then { annotations+: reloaderAnnotations(this) }
-      else {}),
+       then { annotations+: reloaderAnnotations(this) }
+       else {}),
     spec+: {
       selector+: {
         matchLabels: {
@@ -154,8 +157,8 @@ local configmapNamesFromPod(pod) = lib.pruneList(
     _configmapNames:: configmapNamesFromPod(this.spec.template.spec),
     metadata+:
       (if reloaderAnnotations(this) != {}
-      then { annotations+: reloaderAnnotations(this) }
-      else {}),
+       then { annotations+: reloaderAnnotations(this) }
+       else {}),
     spec+: {
       strategy: {
         type: 'Recreate',
@@ -183,7 +186,7 @@ local configmapNamesFromPod(pod) = lib.pruneList(
   helmrelease(me, chartValues):: $.k('helm.fluxcd.io/v1', 'HelmRelease') + $.metadata(me.pkg, me.namespace) {
     local this = self,
     spec+: {
-      values+: 
+      values+:
         if reloaderAnnotations(this) != {}
         then { annotations+: reloaderAnnotations(this) }
         else {},
@@ -206,15 +209,15 @@ local configmapNamesFromPod(pod) = lib.pruneList(
       accessModes: [
         'ReadWriteOnce',
       ],
-    } + if storage != '' 
-        then {
-          resources: {
-            requests: {
-              storage: storage,
-            },
-          }
-        }
-        else {},
+    } + if storage != ''
+    then {
+      resources: {
+        requests: {
+          storage: storage,
+        },
+      },
+    }
+    else {},
   },
 
   port(port=8080, targetPort=8080, name='http', protocol='TCP'):: {
@@ -227,6 +230,15 @@ local configmapNamesFromPod(pod) = lib.pruneList(
   pod(me):: $.k('v1', 'Pod') + $.metadata(me.pkg, me.namespace) {
     spec+: {
       securityContext+: $.securityContext,
+    },
+  },
+
+  envField(name, path):: {
+    name: name,
+    valueFrom: {
+      fieldRef: {
+        fieldPath: path,
+      },
     },
   },
 

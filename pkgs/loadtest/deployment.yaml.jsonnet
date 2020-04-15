@@ -10,10 +10,6 @@ local deployment(me) = k8s.deployment(me) {
             image: 'tidepool/loadtest:latest',
             imagePullPolicy: 'Always',
             name: 'loadtest',
-            env: [
-            ],
-            ports: [
-            ],
           },
         ],
       },
