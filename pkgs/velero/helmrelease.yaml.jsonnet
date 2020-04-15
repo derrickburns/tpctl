@@ -13,7 +13,7 @@ local helmrelease(config, me) = k8s.helmrelease(me, {
         useSecret: false,
       },
       configuration: {
-        provider: 'aws',
+        provider: 'aws', // XXX AWS dependency
         backupStorageLocation: {
           name: 'aws',
           bucket: 'k8s-backup-%s' % config.cluster.metadata.name,
