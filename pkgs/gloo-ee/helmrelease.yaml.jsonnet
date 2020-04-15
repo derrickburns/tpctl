@@ -12,6 +12,9 @@ local helmrelease(config, me) = (
         persistence: {
           storageClassName: 'gp2-expanding',
         },
+        devPortal: {
+          enabled: true
+        },
         prometheus: {
           server: {
             resources: {
