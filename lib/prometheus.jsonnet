@@ -45,7 +45,7 @@ local k8s = import 'k8s.jsonnet';
     then $.podmonitor(me, port, selector, path='/metrics')
     else {},
 
-  Servicemonitor(config, me, port)
+  Servicemonitor(config, me, port)::
     if global.isEnabled(config, 'prometheus-operator')
     then $.servicemonitor(me, port)
     else {},
