@@ -2,12 +2,12 @@ local global = import 'global.jsonnet';
 local lib = import 'lib.jsonnet';
 
 {
-  podmonitor(name, namespace, port, selector, path):: {
+  podmonitor(me, port, selector, path):: {
     apiVersion: 'monitoring.coreos.com/v1',
     kind: 'PodMonitor',
     metadata: {
-      name: name,
-      namespace: namespace,
+      name: me.pkg,
+      namespace: me.namespace,
     },
     spec: {
       podMetricsEndpoints: [
@@ -18,7 +18,7 @@ local lib = import 'lib.jsonnet';
       ],
       namespaceSelector: {
         matchNames: [
-          namespace,
+          me.namespace,
         ],
       },
       selector: {
@@ -51,8 +51,8 @@ local lib = import 'lib.jsonnet';
     },
   },
 
-  Podmonitor(config, name, namespace, port, selector, path='/metrics')::
+  Podmonitor(config, me, port, selector, path='/metrics')::
     if global.isEnabled(config, 'prometheus-operator')
-    then $.podmonitor(name, namespace, port, selector, path='/metrics')
+    then $.podmonitor(me, port, selector, path='/metrics')
     else {},
 }
