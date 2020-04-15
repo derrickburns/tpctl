@@ -2,12 +2,11 @@ local global = import '../../lib/global.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
-local helmrelease(config, me) = k8s.helmrelease(me, { name: 'helm-operator', version: '0.6.0', repository: 'https://charts.fluxcd.io' }) {
+local helmrelease(config, me) = k8s.helmrelease(me, { name: 'helm-operator', version: '1.0.0', repository: 'https://charts.fluxcd.io' }) {
   _secretNames:: ['flux-git-deploy', 'flux-helm-repositories'],
   spec+: {
     values+: {
 
-      createCRD: false,
       helm: {
         versions: 'v3',
       },
@@ -30,11 +29,6 @@ local helmrelease(config, me) = k8s.helmrelease(me, { name: 'helm-operator', ver
         volumeName: 'repositories-yaml',
         secretName: $._secretNames[1],
         cacheVolumeName: 'repositories-cache',
-      },
-
-      image: {
-        repository: 'docker.io/fluxcd/helm-operator',
-        tag: '1.0.0-rc9',
       },
 
       logReleaseDiffs: false,
