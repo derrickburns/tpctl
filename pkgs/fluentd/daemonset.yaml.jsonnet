@@ -1,5 +1,5 @@
-local lib = import '../../lib/lib.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
+local lib = import '../../lib/lib.jsonnet';
 
 local daemonset(config, me) = k8s.daemonset(me) {
   spec+: {
@@ -8,18 +8,9 @@ local daemonset(config, me) = k8s.daemonset(me) {
         containers: [
           {
             env: [
-              {
-                name: 'AWS_REGION',
-                value: config.cluster.metadata.region,
-              },
-              {
-                name: 'REGION',
-                value: config.cluster.metadata.region,
-              },
-              {
-                name: 'CLUSTER_NAME',
-                value: config.cluster.metadata.name,
-              },
+              k8s.envVar('AWS_REGION', config.cluster.metadata.region),
+              k8s.envVar('REGION', config.cluster.metadata.region),
+              k8s.envVar('CLUSTER_NAME', config.cluster.metadata.name),
             ],
             image: 'fluent/fluentd-kubernetes-daemonset:v1.9.2-debian-cloudwatch-1.0',
             name: 'fluentd-cloudwatch',
