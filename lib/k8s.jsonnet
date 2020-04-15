@@ -124,6 +124,25 @@ local configmapNamesFromPod(pod) = lib.pruneList(
     ],
   },
 
+  statefulset(me):: $.k('apps/v1', 'StatefulSet') + $.metadata(me.pkg, me.namespace) {
+    local this = self,
+    spec+: {
+      serviceName: me.pkg,
+      selector+: {
+        matchLabels: {
+          app: me.pkg,
+        },
+      },
+      template+: {
+        metadata+: {
+          labels: {
+            app: me.pkg,
+          },
+        },
+      },
+    },
+  },
+
   daemonset(me):: $.k('apps/v1', 'DaemonSet') + $.metadata(me.pkg, me.namespace) {
     local this = self,
     _secretNames:: secretNamesFromPod(this.spec.template.spec),

@@ -1,29 +1,10 @@
+local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
-local statefulset(me) = {
-  apiVersion: 'apps/v1',
-  kind: 'StatefulSet',
-  metadata: {
-    labels: {
-      'control-plane': me.pkg,
-    },
-    name: me.pkg,
-    namespace: me.namespace,
-  },
-  spec: {
-    selector: {
-      matchLabels: {
-        'control-plane': me.pkg,
-      },
-    },
-    serviceName: me.pkg,
-    template: {
-      metadata: {
-        labels: {
-          'control-plane': me.pkg,
-        },
-      },
-      spec: {
+local statefulset(me) = k8s.statefulset(me) {
+  spec+: {
+    template+: {
+      spec+: {
         containers: [
           {
             args: [
@@ -33,26 +14,10 @@ local statefulset(me) = {
               '--enable-debug-logs=false',
             ],
             env: [
-              {
-                name: 'OPERATOR_NAMESPACE',
-                valueFrom: {
-                  fieldRef: {
-                    fieldPath: 'metadata.namespace',
-                  },
-                },
-              },
-              {
-                name: 'WEBHOOK_SECRET',
-                value: 'webhook-server-secret',
-              },
-              {
-                name: 'WEBHOOK_PODS_LABEL',
-                value: me.pkg,
-              },
-              {
-                name: 'OPERATOR_IMAGE',
-                value: 'docker.elastic.co/eck/eck-operator:1.0.0-beta1',
-              },
+              k8s.envField('OPERATOR_NAMESPACE', 'metadata.namespace'),
+              k8s.envValue('WEBHOOK_SECRET', 'webhook-server-secret'),
+              k8s.envValue('WEBHOOK_PODS_LABEL', me.pkg),
+              k8s.envValue('OPERATOR_IMAGE', 'docker.elastic.co/eck/eck-operator:1.0.0-beta1'),
             ],
             image: 'docker.elastic.co/eck/eck-operator:1.0.0-beta1',
             name: 'manager',
