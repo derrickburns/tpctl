@@ -8,7 +8,7 @@ local configmap(config, me) = k8s.configmap(me) {
         'queued-exporters': {
           'jaeger-all-in-one': {
             'jaeger-thrift-http': {
-              'collector-endpoint': 'http://jaeger-collector.%s:14268/api/traces' % me.namespace,
+              'collector-endpoint': 'http://jaeger-collector.%s:14268/api/traces' % me.namespace, // XXX hardcoding
               timeout: '5s',
             },
             'num-workers': 4,
