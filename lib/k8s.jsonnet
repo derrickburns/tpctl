@@ -109,6 +109,22 @@ local configmapNamesFromPod(pod) = lib.pruneList(
 
   clusterrole(me):: $.k('rbac.authorization.k8s.io/v1', 'ClusterRole') + $.metadata(me.pkg),
 
+  role(me):: $.k('rbac.authorization.k8s.io/v1', 'Role') + $.metadata(me.pkg),
+
+  rolebinding(me):: $.k('rbac.authorization.k8s.io/v1', 'RoleBinding') + $.metadata(me.pkg) {
+    roleRef: {
+      apiGroup: 'rbac.authorization.k8s.io',
+      kind: 'Role',
+      name: me.pkg,
+    },
+    subjects: [
+      {
+        kind: 'ServiceAccount',
+        name: me.pkg,
+        namespace: me.namespace,
+      },
+    ],
+  },
   clusterrolebinding(me):: $.k('rbac.authorization.k8s.io/v1', 'ClusterRoleBinding') + $.metadata(me.pkg) {
     roleRef: {
       apiGroup: 'rbac.authorization.k8s.io',
@@ -179,6 +195,7 @@ local configmapNamesFromPod(pod) = lib.pruneList(
        then { annotations+: reloaderAnnotations(this) }
        else {}),
     spec+: {
+      revisionHistoryLimit: 10,
       strategy: {
         type: 'Recreate',
       },
