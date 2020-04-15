@@ -99,11 +99,11 @@ local deployment(me) = k8s.deployment(me) {
           fsGroup: 472,
           runAsUser: 472,
         },
-        serviceAccountName: 'glooe-grafana',
+        serviceAccountName: me.pkg,
         volumes: [
           {
             configMap: {
-              name: 'glooe-grafana',
+              name: me.pkg,
             },
             name: 'config',
           },
@@ -116,7 +116,7 @@ local deployment(me) = k8s.deployment(me) {
           {
             name: 'storage',
             persistentVolumeClaim: {
-              claimName: 'glooe-grafana',
+              claimName: me.pkg,
             },
           },
         ],
