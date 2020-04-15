@@ -1,14 +1,9 @@
 local global = import 'global.jsonnet';
 local lib = import 'lib.jsonnet';
+local k8s = import 'k8s.jsonnet';
 
 {
-  podmonitor(me, port, selector, path):: {
-    apiVersion: 'monitoring.coreos.com/v1',
-    kind: 'PodMonitor',
-    metadata: {
-      name: me.pkg,
-      namespace: me.namespace,
-    },
+  podmonitor(me, port, selector, path):: k8s.k('monitoring.coreos.com/v1', 'PodMonitor') + k8s.metadata(me.pkg, me.namespace) {
     spec: {
       podMetricsEndpoints: [
         {
@@ -27,18 +22,10 @@ local lib = import 'lib.jsonnet';
     },
   },
 
-  servicemonitor(me, targetPort):: {
-    apiVersion: 'monitoring.coreos.com/v1',
-    kind: 'ServiceMonitor',
-    metadata: {
-      name: me.pkg,
-      namespace: me.namespace,
-    },
+  servicemonitor(me, port):: k8s.k('monitoring.coreos.com/v1', 'ServiceMonitor') + k8s.metadata(me.pkg, me.namespace) {
     spec: {
       endpoints: [
-        {
-          targetPort: targetPort,
-        },
+         if std.isString(port) then { port: port } else { targetPort: port }
       ],
       selector: {
         matchLabels: {
@@ -46,7 +33,9 @@ local lib = import 'lib.jsonnet';
         },
       },
       namespaceSelector: {
-        matchNames: [me.namespace],
+        matchNames: [
+          me.namespace
+        ],
       },
     },
   },
@@ -54,5 +43,10 @@ local lib = import 'lib.jsonnet';
   Podmonitor(config, me, port, selector, path='/metrics')::
     if global.isEnabled(config, 'prometheus-operator')
     then $.podmonitor(me, port, selector, path='/metrics')
+    else {},
+
+  Servicemonitor(config, me, port)
+    if global.isEnabled(config, 'prometheus-operator')
+    then $.servicemonitor(me, port)
     else {},
 }
