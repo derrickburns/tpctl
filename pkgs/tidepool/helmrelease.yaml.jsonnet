@@ -167,7 +167,7 @@ local helmrelease(config, me, prev) = k8s.helmrelease(me, {
           'ALL',
         ],
       },
-      //readOnlyRootFilesystem: true,
+      readOnlyRootFilesystem: true,
       runAsNonRoot: true,
       runAsUser: 65534,
     },
