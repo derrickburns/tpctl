@@ -1,10 +1,9 @@
 local prom = import '../../lib/prometheus.jsonnet';
-local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
-local podmonitor(me) = prom.Podmonitor(config, me, 'metrics', {
+local podmonitor(config, me) = prom.Podmonitor(config, me, 'metrics', {
   'gateway-proxy': 'live',
   gloo: 'gateway-proxy',
 });
 
-function(config, prev, namespace, pkg) podmonitor(lib.package(config, namespace, pkg))
+function(config, prev, namespace, pkg) podmonitor(config, lib.package(config, namespace, pkg))
