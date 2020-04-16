@@ -13,7 +13,7 @@ local helmrelease(config, me) = k8s.helmrelease(me, {
         useSecret: false,
       },
       configuration: {
-        provider: 'aws', // XXX AWS dependency
+        provider: 'aws',  // XXX AWS dependency
         backupStorageLocation: {
           name: 'aws',
           bucket: 'k8s-backup-%s' % config.cluster.metadata.name,
@@ -32,15 +32,15 @@ local helmrelease(config, me) = k8s.helmrelease(me, {
           repository: 'velero/velero',
           pullPolicy: 'IfNotPresent',
         },
-        initContainers: [{
-          name: 'velero-plugin-for-aws',
-          image: 'velero/velero-plugin-for-aws:v1.0.0',
-          volumeMounts: [{
-            mountPath: '/target',
-            name: 'plugins',
-          }],
-        }],
       },
+      initContainers: [{
+        name: 'velero-plugin-for-aws',
+        image: 'velero/velero-plugin-for-aws:v1.0.1',
+        volumeMounts: [{
+          mountPath: '/target',
+          name: 'plugins',
+        }],
+      }],
 
       metrics: {
         serviceMonitor: {
