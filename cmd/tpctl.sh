@@ -540,6 +540,7 @@ function reset_config_dir() {
     confirm "Are you sure that you want to remove prior contents (except values.yaml)?"
     info "resetting config repo"
     rm -rf $MANIFEST_DIR/pkgs
+    rm -rf pkgs
   fi
   mv $TMP_DIR/values.yaml .
 }
