@@ -577,10 +577,11 @@ function make_shared_config() {
   if [ -d $MANIFEST_DIR/$pkgs ]
   then
     cp -r $MANIFEST_DIR/pkgs $TMP_DIR
+    rm -rf $MANIFEST_DIR/pkgs
   else
     cp -r pkgs $TMP_DIR
+    rm -rf pkgs
   fi
-  rm -rf $MANIFEST_DIR/pkgs
   complete "created package manifests"
 }
 
