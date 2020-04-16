@@ -47,6 +47,12 @@ local helmrelease(config, me) = k8s.helmrelease(me, {
           enabled: global.isEnabled(config, 'prometheus-operator'),
         },
       },
+      serviceAccount: {
+        server: {
+          create: false,
+          name: me.pkg,
+        },
+      },
     },
   },
 };
