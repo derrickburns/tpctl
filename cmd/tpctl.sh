@@ -539,7 +539,7 @@ function reset_config_dir() {
   if [ $(ls | wc -l) -ne 0 ]; then
     confirm "Are you sure that you want to remove prior contents (except values.yaml)?"
     info "resetting config repo"
-    rm -rf $MANIFEST_DIR/pkgs
+    rm -rf $MANIFEST_DIR
     rm -rf pkgs
   fi
   mv $TMP_DIR/values.yaml .
@@ -578,7 +578,7 @@ function make_shared_config() {
   if [ -d $MANIFEST_DIR/$pkgs ]
   then
     cp -r $MANIFEST_DIR/pkgs $TMP_DIR/$MANIFEST_DIR
-    rm -rf $MANIFEST_DIR/pkgs
+    rm -rf $MANIFEST_DIR
   else
     cp -r pkgs $TMP_DIR/$MANIFEST_DIR
     rm -rf pkgs
@@ -713,6 +713,12 @@ function make_policy_manifests() {
   done
 }
 
+function namespace_enabled() {
+  local ns = $1
+  local enabled=$(yq r values.yaml namespaces.$ns.namespace.enabled)
+  [ $enabled == 'true' ]
+}
+
 # make K8s manifests
 function make_namespace_config() {
   local values=$(get_values)
@@ -725,6 +731,12 @@ function make_namespace_config() {
     for pkg in $(enabled_pkgs namespaces.$ns); do
       template_files "$values" $TEMPLATE_DIR/pkgs $ns $pkg $out
     done
+    if namespace_enabled $ns; then
+      mkdir -p $MANIFEST_DIR/secrets/$ns
+      cp -r secrets/$ns/* $MANIFEST_DIR/secrets/$ns
+      mkdir -p $MANIFEST_DIR/configmaps/$ns
+      cp -r configmaps/$ns/* $MANIFEST_DIR/configmaps/$ns
+    fi
     complete "created manifests for namespace $ns"
   done
   #cat $out
