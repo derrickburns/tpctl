@@ -576,7 +576,8 @@ function make_shared_config() {
   start "creating package manifests"
   if [ -d $MANIFEST_DIR/$pkgs ]
   then
-    cp -r $MANIFEST_DIR/pkgs $TMP_DIR
+    mkdir -p $TMP_DIR/$MANIFEST_DIR
+    cp -r $MANIFEST_DIR/pkgs $TMP_DIR/$MANIFEST_DIR
     rm -rf $MANIFEST_DIR/pkgs
   else
     cp -r pkgs $TMP_DIR
