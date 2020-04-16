@@ -12,7 +12,7 @@ local deployment(me) = k8s.deployment(me) {
     template+: {
       spec+: {
         containers: [{
-          name: 'admin-site',
+          name: 'admin',
           image: 'tidepool/admin-site:latest',
           imagePullPolicy: 'Always',
           ports: [{
