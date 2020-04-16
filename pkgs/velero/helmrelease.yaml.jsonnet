@@ -53,6 +53,9 @@ local helmrelease(config, me) = k8s.helmrelease(me, {
           name: me.pkg,
         },
       },
+      securityContext: {
+        fsGroup: 65534
+      },
     },
   },
 };
