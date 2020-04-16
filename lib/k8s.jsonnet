@@ -29,7 +29,6 @@ local chart(me, values) = (
 );
 
 local fluxAnnotations(me) = {
-{
   'fluxcd.io/automated': 'true',
   ['fluxcd.io/tag.%s' % me.pkg]: 'glob:master-*',
 };
