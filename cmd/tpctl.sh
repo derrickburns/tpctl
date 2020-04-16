@@ -574,13 +574,13 @@ function enabled_pkgs() {
 # make K8s manifest files for shared services
 function make_shared_config() {
   start "creating package manifests"
+  mkdir -p $TMP_DIR/$MANIFEST_DIR
   if [ -d $MANIFEST_DIR/$pkgs ]
   then
-    mkdir -p $TMP_DIR/$MANIFEST_DIR
     cp -r $MANIFEST_DIR/pkgs $TMP_DIR/$MANIFEST_DIR
     rm -rf $MANIFEST_DIR/pkgs
   else
-    cp -r pkgs $TMP_DIR
+    cp -r pkgs $TMP_DIR/$MANIFEST_DIR
     rm -rf pkgs
   fi
   complete "created package manifests"
