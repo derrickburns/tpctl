@@ -8,7 +8,7 @@ local helmrelease(config, me) = k8s.helmrelease(me, {
   repository: 'https://vmware-tanzu.github.io/helm-charts',
 }) {
   spec+: {
-    values: {
+    values+: {
       credentials: {
         useSecret: false,
       },
