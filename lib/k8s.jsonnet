@@ -195,7 +195,7 @@ local configmapNamesFromPod(pod) = lib.pruneList(
     local this = self,
     _secretNames:: secretNamesFromPod(this.spec.template.spec),
     _configmapNames:: configmapNamesFromPod(this.spec.template.spec),
-    metadata+:
+    metadata+: {
       annotations+: {} + reloaderAnnotations(this) +
        (if automated then fluxAnnotations(me) else {}),
     },
