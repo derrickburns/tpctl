@@ -17,7 +17,7 @@ cluster-integration
 cluster-shared
 cluster-production
 '
-MANIFEST_DIR=
+MANIFEST_DIR=.
 
 function useFzf() {
   command -v fzf >/dev/null 2>&1
