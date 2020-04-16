@@ -5,7 +5,7 @@ local lib = import '../../lib/lib.jsonnet';
 local helmrelease(config, me) = k8s.helmrelease(me, {
   name: 'velero',
   version: '2.9.13',
-  chart: 'https://vmware-tanzu.github.io/helm-charts',
+  repository: 'https://vmware-tanzu.github.io/helm-charts',
 }) {
   spec+: {
     values: {
