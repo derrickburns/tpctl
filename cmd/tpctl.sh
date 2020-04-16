@@ -714,7 +714,7 @@ function make_policy_manifests() {
 }
 
 function namespace_enabled() {
-  local ns = $1
+  local ns=$1
   local enabled=$(yq r values.yaml namespaces.$ns.namespace.enabled)
   [ $enabled == 'true' ]
 }
