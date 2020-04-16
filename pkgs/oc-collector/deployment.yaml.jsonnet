@@ -8,7 +8,7 @@ local deployment(config, me) = k8s.deployment(me) {
     progressDeadlineSeconds: 120,
     template+: {
       metadata+: {
-        annotations:
+        annotations+:
           (if global.isEnabled(config, 'prometheus')
            then {
              'prometheus.io/path': '/metrics',
@@ -42,7 +42,7 @@ local deployment(config, me) = k8s.deployment(me) {
                 port: 13133,
               },
             },
-            name: 'oc-collector',
+            name: me.pkg,
             ports: [
               {
                 containerPort: 55678,

@@ -5,14 +5,14 @@ local deployment(me) = k8s.deployment(me) {
   metadata+: {
     annotations+: {
       'fluxcd.io/automated': 'true',
-      'fluxcd.io/tag.admin': 'glob:master-*',
+      ['fluxcd.io/tag.%s' % me.pkg]: 'glob:master-*',
     },
   },
   spec+: {
     template+: {
       spec+: {
         containers: [{
-          name: 'admin',
+          name: me.pkg,
           image: 'tidepool/admin-site:latest',
           imagePullPolicy: 'Always',
           ports: [{

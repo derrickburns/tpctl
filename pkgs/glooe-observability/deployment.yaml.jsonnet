@@ -9,14 +9,7 @@ local deployment(me) = k8s.deployment(me) {
           {
             env: [
               k8s.envSecret('GLOO_LICENSE_KEY', 'license', 'license-key'),
-              {
-                name: 'POD_NAMESPACE',
-                valueFrom: {
-                  fieldRef: {
-                    fieldPath: 'metadata.namespace',
-                  },
-                },
-              },
+              k8s.envField( 'POD_NAMESPACE', 'metadata.namespace'),
             ],
             envFrom: [
               {
@@ -32,11 +25,11 @@ local deployment(me) = k8s.deployment(me) {
             ],
             image: 'quay.io/solo-io/observability-ee:1.2.2',
             imagePullPolicy: 'IfNotPresent',
-            name: 'observability',
+            name: me.pkg,
             volumeMounts: [
               {
                 mountPath: '/observability',
-                name: 'upstream-dashboard-template',
+                name: me.pkg,
                 readOnly: true,
               },
             ],
@@ -54,7 +47,7 @@ local deployment(me) = k8s.deployment(me) {
               ],
               name: me.pkg,
             },
-            name: 'upstream-dashboard-template',
+            name: me.pkg,
           },
         ],
       },

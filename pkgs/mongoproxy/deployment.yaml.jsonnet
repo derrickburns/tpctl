@@ -3,9 +3,9 @@ local lib = import '../../lib/lib.jsonnet';
 
 local deployment(config, prev, me) = k8s.deployment(me) {
   metadata+: {
-    annotations: {
+    annotations+: {
       'fluxcd.io/automated': 'true',
-      'fluxcd.io/tag.mongoproxy': 'glob:master-*',
+      ['fluxcd.io/tag.%s' % me.pkg]: 'glob:master-*',
     },
   },
   spec+: {
@@ -15,7 +15,7 @@ local deployment(config, prev, me) = k8s.deployment(me) {
         local image = if containers == [] then 'tidepool/mongoproxy:latest' else containers[0].image,
         containers: [
           {
-            name: 'mongoproxy',
+            name: me.pkg,
             image: image,
             imagePullPolicy: 'IfNotPresent',
             ports: [{

@@ -2,16 +2,12 @@ local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
 local deployment(config, me) = k8s.deployment(me) {
-  local secretName =
-    if lib.isTrue(me, 'sidecar')
-    then 'fluxrecv-config'
-    else 'fluxrecv-config-separate',
   spec+: {
     template+: {
       spec+: {
         containers: [
           {
-            name: 'recv',
+            name: me.pkg,
             image: 'fluxcd/flux-recv:%s' % lib.getElse(me, 'version', '0.4.0'),
             imagePullPolicy: 'IfNotPresent',
             args: ['--config=/etc/fluxrecv/fluxrecv.yaml'],
@@ -25,16 +21,16 @@ local deployment(config, me) = k8s.deployment(me) {
               },
             },
             volumeMounts: [{
-              name: 'fluxrecv-config',
+              name: me.pkg,
               mountPath: '/etc/fluxrecv',
             }],
           },
         ],
         volumes: [
           {
-            name: 'fluxrecv-config',
+            name: me.pkg,
             secret: {
-              secretName: secretName,
+              secretName: if lib.isTrue(me, 'sidecar') then 'fluxrecv-config' else 'fluxrecv-config-separate',
               defaultMode: std.parseOctal('0400'),
             },
           },

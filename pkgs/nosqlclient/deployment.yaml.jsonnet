@@ -17,7 +17,7 @@ local deployment(me) = k8s.deployment(me) {
               k8s.envSecret('MONGO_TLS', 'mongo', 'Tls'),
             ],
             image: 'tidepool/nosqlclient:2.3.2',
-            name: 'nosqlclient',
+            name: me.pkg,
             ports: [
               {
                 containerPort: 3000,

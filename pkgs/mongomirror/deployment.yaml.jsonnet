@@ -35,7 +35,7 @@ local deployment(me) = k8s.deployment(me) {
               k8s.envSecret('DESTINATION_PASSWORD', me.pkg, 'DESTINATION_PASSWORD'),
             ],
             image: 'tidepool/mongomirror:latest',
-            name: 'mongomirror',
+            name: me.pkg,
             ports: [
               {
                 containerPort: 8080,

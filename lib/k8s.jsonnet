@@ -28,6 +28,12 @@ local chart(me, values) = (
   else {}
 );
 
+local fluxAnnotations(me) = {
+{
+  'fluxcd.io/automated': 'true',
+  ['fluxcd.io/tag.%s' % me.pkg]: 'glob:master-*',
+};
+
 local reloaderAnnotations(this) = (
   (if std.objectHasAll(this, '_secretNames') && std.length(this._secretNames) > 0
    then { 'secret.reloader.stakater.com/reload': std.join(',', std.set(this._secretNames)) }
@@ -186,14 +192,14 @@ local configmapNamesFromPod(pod) = lib.pruneList(
     },
   },
 
-  deployment(me):: $.k('apps/v1', 'Deployment') + $.metadata(me.pkg, me.namespace) {
+  deployment(me, automated=false):: $.k('apps/v1', 'Deployment') + $.metadata(me.pkg, me.namespace) {
     local this = self,
     _secretNames:: secretNamesFromPod(this.spec.template.spec),
     _configmapNames:: configmapNamesFromPod(this.spec.template.spec),
     metadata+:
-      (if reloaderAnnotations(this) != {}
-       then { annotations+: reloaderAnnotations(this) }
-       else {}),
+      annotations+: {} + reloaderAnnotations(this) +
+       (if automated then fluxAnnotations(me) else {}),
+    },
     spec+: {
       revisionHistoryLimit: 10,
       strategy: {
@@ -222,10 +228,9 @@ local configmapNamesFromPod(pod) = lib.pruneList(
   helmrelease(me, chartValues):: $.k('helm.fluxcd.io/v1', 'HelmRelease') + $.metadata(me.pkg, me.namespace) {
     local this = self,
     spec+: {
-      values+:
-        if reloaderAnnotations(this) != {}
-        then { annotations+: reloaderAnnotations(this) }
-        else {},
+      values+: {
+        annotations+: reloaderAnnotations(this),
+      },
       releaseName: lib.getElse(me, 'releaseName', me.pkg),
       chart: chart(me, chartValues),
     },

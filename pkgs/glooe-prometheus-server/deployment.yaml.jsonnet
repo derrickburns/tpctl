@@ -13,8 +13,7 @@ local deployment(me) = k8s.deployment(me) {
             ],
             image: 'jimmidyson/configmap-reload:v0.2.2',
             imagePullPolicy: 'IfNotPresent',
-            name: 'glooe-prometheus-server-configmap-reload',
-            resources: {},
+            name: '%s-configmap-reload' % me.pkg,
             volumeMounts: [
               {
                 mountPath: '/etc/config',
