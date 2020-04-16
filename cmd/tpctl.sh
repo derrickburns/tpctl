@@ -732,10 +732,14 @@ function make_namespace_config() {
       template_files "$values" $TEMPLATE_DIR/pkgs $ns $pkg $out
     done
     if namespace_enabled $ns; then
-      mkdir -p $MANIFEST_DIR/secrets/$ns
-      cp -r secrets/$ns/* $MANIFEST_DIR/secrets/$ns
-      mkdir -p $MANIFEST_DIR/configmaps/$ns
-      cp -r configmaps/$ns/* $MANIFEST_DIR/configmaps/$ns
+      if [ -d secrets/$ns ]; then
+        mkdir -p $MANIFEST_DIR/secrets/$ns
+        cp -r secrets/$ns/* $MANIFEST_DIR/secrets/$ns
+      fi
+      if [ -d configmaps/$ns ]; then
+        mkdir -p $MANIFEST_DIR/configmaps/$ns
+        cp -r configmaps/$ns/* $MANIFEST_DIR/configmaps/$ns
+      fi
     fi
     complete "created manifests for namespace $ns"
   done
