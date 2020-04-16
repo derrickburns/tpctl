@@ -540,7 +540,6 @@ function reset_config_dir() {
     confirm "Are you sure that you want to remove prior contents (except values.yaml)?"
     info "resetting config repo"
     rm -rf $MANIFEST_DIR
-    rm -rf pkgs
   fi
   mv $TMP_DIR/values.yaml .
 }
@@ -575,13 +574,9 @@ function enabled_pkgs() {
 function make_shared_config() {
   start "creating package manifests"
   mkdir -p $TMP_DIR/$MANIFEST_DIR
-  if [ -d $MANIFEST_DIR/$pkgs ]
-  then
+  if [ -d $MANIFEST_DIR/$pkgs ]; then
     cp -r $MANIFEST_DIR/pkgs $TMP_DIR/$MANIFEST_DIR
     rm -rf $MANIFEST_DIR
-  else
-    cp -r pkgs $TMP_DIR/$MANIFEST_DIR
-    rm -rf pkgs
   fi
   complete "created package manifests"
 }
