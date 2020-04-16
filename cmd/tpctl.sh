@@ -17,6 +17,7 @@ cluster-integration
 cluster-shared
 cluster-production
 '
+MANIFEST_DIR=
 
 function useFzf() {
   command -v fzf >/dev/null 2>&1
@@ -538,7 +539,7 @@ function reset_config_dir() {
   if [ $(ls | wc -l) -ne 0 ]; then
     confirm "Are you sure that you want to remove prior contents (except values.yaml)?"
     info "resetting config repo"
-    rm -rf pkgs
+    rm -rf $MANIFEST_DIR/pkgs
   fi
   mv $TMP_DIR/values.yaml .
 }
@@ -572,9 +573,8 @@ function enabled_pkgs() {
 # make K8s manifest files for shared services
 function make_shared_config() {
   start "creating package manifests"
-  cp -r pkgs $TMP_DIR
-  rm -rf flux gloo
-  rm -rf pkgs
+  cp -r $MANIFEST_DIR/pkgs $TMP_DIR
+  rm -rf $MANIFEST_DIR/pkgs
   complete "created package manifests"
 }
 
@@ -616,7 +616,7 @@ function template_service_accounts() {
   for fullpath in $(find $path -type f -print); do
     local filename=${fullpath#$prefix}
     local pkg=$(dirname $filename)
-    local dir=pkgs/$namespace/$pkg
+    local dir=$MANIFEST_DIR/pkgs/$namespace/$pkg
     local file=$(basename $filename)
     mkdir -p $dir
     if [ "${filename: -14}" == "policy.jsonnet" ]; then
@@ -651,7 +651,7 @@ function template_files() {
 
   for absoluteTemplateFilePath in $(find $absoluteTemplatePkgPath -type f -print); do
     local relativeFilePath=${absoluteTemplateFilePath#$absoluteTemplateDir/}
-    local relativeTargetDir=pkgs/$namespace/$(dirname $relativeFilePath)
+    local relativeTargetDir=$MANIFEST_DIR/pkgs/$namespace/$(dirname $relativeFilePath)
     local templateBasename=$(basename $relativeFilePath)
 
     # make the directory to place the new fil in, if it does not exist
@@ -807,9 +807,9 @@ function install_helmrelease() {
 function bootstrap_flux() {
   start "bootstrapping flux"
   establish_ssh
-  install_helmrelease pkgs/flux/flux/flux-helmrelease.yaml
+  install_helmrelease $MANIFEST_DIR/pkgs/flux/flux/flux-helmrelease.yaml
   install_fluxkey
-  install_helmrelease pkgs/flux/flux/helm-operator-helmrelease.yaml
+  install_helmrelease $MANIFEST_DIR/pkgs/flux/flux/helm-operator-helmrelease.yaml
   complete "bootstrapped flux"
 }
 
