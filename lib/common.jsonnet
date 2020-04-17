@@ -21,10 +21,10 @@ local lib = import 'lib.jsonnet';
   },
 
   package(config, prev, namespace, pkg):: config.namespaces[namespace][pkg] {
-    namespace: lib.kebabCase(namespace),
-    pkg: lib.kebabCase(lib.getElse(config.namespaces[namespace][pkg], 'pkg', pkg)),
-    config: config,
-    prev: prev,
+    namespace:: lib.kebabCase(namespace),
+    pkg:: lib.kebabCase(lib.getElse(config.namespaces[namespace][pkg], 'pkg', pkg)),
+    config:: config,
+    prev:: prev,
   },
 
   namespaces(config):: std.set(std.objectFields(config.namespaces)),
