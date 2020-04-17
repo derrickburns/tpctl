@@ -1,7 +1,8 @@
 local common = import '../../lib/common.jsonnet';
+local k8s = import '../../lib/k8s.jsonnet';
 
 local helmrelease() = 
-  self._k8s.helmrelease(self.me, { version: '1.1.0', repository: 'https://code-chris.github.io/helm-charts' }) {
+  k8s.helmrelease(self.me, { version: '1.1.0', repository: 'https://code-chris.github.io/helm-charts' }) {
     spec+: {
       values: {
         metrics: {
