@@ -10,7 +10,7 @@ local lib = import 'lib.jsonnet';
                     {
                       ['fluxcd.io/tag.%s' % container.name]: pattern
                       for container in
-                        lib.getElse(this.spec.template.spec.containers, [])
+                        lib.getElse(this, 'spec.template.spec.containers', [])
                     },
     },
   },
