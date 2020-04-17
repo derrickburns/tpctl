@@ -13,6 +13,7 @@
      _linkerd:: import 'linkerd.jsonnet',
      _pom:: import 'pom.jsonnet',
      _prom:: import 'promtheus.jsonnet',
-     _tracing:: import 'tracing.jsonnet'
+     _tracing:: import 'tracing.jsonnet',
+     _me:: self._lib.package(config, namespace, pkg),
    }
 }
