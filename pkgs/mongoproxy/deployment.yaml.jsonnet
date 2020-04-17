@@ -1,4 +1,5 @@
 local k8s = import '../../lib/k8s.jsonnet';
+local common = import '../../lib/common.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
 local deployment(config, prev, me) = k8s.deployment(me) + flux.metadata() {
@@ -34,4 +35,4 @@ local deployment(config, prev, me) = k8s.deployment(me) + flux.metadata() {
   },
 };
 
-function(config, prev, namespace, pkg) deployment(config, prev, lib.package(config, namespace, pkg))
+function(config, prev, namespace, pkg) deployment(config, prev, common.package(config, prev, namespace, pkg))

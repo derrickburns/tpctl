@@ -1,4 +1,5 @@
 local lib = import '../../lib/lib.jsonnet';
+local common = import '../../lib/common.jsonnet';
 local basepolicy = import '../../lib/policy.jsonnet';
 local tplib = import 'lib.jsonnet';
 local mylib = import 'policy-lib.jsonnet';
@@ -17,4 +18,4 @@ local policy(config, me) = (
   )
 );
 
-function(config, namespace, pkg) policy(config, lib.package(config, namespace, 'tidepool'))
+function(config, prev, namespace, pkg) policy(config, common.package(config, prev, namespace, 'tidepool'))

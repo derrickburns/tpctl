@@ -75,6 +75,8 @@ local configmapNamesFromPod(pod) = lib.pruneList(
 
 {
 
+  key(o): "%s %s %s %s" % [o.apiVersion, o.kind, o.metadata.name, lib.getElse( o, 'metadata.namespace', '---')],
+
   isResource(o):: std.isObject(o) && std.objectHas(o, 'apiVersion') && std.objectHas(o, 'kind'),
 
   flatten(o)::
@@ -83,11 +85,12 @@ local configmapNamesFromPod(pod) = lib.pruneList(
     else if std.isArray(o) then std.flattenArrays(std.map($.flatten, o))
     else [],
 
-  flattenWithName(o, name)::
-    if $.isResource(o) then { name: o }
-    else if std.isObject(o) then lib.mergeList(lib.values(std.mapWithKey(function(key, x) $.flatten(x, '%s:%s' % [name, key]), o)))
-    else if std.isArray(o) then lib.mergeList(std.mapWithIndex(function(index, x) $.flatten(x, '%s:%s' % [name, index]), o))
-    else {},
+  find(o, requestedKey):: (
+    local matches = std.filter(function(x) $.key(x) == requestedKey, $.flatten(o));
+    if std.length(matches) == 1 then matches[0] else {}
+  ),
+
+  findMatch(prev, x):: if $.isResource(x) then $.find(prev, $.key(x)) else {},
 
   k(apiVersion, kind):: {
     apiVersion: apiVersion,

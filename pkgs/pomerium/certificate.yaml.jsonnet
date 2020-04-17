@@ -1,4 +1,5 @@
 local global = import '../../lib/global.jsonnet';
+local common = import '../../lib/common.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 local mylib = import '../../lib/pom.jsonnet';

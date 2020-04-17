@@ -1,4 +1,5 @@
 local secret(namespace) = {
+local common = import '../../lib/common.jsonnet';
   apiVersion: 'v1',
   data: {
     Scheme: std.base64('mongodb'),

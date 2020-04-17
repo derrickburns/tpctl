@@ -1,4 +1,5 @@
 local k8s = import '../../lib/k8s.jsonnet';
+local common = import '../../lib/common.jsonnet';
 
 local helmrelease(config, me) = k8s.helmrelease(me, { name: 'datadog-agent', version: '2.0.4' }) {
   _secretNames:: ['datadog'],
@@ -24,4 +25,4 @@ local helmrelease(config, me) = k8s.helmrelease(me, { name: 'datadog-agent', ver
   },
 };
 
-function(config, prev, namespace, pkg) helmrelease(config, lib.package(config, namespace, pkg))
+function(config, prev, namespace, pkg) helmrelease(config, common.package(config, prev, namespace, pkg))

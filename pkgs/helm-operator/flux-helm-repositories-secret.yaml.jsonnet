@@ -1,3 +1,5 @@
+local common = import '../../lib/common.jsonnet';
+
 local info = {
   apiVersion: 'v1',
   repositories: [

@@ -1,4 +1,5 @@
 local global = import '../../lib/global.jsonnet';
+local common = import '../../lib/common.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
 local servicemonitor(namespace) = {

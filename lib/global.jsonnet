@@ -1,3 +1,4 @@
+local common = import 'common.jsonnet';
 local lib = import 'lib.jsonnet';
 
 {
@@ -13,7 +14,7 @@ local lib = import 'lib.jsonnet';
   ),
 
   packagesWithFilter(config, filter):: [
-    lib.package(config, namespace, pkg)
+    common.package(config, {}, namespace, pkg)
     for namespace in std.objectFields(config.namespaces)
     for pkg in std.objectFields(config.namespaces[namespace])
     if filter(config.namespaces[namespace][pkg], config, namespace, pkg)

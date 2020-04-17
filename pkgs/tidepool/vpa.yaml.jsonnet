@@ -1,4 +1,5 @@
 local lib = import '../../lib/lib.jsonnet';
+local common = import '../../lib/common.jsonnet';
 
 local expand = import '../../lib/expand.jsonnet';
 
@@ -47,4 +48,4 @@ local vpas(config, me) = (
   [vpa(svc, me.namespace) for svc in svcs if lib.getElse(me, svc + '.vpa.enabled', lib.getElse(me, 'vpa.enabled', 'false') == 'true')]
 );
 
-function(config, prev, namespace, pkg) vpas(config, lib.package(config, namespace, pkg))
+function(config, prev, namespace, pkg) vpas(config, common.package(config, prev, namespace, pkg))

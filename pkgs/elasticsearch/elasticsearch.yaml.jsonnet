@@ -1,4 +1,5 @@
 local lib = import '../../lib/lib.jsonnet';
+local common = import '../../lib/common.jsonnet';
 
 local elasticsearch(config, me) = {
   apiVersion: 'elasticsearch.k8s.elastic.co/v1beta1',
@@ -42,4 +43,4 @@ local elasticsearch(config, me) = {
   },
 };
 
-function(config, prev, namespace, pkg) elasticsearch(config, lib.package(config, namespace, pkg))
+function(config, prev, namespace, pkg) elasticsearch(config, common.package(config, prev, namespace, pkg))

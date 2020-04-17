@@ -1,4 +1,5 @@
 local k8s = import '../../lib/k8s.jsonnet';
+local common = import '../../lib/common.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
 local helmrelease(config, me) = k8s.helmrelease(me, { version: '0.3.18', repository: 'https://kubernetes-charts.banzaicloud.com' }) {
@@ -30,4 +31,4 @@ local helmrelease(config, me) = k8s.helmrelease(me, { version: '0.3.18', reposit
   },
 };
 
-function(config, prev, namespace, pkg) helmrelease(config, lib.package(config, namespace, pkg))
+function(config, prev, namespace, pkg) helmrelease(config, common.package(config, prev, namespace, pkg))

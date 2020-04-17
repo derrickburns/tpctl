@@ -1,4 +1,5 @@
 local linkerd = import '../../lib/linkerd.jsonnet';
+local common = import '../../lib/common.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
 local Namespace(config, me) = (
@@ -25,4 +26,4 @@ local Namespace(config, me) = (
   else {}
 );
 
-function(config, prev, namespace, pkg) Namespace(config, lib.package(config, namespace, pkg))
+function(config, prev, namespace, pkg) Namespace(config, common.package(config, prev, namespace, pkg))

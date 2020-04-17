@@ -1,4 +1,5 @@
 local iam = import '../../lib/k8s.jsonnet';
+local common = import '../../lib/common.jsonnet';
 
 local policy(namespace) = iam.metadata('cloudwatch-agent', namespace) + {
   attachPolicyARNs: [
@@ -7,4 +8,4 @@ local policy(namespace) = iam.metadata('cloudwatch-agent', namespace) + {
   ],
 };
 
-function(config, namespace, pkg) policy(namespace)
+function(config, prev, namespace, pkg) policy(namespace)

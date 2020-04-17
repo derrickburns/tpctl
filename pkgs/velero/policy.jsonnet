@@ -1,4 +1,5 @@
 local lib = import '../../lib/lib.jsonnet';
+local common = import '../../lib/common.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 local p = import '../../lib/policy.jsonnet';
 
@@ -12,4 +13,4 @@ local policy(config, me) = (
   )
 );
 
-function(config, namespace, pkg) policy(config, lib.package(config, namespace, pkg))
+function(config, prev, namespace, pkg) policy(config, common.package(config, prev, namespace, pkg))

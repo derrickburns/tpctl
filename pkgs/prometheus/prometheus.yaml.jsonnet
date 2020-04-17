@@ -1,4 +1,5 @@
 local global = import '../../lib/global.jsonnet';
+local common = import '../../lib/common.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
 local prometheus(config, me) =  k8s.metadata(me.pkg, me.namespace) {
@@ -47,4 +48,4 @@ local prometheus(config, me) =  k8s.metadata(me.pkg, me.namespace) {
   },
 };
 
-function(config, prev, namespace, pkg) prometheus(config, lib.package(config, namespace, pkg))
+function(config, prev, namespace, pkg) prometheus(config, common.package(config, prev, namespace, pkg))

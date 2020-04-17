@@ -1,4 +1,5 @@
 local k8s = import '../../lib/k8s.jsonnet';
+local common = import '../../lib/common.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
 local clusterrole(me) = k8s.clusterrole(me) {
@@ -160,4 +161,4 @@ local clusterrole(me) = k8s.clusterrole(me) {
   ],
 };
 
-function(config, prev, namespace, pkg) clusterrole(lib.package(config, namespace, pkg))
+function(config, prev, namespace, pkg) clusterrole(common.package(config, prev, namespace, pkg))

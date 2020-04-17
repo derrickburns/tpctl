@@ -1,4 +1,5 @@
 local deployment(namespace) = {
+local common = import '../../lib/common.jsonnet';
   apiVersion: 'apps/v1',
   kind: 'Deployment',
   metadata: {

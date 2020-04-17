@@ -1,4 +1,5 @@
 local k8s = import '../../lib/k8s.jsonnet';
+local common = import '../../lib/common.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
 local statefulset(me) = k8s.statefulset(me) {
@@ -47,4 +48,4 @@ local statefulset(me) = k8s.statefulset(me) {
   },
 };
 
-function(config, prev, namespace, pkg) statefulset(lib.package(config, namespace, pkg))
+function(config, prev, namespace, pkg) statefulset(common.package(config, prev, namespace, pkg))

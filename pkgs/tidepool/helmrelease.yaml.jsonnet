@@ -1,4 +1,5 @@
 local expand = import '../../lib/expand.jsonnet';
+local common = import '../../lib/common.jsonnet';
 local global = import '../../lib/global.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
@@ -143,14 +144,15 @@ local annotations(me) =
   + filterAnnotations(me, svcs)
   + prefixAnnotations('repository', svcs);
 
-local helmrelease(config, me, prev) = k8s.helmrelease(me, {
+local helmrelease(config, me, previous) = k8s.helmrelease(me, {
   repository: 'https://raw.githubusercontent.com/tidepool-org/tidepool-helm/master/',
   git: 'git@github.com:tidepool-org/development',
   path: 'charts/tidepool',
 }) {
+  local prev = k8s.findMatch(previous, self),
 
   metadata+: {
-    annotations: annotations(me),
+    annotations+: annotations(me),
   },
   local common = {
     podAnnotations: linkerd.annotations(config) + {
@@ -457,4 +459,4 @@ local helmrelease(config, me, prev) = k8s.helmrelease(me, {
   },
 };
 
-function(config, prev, namespace, pkg) helmrelease(expand.expand(config), lib.package(config, namespace, pkg), prev)
+function(config, prev, namespace, pkg) helmrelease(expand.expand(config), common.package(config, prev, namespace, pkg), prev)

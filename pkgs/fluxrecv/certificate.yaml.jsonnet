@@ -1,4 +1,5 @@
 local gloo = import '../../lib/gloo.jsonnet';
+local common = import '../../lib/common.jsonnet';
 
 local exp = import '../../lib/expand.jsonnet';
 

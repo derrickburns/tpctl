@@ -1,3 +1,5 @@
+local common = import '../../lib/common.jsonnet';
+
 local configmap(config, namespace) = {
   apiVersion: 'v1',
   data: {

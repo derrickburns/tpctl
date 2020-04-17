@@ -1,4 +1,5 @@
 local k8s = import '../../lib/k8s.jsonnet';
+local common = import '../../lib/common.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
 local helmrelease(config, prev, me) =
@@ -23,4 +24,4 @@ local helmrelease(config, prev, me) =
     }, lib.getElse(me, 'spec', {})),
   };
 
-function(config, prev, namespace, pkg) helmrelease(config, prev, lib.package(config, namespace, pkg))
+function(config, prev, namespace, pkg) helmrelease(config, prev, common.package(config, prev, namespace, pkg))

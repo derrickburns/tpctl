@@ -1,4 +1,5 @@
 local serviceaccount(namespace) = {
+local common = import '../../lib/common.jsonnet';
   apiVersion: 'v1',
   kind: 'ServiceAccount',
   metadata: {

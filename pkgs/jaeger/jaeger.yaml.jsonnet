@@ -1,4 +1,5 @@
 local lib = import '../../lib/lib.jsonnet';
+local common = import '../../lib/common.jsonnet';
 
 local jaeger(config, namespace) = {
   apiVersion: 'jaegertracing.io/v1',

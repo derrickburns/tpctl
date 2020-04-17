@@ -5,24 +5,6 @@
 
   isEnabledAt(x, prop):: $.isTrue(x, prop + '.enabled'),
 
-  package(config, namespace, pkg):: config.namespaces[namespace][pkg] {
-    namespace: $.kebabCase(namespace),
-    pkg: $.kebabCase($.getElse(config.namespaces[namespace][pkg], 'pkg', pkg)),
-  },
-
-  namespaces(config):: std.set(std.objectFields(config.namespaces)),
-
-  namespacesWithout(config, prop, default):: (
-    local all = $.namespaces(config);
-    local on = $.namespacesWith(config, prop, default);
-    std.setDiff(all, on)
-  ),
-
-  namespacesWith(config, prop, default):: (
-    local all = $.namespaces(config);
-    std.set(std.filter(function(x) $.getElse(config.namespaces[x], 'namespace.' + prop, default), all))
-  ),
-
   matches(labels, selector)::
     std.foldl(function(a, b) a && b, [$.getElse(labels, x, false) == selector[x] for x in std.objectFields(selector)], true),
 

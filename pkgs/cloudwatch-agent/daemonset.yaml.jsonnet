@@ -1,4 +1,5 @@
 local k8s = import '../../lib/k8s.jsonnet';
+local common = import '../../lib/common.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
 local daemonset(config, me) = k8s.daemonset(me) {
@@ -104,4 +105,4 @@ local daemonset(config, me) = k8s.daemonset(me) {
   },
 };
 
-function(config, prev, namespace, pkg) daemonset(config, lib.package(config, namespace, pkg))
+function(config, prev, namespace, pkg) daemonset(config, common.package(config, prev, namespace, pkg))

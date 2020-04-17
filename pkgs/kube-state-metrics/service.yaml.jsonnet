@@ -1,4 +1,5 @@
 local service(namespace) = {
+local common = import '../../lib/common.jsonnet';
   apiVersion: 'v1',
   kind: 'Service',
   metadata: {

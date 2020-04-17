@@ -1,4 +1,5 @@
 local lib = import '../../lib/lib.jsonnet';
+local common = import '../../lib/common.jsonnet';
 
 {
   shadowNames(names):: std.map(function(x) '%s-shadow' % x, names),

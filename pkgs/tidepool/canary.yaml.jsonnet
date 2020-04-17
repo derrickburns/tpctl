@@ -1,4 +1,5 @@
 local lib = import '../../lib/lib.jsonnet';
+local common = import '../../lib/common.jsonnet';
 
 local expand = import '../../lib/expand.jsonnet';
 
@@ -97,4 +98,4 @@ local canaries(config, prev, me) = (
   [canary(config, me, svc) for svc in svcs if lib.getElse(me, svc + '.canary.enabled', false)]
 );
 
-function(config, prev, namespace, pkg) canaries(config, prev, lib.package(config, namespace, pkg))
+function(config, prev, namespace, pkg) canaries(config, prev, common.package(config, prev, namespace, pkg))

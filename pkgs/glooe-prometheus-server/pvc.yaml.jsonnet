@@ -1,4 +1,5 @@
 local k8s = import '../../lib/k8s.jsonnet';
+local common = import '../../lib/common.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
 local persistentvolumeclaim(me) = k8s.pvc(me, '64Gi') {
@@ -7,4 +8,4 @@ local persistentvolumeclaim(me) = k8s.pvc(me, '64Gi') {
   },
 };
 
-function(config, prev, namespace, pkg) persistentvolumeclaim(lib.package(config, namespace, pkg))
+function(config, prev, namespace, pkg) persistentvolumeclaim(common.package(config, prev, namespace, pkg))

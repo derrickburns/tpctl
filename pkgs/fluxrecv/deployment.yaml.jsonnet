@@ -1,4 +1,5 @@
 local k8s = import '../../lib/k8s.jsonnet';
+local common = import '../../lib/common.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
 local deployment(config, me) = k8s.deployment(me) {
@@ -41,7 +42,7 @@ local deployment(config, me) = k8s.deployment(me) {
 };
 
 function(config, prev, namespace, pkg) (
-  local me = lib.package(config, namespace, pkg);
+  local me = common.package(config, prev, namespace, pkg);
   if lib.isTrue(me, 'sidecar')
   then {}
   else deployment(config, me)
