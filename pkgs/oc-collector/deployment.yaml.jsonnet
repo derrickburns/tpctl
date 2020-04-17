@@ -2,7 +2,7 @@ local global = import '../../lib/global.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 local prom = import '../../lib/prometheus.jsonnet';
-local linkerd  = import '../../lib/linkerd .jsonnet';
+local linkerd  = import '../../lib/linkerd.jsonnet';
 
 local deployment(config, me) = k8s.deployment(me) {
   spec+: {
