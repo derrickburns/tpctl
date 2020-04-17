@@ -33,6 +33,7 @@ RUN curl -sL /usr/local/bin/hub https://github.com/github/hub/releases/download/
     mv /tmp/hub-linux-amd64-2.13.0/bin/hub /usr/local/bin
 RUN curl -sL "https://github.com/smallstep/cli/releases/download/v0.14.0-rc.3/step_0.14.0-rc.3_linux_amd64.tar.gz" | tar -xz -C /tmp && mv /tmp/step*/bin/step /usr/local/bin
 RUN curl -sL -o /usr/local/bin/sops  "https://github.com/mozilla/sops/releases/download/v3.5.0/sops-v3.5.0.linux"
+RUN curl -sL -o /usr/local/bin/kubecfg "https://github.com/bitnami/kubecfg/releases/download/v0.16.0/kubecfg-linux-amd64"
 RUN ln -s /usr/bin/python3 /usr/local/bin/python3 && chmod +x /usr/local/bin/*
 COPY helmit /usr/local/bin/helmit
 COPY select_kind /usr/local/bin/select_kind
