@@ -3,7 +3,7 @@ local k8s = import 'k8s.jsonnet';
 local lib = import 'lib.jsonnet';
 
 {
-  annotations(config, port, path='/metrics'):: {
+  metadata(config, port, path='/metrics'):: {
     metadata+: {
       annotations+:
         (if global.isEnabled(config, 'prometheus')
