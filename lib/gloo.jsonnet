@@ -1,12 +1,12 @@
 local certmanager = import 'certmanager.jsonnet';
 local expand = import 'expand.jsonnet';
 local global = import 'global.jsonnet';
+local init = import 'init.jsonnet';
 local k8s = import 'k8s.jsonnet';
 local lib = import 'lib.jsonnet';
 local linkerd = import 'linkerd.jsonnet';
 local pom = import 'pom.jsonnet';
 local tracing = import 'tracing.jsonnet';
-local init = import 'init.jsonnet';
 
 local AwsTcpLoadBalancer(config) = {  // XXX AWS dependency
   'service.beta.kubernetes.io/aws-load-balancer-proxy-protocol': '*',

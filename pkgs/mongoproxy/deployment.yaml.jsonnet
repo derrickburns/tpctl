@@ -1,13 +1,7 @@
 local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
-local deployment(config, prev, me) = k8s.deployment(me) {
-  metadata+: {
-    annotations+: {
-      'fluxcd.io/automated': 'true',
-      ['fluxcd.io/tag.%s' % me.pkg]: 'glob:master-*',
-    },
-  },
+local deployment(config, prev, me) = k8s.deployment(me) + flux.metadata() {
   spec+: {
     template+: {
       spec+: {

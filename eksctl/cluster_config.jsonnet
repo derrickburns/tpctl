@@ -5,7 +5,7 @@ local lib = import '../lib/lib.jsonnet';
 local annotatedNodegroup(config, ng, clusterName) =
   ng {
     kubeletExtraConfig: {
-      allowedUnsafeSysctls: "net.netfilter*",
+      allowedUnsafeSysctls: 'net.netfilter*',
     },
     tags+: {
       'k8s.io/cluster-autoscaler/enabled': 'true',

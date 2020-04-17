@@ -1,27 +1,14 @@
 local global = import '../../lib/global.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
+local prom = import '../../lib/prometheus.jsonnet';
+local linkerd  = import '../../lib/linkerd .jsonnet';
 
 local deployment(config, me) = k8s.deployment(me) {
   spec+: {
     minReadySeconds: 5,
     progressDeadlineSeconds: 120,
-    template+: {
-      metadata+: {
-        annotations+:
-          (if global.isEnabled(config, 'prometheus')
-           then {
-             'prometheus.io/path': '/metrics',
-             'prometheus.io/port': '8888',
-             'prometheus.io/scrape': 'true',
-           }
-           else {}) +
-          (if global.isEnabled(config, 'linkerd')
-           then {
-             'linkerd.io/inject': 'enabled',
-           }
-           else {}),
-      },
+    template+: prom.metadata(config, 8888) + linkerd.metadata(config) {
       spec+: {
         containers: [
           {

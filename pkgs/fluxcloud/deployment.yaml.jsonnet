@@ -1,7 +1,7 @@
 local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
-local Deployment(config, me) = k8s.deployment(me) {
+local deployment(config, me) = k8s.deployment(me) {
   spec+: {
     template+: {
       spec+: {
@@ -29,4 +29,4 @@ local Deployment(config, me) = k8s.deployment(me) {
   },
 };
 
-function(config, prev, namespace, pkg) Deployment(config, lib.package(config, namespace, pkg))
+function(config, prev, namespace, pkg) deployment(config, lib.package(config, namespace, pkg))

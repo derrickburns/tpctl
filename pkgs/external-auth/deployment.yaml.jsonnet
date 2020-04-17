@@ -1,7 +1,8 @@
 local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
+local flux = import '../../lib/flux.jsonnet';
 
-local deployment(me) = k8s.deployment(me) {
+local deployment(me) = k8s.deployment(me) + flux.metadata() {
   spec+: {
     template+: {
       spec+: {

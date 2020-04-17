@@ -1,5 +1,5 @@
-local lib = import 'lib.jsonnet';
 local global = import 'global.jsonnet';
+local lib = import 'lib.jsonnet';
 local tracing = import 'tracing.jsonnet';
 
 {
@@ -8,7 +8,13 @@ local tracing = import 'tracing.jsonnet';
     then {}
     else lib.getElse(global.package(config, 'linkerd'), 'annotations', {}) + {
       'linkerd.io/inject': 'enabled',
-    } + (if global.isEnabled(config, 'oc-collector') 
+    } + (if global.isEnabled(config, 'oc-collector')
          then { 'config.linkerd.io/trace-collector': tracing.address(config) }
          else {}),
+
+  metadata(config):: {
+    metadata+: {
+      annotations+: $.annotations(config),
+    },
+  },
 }
