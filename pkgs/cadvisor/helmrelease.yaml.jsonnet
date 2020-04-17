@@ -1,15 +1,14 @@
-local global = import '../../lib/global.jsonnet';
-local k8s = import '../../lib/k8s.jsonnet';
-local lib = import '../../lib/lib.jsonnet';
+local common = import '../../lib/common.jsonnet';
 
-local helmrelease(config, me) = lib.E(me, k8s.helmrelease(me, { version: '1.1.0', repository: 'https://code-chris.github.io/helm-charts' }) {
-  spec+: {
-    values: {
-      metrics: {
-        enabled: global.isEnabled(config, 'prometheus-operator'),
+local helmrelease() =
+  k8s.helmrelease($.me, { version: '1.1.0', repository: 'https://code-chris.github.io/helm-charts' }) {
+    spec+: {
+      values: {
+        metrics: {
+          enabled: $._global.isEnabled($._config, 'prometheus-operator'),
+        },
       },
     },
-  },
-});
+  };
 
-function(config, prev, namespace, pkg) helmrelease(config, lib.package(config, namespace, pkg))
+function(config, prev, namespace, pkg) common.init(config, prev, namespace, pkg) + helmrelease()
