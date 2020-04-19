@@ -86,17 +86,17 @@ local clusterrole(me) = k8s.clusterrole(me) {
 
 local clusterrolebinding(me) = k8s.clusterrolebinding(me);
 
-local configmap(config, me) = k8s.configmap(me) {
+local configmap(me) = k8s.configmap(me) {
   data: {
     'cwagentconfig.json': std.manifestJson(
       {
         agent: {
-          region: config.cluster.metadata.region,
+          region: me.config.cluster.metadata.region,
         },
         logs: {
           metrics_collected: {
             kubernetes: {
-              cluster_name: config.cluster.metadata.name,
+              cluster_name: me.config.cluster.metadata.name,
               metrics_collection_interval: 60,
             },
           },
