@@ -8,7 +8,7 @@ local helmrelease(config, prev, me) =
       annotations+: {
         'fluxcd.io/automated': 'true',
         'repository.fluxcd.io/slack-tidebot': 'deployment.image',
-        'fluxcd.io/tag.slack-tidebot': lib.getElse(me, 'gitops', 'glob:master-*'),
+        'fluxcd.io/tag.slack-tidebot': lib.getElse(me, 'gitops', 'regex:master-[0-9A-Za-z]{40}'),
       },
     },
 
