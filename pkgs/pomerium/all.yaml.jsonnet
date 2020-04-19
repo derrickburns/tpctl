@@ -2,7 +2,7 @@ local common = import '../../lib/common.jsonnet';
 local global = import '../../lib/global.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
-local mylib = import '../../pom.jsonnet';
+local mylib = import '../../lib/pom.jsonnet';
 
 local upstream(name, namespace) = k8s.k('gloo.solo.io/v1', 'Upstream') + k8s.metadata(name, namespace) {
   spec: {
