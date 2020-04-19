@@ -17,7 +17,7 @@ local deployment(me) = k8s.deployment(me) + flux.metadata() {
       spec+: {
         containers: [
           {
-            image: getPrev(me, prev),
+            image: getPrev(me, me.prev),
             imagePullPolicy: 'Always',
             name: me.pkg,
             env: [k8s.envSecret('API_SECRET', 'shoreline', 'ServiceAuth')],
