@@ -8,7 +8,7 @@ local getPrev(me, prev, def='') = (
   local containers = lib.getElse(prev, 'spec.template.spec.containers', []);
   if std.length(containers) < 1 
   then default
-  else lib.getElse(containers[0], image, default)
+  else lib.getElse(containers[0], 'image', default)
 );
 
 local deployment(me) = k8s.deployment(me) + flux.metadata() {
