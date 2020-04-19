@@ -180,16 +180,12 @@ local httpsVirtualService(config, namespace) = k8s.k('gateway.solo.io/v1', 'Virt
   },
 };
 
-local httpVirtualService(config, namespace) = {
-  apiVersion: 'gateway.solo.io/v1',
-  kind: 'VirtualService',
-  metadata: {
+local httpVirtualService(config, namespace) = k8s.k( 'gateway.solo.io/v1', 'VirtualService') + k8s.metadata('proxy-http', namespace) {
+  metadata+: {
     labels: {
       protocol: 'http',
       type: 'pomerium',
     },
-    name: 'proxy-http',
-    namespace: namespace,
   },
   spec: {
     displayName: 'proxy-http',
