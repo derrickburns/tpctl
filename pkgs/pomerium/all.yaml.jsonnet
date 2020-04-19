@@ -26,7 +26,7 @@ local upstream(me, name) = k8s.k('gloo.solo.io/v1', 'Upstream') + k8s.metadata(n
   },
 };
 
-local virtualService(me, name) = k8s.k('gateway.solo.io/v1', 'VirtualService') + k8s.metadata(name, namespace) {
+local virtualService(me, name) = k8s.k('gateway.solo.io/v1', 'VirtualService') + k8s.metadata(name, me.namespace) {
   local domain = pomerium.rootDomain(me.config),
   metadata+: {
     labels: {
