@@ -211,14 +211,16 @@ local httpVirtualService(config, namespace) = {
   },
 };
 
-function(config, prev, namespace, pkg) [
-  helmrelease(config, common.package(config, prev, namespace, pkg)),
-  httpVirtualService(config, namespace),
-  httpsVirtualService(config, namespace),
-  virtualService(config, 'authorize', namespace),
-  virtualService(config, 'authenticate', namespace),
-  upstream('pomerium-proxy', namespace),
-  upstream('pomerium-authenticate', namespace),
-  upstream('pomerium-authorize', namespace),
-  certificate(config, namespace),
-]
+function(config, prev, namespace, pkg) {
+  helm: helmrelease(config, common.package(config, prev, namespace, pkg)), 
+  gloo: [ 
+    httpVirtualService(config, namespace),
+    httpsVirtualService(config, namespace),
+    virtualService(config, 'authorize', namespace),
+    virtualService(config, 'authenticate', namespace),
+    upstream('pomerium-proxy', namespace),
+    upstream('pomerium-authenticate', namespace),
+    upstream('pomerium-authorize', namespace),
+   ],
+  certmanager: certificate(config, namespace),
+}
