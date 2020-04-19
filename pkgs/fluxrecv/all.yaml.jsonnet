@@ -2,7 +2,6 @@ local gloo = import '../../lib/gloo.jsonnet';
 local common = import '../../lib/common.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
-local common = import '../../lib/common.jsonnet';
 local exp = import '../../lib/expand.jsonnet';
 
 local deployment(me) = k8s.deployment(me) {
@@ -57,8 +56,8 @@ function(config, prev, namespace, pkg) (
   local me = common.package(config, prev, namespace, pkg);
   [
     if lib.isTrue(me, 'sidecar') then {} else deployment(me),
-    gloo.virtualServicesForPackage(exp.expand(config), 'fluxrecv', namespace),
-    gloo.certificatesForPackage(exp.expand(config), 'fluxrecv', namespace),
+    gloo.virtualServicesForPackage(me),
+    gloo.certificatesForPackage(me),
     service(me),
   ]
 )

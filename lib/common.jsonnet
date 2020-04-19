@@ -1,4 +1,5 @@
 local lib = import 'lib.jsonnet';
+local exp = import 'expand.jsonnet';
 
 {
   init(config, prev, namespace, pkg):: {
@@ -20,12 +21,15 @@ local lib = import 'lib.jsonnet';
     _isEnabled(x):: self._global.isEnabled(self._config, x),
   },
 
-  package(config, prev, namespace, pkg):: config.namespaces[namespace][pkg] {
-    namespace:: lib.kebabCase(namespace),
-    pkg:: lib.kebabCase(lib.getElse(config.namespaces[namespace][pkg], 'pkg', pkg)),
-    config:: config,
-    prev:: prev,
-  },
+  package(config, prev, namespace, pkg):: (
+    local expanded = exp.expand(config);
+    expanded.namespaces[namespace][pkg] {
+      namespace:: lib.kebabCase(namespace),
+      pkg:: lib.kebabCase(lib.getElse(expanded.namespaces[namespace][pkg], 'pkg', pkg)),
+      config: expanded,
+      prev:: prev,
+    }
+  ),
 
   namespaces(config):: std.set(std.objectFields(config.namespaces)),
 
