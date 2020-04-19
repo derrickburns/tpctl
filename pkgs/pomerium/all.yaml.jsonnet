@@ -1,10 +1,11 @@
+local certmanager = import '../../lib/certmanager.jsonnet';
 local common = import '../../lib/common.jsonnet';
 local global = import '../../lib/global.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
-local mylib = import '../../lib/pom.jsonnet';
+local pomerium = import '../../lib/pom.jsonnet';
 
-local upstream(name, namespace) = k8s.k('gloo.solo.io/v1', 'Upstream') + k8s.metadata(name, namespace) {
+local upstream(me, name) = k8s.k('gloo.solo.io/v1', 'Upstream') + k8s.metadata(name, me.namespace) {
   spec: {
     discoveryMetadata: {},
     kube: {
@@ -13,20 +14,20 @@ local upstream(name, namespace) = k8s.k('gloo.solo.io/v1', 'Upstream') + k8s.met
         'app.kubernetes.io/name': name,
       },
       serviceName: name,
-      serviceNamespace: namespace,
+      serviceNamespace: me.namespace,
       servicePort: 443,
     },
     sslConfig: {
       secretRef: {
         name: '%s-tls' % name,
-        namespace: namespace,
+        namespace: me.namespace,
       },
     },
   },
 };
 
-local virtualService(config, name, namespace) = k8s.k('gateway.solo.io/v1', 'VirtualService') + k8s.metadata(name, namespace) {
-  local domain = mylib.rootDomain(config),
+local virtualService(me, name) = k8s.k('gateway.solo.io/v1', 'VirtualService') + k8s.metadata(name, namespace) {
+  local domain = pomerium.rootDomain(me.config),
   metadata+: {
     labels: {
       protocol: 'https',
@@ -37,8 +38,8 @@ local virtualService(config, name, namespace) = k8s.k('gateway.solo.io/v1', 'Vir
     displayName: name,
     sslConfig: {
       secretRef: {
-        name: 'pomerium-tls',
-        namespace: namespace,
+        name: '%s-tls' % me.pkg,
+        namespace: me.namespace,
       },
       sniDomains: [
         '%s.%s' % [name, domain],
@@ -59,7 +60,7 @@ local virtualService(config, name, namespace) = k8s.k('gateway.solo.io/v1', 'Vir
             single: {
               upstream: {
                 name: 'pomerium-%s' % name,
-                namespace: namespace,
+                namespace: me.namespace,
               },
             },
           },
@@ -69,37 +70,31 @@ local virtualService(config, name, namespace) = k8s.k('gateway.solo.io/v1', 'Vir
   },
 };
 
-local certificate(config, namespace) = k8s.k('cert-manager.io/v1alpha2', 'Certificate') + k8s.metadata('pomerium-certificate', namespace) {
-  spec: {
-    secretName: 'pomerium-tls',
-    issuerRef: {
-      name: lib.getElse(global.package(config, 'certmanager'), 'issuer', 'letsencrypt-production'),
-      kind: 'ClusterIssuer',
-    },
-    commonName: self.dnsNames[0],
-    dnsNames: ['authenticate.%s' % mylib.rootDomain(config), 'authorize.%s' % mylib.rootDomain(config)] + mylib.dnsNames(config),
-  },
-};
+local dnsNames(me) =
+  ['authenticate.%s' % pomerium.rootDomain(me.config), 'authorize.%s' % pomerium.rootDomain(me.config)] + pomerium.dnsNames(me.config);
 
-local getPoliciesForPackage(config, me) = [
+local certificate(me) = certmanager.certificate(me, dnsNames(me));
+
+local getPoliciesForPackage(me) = [
   {
+    local config = me.config,
     local port = lib.getElse(sso, 'port', 8080),
     local suffix = if port == 80 then '' else ':%s' % port,
-    from: 'https://' + mylib.dnsNameForSso(config, me, sso),
+    from: 'https://' + pomerium.dnsNameForSso(config, me, sso),
     to: 'http://' + lib.getElse(sso, 'serviceName', me.pkg) + '.' + me.namespace + '.svc.cluster.local' + suffix,
     allowed_groups: lib.getElse(sso, 'allowed_groups', lib.getElse(config, 'general.sso.allowed_groups', [])),
     allowed_users: lib.getElse(sso, 'allowed_users', lib.getElse(config, 'general.sso.allowed_users', [])),
     allow_websockets: lib.getElse(sso, 'allow_websockets', lib.getElse(config, 'general.sso.allow_websockets', true)),
   }
-  for sso in mylib.ssoList(me)
+  for sso in pomerium.ssoList(me)
 ];
 
-local getPolicy(config) = std.flattenArrays([getPoliciesForPackage(config, pkg) for pkg in global.packagesWithKey(config, 'sso')]);
+local getPolicy(me) = std.flattenArrays([getPoliciesForPackage(me) for pkg in global.packagesWithKey(me.config, 'sso')]);
 
-local helmrelease(config, me) = k8s.helmrelease(me, { version: '5.0.3', repository: 'https://helm.pomerium.io' }) {
+local helmrelease(me) = k8s.helmrelease(me, { version: '5.0.3', repository: 'https://helm.pomerium.io' }) {
   _secretNames:: ['pomerium'],
   _configmapNames:: ['pomerium'],
-  local domain = mylib.rootDomain(config),
+  local domain = pomerium.rootDomain(me.config),
   spec+: {
     values+: {
       authenticate: {
@@ -108,7 +103,7 @@ local helmrelease(config, me) = k8s.helmrelease(me, { version: '5.0.3', reposito
         },
       },
       extraEnv: {
-        log_level: lib.getElse(me, 'logLevel', lib.getElse(config, 'general.logLevel', 'info')),
+        log_level: lib.getElse(me, 'logLevel', lib.getElse(me.config, 'general.logLevel', 'info')),
       },
       service: {
         type: 'ClusterIP',
@@ -116,7 +111,7 @@ local helmrelease(config, me) = k8s.helmrelease(me, { version: '5.0.3', reposito
       config: {
         rootDomain: domain,
         existingSecret: $._secretNames[0],
-        policy: getPolicy(config),
+        policy: getPolicy(me),
       },
       forwardAuth: {
         enabled: false,
@@ -128,8 +123,8 @@ local helmrelease(config, me) = k8s.helmrelease(me, { version: '5.0.3', reposito
   },
 };
 
-local httpsVirtualService(config, namespace) = k8s.k('gateway.solo.io/v1', 'VirtualService') + k8s.metadata('proxy-https', namespace) {
-  local domains = mylib.dnsNames(config),
+local httpsVirtualService(me) = k8s.k('gateway.solo.io/v1', 'VirtualService') + k8s.metadata('proxy-https', me.namespace) {
+  local domains = pomerium.dnsNames(me.config),
   metadata+: {
     labels: {
       protocol: 'https',
@@ -141,7 +136,7 @@ local httpsVirtualService(config, namespace) = k8s.k('gateway.solo.io/v1', 'Virt
     sslConfig: {
       secretRef: {
         name: 'pomerium-tls',
-        namespace: namespace,
+        namespace: me.namespace,
       },
       sniDomains: domains,
     },
@@ -158,7 +153,7 @@ local httpsVirtualService(config, namespace) = k8s.k('gateway.solo.io/v1', 'Virt
             single: {
               upstream: {
                 name: 'pomerium-proxy',
-                namespace: namespace,
+                namespace: me.namespace,
               },
             },
           },
@@ -180,7 +175,7 @@ local httpsVirtualService(config, namespace) = k8s.k('gateway.solo.io/v1', 'Virt
   },
 };
 
-local httpVirtualService(config, namespace) = k8s.k( 'gateway.solo.io/v1', 'VirtualService') + k8s.metadata('proxy-http', namespace) {
+local httpVirtualService(me) = k8s.k('gateway.solo.io/v1', 'VirtualService') + k8s.metadata('proxy-http', me.namespace) {
   metadata+: {
     labels: {
       protocol: 'http',
@@ -190,7 +185,7 @@ local httpVirtualService(config, namespace) = k8s.k( 'gateway.solo.io/v1', 'Virt
   spec: {
     displayName: 'proxy-http',
     virtualHost: {
-      domains: mylib.dnsNames(config),
+      domains: pomerium.dnsNames(me.config),
       routes: [
         {
           matchers: [
@@ -208,15 +203,17 @@ local httpVirtualService(config, namespace) = k8s.k( 'gateway.solo.io/v1', 'Virt
 };
 
 function(config, prev, namespace, pkg) {
-  helm: helmrelease(config, common.package(config, prev, namespace, pkg)), 
-  gloo: [ 
-    httpVirtualService(config, namespace),
-    httpsVirtualService(config, namespace),
-    virtualService(config, 'authorize', namespace),
-    virtualService(config, 'authenticate', namespace),
-    upstream('pomerium-proxy', namespace),
-    upstream('pomerium-authenticate', namespace),
-    upstream('pomerium-authorize', namespace),
-   ],
-  certmanager: certificate(config, namespace),
+  local me = common.package(config, prev, namespace, pkg),
+  helm: helmrelease(me),
+  gloo: [
+    httpVirtualService(me),
+    httpsVirtualService(me),
+    virtualService(me, 'authorize'),
+    virtualService(me, 'authenticate'),
+    upstream(me, 'pomerium-proxy'),
+    upstream(me, 'pomerium-authenticate'),
+    upstream(me, 'pomerium-authorize'),
+  ],
+  certmanager: certificate(me),
+
 }
