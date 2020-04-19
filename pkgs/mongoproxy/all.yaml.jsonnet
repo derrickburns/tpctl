@@ -1,12 +1,12 @@
-local k8s = import '../../lib/k8s.jsonnet';
 local common = import '../../lib/common.jsonnet';
+local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
-local deployment(config, prev, me) = k8s.deployment(me) + flux.metadata() {
+local deployment(me) = k8s.deployment(me) + flux.metadata() {
   spec+: {
     template+: {
       spec+: {
-        local containers = lib.getElse(prev, 'spec.template.spec.containers', []),
+        local containers = lib.getElse(me.prev, 'spec.template.spec.containers', []),
         local image = if containers == [] then 'tidepool/mongoproxy:latest' else containers[0].image,
         containers: [
           {
@@ -35,4 +35,16 @@ local deployment(config, prev, me) = k8s.deployment(me) + flux.metadata() {
   },
 };
 
-function(config, prev, namespace, pkg) deployment(config, prev, common.package(config, prev, namespace, pkg))
+local service(me) = k8s.service(me) {
+  spec+: {
+    ports: [k8s.port(27017, 27017, 'mongo')],
+  },
+};
+
+function(config, prev, namespace, pkg) (
+  local me = common.package(config, prev, namespace, pkg);
+  [
+    deployment(me),
+    service(me),
+  ]
+)
