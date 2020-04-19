@@ -1,14 +1,13 @@
 local lib = import '../../lib/lib.jsonnet';
 local common = import '../../lib/common.jsonnet';
+local k8s = import '../../lib/k8s.jsonnet';
 
-local elasticsearch(config, me) = {
-  apiVersion: 'elasticsearch.k8s.elastic.co/v1beta1',
-  kind: 'Elasticsearch',
-  metadata: {
-    name: 'jaeger',
+local elasticsearch(config, me) = k8s.k( 'elasticsearch.k8s.elastic.co/v1beta1', 'Elasticsearch') {
+  metadata+: {
+    name: 'jaeger', // XXX check
     namespace: me.namespace,
   },
-  spec: {
+  spec+: {
     nodeSets: [
       {
         config: {
@@ -33,7 +32,7 @@ local elasticsearch(config, me) = {
                   storage: lib.getElse(me, 'storage', '5Gi'),
                 },
               },
-              storageClassName: 'gp2-expanding',
+              storageClassName: 'gp2-expanding', // XXX hardcoded
             },
           },
         ],
