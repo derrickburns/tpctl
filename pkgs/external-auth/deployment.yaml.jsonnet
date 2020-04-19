@@ -5,7 +5,7 @@ local flux = import '../../lib/flux.jsonnet';
 
 local getPrev(me, prev, def='') = (
   local default = (if def == '' then 'tidepool/%s:latest' % me.pkg else def);
-  local containers = lib.getElse(prev, 'spec.template.spec.containers, []);
+  local containers = lib.getElse(prev, 'spec.template.spec.containers', []);
   if std.length(containers) < 1 
   then default
   else lib.getElse(containers[0], image, default)
