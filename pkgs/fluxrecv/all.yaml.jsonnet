@@ -56,7 +56,7 @@ local service(me) = k8s.service(me) {
 function(config, prev, namespace, pkg) (
   local me = common.package(config, prev, namespace, pkg);
   [
-    if lib.isTrue(me, 'sidecar') then {} else deployment(config, me),
+    if lib.isTrue(me, 'sidecar') then {} else deployment(me),
     gloo.virtualServicesForPackage(exp.expand(config), 'fluxrecv', namespace),
     gloo.certificatesForPackage(exp.expand(config), 'fluxrecv', namespace),
     service(me),
