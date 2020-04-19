@@ -31,4 +31,16 @@ local deployment(me) = k8s.deployment(me) {
   },
 };
 
-function(config, prev, namespace, pkg) deployment(common.package(config, prev, namespace, pkg))
+local service(me) = k8s.service(me) {
+  spec+: {
+    ports: [ k8s.port(3000,3000) ],
+  },
+};
+
+function(config, prev, namespace, pkg) (
+  local me = common.package(config, prev, namespace, pkg);
+  [ 
+    service(me),
+    deployment(me),
+  ]
+)
