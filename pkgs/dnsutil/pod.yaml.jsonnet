@@ -12,7 +12,7 @@ local pod(me) = k8s.pod(me) {
         ],
         image: 'gcr.io/kubernetes-e2e-test-images/dnsutils:1.3',
         imagePullPolicy: 'IfNotPresent',
-        name: 'dnsutils',
+        name: me.pkg,
       },
     ],
     restartPolicy: 'Always',
