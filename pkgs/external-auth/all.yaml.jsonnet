@@ -4,6 +4,7 @@ local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
 local port = 8080;
+local containerPort = 4000;
 
 local getPrev(me, def='') = (
   local default = (if def == '' then 'tidepool/%s:latest' % me.pkg else def);
@@ -23,7 +24,7 @@ local deployment(me) = k8s.deployment(me) + flux.metadata() {
             imagePullPolicy: 'Always',
             name: me.pkg,
             env: [k8s.envSecret('API_SECRET', 'shoreline', 'ServiceAuth')],
-            ports: [{ containerPort: 4000 }],
+            ports: [{ containerPort: containerPort }],
           },
         ],
       },
@@ -33,7 +34,7 @@ local deployment(me) = k8s.deployment(me) + flux.metadata() {
 
 local service(me) = k8s.service(me) {
   spec+: {
-    ports: [k8s.port(port, 4000)],
+    ports: [k8s.port(port, containerPort)],
   },
 };
 

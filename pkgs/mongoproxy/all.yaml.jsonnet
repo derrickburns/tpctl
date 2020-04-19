@@ -2,6 +2,8 @@ local common = import '../../lib/common.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
+local containerPort = 27017;
+
 local deployment(me) = k8s.deployment(me) + flux.metadata() {
   spec+: {
     template+: {
@@ -14,7 +16,7 @@ local deployment(me) = k8s.deployment(me) + flux.metadata() {
             image: image,
             imagePullPolicy: 'IfNotPresent',
             ports: [{
-              containerPort: 27017,
+              containerPort: containerPort,
             }],
             env: [
               me.envSecret('MONGO_SCHEME', me.pkg, 'Scheme'),
@@ -26,7 +28,7 @@ local deployment(me) = k8s.deployment(me) + flux.metadata() {
               me.envSecret('MONGO_TLS', me.pkg, 'Tls'),
               me.envSecret('MONGO_TIMEOUT', me.pkg, 'Timeout'),
               me.envSecret('MONGO_READONLY', me.pkg, 'Readonly'),
-              me.envVar('MONGOPROXY_PORT', '27017'),
+              me.envVar('MONGOPROXY_PORT', '%d' % containerPort ), 
             ],
           },
         ],
@@ -37,7 +39,7 @@ local deployment(me) = k8s.deployment(me) + flux.metadata() {
 
 local service(me) = k8s.service(me) {
   spec+: {
-    ports: [k8s.port(27017, 27017, 'mongo')],
+    ports: [k8s.port(27017, containerPort, 'mongo')],
   },
 };
 

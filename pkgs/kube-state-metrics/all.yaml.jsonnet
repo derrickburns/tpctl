@@ -1,6 +1,8 @@
 local common = import '../../lib/common.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 
+local containerPort = 8080;
+
 local clusterrole(me) = k8s.clusterrole(me) {
   rules: [
     {
@@ -134,7 +136,7 @@ local deployment(me) = k8s.deployment(me) {
             name: me.pkg,
             ports: [
               {
-                containerPort: 8080,
+                containerPort: containerPort,
                 name: 'metrics',
               },
             ],
@@ -152,7 +154,7 @@ local deployment(me) = k8s.deployment(me) {
 
 local service(me) = k8s.service(me) {
   spec+: {
-    ports: [k8s.port(80, 8080)],
+    ports: [k8s.port(80, containerPort)],
   },
 };
 

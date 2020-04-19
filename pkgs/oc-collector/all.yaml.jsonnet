@@ -62,9 +62,11 @@ local deployment(me) = k8s.deployment(me) {
             name: me.pkg,
             ports: [
               {
+                name: "opencensus",
                 containerPort: 55678,
               },
               {
+                name: 'zipkin',
                 containerPort: 9411,
               },
               {
