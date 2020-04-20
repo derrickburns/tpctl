@@ -135,7 +135,7 @@ local daemonset(me) = k8s.daemonset(me) {
             volumeMounts: [
               {
                 mountPath: '/etc/cwagentconfig',
-                name: 'cwagentconfig',
+                name: me.pkg,
               },
               {
                 mountPath: '/rootfs',
