@@ -193,12 +193,12 @@ local ExternalDnsHosts(hosts) = {
     options: $.virtualHostOptions(vs),
   },
 
-  virtualService(vs, me):: {
+  virtualService(vs):: {
     apiVersion: 'gateway.solo.io/v1',
     kind: 'VirtualService',
     metadata: {
       name: lib.kebabCase(vs.name),
-      namespace: me.namespace,
+      namespace: vs.namespace,
       labels: vs.labels,
     },
     spec: $.sslConfig(vs) + {
@@ -301,8 +301,8 @@ local ExternalDnsHosts(hosts) = {
 
   virtualServicesForPackage(me):: (
     local vsarray = $.vsForNamespacedPackage(me);
-    local tovs(x) = $.virtualService(x, me);
-    local result = std.map(tovs, vsarray);
+    local tovs(x) = $.virtualService(x);
+    local result = std.map($.virtualService, vsarray);
     std.trace(std.manifestJson({vsarray:  vsarray, result: result}), std.filter(function(x) std.length(x.spec.virtualHost.domains) > 0, result))
   ),
 
