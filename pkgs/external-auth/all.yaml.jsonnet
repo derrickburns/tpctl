@@ -6,29 +6,20 @@ local lib = import '../../lib/lib.jsonnet';
 local port = 8080;
 local containerPort = 4000;
 
-local getPrev(me, this, def='') = (
-  local default = (if def == '' then 'tidepool/%s:latest' % me.pkg else def);
-  local prev = k8s.findMatch(me.prev, this);
-  local containers = std.trace( std.manifestJson( { prev: me.prev} ), lib.getElse(prev, 'spec.template.spec.containers', []));
-  if std.length(containers) < 1
-  then default
-  else lib.getElse(containers[0], 'image', default)
-);
-
 local deployment(me) = k8s.deployment(me) + flux.metadata() {
   local this = self,
   spec+: {
     template+: {
       spec+: {
-        containers: [
+        containers: flux.patch(me.prev, this, [
           {
-            image: getPrev(me, this),
+            image: 'tidepool/%s:latest' % me.pkg,
             imagePullPolicy: 'Always',
             name: me.pkg,
             env: [k8s.envSecret('API_SECRET', 'shoreline', 'ServiceAuth')],
             ports: [{ containerPort: containerPort }],
           },
-        ],
+        ]),
       },
     },
   },
