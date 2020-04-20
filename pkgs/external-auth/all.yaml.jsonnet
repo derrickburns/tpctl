@@ -7,7 +7,7 @@ local port = 8080;
 local containerPort = 4000;
 
 local deployment(me) = flux.deployment(me) {
-  _containers: [
+  _containers:: [
     {
       image: 'tidepool/%s:latest' % me.pkg,
       imagePullPolicy: 'Always',
