@@ -307,17 +307,15 @@ local ExternalDnsHosts(hosts) = {
   ),
 
   certificatesForPackage(me):: (
-    local vsarray = $.vsForNamespacedPackage(me);
-    lib.pruneList(std.map(function(v) $.certificate(me, v), vsarray))
+    if global.isEnabled(me.config, 'certmanager')
+    then lib.pruneList(std.map(function(v) $.certificate(v), $.vsForNamespacedPackage(me))
+    else []
   ),
 
   certificateSecretName(base, namespace):: namespace + '-' + base + '-certificate',
 
-  certificate(me, vsin):: (
-    local vs = $.withNamespace($.withName(vsin, me.pkg), me.namespace);
-    if global.isEnabled(me.config, 'certmanager')
-       && $.isHttps(vs)
-       && std.length(vs.dnsNames) > 0
+  certificate(vs):: (
+    if $.isHttps(vs) && std.length(vs.dnsNames) > 0
     then certmanager.certificate(me, vs.dnsNames, $.certificateSecretName(vs.name, vs.namespace))
     else {}
   ),
