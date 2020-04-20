@@ -123,8 +123,6 @@ local clusterrole(me) = k8s.clusterrole(me) {
   ],
 };
 
-local clusterrolebinding(me) = k8s.clusterrolebinding(me);
-
 local deployment(me) = k8s.deployment(me) {
   spec+: {
     template+: {
@@ -158,15 +156,13 @@ local service(me) = k8s.service(me) {
   },
 };
 
-local serviceaccount(me) = k8s.serviceaccount(me);
-
 function(config, prev, namespace, pkg) (
   local me = common.package(config, prev, namespace, pkg);
   [
-    serviceaccount(me),
+    k8s.serviceaccount(me),
     service(me),
     deployment(me),
-    clusterrolebinding(me),
+    k8s.clusterrolebinding(me),
     clusterrole(me),
   ]
 )
