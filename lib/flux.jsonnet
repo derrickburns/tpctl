@@ -14,17 +14,18 @@ local lib = import 'lib.jsonnet';
   },
 
   // all containers in a K8s manifest
-  containers(manifest)::
+  containers(manifest):: (
+    assert std.objectHas(manifest, 'kind'): std.manifestJson(manifest);
     if manifest.kind == 'Deployment' then manifest.spec.template.spec.containers
     else if manifest.kind == 'Daemonset' then manifest.spec.template.spec.containers
     else if manifest.kind == 'Statefulset' then manifest.spec.template.spec.containers
     else if manifest.kind == 'Pod' then manifest.spec.containers
-    else [],
+    else []),
 
   // a patched version of all containers
   patch(old, this, containers):: (
     local matching = k8s.findMatch(old, this);
-    local map = std.trace( std.manifestJson( { matching: matching}),{ [c.name]: c for c in $.containers(matching) });
+    local map = { [c.name]: c for c in $.containers(matching) };
     local updateContainer(map, container) =
       container { image: lib.getElse(map, container.name + '.image', container.image) };
     std.map(function(c) updateContainer(map, c), containers)
