@@ -304,7 +304,7 @@ function clone_remote() {
     cd $TMP_DIR
     if [[ ! -d $(basename $HTTPS_REMOTE_REPO) ]]; then
       start "cloning remote"
-      git clone $(repo_with_token $HTTPS_REMOTE_REPO)
+      git clone $(repo_with_token $HTTPS_REMOTE_REPO) >/dev/null 2>&1
       expect_success "Cannot clone $HTTPS_REMOTE_REPO"
       complete "cloned remote"
     fi
@@ -319,7 +319,7 @@ function set_template_dir() {
   if [[ ! -d $TEMPLATE_DIR ]]; then
     start "cloning quickstart"
     pushd $TMP_DIR >/dev/null 2>&1
-    git clone $(repo_with_token https://github.com/tidepool-org/tpctl)
+    git clone $(repo_with_token https://github.com/tidepool-org/tpctl) >/dev/null 2>&1
     if [ -n "$TPCTL_BRANCH" ]; then
       (
         cd tpctl
