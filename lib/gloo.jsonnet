@@ -300,10 +300,8 @@ local ExternalDnsHosts(hosts) = {
   },
 
   virtualServicesForPackage(me):: (
-    local vsarray = $.vsForNamespacedPackage(me);
-    local tovs(x) = $.virtualService(x);
-    local result = std.map($.virtualService, vsarray);
-    std.trace(std.manifestJson({vsarray:  vsarray, result: result}), std.filter(function(x) std.length(x.spec.virtualHost.domains) > 0, result))
+    local result = std.map($.virtualService, $.vsForNamespacedPackage(me));
+    std.filter(function(x) std.length(x.spec.virtualHost.domains) > 0, result)
   ),
 
   certificatesForPackage(me):: (
