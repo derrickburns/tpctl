@@ -601,10 +601,9 @@ function as_json_else() {
   local default=$3
   mkdir -p $(dirname $dest)
   if [ -f $source ]; then
-    yq r $source -j >${dest}
-    if [[ $? -ne 0 || $(wc -w <${dest} | sed -e "s/ *//") == 0 ]]; then
-      echo "$default" >${dest}
-    fi
+    echo "[" >$dest
+    yq r -d'*' $source -j | jq -c >>$dest
+    echo "]" >>$dest
   else
     echo "$default" >${dest}
   fi
