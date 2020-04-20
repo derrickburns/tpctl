@@ -8,7 +8,7 @@ local containerPort = 4000;
 
 local getPrev(me, this, def='') = (
   local default = (if def == '' then 'tidepool/%s:latest' % me.pkg else def);
-  local prev = k8s.findMatch(me.prev, this);
+  local prev = std.trace( { meprev: me.prev, this: this },  k8s.findMatch(me.prev, this));
   local containers = lib.getElse(prev, 'spec.template.spec.containers', []);
   if std.length(containers) < 1
   then default
