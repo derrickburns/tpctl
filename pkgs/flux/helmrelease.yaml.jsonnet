@@ -3,12 +3,12 @@ local common = import '../../lib/common.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
-local helmrelease(config, me) = k8s.helmrelease(me, {
+local helmrelease(me) = k8s.helmrelease(me, {
   version: '1.2.0',
   repository: 'https://charts.fluxcd.io',
 }) {
 
-  local ns = config.namespaces[me.namespace],
+  local ns = me.config.namespaces[me.namespace],
   _secretNames:: if lib.isEnabledAt(ns, 'fluxrecv') && lib.isTrue(ns, 'fluxrecv.sidecar') then ['fluxrecv-config'] else [],
 
   spec+: {
@@ -28,16 +28,16 @@ local helmrelease(config, me) = k8s.helmrelease(me, {
       },
 
       git: {
-        label: config.cluster.metadata.name,
-        email: config.general.email,
-        url: '%s.git' % config.general.github.git,
+        label: me.config.cluster.metadata.name,
+        email: me.config.general.email,
+        url: '%s.git' % me.config.general.github.git,
         path: 'manifests',
       },
 
       prometheus: {
-        enabled: global.isEnabled(config, 'prometheus'),
+        enabled: global.isEnabled(me.config, 'prometheus'),
         serviceMonitor: {
-          create: global.isEnabled(config, 'prometheus-operator'),
+          create: global.isEnabled(me.config, 'prometheus-operator'),
         },
       },
 
@@ -91,4 +91,4 @@ local helmrelease(config, me) = k8s.helmrelease(me, {
   },
 };
 
-function(config, prev, namespace, pkg) helmrelease(config, common.package(config, prev, namespace, pkg))
+function(config, prev, namespace, pkg) helmrelease(common.package(config, prev, namespace, pkg))
