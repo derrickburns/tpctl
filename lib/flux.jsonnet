@@ -8,7 +8,7 @@ local lib = import 'lib.jsonnet';
     local default = lib.getElse(this, 'gitops.default', 'regex:master-[0-9A-Za-z]{40}'),
     metadata+: {
       annotations+:
-        { 'fluxcd.io/automated': if lib.getElse(this, 'gitops.enabled', true) then 'true' else 'false' } +
+        { 'fluxcd.io/automated': if lib.getElse(this, 'gitops.enabled', false) then 'true' else 'false' } +
         { ['fluxcd.io/tag.%s' % container.name]: default for container in $.containers(this) },
     },
   },
