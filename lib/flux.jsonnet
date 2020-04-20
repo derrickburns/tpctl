@@ -20,7 +20,7 @@ local k8s = import 'k8s.jsonnet';
     if manifest.kind == 'Deployment' then manifest.spec.template.spec.containers
     else if manifest.kind == 'Daemonset' then manifest.spec.template.spec.containers
     else if manifest.kind == 'Statefulset' then manifest.spec.template.spec.containers
-    else if manifest.kind == 'Pod' then spec.containers
+    else if manifest.kind == 'Pod' then manifest.spec.containers
     else [],
 
   patch(old, this, containers):: (
