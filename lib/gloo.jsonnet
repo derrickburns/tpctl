@@ -306,7 +306,7 @@ local ExternalDnsHosts(hosts) = {
 
   certificatesForPackage(me):: (
     if global.isEnabled(me.config, 'certmanager')
-    then lib.pruneList(std.map(function(v) $.certificate(v), $.vsForNamespacedPackage(me))
+    then lib.pruneList(std.map($.certificate, $.vsForNamespacedPackage(me)))
     else []
   ),
 
