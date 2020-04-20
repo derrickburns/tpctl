@@ -202,10 +202,10 @@ local httpVirtualService(me) = k8s.k('gateway.solo.io/v1', 'VirtualService') + k
   },
 };
 
-function(config, prev, namespace, pkg) {
-  local me = common.package(config, prev, namespace, pkg),
-  helm: helmrelease(me),
-  gloo: [
+function(config, prev, namespace, pkg) (
+  local me = common.package(config, prev, namespace, pkg);
+  [
+    helmrelease(me),
     httpVirtualService(me),
     httpsVirtualService(me),
     virtualService(me, 'authorize'),
@@ -213,7 +213,6 @@ function(config, prev, namespace, pkg) {
     upstream(me, 'pomerium-proxy'),
     upstream(me, 'pomerium-authenticate'),
     upstream(me, 'pomerium-authorize'),
-  ],
-  certmanager: certificate(me),
-
-}
+    certificate(me),
+  ]
+)
