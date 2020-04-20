@@ -24,7 +24,7 @@ local lib = import 'lib.jsonnet';
   // a patched version of all containers
   patch(old, this, containers):: (
     local matching = k8s.findMatch(old, this);
-    local map = { [c.name]: c for c in $.containers(matching) };
+    local map = std.trace( std.manifestJson( { matching: matching}),{ [c.name]: c for c in $.containers(matching) });
     local updateContainer(map, container) =
       container { image: lib.getElse(map, container.name + '.image', container.image) };
     std.map(function(c) updateContainer(map, c), containers)
