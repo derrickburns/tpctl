@@ -6,23 +6,16 @@ local lib = import '../../lib/lib.jsonnet';
 local port = 8080;
 local containerPort = 4000;
 
-local deployment(me) = k8s.deployment(me) + flux.metadata() {
-  local this = self,
-  spec+: {
-    template+: {
-      spec+: {
-        containers: flux.patch(me.prev, this, [
-          {
-            image: 'tidepool/%s:latest' % me.pkg,
-            imagePullPolicy: 'Always',
-            name: me.pkg,
-            env: [k8s.envSecret('API_SECRET', 'shoreline', 'ServiceAuth')],
-            ports: [{ containerPort: containerPort }],
-          },
-        ]),
-      },
+local deployment(me) = flux.deployment(me) {
+  _containers: [
+    {
+      image: 'tidepool/%s:latest' % me.pkg,
+      imagePullPolicy: 'Always',
+      name: me.pkg,
+      env: [k8s.envSecret('API_SECRET', 'shoreline', 'ServiceAuth')],
+      ports: [{ containerPort: containerPort }],
     },
-  },
+  ],
 };
 
 local service(me) = k8s.service(me) {
