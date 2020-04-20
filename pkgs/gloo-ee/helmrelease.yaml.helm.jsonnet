@@ -10,6 +10,13 @@ local helmrelease(me) = (
       values: gloo.globalValues(me.config, me, glooVersion) + {
         gloo: gloo.glooValues(me.config, me, glooVersion),
         create_license_secret: false,
+        global: {
+          extensions: {
+            extAuth: {
+              existingSecret: 'ext-auth-signing-key',
+            },
+          },
+        },
         persistence: {
           storageClassName: 'gp2-expanding',
         },

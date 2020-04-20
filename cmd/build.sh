@@ -1,4 +1,4 @@
 #!/bin/sh
 DIR=$(dirname $0)
-cd $DIR
+cd $DIR/..
 docker build -t tidepool/tpctl .

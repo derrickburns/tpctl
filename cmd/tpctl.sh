@@ -314,22 +314,9 @@ function clone_remote() {
   fi
 }
 
-# clone quickstart repo, export TEMPLATE_DIR
 function set_template_dir() {
-  if [[ ! -d $TEMPLATE_DIR ]]; then
-    start "cloning tpctl"
-    pushd $TMP_DIR >/dev/null 2>&1
-    git clone $(repo_with_token https://github.com/tidepool-org/tpctl) 
-    if [ -n "$TPCTL_BRANCH" ]; then
-      (
-        cd tpctl
-        git checkout $TPCTL_BRANCH
-      )
-    fi
-    export TEMPLATE_DIR=$(pwd)/tpctl
-    popd >/dev/null 2>&1
-    complete "cloned quickstart"
-  fi
+  export DIR=$(cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd && echo -n x)
+  export TEMPLATE_DIR=$(echo ${DIR%x} | sed -e "s/ *$//")
 }
 
 # convert values file into json, return name of json file
@@ -606,6 +593,10 @@ function template_service_accounts() {
   done
 }
 
+function expand_jsonnet() {
+  kubecfg show --tla-str-file prev=$1 --tla-code-file config=$2 --tla-str namespace=$3 --tla-str pkg=$4 $5
+}
+
 # template_files $1 $2 $3 $4 $5 - instantiates template for pkg in given namespace
 # $1 - json values file  (values file name)
 # $2 - the absolute path to the template directory
@@ -644,11 +635,18 @@ function template_files() {
       local targetBasename=${templateBasename%.jsonnet}
       local relativeTarget=$relativeTargetDir/${targetBasename}
       add_file ${relativeTarget}
-      kubecfg show --tla-str-file prev=$prev \
-              --tla-code-file config=$values \
-              --tla-str namespace=$namespace \
-              --tla-str pkg=$pkg $absoluteTemplateFilePath >${relativeTarget}
-      expect_success "Templating failure ${relativeFilePath}"
+      expand_jsonnet $prev $values $namespace $pkg $absoluteTemplateFilePath >$relativeTarget
+      expect_success "jsonnet templating failure ${relativeFilePath}"
+    elif [ "${templateBasename: -17}" == "yaml.helm.jsonnet" ]; then
+      local targetBasename=${templateBasename%.helm.jsonnet}
+      local relativeTarget=$relativeTargetDir/${targetBasename}
+      add_file ${relativeTarget}
+      local helmInput=$TMP_DIR/helm/${relativeTarget}
+      mkdir -p $(dirname $helmInput)
+      expand_jsonnet $prev $values $namespace $pkg $absoluteTemplateFilePath >$helmInput
+      expect_success "jsonnet templating failure ${relativeFilePath}"
+      helmit $helmInput template > ${relativeTarget}
+      expect_success "helm templating failure ${relativeFilePath}"
     fi
   done
 }
@@ -1073,6 +1071,31 @@ function remove_mesh() {
   complete "removed linkerd"
 }
 
+function dehelm() {
+  local namespace=$1
+  local releaseName=$2
+  local pkgName=$3
+  fluxoff
+  info "deleting helm secrets for $namespace/$releaseName"
+  kubectl delete secrets -n $namespace -l name=$releaseName,owner=helm
+  info "deleting helmrelease release for $namespacea/$pkgName"
+  kubectl delete helmrelease -n $namespace -l app=$pkgName
+  complete "de-helmed $namespace/$releaseName/$pkgName"
+  info "proceed with expanding helm template client-side"
+}
+
+function fluxoff() {
+  info "scaling down flux and helm operator"
+  kubectl scale deployment.v1.apps/flux -n flux --replicas=0
+  kubectl scale deployment.v1.apps/helm-operator -n flux --replicas=0
+}
+
+function fluxon() {
+  info "scaling up flux and helm operator"
+  kubectl scale deployment.v1.apps/flux -n flux --replicas=1
+  kubectl scale deployment.v1.apps/helm-operator -n flux --replicas=1
+}
+
 # create an empty GitHub config repo
 # name is given in $1
 # if name contains a slash, the part before is treated as the organization
@@ -1157,6 +1180,11 @@ service_account \$namespace \$name  - recreate a single service account in curre
 users                               - add system:master USERS to K8s cluster
 utils                               - update coredns, aws-node, and kube-proxy services in current context
 vpa                                 - install vertical pod autoscaler
+
+----- Flux and Helm Operator Commands
+dehelm \$namespace \$releaseName \$chartName - remove helmreleases 
+fluxon                              - turn on flux and helmoperator
+fluxoff                             - turn off flux and helmoperator
       
 ----- Other Commands
 buckets                             - create S3 buckets if needed and copy assets if does not exist
@@ -1164,7 +1192,6 @@ kmskey                              - create a new Amazon KMS key for the cluste
 merge_kubeconfig                    - copy the KUBECONFIG into the local $KUBECONFIG file
 remove_mesh                         - uninstall the service mesh
 update_kubeconfig                   - modify context and user for kubeconfig
-compute_prev                        - compute json rep of manifests
 '
 
 # show help
@@ -1402,11 +1429,14 @@ main() {
       clone_remote
       get_vpc
       ;;
-    compute_prev)
-      check_remote_repo
-      setup_tmpdir
-      clone_remote
-      compute_prev
+    dehelm)
+      dehelm $1 $2 $3
+      ;;
+    fluxon)
+      fluxon
+      ;;
+    fluxoff)
+      fluxoff
       ;;
     *)
       if useFzf; then

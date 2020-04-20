@@ -1,0 +1,10 @@
+#!/bin/bash
+namespace=$1
+releaseName=$2
+pkgName=$3
+kubectl scale deployment.v1.apps/helm-operator -n flux --replicas=0
+kubectl scale deployment.v1.apps/flux -n flux --replicas=0
+kubectl delete secrets -n $namespace -l name=$releaseName,owner=helm
+kubectl delete helmrelease -n $namespace -l app=$pkgName
+#kubectl scale deployment.v1.apps/helm-operator -n flux --replicas=1
+
