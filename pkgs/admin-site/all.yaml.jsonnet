@@ -4,7 +4,7 @@ local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
 local deployment(me) = flux.deployment(me) {
-  _containers: [{
+  _containers:: [{
     name: me.pkg,
     image: 'tidepool/admin-site:latest',
     imagePullPolicy: 'Always',
