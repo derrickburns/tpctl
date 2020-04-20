@@ -170,7 +170,7 @@ local daemonset(me) = k8s.daemonset(me) {
         volumes: [
           {
             configMap: {
-              name: 'cwagentconfig',
+              name: me.pkg,
             },
             name: me.pkg,
           },
