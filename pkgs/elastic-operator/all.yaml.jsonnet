@@ -16,9 +16,9 @@ local statefulset(me) = k8s.statefulset(me) {
             ],
             env: [
               k8s.envField('OPERATOR_NAMESPACE', 'metadata.namespace'),
-              k8s.envValue('WEBHOOK_SECRET', 'webhook-server-secret'),
-              k8s.envValue('WEBHOOK_PODS_LABEL', me.pkg),
-              k8s.envValue('OPERATOR_IMAGE', 'docker.elastic.co/eck/eck-operator:1.0.0-beta1'),
+              k8s.envVar('WEBHOOK_SECRET', 'webhook-server-secret'),
+              k8s.envVar('WEBHOOK_PODS_LABEL', me.pkg),
+              k8s.envVar('OPERATOR_IMAGE', 'docker.elastic.co/eck/eck-operator:1.0.0-beta1'),
             ],
             image: 'docker.elastic.co/eck/eck-operator:1.0.0-beta1',
             name: me.pkg,

@@ -1,3 +1,4 @@
+local kubecfg = import 'kubecfg.libsonnet';
 local lib = import 'lib.jsonnet';
 local exp = import 'expand.jsonnet';
 
@@ -27,7 +28,7 @@ local exp = import 'expand.jsonnet';
       namespace:: lib.kebabCase(namespace),
       pkg:: lib.kebabCase(lib.getElse(expanded.namespaces[namespace][pkg], 'pkg', pkg)),
       config: expanded,
-      prev:: prev,
+      prev:: kubecfg.parseYaml(prev),
     }
   ),
 

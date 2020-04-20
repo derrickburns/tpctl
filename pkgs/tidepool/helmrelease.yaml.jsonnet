@@ -144,12 +144,13 @@ local annotations(me) =
   + filterAnnotations(me, svcs)
   + prefixAnnotations('repository', svcs);
 
-local helmrelease(config, me, previous) = k8s.helmrelease(me, {
+local helmrelease(me) = k8s.helmrelease(me, {
   repository: 'https://raw.githubusercontent.com/tidepool-org/tidepool-helm/master/',
   git: 'git@github.com:tidepool-org/development',
   path: 'charts/tidepool',
 }) {
-  local prev = k8s.findMatch(previous, self),
+  local prev = k8s.findMatch(me.prev, self),
+  local config = me.config,
 
   metadata+: {
     annotations+: annotations(me),
@@ -459,4 +460,4 @@ local helmrelease(config, me, previous) = k8s.helmrelease(me, {
   },
 };
 
-function(config, prev, namespace, pkg) helmrelease(expand.expand(config), common.package(config, prev, namespace, pkg), prev)
+function(config, prev, namespace, pkg) helmrelease(common.package(config, prev, namespace, pkg))
