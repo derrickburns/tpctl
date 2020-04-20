@@ -15,8 +15,8 @@ local lib = import 'lib.jsonnet';
 
   // all containers in a K8s manifest
   containers(manifest):: (
-    assert std.objectHas(manifest, 'kind'): std.manifestJson(manifest);
-    if manifest.kind == 'Deployment' then manifest.spec.template.spec.containers
+    if ! std.objectHas(manifest, 'kind') then []
+    else if manifest.kind == 'Deployment' then manifest.spec.template.spec.containers
     else if manifest.kind == 'Daemonset' then manifest.spec.template.spec.containers
     else if manifest.kind == 'Statefulset' then manifest.spec.template.spec.containers
     else if manifest.kind == 'Pod' then manifest.spec.containers
