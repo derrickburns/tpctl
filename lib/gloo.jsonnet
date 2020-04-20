@@ -306,13 +306,13 @@ local ExternalDnsHosts(hosts) = {
 
   certificatesForPackage(me):: (
     if global.isEnabled(me.config, 'certmanager')
-    then lib.pruneList(std.map($.certificate, $.vsForNamespacedPackage(me)))
+    then lib.pruneList(std.map(function(x) $.certificate(x, me), $.vsForNamespacedPackage(me)))
     else []
   ),
 
   certificateSecretName(base, namespace):: namespace + '-' + base + '-certificate',
 
-  certificate(vs):: (
+  certificate(vs, me):: (
     if $.isHttps(vs) && std.length(vs.dnsNames) > 0
     then certmanager.certificate(me, vs.dnsNames, $.certificateSecretName(vs.name, vs.namespace))
     else {}
