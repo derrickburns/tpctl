@@ -1,0 +1,37 @@
+FROM ubuntu:18.04 
+WORKDIR /root/workdir
+ENV TERM xterm-256color
+ENV TZ America/Los_Angeles
+ENV DEBIAN_FRONTEND noninteractive
+RUN apt update -y && apt upgrade -y && \
+    apt install nano python3-pip curl git openjdk-8-jdk vim python3 build-essential file locales expect -y && \
+    pip3 install --upgrade --user awscli boto3 environs
+RUN curl -sL -o /usr/local/bin/jq https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64
+RUN locale-gen en_US.UTF-8
+RUN curl -sL "https://dl.google.com/go/go1.14.linux-amd64.tar.gz" | tar xz -C /tmp
+ENV GOPATH /root/workdir/go
+RUN /tmp/go/bin/go get github.com/google/go-jsonnet/cmd/jsonnet
+RUN mv /root/workdir/go/bin/jsonnet /usr/local/bin/jsonnet
+RUN curl -sL "https://get.helm.sh/helm-v3.1.2-linux-amd64.tar.gz" | tar xz -C /tmp && mv /tmp/linux-amd64/helm /usr/local/bin
+RUN curl -sL "https://github.com/weaveworks/eksctl/releases/download/0.15.0/eksctl_Linux_amd64.tar.gz" | tar xz -C /tmp && \
+    mv /tmp/eksctl /usr/local/bin
+RUN curl -sL -o /usr/local/bin/kubectl https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl 
+RUN git clone https://github.com/ahmetb/kubectx /opt/kubectx && \
+    mv /opt/kubectx/kubectx /usr/local/bin/kubectx && \
+    mv /opt/kubectx/kubens /usr/local/bin/kubens && \
+    rm -rf /opt/kubectx
+RUN curl -sL -o /usr/local/bin/yq https://github.com/mikefarah/yq/releases/download/3.3.0/yq_linux_amd64 
+RUN curl -sL -o /usr/local/bin/aws-iam-authenticator https://amazon-eks.s3-us-west-2.amazonaws.com/1.14.6/2019-08-22/bin/linux/amd64/aws-iam-authenticator && \
+    curl -sL -o aws-iam-authenticator.sha256 https://amazon-eks.s3-us-west-2.amazonaws.com/1.14.6/2019-08-22/bin/linux/amd64/aws-iam-authenticator.sha256 && \
+    openssl sha1 -sha256 /usr/local/bin/aws-iam-authenticator && \
+    rm ./aws-iam-authenticator.sha256
+RUN curl -sL -o /usr/local/bin/fluxctl https://github.com/fluxcd/flux/releases/download/1.19.0/fluxctl_linux_amd64
+RUN mv ~/.local/bin/* /usr/local/bin
+RUN curl -sL -o /usr/local/bin/linkerd https://github.com/linkerd/linkerd2/releases/download/stable-2.7.1/linkerd2-cli-stable-2.7.1-linux 
+RUN curl -sL -o /usr/local/bin/glooctl https://github.com/solo-io/gloo/releases/download/v1.3.22/glooctl-linux-amd64
+RUN curl -sL /usr/local/bin/hub https://github.com/github/hub/releases/download/v2.13.0/hub-linux-amd64-2.13.0.tgz | tar xz -C /tmp && \
+    mv /tmp/hub-linux-amd64-2.13.0/bin/hub /usr/local/bin
+RUN curl -sL "https://github.com/smallstep/cli/releases/download/v0.14.0-rc.3/step_0.14.0-rc.3_linux_amd64.tar.gz" | tar -xz -C /tmp && mv /tmp/step*/bin/step /usr/local/bin
+RUN curl -sL -o /usr/local/bin/sops  "https://github.com/mozilla/sops/releases/download/v3.5.0/sops-v3.5.0.linux"
+RUN curl -sL -o /usr/local/bin/kubecfg "https://github.com/bitnami/kubecfg/releases/download/v0.16.0/kubecfg-linux-amd64"
+RUN ln -s /usr/bin/python3 /usr/local/bin/python3 && chmod +x /usr/local/bin/*
