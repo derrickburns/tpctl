@@ -35,7 +35,6 @@ RUN curl -sL "https://github.com/smallstep/cli/releases/download/v0.14.0-rc.3/st
 RUN curl -sL -o /usr/local/bin/sops  "https://github.com/mozilla/sops/releases/download/v3.5.0/sops-v3.5.0.linux"
 RUN curl -sL -o /usr/local/bin/kubecfg "https://github.com/bitnami/kubecfg/releases/download/v0.16.0/kubecfg-linux-amd64"
 RUN ln -s /usr/bin/python3 /usr/local/bin/python3 && chmod +x /usr/local/bin/*
-COPY cmd/* /usr/local/bin/
-COPY pkgs lib eksctl /root/
+COPY cmd pkgs lib eksctl /root/tpctl/
 RUN cd /root/workdir
-CMD [ "/root/tpctl"  ]
+CMD [ "/root/tpctl/cmd/tpctl.sh"  ]
