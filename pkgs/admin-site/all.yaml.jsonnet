@@ -10,7 +10,7 @@ local deployment(me) = flux.deployment(me) {
     imagePullPolicy: 'Always',
     env: [
       k8s.envSecret('SERVER_SECRET', 'server', 'ServiceAuth'),  
-      k8s.envVar('API_HOST', 'http://internal.dev1')
+      k8s.envVar('API_HOST', 'http://internal.%s' % me.namespace)
     ],
     ports: [{
       containerPort: 8080,
