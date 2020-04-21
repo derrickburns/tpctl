@@ -645,7 +645,7 @@ function template_files() {
       mkdir -p $(dirname $helmInput)
       expand_jsonnet $prev $values $namespace $pkg $absoluteTemplateFilePath >$helmInput
       expect_success "jsonnet templating failure ${relativeFilePath}"
-      helmit $helmInput template > ${relativeTarget}
+      helmit $helmInput template > ${relativeTarget} 2>/dev/null
       expect_success "helm templating failure ${relativeFilePath}"
     fi
   done
