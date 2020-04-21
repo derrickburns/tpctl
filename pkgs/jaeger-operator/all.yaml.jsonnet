@@ -1,6 +1,14 @@
-local k8s = import '../../lib/k8s.jsonnet';
 local common = import '../../lib/common.jsonnet';
+local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
+
+local clusterrolebinding(me) = k8s.clusterrolebinding(me) + k8s.metadata('auth-delegator') {
+  roleRef: {
+    apiGroup: 'rbac.authorization.k8s.io',
+    kind: 'ClusterRole',
+    name: 'system:auth-delegator',
+  },
+};
 
 local clusterrole(me) = k8s.clusterrole(me) {
   rules: [
@@ -147,11 +155,11 @@ local clusterrole(me) = k8s.clusterrole(me) {
       ],
     },
     {
-      apiGroups: [ 
-       'autoscaling',
+      apiGroups: [
+        'autoscaling',
       ],
       resources: [
-        'horizontalpodautoscalers'
+        'horizontalpodautoscalers',
       ],
       verbs: [
         'list',
@@ -161,4 +169,45 @@ local clusterrole(me) = k8s.clusterrole(me) {
   ],
 };
 
-function(config, prev, namespace, pkg) clusterrole(common.package(config, prev, namespace, pkg))
+local deployment(me) = k8s.deployment(me) {
+  spec+: {
+    template+: {
+      spec+: {
+        containers: [
+          {
+            args: [
+              'start',
+            ],
+            env: [
+              k8s.envVar('WATCH_NAMESPACE', ''),
+              k8s.envField('POD_NAME', 'metadata.name'),
+              k8s.envField('POD_NAMESPACE', 'metadata.namespace'),
+              k8s.envVar('OPERATOR_NAME', me.pkg),
+            ],
+            image: 'jaegertracing/jaeger-operator:1.17.0',
+            imagePullPolicy: 'Always',
+            name: me.pkg,
+            ports: [
+              {
+                containerPort: 8383,
+                name: 'metrics',
+              },
+            ],
+          },
+        ],
+        serviceAccountName: me.pkg,
+      },
+    },
+  },
+};
+
+function(config, prev, namespace, pkg) (
+  local me = common.package(config, prev, namespace, pkg);
+  [
+    k8s.serviceaccount(me),
+    deployment(me),
+    clusterrole(me),
+    clusterrolebinding(me),
+    k8s.clusterrolebinding(me),
+  ]
+)

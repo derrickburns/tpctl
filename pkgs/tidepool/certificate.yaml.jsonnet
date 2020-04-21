@@ -4,4 +4,4 @@ local common = import '../../lib/common.jsonnet';
 local expand = import '../../lib/expand.jsonnet';
 
 function(config, prev, namespace, pkg)
-  gloo.certificatesForPackage(expand.expand(config), 'tidepool', namespace)
+  gloo.certificatesForPackage(common.package(config, prev, namespace, pkg))

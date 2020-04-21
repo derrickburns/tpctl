@@ -2,7 +2,7 @@ local k8s = import '../../lib/k8s.jsonnet';
 local common = import '../../lib/common.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
-local helmrelease(config, me) = k8s.helmrelease(me, { version: '0.3.18', repository: 'https://kubernetes-charts.banzaicloud.com' }) {
+local helmrelease(me) = k8s.helmrelease(me, { version: '0.3.18', repository: 'https://kubernetes-charts.banzaicloud.com' }) {
   _secretNames:: [ 'thanos' ],
 
   spec+: {
@@ -12,23 +12,23 @@ local helmrelease(config, me) = k8s.helmrelease(me, { version: '0.3.18', reposit
         tag: 'v0.11.0',
       },
       bucket: {
-        logLevel: lib.getElse(config, 'general.loglevel', 'info'),
+        logLevel: lib.getElse(me.config, 'general.loglevel', 'info'),
         serviceAccount: me.pkg,
       },
       store: {
-        logLevel: lib.getElse(config, 'general.loglevel', 'info'),
+        logLevel: lib.getElse(me.config, 'general.loglevel', 'info'),
         serviceAccount: me.pkg,
       },
       query: {
-        logLevel: lib.getElse(config, 'general.loglevel', 'info'),
+        logLevel: lib.getElse(me.config, 'general.loglevel', 'info'),
         serviceAccount: me.pkg,
       },
       compact: {
-        logLevel: lib.getElse(config, 'general.loglevel', 'info'),
+        logLevel: lib.getElse(me.config, 'general.loglevel', 'info'),
         serviceAccount: me.pkg,
       },
     },
   },
 };
 
-function(config, prev, namespace, pkg) helmrelease(config, common.package(config, prev, namespace, pkg))
+function(config, prev, namespace, pkg) helmrelease(common.package(config, prev, namespace, pkg))

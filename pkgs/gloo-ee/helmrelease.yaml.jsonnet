@@ -3,12 +3,12 @@ local common = import '../../lib/common.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
-local helmrelease(config, me) = (
+local helmrelease(me) = (
   local glooVersion = lib.getElse(me, 'gloo.version', '1.3.0');
   k8s.helmrelease(me, { name: 'gloo-ee', version: '1.3.0', repository: 'http://storage.googleapis.com/gloo-ee-helm' }) {
     spec+: {
-      values: gloo.globalValues(config, me, glooVersion) + {
-        gloo: gloo.glooValues(config, me, glooVersion),
+      values: gloo.globalValues(me.config, me, glooVersion) + {
+        gloo: gloo.glooValues(me.config, me, glooVersion),
         create_license_secret: false,
         persistence: {
           storageClassName: 'gp2-expanding',
@@ -33,4 +33,4 @@ local helmrelease(config, me) = (
   }
 );
 
-function(config, prev, namespace, pkg) helmrelease(config, common.package(config, prev, namespace, pkg))
+function(config, prev, namespace, pkg) helmrelease(common.package(config, prev, namespace, pkg))

@@ -2,7 +2,7 @@ local k8s = import '../../lib/k8s.jsonnet';
 local common = import '../../lib/common.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
-local helmrelease(config, prev, me) =
+local helmrelease(me) =
   k8s.helmrelease(me, { git: 'git@github.com:tidepool-org/locust-helm' }) {
     spec+: {
       values+: {
@@ -15,4 +15,4 @@ local helmrelease(config, prev, me) =
     },
   };
 
-function(config, prev, namespace, pkg) helmrelease(config, prev, common.package(config, prev, namespace, pkg))
+function(config, prev, namespace, pkg) helmrelease(common.package(config, prev, namespace, pkg))

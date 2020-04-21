@@ -1,22 +1,14 @@
-local k8s = import '../../lib/k8s.jsonnet';
 local common = import '../../lib/common.jsonnet';
-local lib = import '../../lib/lib.jsonnet';
 local flux = import '../../lib/flux.jsonnet';
 
-local deployment(me) = k8s.deployment(me) + flux.metadata() {
-  spec+: {
-    template+: {
-      spec+: {
-        containers: [
-          {
-            image: 'tidepool/loadtest:latest',
-            imagePullPolicy: 'Always',
-            name: me.pkg,
-          },
-        ],
-      },
+local deployment(me) = flux.deployment(me) {
+  _containers:: [
+    {
+      image: 'tidepool/loadtest:latest',
+      imagePullPolicy: 'Always',
+      name: me.pkg,
     },
-  },
+  ],
 };
 
 function(config, prev, namespace, pkg) deployment(common.package(config, prev, namespace, pkg))

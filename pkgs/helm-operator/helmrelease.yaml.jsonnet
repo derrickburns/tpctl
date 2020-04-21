@@ -3,7 +3,7 @@ local common = import '../../lib/common.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
-local helmrelease(config, me) = k8s.helmrelease(me, { name: 'helm-operator', version: '1.0.0', repository: 'https://charts.fluxcd.io' }) {
+local helmrelease(me) = k8s.helmrelease(me, { name: 'helm-operator', version: '1.0.0', repository: 'https://charts.fluxcd.io' }) {
   _secretNames:: ['flux-git-deploy', 'flux-helm-repositories'],
   spec+: {
     values+: {
@@ -13,9 +13,9 @@ local helmrelease(config, me) = k8s.helmrelease(me, { name: 'helm-operator', ver
       },
 
       prometheus: {
-        enabled: global.isEnabled(config, 'prometheus'),
+        enabled: global.isEnabled(me.config, 'prometheus'),
         serviceMonitor: {
-          create: global.isEnabled(config, 'prometheus-operator'),
+          create: global.isEnabled(me.config, 'prometheus-operator'),
         },
       },
 
@@ -44,4 +44,4 @@ local helmrelease(config, me) = k8s.helmrelease(me, { name: 'helm-operator', ver
   },
 };
 
-function(config, prev, namespace, pkg) helmrelease(config, common.package(config, prev, namespace, pkg))
+function(config, prev, namespace, pkg) helmrelease(common.package(config, prev, namespace, pkg))

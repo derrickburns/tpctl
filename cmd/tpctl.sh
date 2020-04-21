@@ -303,23 +303,23 @@ function clone_remote() {
   if [ "$USE_LOCAL_FILESYSTEM" == "false" ]; then
     cd $TMP_DIR
     if [[ ! -d $(basename $HTTPS_REMOTE_REPO) ]]; then
-      start "cloning remote"
+      start "cloning configuration repo"
       git clone $(repo_with_token $HTTPS_REMOTE_REPO)
       expect_success "Cannot clone $HTTPS_REMOTE_REPO"
       complete "cloned remote"
     fi
-    echo $(basename $HTTPS_REMOTE_REPO)
+    info $(basename $HTTPS_REMOTE_REPO)
     cd $(basename $HTTPS_REMOTE_REPO)
-    git pull
+    git pull >/dev/null
   fi
 }
 
 # clone quickstart repo, export TEMPLATE_DIR
 function set_template_dir() {
   if [[ ! -d $TEMPLATE_DIR ]]; then
-    start "cloning quickstart"
+    start "cloning tpctl"
     pushd $TMP_DIR >/dev/null 2>&1
-    git clone $(repo_with_token https://github.com/tidepool-org/tpctl)
+    git clone $(repo_with_token https://github.com/tidepool-org/tpctl) 
     if [ -n "$TPCTL_BRANCH" ]; then
       (
         cd tpctl
@@ -544,30 +544,10 @@ function reset_config_dir() {
   mv $TMP_DIR/values.yaml .
 }
 
-function get_valid_packages() {
-  if [ -z "$VALID_PACKAGES" ]
-  then
-    local pkgs=""
-    for dir in $(ls $TEMPLATE_DIR/pkgs); do
-      local pkg=$(basename $dir)
-      pkgs="${pkgs} $pkg"
-    done
-    VALID_PACKAGES="$pkgs"
-  fi
-  echo $VALID_PACKAGES
-}
-
 # return list of enabled packages
 function enabled_pkgs() {
   local key=$1
-  local pkgs=""
-  for pkg in $(get_valid_packages); do
-    local enabled=$(yq r values.yaml $key.${pkg}.enabled)
-    if [ "$enabled" == "true" ]; then
-      pkgs="${pkgs} $pkg"
-    fi
-  done
-  echo $pkgs
+  yq r values.yaml -p pv ${key}.*.enabled | grep "true" | sed -e 's/\.enabled:.*//'  -e 's/.*\.//'
 }
 
 # make K8s manifest files for shared services
@@ -595,19 +575,12 @@ function make_cluster_config() {
   complete "created eksctl manifest"
 }
 
-function as_json_else() {
-  local source=$1
-  local dest=$2
-  local default=$3
-  mkdir -p $(dirname $dest)
-  if [ -f $source ]; then
-    yq r $source -j >${dest}
-    if [[ $? -ne 0 || $(wc -w <${dest} | sed -e "s/ *//") == 0 ]]; then
-      echo "$default" >${dest}
-    fi
-  else
-    echo "$default" >${dest}
-  fi
+function prev() {
+  for file in $(find $TMP_DIR/$MANIFEST_DIR -type f -name \*.yaml)
+  do
+    echo "---"
+    cat $file 
+  done
 }
 
 # make service accounts  for namespace given config, path, prefix, and environment name
@@ -633,11 +606,12 @@ function template_service_accounts() {
   done
 }
 
-# template_files $1 $2 $3 $4 - instantiates template for pkg in given namespace
+# template_files $1 $2 $3 $4 $5 - instantiates template for pkg in given namespace
 # $1 - json values file  (values file name)
 # $2 - the absolute path to the template directory
 # $3 - the target namespace for the instantiated templates
 # $4 - the name of the package to instantiate
+# $5 - the name of the file with the YAML manifests created during the last run
 #
 # copies files with suffix ".yaml"
 # evaluates templates for files with suffix ".yaml.jsonnet"
@@ -648,7 +622,7 @@ function template_files() {
   local absoluteTemplateDir=$2
   local namespace=$3
   local pkg=$4
-  local dest=$5
+  local prev=$5
 
   local absoluteTemplatePkgPath=$absoluteTemplateDir/$4
 
@@ -657,7 +631,7 @@ function template_files() {
     local relativeTargetDir=$MANIFEST_DIR/pkgs/$namespace/$(dirname $relativeFilePath)
     local templateBasename=$(basename $relativeFilePath)
 
-    # make the directory to place the new fil in, if it does not exist
+    # make the directory to place the new file in, if it does not exist
     mkdir -p $relativeTargetDir
 
     if [ "${templateBasename: -5}" == ".yaml" ]; then
@@ -669,27 +643,12 @@ function template_files() {
       # instantiate a jsonnet template into yaml
       local targetBasename=${templateBasename%.jsonnet}
       local relativeTarget=$relativeTargetDir/${targetBasename}
-      local previousTarget=${TMP_DIR}/$relativeTarget
       add_file ${relativeTarget}
-      local tmpPreviousTarget=$TMP_DIR/prev/$relativeTarget
-      mkdir -p $(basename $tmpPreviousTarget)
-      as_json_else ${previousTarget} $tmpPreviousTarget "{}"
-      cat <<! >>$dest
-   + (
-      local prev=import '$tmpPreviousTarget';
-      local config=import '$values';
-      local namespace='$namespace';
-      local pkg='$pkg';
-      local f=import '$absoluteTemplateFilePath';
-      { '${relativeTarget}' : f(config, prev, namespace, pkg) }
-    )
-!
-      kubecfg show --tla-code-file prev=$tmpPreviousTarget \
+      kubecfg show --tla-str-file prev=$prev \
               --tla-code-file config=$values \
               --tla-str namespace=$namespace \
               --tla-str pkg=$pkg $absoluteTemplateFilePath >${relativeTarget}
       expect_success "Templating failure ${relativeFilePath}"
-      #rm ${tmpPreviousTarget}
     fi
   done
 }
@@ -718,13 +677,12 @@ function namespace_enabled() {
 function make_namespace_config() {
   local values=$(get_values)
   local ns
-  local out=$TMP_DIR/output
-  echo "{}" >$out
+  prev > $TMP_DIR/prev
   for ns in $(get_namespaces); do
     start "creating manifests for namespace $ns"
     local pkg
     for pkg in $(enabled_pkgs namespaces.$ns); do
-      template_files "$values" $TEMPLATE_DIR/pkgs $ns $pkg $out
+      template_files "$values" $TEMPLATE_DIR/pkgs $ns $pkg $TMP_DIR/prev
     done
     if namespace_enabled $ns; then
       if [ -d secrets/$ns ]; then
@@ -738,8 +696,6 @@ function make_namespace_config() {
     fi
     complete "created manifests for namespace $ns"
   done
-  #cat $out
-  #jsonnet $out
 }
 
 # create all K8s manifests and EKSCTL manifest
@@ -1155,7 +1111,7 @@ function make_repo() {
   complete "created private repo $org/$repo"
 
   if [ "$USE_LOCAL_FILESYSTEM" == "true" ]; then
-    info "cloning repo"
+    info "cloning configuration repo"
     git clone http://github.com/${org}/${repo}.git
     cd $repo
     info "cloned repo into $(pwd)"
@@ -1208,6 +1164,7 @@ kmskey                              - create a new Amazon KMS key for the cluste
 merge_kubeconfig                    - copy the KUBECONFIG into the local $KUBECONFIG file
 remove_mesh                         - uninstall the service mesh
 update_kubeconfig                   - modify context and user for kubeconfig
+compute_prev                        - compute json rep of manifests
 '
 
 # show help
@@ -1444,6 +1401,12 @@ main() {
       setup_tmpdir
       clone_remote
       get_vpc
+      ;;
+    compute_prev)
+      check_remote_repo
+      setup_tmpdir
+      clone_remote
+      compute_prev
       ;;
     *)
       if useFzf; then

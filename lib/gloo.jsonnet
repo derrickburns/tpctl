@@ -7,6 +7,7 @@ local lib = import 'lib.jsonnet';
 local linkerd = import 'linkerd.jsonnet';
 local pom = import 'pom.jsonnet';
 local tracing = import 'tracing.jsonnet';
+local common = import 'common.jsonnet';
 
 local AwsTcpLoadBalancer(config) = {  // XXX AWS dependency
   'service.beta.kubernetes.io/aws-load-balancer-proxy-protocol': '*',
@@ -39,29 +40,25 @@ local ExternalDnsHosts(hosts) = {
   // add a name field to each entry of a map, where the name is the key
   addName(map):: std.mapWithKey(function(n, v) $.withName(v, n), map),
 
-  vsForNamespacedPackage(name, pkg, package):: (
+  vsForNamespacedPackage(me):: (
 
-    // add virtual service name and namespace as key/value pairs in each virtual service
-    local taggedVsList(vsmap) = $.addName($.addNamespace(vsmap, name));
+    // add name
+    local taggedVsList(vsmap) = $.addName(vsmap);
 
-    // flatten tagged virtual service map into a simple list
-    local taggedVsMap(vsmap) = lib.values(taggedVsList(vsmap));
+    // add namespace
+    local taggedVsMap(vsmap) = std.map( function(x) x { namespace: me.namespace}, lib.values(taggedVsList(vsmap)));
 
     // filter out disabled virtual services
     local enabledVsList(vsmap) =
       lib.pruneList(std.filter(function(vs) lib.isEnabled(vs), taggedVsMap(vsmap)));
 
-    // filter out disabled packages
-    std.filter(
-      function(x) lib.isEnabled(package),
-      enabledVsList(lib.getElse(package, 'virtualServices', {}))
-    )
+    enabledVsList(lib.getElse(me, 'virtualServices', {}))
   ),
 
   // provide an array of virtual services for a config
   virtualServices(config):: (
     local vsForNamespace(name, namespace) = (
-      local vsForPackage(pkg, package) = $.vsForNamespacedPackage(name, pkg, package);
+      local vsForPackage(pkg, package) = $.vsForNamespacedPackage(common.package(config, {}, name, pkg));
       std.flattenArrays(lib.values(std.mapWithKey(vsForPackage, namespace)))
     );
     std.flattenArrays(lib.values(std.mapWithKey(vsForNamespace, config.namespaces)))
@@ -196,8 +193,7 @@ local ExternalDnsHosts(hosts) = {
     options: $.virtualHostOptions(vs),
   },
 
-  virtualService(vsin, defaultName, defaultNamespace):: {
-    local vs = $.withNamespace($.withName(vsin, defaultName), defaultNamespace),
+  virtualService(vs):: {
     apiVersion: 'gateway.solo.io/v1',
     kind: 'VirtualService',
     metadata: {
@@ -303,26 +299,22 @@ local ExternalDnsHosts(hosts) = {
     },
   },
 
-  virtualServicesForPackage(config, pkgname, namespace):: (
-    local vsarray = $.vsForNamespacedPackage(namespace, pkgname, config.namespaces[namespace][pkgname]);
-    local tovs(x) = $.virtualService(x, pkgname, namespace);
-    local result = std.map(tovs, vsarray);
+  virtualServicesForPackage(me):: (
+    local result = std.map($.virtualService, $.vsForNamespacedPackage(me));
     std.filter(function(x) std.length(x.spec.virtualHost.domains) > 0, result)
   ),
 
-  certificatesForPackage(config, pkgname, namespace):: (
-    local vsarray = $.vsForNamespacedPackage(namespace, pkgname, config.namespaces[namespace][pkgname]);
-    lib.pruneList(std.map(function(v) $.certificate(config, v, pkgname, namespace), vsarray))
+  certificatesForPackage(me):: (
+    if global.isEnabled(me.config, 'certmanager')
+    then lib.pruneList(std.map(function(x) $.certificate(x, me), $.vsForNamespacedPackage(me)))
+    else []
   ),
 
   certificateSecretName(base, namespace):: namespace + '-' + base + '-certificate',
 
-  certificate(config, vsin, defaultName, defaultNamespace):: (
-    local vs = $.withNamespace($.withName(vsin, defaultName), defaultNamespace);
-    if global.isEnabled(config, 'certmanager')
-       && $.isHttps(vs)
-       && std.length(vs.dnsNames) > 0
-    then certmanager.certificate(config, $.certificateSecretName(vs.name, vs.namespace), vs.namespace, vs.dnsNames)
+  certificate(vs, me):: (
+    if $.isHttps(vs) && std.length(vs.dnsNames) > 0
+    then certmanager.certificate(me, vs.dnsNames, $.certificateSecretName(vs.name, vs.namespace))
     else {}
   ),
 

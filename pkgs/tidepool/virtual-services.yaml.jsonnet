@@ -4,5 +4,5 @@ local common = import '../../lib/common.jsonnet';
 local expand = import '../../lib/expand.jsonnet';
 
 function(config, prev, namespace, pkg) (
-  gloo.virtualServicesForPackage(expand.expand(config), 'tidepool', namespace)
+  gloo.virtualServicesForPackage(common.package(config, prev, namespace, pkg))
 )

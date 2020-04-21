@@ -1,9 +1,8 @@
 local global = import '../../lib/global.jsonnet';
 local common = import '../../lib/common.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
-local lib = import '../../lib/lib.jsonnet';
 
-local helmrelease(config, me) = k8s.helmrelease(me, {
+local helmrelease(me) = k8s.helmrelease(me, {
   name: 'velero',
   version: '2.9.13',
   repository: 'https://vmware-tanzu.github.io/helm-charts',
@@ -17,20 +16,20 @@ local helmrelease(config, me) = k8s.helmrelease(me, {
         provider: 'aws',  // XXX AWS dependency
         backupStorageLocation: {
           name: 'aws',
-          bucket: 'k8s-backup-%s' % config.cluster.metadata.name,
+          bucket: 'k8s-backup-%s' % me.config.cluster.metadata.name,
           config: {
-            region: config.cluster.metadata.region,
+            region: me.config.cluster.metadata.region,
           },
         },
-        logLevel: config.general.logLevel,
+        logLevel: me.config.general.logLevel,
         volumeSnapshotLocation: {
           name: 'velero.io-aws',
           config: {
-            region: config.cluster.metadata.region,
+            region: me.config.cluster.metadata.region,
           },
         },
         image: {
-          repository: 'velero/velero',
+          repository: 'velero/velero', // XXX missing image tag
           pullPolicy: 'IfNotPresent',
         },
       },
@@ -45,7 +44,7 @@ local helmrelease(config, me) = k8s.helmrelease(me, {
 
       metrics: {
         serviceMonitor: {
-          enabled: global.isEnabled(config, 'prometheus-operator'),
+          enabled: global.isEnabled(me.config, 'prometheus-operator'),
         },
       },
       serviceAccount: {
@@ -61,4 +60,4 @@ local helmrelease(config, me) = k8s.helmrelease(me, {
   },
 };
 
-function(config, prev, namespace, pkg) helmrelease(config, common.package(config, prev, namespace, pkg))
+function(config, prev, namespace, pkg) helmrelease(common.package(config, prev, namespace, pkg))

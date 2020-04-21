@@ -2,6 +2,8 @@ local k8s = import '../../lib/k8s.jsonnet';
 local common = import '../../lib/common.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
+local containerPort = 3000;
+
 local deployment(me) = k8s.deployment(me) {
   spec+: {
     template+: {
@@ -21,7 +23,7 @@ local deployment(me) = k8s.deployment(me) {
             name: me.pkg,
             ports: [
               {
-                containerPort: 3000,
+                containerPort: containerPort,
               },
             ],
           },
@@ -31,4 +33,16 @@ local deployment(me) = k8s.deployment(me) {
   },
 };
 
-function(config, prev, namespace, pkg) deployment(common.package(config, prev, namespace, pkg))
+local service(me) = k8s.service(me) {
+  spec+: {
+    ports: [ k8s.port(3000,containerPort) ],
+  },
+};
+
+function(config, prev, namespace, pkg) (
+  local me = common.package(config, prev, namespace, pkg);
+  [ 
+    service(me),
+    deployment(me),
+  ]
+)

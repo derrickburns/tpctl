@@ -16,7 +16,7 @@ local prefixAnnotations(prefix, svcs) = {
 };
 
 local filterAnnotations(me, svcs) = {
-  local default = lib.getElse(me, 'gitops.default', 'glob:develop-*'),
+  local default = lib.getElse(me, 'gitops.default', 'regex:master-[0-9A-Za-z]{40}'),
   ['fluxcd.io/tag.%s' % svc]: lib.getElse(me, 'gitops.%s' % svc, default)
   for svc in svcs
 };
@@ -144,12 +144,13 @@ local annotations(me) =
   + filterAnnotations(me, svcs)
   + prefixAnnotations('repository', svcs);
 
-local helmrelease(config, me, previous) = k8s.helmrelease(me, {
+local helmrelease(me) = k8s.helmrelease(me, {
   repository: 'https://raw.githubusercontent.com/tidepool-org/tidepool-helm/master/',
   git: 'git@github.com:tidepool-org/development',
   path: 'charts/tidepool',
 }) {
-  local prev = k8s.findMatch(previous, self),
+  local prev = k8s.findMatch(me.prev, self),
+  local config = me.config,
 
   metadata+: {
     annotations+: annotations(me),
@@ -194,13 +195,13 @@ local helmrelease(config, me, previous) = k8s.helmrelease(me, {
       auth: lib.mergeList([common, {
         extraContainers: extraContainers,
         deployment+: {
-          image: lib.getElse(prev, 'spec.values.auth.deployment.image', 'tidepool/platform-auth:master-8c8d9b39182b9edd9bafd987f50b254470840a8d'),
+          image: lib.getElse(prev, 'spec.values.auth.deployment.image', 'tidepool/platform-auth:master-latest'),
         },
       }, lib.getElse(me, 'auth', {})]),
 
       blip: lib.mergeList([common, {
         deployment+: {
-          image: lib.getElse(prev, 'spec.values.blip.deployment.image', 'tidepool/blip:master-47c8b1b3f298583684fe323ab170dfe7cc968902'),
+          image: lib.getElse(prev, 'spec.values.blip.deployment.image', 'tidepool/blip:master-latest'),
         },
       }, lib.getElse(me, 'blip', {})]),
 
@@ -221,14 +222,14 @@ local helmrelease(config, me, previous) = k8s.helmrelease(me, {
               type: 's3',
             },
           },
-          image: lib.getElse(prev, 'spec.values.blob.deployment.image', 'tidepool/platform-blob:master-8c8d9b39182b9edd9bafd987f50b254470840a8d'),
+          image: lib.getElse(prev, 'spec.values.blob.deployment.image', 'tidepool/platform-blob:master-latest'),
         },
       }, lib.getElse(me, 'blob', {})]),
 
       data: lib.mergeList([common, {
         extraContainers: extraContainers,
         deployment+: {
-          image: lib.getElse(prev, 'spec.values.data.deployment.image', 'tidepool/platform-data:master-8c8d9b39182b9edd9bafd987f50b254470840a8d'),
+          image: lib.getElse(prev, 'spec.values.data.deployment.image', 'tidepool/platform-data:master-latest'),
           replicas: 3,
         },
       }, lib.getElse(me, 'data', {})]),
@@ -247,7 +248,7 @@ local helmrelease(config, me, previous) = k8s.helmrelease(me, {
         extraContainers: extraContainers,
         deployment+: {
           replicas: 2,
-          image: lib.getElse(prev, 'spec.values.gatekeeper.deployment.image', 'tidepool/gatekeeper:master-03ab418230def26a638664bfbfd0a49736c96aa3'),
+          image: lib.getElse(prev, 'spec.values.gatekeeper.deployment.image', 'tidepool/gatekeeper:master-latest'),
         },
       }, lib.getElse(me, 'gatekeeper', {})]),
 
@@ -304,7 +305,7 @@ local helmrelease(config, me, previous) = k8s.helmrelease(me, {
       highwater: lib.mergeList([common, {
         extraContainers: extraContainers,
         deployment+: {
-          image: lib.getElse(prev, 'spec.values.highwater.deployment.image', 'tidepool/highwater:master-8db30b8b1e4ca759e8377de4a09dd9a6f6a5ce88'),
+          image: lib.getElse(prev, 'spec.values.highwater.deployment.image', 'tidepool/highwater:master-latest'),
         },
       }, lib.getElse(me, 'highwater', {})]),
 
@@ -325,7 +326,7 @@ local helmrelease(config, me, previous) = k8s.helmrelease(me, {
             },
             type: 's3',
           },
-          image: lib.getElse(prev, 'spec.values.hydrophone.deployment.image', 'tidepool/hydrophone:master-8537584fb9633995c36e2df333e9709f94b30095'),
+          image: lib.getElse(prev, 'spec.values.hydrophone.deployment.image', 'tidepool/hydrophone:master-latest'),
         },
       }, lib.getElse(me, 'hydrophone', {})]),
 
@@ -346,7 +347,7 @@ local helmrelease(config, me, previous) = k8s.helmrelease(me, {
               type: 's3',
             },
           },
-          image: lib.getElse(prev, 'spec.values.image.deployment.image', 'tidepool/platform-image:master-8c8d9b39182b9edd9bafd987f50b254470840a8d'),
+          image: lib.getElse(prev, 'spec.values.image.deployment.image', 'tidepool/platform-image:master-latest'),
         },
       }, lib.getElse(me, 'image', {})]),
 
@@ -368,7 +369,7 @@ local helmrelease(config, me, previous) = k8s.helmrelease(me, {
               type: 's3',
             },
           },
-          image: lib.getElse(prev, 'spec.values.jellyfish.deployment.image', 'tidepool/jellyfish:master-737f1009a70fd3856e08c9b858ab86752a181b1d'),
+          image: lib.getElse(prev, 'spec.values.jellyfish.deployment.image', 'tidepool/jellyfish:master-latest'),
         },
       }, lib.getElse(me, 'jellyfish', {})]),
 
@@ -381,7 +382,7 @@ local helmrelease(config, me, previous) = k8s.helmrelease(me, {
       messageapi: lib.mergeList([common, {
         extraContainers: extraContainers,
         deployment+: {
-          image: lib.getElse(prev, 'spec.values.messageapi.deployment.image', 'tidepool/message-api:master-73e5dc0b12f03bc0ec1428cde45520317dbf4688'),
+          image: lib.getElse(prev, 'spec.values.messageapi.deployment.image', 'tidepool/message-api:master-latest'),
         },
       }, lib.getElse(me, 'messageapi', {})]),
 
@@ -389,7 +390,7 @@ local helmrelease(config, me, previous) = k8s.helmrelease(me, {
         extraContainers: extraContainers,
         deployment+: {
           replicas: 0,
-          image: lib.getElse(prev, 'spec.values.migrations.deployment.image', 'tidepool/platform-migrations:master-8c8d9b39182b9edd9bafd987f50b254470840a8d'),
+          image: lib.getElse(prev, 'spec.values.migrations.deployment.image', 'tidepool/platform-migrations:master-latest'),
         },
       }, lib.getElse(me, 'migrations', {})]),
 
@@ -400,14 +401,14 @@ local helmrelease(config, me, previous) = k8s.helmrelease(me, {
       notification: lib.mergeList([common, {
         extraContainers: extraContainers,
         deployment+: {
-          image: lib.getElse(prev, 'spec.values.notification.deployment.image', 'tidepool/platform-notification:master-8c8d9b39182b9edd9bafd987f50b254470840a8d'),
+          image: lib.getElse(prev, 'spec.values.notification.deployment.image', 'tidepool/platform-notification:master-latest'),
         },
       }, lib.getElse(me, 'notification', {})]),
 
       seagull: lib.mergeList([common, {
         extraContainers: extraContainers,
         deployment+: {
-          image: lib.getElse(prev, 'spec.values.seagull.deployment.image', 'tidepool/seagull:master-0ac202bfccc0994d264b5fe9fcc06d2a56c55977'),
+          image: lib.getElse(prev, 'spec.values.seagull.deployment.image', 'tidepool/seagull:master-latest'),
         },
       }, lib.getElse(me, 'seagull', {})]),
 
@@ -416,14 +417,14 @@ local helmrelease(config, me, previous) = k8s.helmrelease(me, {
         priorityClassName: 'high-priority',
         deployment+: {
           isShadow: lib.isTrue(me, 'shadow.enabled') && (lib.getElse(me, 'shadow.sender', '') != ''),
-          image: lib.getElse(prev, 'spec.values.shoreline.deployment.image', 'tidepool/shoreline:master-66e766fffb4058781a24740b6a809bb12e2d08a9'),
+          image: lib.getElse(prev, 'spec.values.shoreline.deployment.image', 'tidepool/shoreline:master-latest'),
         },
       }, lib.getElse(me, 'shoreline', {})]),
 
       task: lib.mergeList([common, {
         extraContainers: extraContainers,
         deployment+: {
-          image: lib.getElse(prev, 'spec.values.task.deployment.image', 'tidepool/platform-task:master-8c8d9b39182b9edd9bafd987f50b254470840a8d'),
+          image: lib.getElse(prev, 'spec.values.task.deployment.image', 'tidepool/platform-task:master-latest'),
         },
       }, lib.getElse(me, 'task', {})]),
 
@@ -437,21 +438,21 @@ local helmrelease(config, me, previous) = k8s.helmrelease(me, {
         extraContainers: extraContainers,
         deployment+: {
           replicas: 3,
-          image: lib.getElse(prev, 'spec.values.tidewhisperer.deployment.image', 'tidepool/tide-whisperer:master-d64636a94823ceb329ade5ff8e0a7716a5108fef'),
+          image: lib.getElse(prev, 'spec.values.tidewhisperer.deployment.image', 'tidepool/tide-whisperer:master-latest'),
         },
       }, lib.getElse(me, 'tidewhisperer', {})]),
 
       tools: lib.mergeList([common, {
         extraContainers: extraContainers,
         deployment+: {
-          image: lib.getElse(prev, 'spec.values.tools.deployment.image', 'tidepool/platform-tools:master-8c8d9b39182b9edd9bafd987f50b254470840a8d'),
+          image: lib.getElse(prev, 'spec.values.tools.deployment.image', 'tidepool/platform-tools:master-latest'),
         },
       }, lib.getElse(me, 'tools', {})]),
 
       user: lib.mergeList([common, {
         extraContainers: extraContainers,
         deployment+: {
-          image: lib.getElse(prev, 'spec.values.user.deployment.image', 'tidepool/platform-user:master-8c8d9b39182b9edd9bafd987f50b254470840a8d'),
+          image: lib.getElse(prev, 'spec.values.user.deployment.image', 'tidepool/platform-user:master-latest'),
         },
       }, lib.getElse(me, 'users', {})]),
 
@@ -459,4 +460,4 @@ local helmrelease(config, me, previous) = k8s.helmrelease(me, {
   },
 };
 
-function(config, prev, namespace, pkg) helmrelease(expand.expand(config), common.package(config, prev, namespace, pkg), prev)
+function(config, prev, namespace, pkg) helmrelease(common.package(config, prev, namespace, pkg))
