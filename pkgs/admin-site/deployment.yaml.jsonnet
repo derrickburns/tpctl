@@ -14,6 +14,10 @@ local deployment(me) = k8s.deployment(me) + flux.metadata() {
           ports: [{
             containerPort: 8080,
           }],
+          env: [
+            k8s.envSecret('SERVER_SECRET', 'server', 'ServiceAuth'),
+            k8s.envValue('API_HOST', 'http://internal),
+          ]
         }],
       },
     },
