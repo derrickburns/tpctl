@@ -16,7 +16,7 @@ local prefixAnnotations(prefix, svcs) = {
 };
 
 local filterAnnotations(me, svcs) = {
-  local default = lib.getElse(me, 'gitops.default', 'regex:master-[0-9A-Za-z]{40}'),
+  local default = lib.getElse(me, 'gitops.default', 'regex:master-[0-9A-Fa-f]{40}'),
   ['fluxcd.io/tag.%s' % svc]: lib.getElse(me, 'gitops.%s' % svc, default)
   for svc in svcs
 };
