@@ -15,13 +15,13 @@ helm repo update >/dev/stderr
 
 case ${2:-install} in
 install)
-  op="upgrade -i --force --version $version -f /tmp/${name}-${namespace}.yaml"
+  op="upgrade -i --force --version $version --namespace ${namespace} -f /tmp/${name}-${namespace}.yaml"
   ;;
 delete)
   op="delete"
   ;;
 template)
-  op="template --version $version -f /tmp/${name}-${namespace}.yaml"
+  op="template --version $version --namespace ${namespace} -f /tmp/${name}-${namespace}.yaml"
   ;;
 esac
 
