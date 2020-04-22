@@ -1,5 +1,5 @@
-local gloo = import '../../lib/gloo.jsonnet';
 local common = import '../../lib/common.jsonnet';
+local gloo = import '../../lib/gloo.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
@@ -17,14 +17,21 @@ local helmrelease(me) = (
             },
           },
         },
-        persistence: {
-          storageClassName: 'gp2-expanding',
-        },
         devPortal: {
-          enabled: true
+          enabled: true,
+        },
+        grafana: {
+          persistence: {
+            size: '1Gi',
+            storageClassName: 'gp2-expanding',
+          },
         },
         prometheus: {
           server: {
+            persistentVolume: {
+              storageClass: 'gp2-expanding',
+              size: '30Gi',
+            },
             resources: {
               limits: {
                 memory: '3Gi',
