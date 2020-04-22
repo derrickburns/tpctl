@@ -5,7 +5,7 @@ local lib = import 'lib.jsonnet';
   // default metadata for flux gitops
   metadata():: {
     local this = self,
-    local default = lib.getElse(this, 'gitops.default', 'regex:^master-[0-9A-Za-z]{40}$'),
+    local default = lib.getElse(this, 'gitops.default', 'regex:^master-[0-9A-Ha-h]{40}$'),
     metadata+: {
       annotations+:
         { 'fluxcd.io/automated': if lib.getElse(this, 'gitops.enabled', true) then 'true' else 'false' } +
