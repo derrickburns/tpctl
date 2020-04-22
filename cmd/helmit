@@ -10,8 +10,8 @@ namespace=$(echo "$hr" | jq .metadata.namespace | sed -e 's/"//g')
 kubectl create namespace $namespace 2>/dev/null
 echo "$hr" | jq .spec.values | yq r - >/tmp/${name}-${namespace}.yaml
 release=${release:=${name}}
-helm repo add $name $chart
-helm repo update
+helm repo add $name $chart >/dev/stderr
+helm repo update >/dev/stderr
 
 case ${2:-install} in
 install)
