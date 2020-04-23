@@ -103,7 +103,7 @@
 
   pascalCase(kebabCaseWord):: $.camelCase(kebabCaseWord, true),
 
-  withKeyAsField(o, as): std.mapWithKey(function(name, val) val + {[as]: name}, o),
+  withKeyAsField(o, as): std.mapWithKey(function(name, val) val + if std.objectHas(o, as) then o else {[as]: name}, o),
 
   asArrayWithField(o, as): $.values( $.withKeyAsField(o,as) ),
 }
