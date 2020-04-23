@@ -315,7 +315,7 @@ local ExternalDnsHosts(hosts) = {
   certificate(vs, me):: (
     if $.isHttps(vs) && std.length(vs.dnsNames) > 0
     then certmanager.certificate(me, vs.dnsNames, $.certificateSecretName(vs.name, vs.namespace))
-    else {}
+    else std.trace(std.manifestJson(vs), {});
   ),
 
   baseGatewayProxy(config, me, name):: {
