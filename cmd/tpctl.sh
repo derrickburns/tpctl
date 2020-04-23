@@ -318,9 +318,9 @@ function clone_remote() {
 
 function set_template_dir() {
   if [ -z "$TEMPLATE_DIR" ]; then
-    echo $DIR
     export TEMPLATE_DIR="$(CDPATH= cd -- "$DIR" && cd .. && pwd -P)/"
-    echo $TEMPLATE_DIR
+  fi
+  if [ -z "$COMMAND_DIR" ]; then
     export COMMAND_DIR=$TEMPLATE_DIR/cmd/
   fi
 }
