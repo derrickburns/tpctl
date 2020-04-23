@@ -50,8 +50,9 @@ local helmrelease(me) = k8s.helmrelease(me, {
         dry: false,
       },
 
-      additionalArgs: [
-      ] + if lib.isTrue(ns, 'fluxcloud.enabled') then ['--connect=ws://fluxcloud'] else [],
+      additionalArgs:
+       [ '--registry-exclude-image=*velero*' ] // XXX hardcoded
+       + if lib.isTrue(ns, 'fluxcloud.enabled') then ['--connect=ws://fluxcloud'] else [],
 
       extraContainers:
         if lib.isEnabledAt(ns, 'fluxrecv') && lib.isTrue(ns, 'fluxrecv.sidecar')
