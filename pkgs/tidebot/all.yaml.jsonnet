@@ -17,7 +17,8 @@ local deployment(me) = flux.deployment(me) {
     envFrom: [{
       configMapRef: {
         name: me.pkg,
-      },
+      }
+    }, {
       secretRef: {
         name: me.pkg,
       },
