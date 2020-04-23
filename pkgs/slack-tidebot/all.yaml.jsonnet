@@ -88,5 +88,6 @@ function(config, prev, namespace, pkg) (
     deployment(me),
     configmap(me),
     gloo.virtualServicesForPackage(me),
+    gloo.certificatesForPackage(me),
   ]
 )
