@@ -36,7 +36,7 @@ local lib = import 'lib.jsonnet';
     spec+: {
       template+: {
         spec+: {
-          containers: $.patch(me.prev, this, if std.objectHasAll(this, '_containerMap') then lib.asArrayWithField(o, 'name') else this._containers)
+          containers: $.patch(me.prev, this, if std.objectHasAll(this, '_containerMap') then lib.asArrayWithField(this._containerMap, 'name') else this._containers)
         },
       },
     },
