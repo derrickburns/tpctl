@@ -290,6 +290,16 @@ local configmapNamesFromPod(pod) = lib.pruneList(
     value: value,
   },
 
+  envConfigmap(env, cm, key, optional=false):: {
+    name: env,
+    valueFrom: {
+      configMapKeyRef: {
+        name: cm,
+        key: key,
+        optional: optional,
+      },
+    },
+  },
   envSecret(env, secret, key, optional=false):: {
     name: env,
     valueFrom: {
