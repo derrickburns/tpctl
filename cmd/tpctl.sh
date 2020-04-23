@@ -346,7 +346,7 @@ function default_value() {
 
 # retrieve value from values file, or exit if it is not available
 function require_value() {
-  yq r values.yaml -j $1 2>/dev/null
+  yq r values.yaml -j $1 | sed -e 's/"//g' 2>/dev/null
   if [ $? -ne 0 ]; then
     panic "value $1 not found in values.yaml"
   fi
