@@ -12,7 +12,7 @@ RUN curl -sL "https://dl.google.com/go/go1.14.linux-amd64.tar.gz" | tar xz -C /t
 ENV GOPATH /root/workdir/go
 RUN /tmp/go/bin/go get github.com/google/go-jsonnet/cmd/jsonnet
 RUN mv /root/workdir/go/bin/jsonnet /usr/local/bin/jsonnet
-RUN curl -sL "https://get.helm.sh/helm-v3.1.2-linux-amd64.tar.gz" | tar xz -C /tmp && mv /tmp/linux-amd64/helm /usr/local/bin
+RUN curl -sL /tmp/helm "https://get.helm.sh/helm-v3.2.0-linux-amd64.tar.gz" | tar xz -C /tmp && mv /tmp/linux-amd64/helm /usr/local/bin
 RUN curl -sL "https://github.com/weaveworks/eksctl/releases/download/0.15.0/eksctl_Linux_amd64.tar.gz" | tar xz -C /tmp && \
     mv /tmp/eksctl /usr/local/bin
 RUN curl -sL -o /usr/local/bin/kubectl https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl 
@@ -20,7 +20,7 @@ RUN git clone https://github.com/ahmetb/kubectx /opt/kubectx && \
     mv /opt/kubectx/kubectx /usr/local/bin/kubectx && \
     mv /opt/kubectx/kubens /usr/local/bin/kubens && \
     rm -rf /opt/kubectx
-RUN curl -sL -o /usr/local/bin/yq https://github.com/mikefarah/yq/releases/download/3.3.0/yq_linux_amd64 
+RUN curl -sL -o /usr/local/bin/yq https://github.com/mikefarah/yq/releases/download/3.3.0/yq_linux_386
 RUN curl -sL -o /usr/local/bin/aws-iam-authenticator https://amazon-eks.s3-us-west-2.amazonaws.com/1.14.6/2019-08-22/bin/linux/amd64/aws-iam-authenticator && \
     curl -sL -o aws-iam-authenticator.sha256 https://amazon-eks.s3-us-west-2.amazonaws.com/1.14.6/2019-08-22/bin/linux/amd64/aws-iam-authenticator.sha256 && \
     openssl sha1 -sha256 /usr/local/bin/aws-iam-authenticator && \
@@ -35,3 +35,5 @@ RUN curl -sL "https://github.com/smallstep/cli/releases/download/v0.14.0-rc.3/st
 RUN curl -sL -o /usr/local/bin/sops  "https://github.com/mozilla/sops/releases/download/v3.5.0/sops-v3.5.0.linux"
 RUN curl -sL -o /usr/local/bin/kubecfg "https://github.com/bitnami/kubecfg/releases/download/v0.16.0/kubecfg-linux-amd64"
 RUN ln -s /usr/bin/python3 /usr/local/bin/python3 && chmod +x /usr/local/bin/*
+RUN ls -lrt /usr/local/bin
+RUN helm version | tee helm.version

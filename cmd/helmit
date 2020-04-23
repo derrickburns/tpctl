@@ -1,4 +1,4 @@
-#!/bin/bash  -x
+#!/bin/bash
 file=$1
 hr=$(yq r $file -j)
 values=$(echo "$hr" | jq .spec.values | yq r - >/tmp/foobar)
@@ -21,7 +21,7 @@ delete)
   op="delete"
   ;;
 template)
-  op="template --version $version /tmp/${name}-${namespace}.yaml"
+  op="template --version $version -f /tmp/${name}-${namespace}.yaml"
   ;;
 esac
 

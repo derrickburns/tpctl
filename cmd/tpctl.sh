@@ -10,6 +10,8 @@ export APPROVE=false
 export USE_LOCAL_FILESYSTEM=false
 export SKIP_REVIEW=false
 export GITHUB_ORG=${GITHUB_ORG:-tidepool-org}
+X=$( dirname "${BASH_SOURCE[0]}" )
+export DIR=$( cd "$X" >/dev/null 2>&1 && pwd )
 REPOS='
 cluster-dev
 cluster-qa2
@@ -315,8 +317,11 @@ function clone_remote() {
 }
 
 function set_template_dir() {
-  export DIR=$(cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd && echo -n x)
-  export TEMPLATE_DIR=$(echo ${DIR%x} | sed -e "s/ *$//")
+  if [ -z "$TEMPLATE_DIR" ]; then
+    echo $DIR
+    export TEMPLATE_DIR="$(CDPATH= cd -- "$DIR" && cd .. && pwd -P)/"
+    echo $TEMPLATE_DIR
+  fi
 }
 
 # convert values file into json, return name of json file
@@ -466,7 +471,7 @@ function update_kubeconfig() {
   start "updating kubeconfig"
   local values=$(get_values)
   yq r ./kubeconfig.yaml -j >$TMP_DIR/kubeconfig.yaml
-  jsonnet --tla-code-file prev=${TMP_DIR}/kubeconfig.yaml --tla-code-file config="$values" ${TEMPLATE_DIR}/eksctl/kubeconfig.jsonnet | yq r -P - >kubeconfig.yaml
+  jsonnet --tla-code-file prev=${TMP_DIR}/kubeconfig.yaml --tla-code-file config="$values" ${TEMPLATE_DIR}eksctl/kubeconfig.jsonnet | yq r -P - >kubeconfig.yaml
   expect_success "updating kubeconfig failed"
   complete "updated kubeconfig"
 }
@@ -557,7 +562,7 @@ function make_cluster_config() {
   add_file "config.yaml"
   serviceAccountFile=$TMP_DIR/serviceaccounts
   make_policy_manifests | yq r - -j | jq >$serviceAccountFile
-  jsonnet --tla-code-file config="$values" --tla-code-file serviceaccounts="$serviceAccountFile" ${TEMPLATE_DIR}/eksctl/cluster_config.jsonnet | yq r -P - >config.yaml
+  jsonnet --tla-code-file config="$values" --tla-code-file serviceaccounts="$serviceAccountFile" ${TEMPLATE_DIR}eksctl/cluster_config.jsonnet | yq r -P - >config.yaml
   expect_success "Templating failure eksctl/cluster_config.jsonnet"
   complete "created eksctl manifest"
 }
@@ -645,7 +650,7 @@ function template_files() {
       mkdir -p $(dirname $helmInput)
       expand_jsonnet $prev $values $namespace $pkg $absoluteTemplateFilePath >$helmInput
       expect_success "jsonnet templating failure ${relativeFilePath}"
-      helmit $helmInput template > ${relativeTarget} 2>/dev/null
+      helmit $helmInput template > ${relativeTarget}
       expect_success "helm templating failure ${relativeFilePath}"
     fi
   done
@@ -659,7 +664,7 @@ function make_policy_manifests() {
     start "creating $ns policy files "
     local pkg
     for pkg in $(enabled_pkgs namespaces.$ns); do
-      template_service_accounts "$values" $TEMPLATE_DIR/pkgs/$pkg $TEMPLATE_DIR/pkgs/ $ns
+      template_service_accounts "$values" ${TEMPLATE_DIR}pkgs/$pkg ${TEMPLATE_DIR}pkgs/ $ns
     done
     complete "created $ns policy files"
   done
@@ -680,7 +685,7 @@ function make_namespace_config() {
     start "creating manifests for namespace $ns"
     local pkg
     for pkg in $(enabled_pkgs namespaces.$ns); do
-      template_files "$values" $TEMPLATE_DIR/pkgs $ns $pkg $TMP_DIR/prev
+      template_files "$values" ${TEMPLATE_DIR}pkgs $ns $pkg $TMP_DIR/prev
     done
     if namespace_enabled $ns; then
       if [ -d secrets/$ns ]; then
@@ -1240,7 +1245,6 @@ main() {
   done
 
   unset TMP_DIR
-  unset TEMPLATE_DIR
   unset CHART_DIR
   unset SM_DIR
 
