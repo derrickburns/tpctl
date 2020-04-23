@@ -321,6 +321,7 @@ function set_template_dir() {
     echo $DIR
     export TEMPLATE_DIR="$(CDPATH= cd -- "$DIR" && cd .. && pwd -P)/"
     echo $TEMPLATE_DIR
+    export COMMAND_DIR=$TEMPLATE_DIR/cmd/
   fi
 }
 
@@ -650,7 +651,7 @@ function template_files() {
       mkdir -p $(dirname $helmInput)
       expand_jsonnet $prev $values $namespace $pkg $absoluteTemplateFilePath >$helmInput
       expect_success "jsonnet templating failure ${relativeFilePath}"
-      helmit $helmInput template > ${relativeTarget}
+      ${COMMAND_DIR}/helmit $helmInput template > ${relativeTarget}
       expect_success "helm templating failure ${relativeFilePath}"
     fi
   done
