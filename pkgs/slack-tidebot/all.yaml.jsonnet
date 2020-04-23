@@ -4,106 +4,30 @@ local gloo = import '../../lib/gloo.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
+local containerPort = 8080;
+
 local deployment(me) = flux.deployment(me) {
   _containers:: [{
     name: me.pkg,
     image: 'tidepool/slack-tidebot:master-latest',
     imagePullPolicy: 'Always',
     env: [
-      {
-        name: 'HUBOT_CONCURRENT_REQUESTS',
-        value: '1',
-      },
-      {
-        name: 'HUBOT_GITHUB_TOKEN',
-        valueFrom: {
-          secretKeyRef: {
-            key: 'HUBOT_GITHUB_TOKEN',
-            name: 'tidebot',
-            optional: false,
-          },
-        },
-      },
-      {
-        name: 'HUBOT_SLACK_TOKEN',
-        valueFrom: {
-          secretKeyRef: {
-            key: 'HUBOT_SLACK_TOKEN',
-            name: 'tidebot',
-            optional: false,
-          },
-        },
-      },
-      {
-        name: 'HUBOT_GITHUB_EVENT_NOTIFIER_TYPES',
-        valueFrom: {
-          configMapKeyRef: {
-            key: 'HUBOT_GITHUB_EVENT_NOTIFIER_TYPES',
-            name: 'tidebot',
-            optional: false,
-          },
-        },
-      },
-      {
-        name: 'HUBOT_SLACK_ACCOUNT',
-        valueFrom: {
-          configMapKeyRef: {
-            key: 'HUBOT_SLACK_ACCOUNT',
-            name: 'tidebot',
-            optional: false,
-          },
-        },
-      },
-      {
-        name: 'HUBOT_SLACK_ROOMS',
-        valueFrom: {
-          configMapKeyRef: {
-            key: 'HUBOT_SLACK_ROOMS',
-            name: 'tidebot',
-            optional: false,
-          },
-        },
-      },
-      {
-        name: 'inputToRepoMap',
-        valueFrom: {
-          configMapKeyRef: {
-            key: 'inputToRepoMap',
-            name: 'tidebot',
-            optional: false,
-          },
-        },
-      },
-      {
-        name: 'inputToNamespaceMap',
-        valueFrom: {
-          configMapKeyRef: {
-            key: 'inputToNamespaceMap',
-            name: 'tidebot',
-            optional: false,
-          },
-        },
-      },
-      {
-        name: 'serviceRepoToPackage',
-        valueFrom: {
-          configMapKeyRef: {
-            key: 'serviceRepoToPackage',
-            name: 'tidebot',
-            optional: false,
-          },
-        },
-      },
+      k8s.envVar( 'HUBOT_CONCURRENT_REQUESTS', '1'),
     ],
+    envFrom: [{
+      configMapRef: {
+        name: me.pkg,
+      },
+    }],
     ports: [{
-      containerPort: 8080,
+      containerPort: containerPort,
     }],
   }],
 };
 
 local service(me) = k8s.service(me) {
   spec+: {
-    ports: [k8s.port(8080, 8080)],
+    ports: [k8s.port(8080, containerPort)],
   },
 };
 
