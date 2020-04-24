@@ -454,7 +454,7 @@ local ExternalDnsHosts(hosts) = {
     },
   },
 
-  settings(config, me):: k8s.k('gloo.solo.io/v1', 'Settings') + k8s.metadata('default', me.namespace) {
+  settings(me):: k8s.k('gloo.solo.io/v1', 'Settings') + k8s.metadata('default', me.namespace) {
     metadata+: {
       labels: {
         app: 'gloo',
@@ -519,7 +519,7 @@ local ExternalDnsHosts(hosts) = {
       kubernetesArtifactSource: {},
       kubernetesConfigSource: {},
       kubernetesSecretSource: {},
-      linkerd: global.isEnabled(config, 'linkerd'),
+      linkerd: global.isEnabled(me.config, 'linkerd'),
       refreshRate: '60s',
     },
   },

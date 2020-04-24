@@ -1,8 +1,9 @@
 local lib = import '../../lib/lib.jsonnet';
 local common = import '../../lib/common.jsonnet';
 
-local ClusterIssuer(config, me) = lib.E(me, {
-  apiVersion: 'cert-manager.io/v1alpha2',
+local ClusterIssuer(me) = {
+ local config = me.config,
+ apiVersion: 'cert-manager.io/v1alpha2',
   kind: 'ClusterIssuer',
   metadata: {
     name: 'letsencrypt-production',
@@ -31,6 +32,6 @@ local ClusterIssuer(config, me) = lib.E(me, {
       ],
     },
   },
-});
+};
 
-function(config, prev, namespace, pkg) ClusterIssuer(config, common.package(config, prev, namespace, pkg))
+function(config, prev, namespace, pkg) ClusterIssuer(common.package(config, prev, namespace, pkg))

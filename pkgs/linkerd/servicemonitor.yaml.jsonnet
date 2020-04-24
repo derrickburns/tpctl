@@ -1,20 +1,10 @@
 local global = import '../../lib/global.jsonnet';
 local common = import '../../lib/common.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
+local k8s = import '../../lib/k8s.jsonnet';
 
-local servicemonitor(namespace) = {
-  apiVersion: 'monitoring.coreos.com/v1',
-  kind: 'ServiceMonitor',
-  metadata: {
-    annotations: null,
-    labels: {
-      'k8s-app': 'linkerd-prometheus',
-      release: 'monitoring-prometheus-operator',
-    },
-    name: 'linkerd-federate',
-    namespace: namespace,
-  },
-  spec: {
+local servicemonitor(me) = k8s.k('monitoring.coreos.com/v1', 'ServiceMonitor') + k8s.metadata('linkerd-federate', me.namespace) {
+  spec+: {
     endpoints: [
       {
         honorLabels: true,
@@ -42,7 +32,7 @@ local servicemonitor(namespace) = {
     jobLabel: 'app',
     namespaceSelector: {
       matchNames: [
-        namespace,
+        me.namespace,
       ],
     },
     selector: {
@@ -53,7 +43,9 @@ local servicemonitor(namespace) = {
   },
 };
 
-function(config, prev, namespace, pkg)
-  if global.isEnabled(config, 'prometheus-operator')
-  then servicemonitor(namespace)
+function(config, prev, namespace, pkg) (
+  local me = common.package(config, prev, namespace, pkg);
+  if global.isEnabled(me.config, 'prometheus-operator')
+  then servicemonitor(me)
   else {}
+)

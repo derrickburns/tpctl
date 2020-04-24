@@ -1,7 +1,7 @@
-local secret(namespace) = {
 local common = import '../../lib/common.jsonnet';
-  apiVersion: 'v1',
-  data: {
+
+local secret(me) = k8s.k('v1', 'Secret') + k8s.metadata('mongo', me.namespace) {
+  data+: {
     Scheme: std.base64('mongodb'),
     Addresses: std.base64('mongodb'),
     Username: '',
@@ -11,11 +11,7 @@ local common = import '../../lib/common.jsonnet';
     OptParams: '',
   },
   kind: 'Secret',
-  metadata: {
-    name: 'mongo',
-    namespace: namespace,
-  },
   type: 'Opaque',
 };
 
-function(config, prev, namespace, pkg) secret(namespace)
+function(config, prev, namespace, pkg) secret(common.package(config, prev, namespace, pkg))

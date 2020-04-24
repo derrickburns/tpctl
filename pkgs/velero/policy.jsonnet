@@ -3,8 +3,8 @@ local common = import '../../lib/common.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 local p = import '../../lib/policy.jsonnet';
 
-local policy(config, me) = (
-  local bucket = 'k8s-backup-%s' % config.cluster.metadata.name;
+local policy(me) = (
+  local bucket = 'k8s-backup-%s' % me.config.cluster.metadata.name;
   p.policy() + k8s.metadata(me.pkg, me.namespace) + p.attachPolicy(
     [
       p.statement(p.bucketArn(bucket), 's3:ListBucket'),
@@ -13,4 +13,4 @@ local policy(config, me) = (
   )
 );
 
-function(config, prev, namespace, pkg) policy(config, common.package(config, prev, namespace, pkg))
+function(config, prev, namespace, pkg) policy(common.package(config, prev, namespace, pkg))

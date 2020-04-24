@@ -1,11 +1,12 @@
 local k8s = import '../../lib/k8s.jsonnet';
 local common = import '../../lib/common.jsonnet';
 
-local helmrelease(config, me) = k8s.helmrelease(me, {
+local helmrelease(me) = k8s.helmrelease(me, {
   name: 'sumologic-fluentd',
   repository: 'https://sumologic.github.io/sumologic-kubernetes-collection',
   version: '0.13.0',
 }) {
+  local config = me.config,
   _secretNames:: ['sumologic'],
 
   metadata: {
@@ -40,4 +41,4 @@ local helmrelease(config, me) = k8s.helmrelease(me, {
   },
 };
 
-function(config, prev, namespace, pkg) helmrelease(config, common.package(config, prev, namespace, pkg))
+function(config, prev, namespace, pkg) helmrelease(common.package(config, prev, namespace, pkg))

@@ -43,7 +43,8 @@ local svcs = [
   'user',
 ];
 
-local canary(config, me, svc) = {
+local canary(me, svc) = {
+  local config = me.config,
   apiVersion: 'flagger.app/v1alpha3',
   kind: 'Canary',
   metadata: {
@@ -94,8 +95,8 @@ local canary(config, me, svc) = {
   },
 };
 
-local canaries(config, prev, me) = (
-  [canary(config, me, svc) for svc in svcs if lib.getElse(me, svc + '.canary.enabled', false)]
+local canaries(prev, me) = (
+  [canary(me, svc) for svc in svcs if lib.getElse(me, svc + '.canary.enabled', false)]
 );
 
-function(config, prev, namespace, pkg) canaries(config, prev, common.package(config, prev, namespace, pkg))
+function(config, prev, namespace, pkg) canaries(prev, common.package(config, prev, namespace, pkg))

@@ -1,3 +1,5 @@
+local kubecfg = import 'kubecfg.libsonnet';
+
 local kubeconfig(config, prev) = prev {
   contexts: [{
     context: {
@@ -13,4 +15,4 @@ local kubeconfig(config, prev) = prev {
   }],
 };
 
-function(config, prev) kubeconfig(config, prev)
+function(config, prev) kubeconfig(config, kubecfg.parseYaml(prev))

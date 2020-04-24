@@ -53,13 +53,13 @@ local lib = import 'lib.jsonnet';
     },
   },
 
-  Podmonitor(config, me, port, selector, path='/metrics')::
-    if global.isEnabled(config, 'prometheus-operator')
+  Podmonitor(me, port, selector, path='/metrics')::
+    if global.isEnabled(me.config, 'prometheus-operator')
     then $.podmonitor(me, port, selector, path='/metrics')
     else {},
 
-  Servicemonitor(config, me, port)::
-    if global.isEnabled(config, 'prometheus-operator')
+  Servicemonitor(me, port)::
+    if global.isEnabled(me.config, 'prometheus-operator')
     then $.servicemonitor(me, port)
     else {},
 }

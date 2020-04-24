@@ -128,7 +128,7 @@ local service(me) = k8s.service(me) {
   },
 };
 
-local servicemonitor(me) = prom.Servicemonitor(me.config, me, 8888);
+local servicemonitor(me) = prom.Servicemonitor(me, 8888);
 
 function(config, prev, namespace, pkg) (
   local me = common.package(config, prev, namespace, pkg);

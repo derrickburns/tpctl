@@ -9,8 +9,8 @@ local withEmailPolicy(me) =
   then {}
   else basepolicy.withEmailPolicy();
 
-local policy(config, me) = (
-  local bucket = lib.getElse(me, 'buckets.asset', mylib.assetBucket(config, me.namespace));
+local policy(me) = (
+  local bucket = lib.getElse(me, 'buckets.asset', mylib.assetBucket(me.config, me.namespace));
   basepolicy.policyAndMetadata(
     'hydrophone',
     me.namespace,
@@ -18,4 +18,4 @@ local policy(config, me) = (
   )
 );
 
-function(config, prev, namespace, pkg) policy(config, common.package(config, prev, namespace, 'tidepool'))
+function(config, prev, namespace, pkg) policy(common.package(config, prev, namespace, 'tidepool'))

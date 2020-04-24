@@ -2,7 +2,8 @@ local lib = import '../../lib/lib.jsonnet';
 local common = import '../../lib/common.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 
-local elasticsearch(config, me) = k8s.k( 'elasticsearch.k8s.elastic.co/v1beta1', 'Elasticsearch') {
+local elasticsearch(me) = k8s.k( 'elasticsearch.k8s.elastic.co/v1beta1', 'Elasticsearch') {
+  local config = me.config,
   metadata+: {
     name: 'jaeger', // XXX check
     namespace: me.namespace,
@@ -42,4 +43,4 @@ local elasticsearch(config, me) = k8s.k( 'elasticsearch.k8s.elastic.co/v1beta1',
   },
 };
 
-function(config, prev, namespace, pkg) elasticsearch(config, common.package(config, prev, namespace, pkg))
+function(config, prev, namespace, pkg) elasticsearch(common.package(config, prev, namespace, pkg))

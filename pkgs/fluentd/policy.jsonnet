@@ -3,7 +3,9 @@ local common = import '../../lib/common.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 local p = import '../../lib/policy.jsonnet';
 
-local policy(config, me) = p.policy() + k8s.metadata(me.pkg, me.namespace) + p.attachPolicy(
+local policy(me) = (
+  local config = me.config;
+  p.policy() + k8s.metadata(me.pkg, me.namespace) + p.attachPolicy(
   p.statement(
     [
       'arn:aws:logs:%s:%s:*' % [config.cluster.metadata.region, config.aws.accountNumber],
@@ -14,6 +16,6 @@ local policy(config, me) = p.policy() + k8s.metadata(me.pkg, me.namespace) + p.a
       's3:GetObject',
     ]
   )
-);
+));
 
-function(config, prev, namespace, pkg) policy(config, common.package(config, prev, namespace, pkg))
+function(config, prev, namespace, pkg) policy(common.package(config, prev, namespace, pkg))

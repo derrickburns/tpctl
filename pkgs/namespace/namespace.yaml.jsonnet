@@ -2,7 +2,7 @@ local linkerd = import '../../lib/linkerd.jsonnet';
 local common = import '../../lib/common.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
-local Namespace(config, me) = (
+local Namespace(me) = (
   local meshed = lib.isTrue(me, 'meshed');
   local discoverable = lib.isTrue(me, 'discoverable');
   local goldilocks = lib.isTrue(me, 'goldilocks');
@@ -16,7 +16,7 @@ local Namespace(config, me) = (
         name: me.namespace,
         annotations:
           lib.getElse(me, 'annotations', {})
-          + (if meshed then linkerd.annotations(config) else {}),
+          + (if meshed then linkerd.annotations(me.config) else {}),
         labels:
           lib.getElse(me, 'labels', {})
           + { 'discovery.solo.io/function_discovery': if discoverable then 'enabled' else 'disabled' }
@@ -26,4 +26,4 @@ local Namespace(config, me) = (
   else {}
 );
 
-function(config, prev, namespace, pkg) Namespace(config, common.package(config, prev, namespace, pkg))
+function(config, prev, namespace, pkg) Namespace(common.package(config, prev, namespace, pkg))

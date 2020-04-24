@@ -2,7 +2,8 @@ local common = import '../../lib/common.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
-local deployment(config, me) = k8s.deployment(me) {
+local deployment(me) = k8s.deployment(me) {
+  local config = me.config,
   _containers:: {
     image: 'justinbarrick/fluxcloud:v0.3.9',
     ports: [
@@ -21,4 +22,4 @@ local deployment(config, me) = k8s.deployment(me) {
   },
 };
 
-function(config, prev, namespace, pkg) deployment(config, common.package(config, prev, namespace, pkg))
+function(config, prev, namespace, pkg) deployment(common.package(config, prev, namespace, pkg))

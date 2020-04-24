@@ -1,14 +1,9 @@
+local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 local common = import '../../lib/common.jsonnet';
 
-local jaeger(config, namespace) = {
-  apiVersion: 'jaegertracing.io/v1',
-  kind: 'Jaeger',
-  metadata: {
-    name: 'jaeger',
-    namespace: namespace,
-  },
-  spec: {
+local jaeger(me) = k8s.k( 'jaegertracing.io/v1', 'Jaeger') + k8s.metadata('jaeger', me.namespace) {
+  spec+: {
     strategy: 'production',
     ingress: {
       enabled: false,
@@ -23,7 +18,7 @@ local jaeger(config, namespace) = {
       //type: 'elasticsearch',
       //options: {
         //es: {
-          //'server-urls': 'https://jaeger-es-http.%s:9200' % namespace,
+          //'server-urls': 'https://jaeger-es-http.%s:9200' % me.namespace,
           //tls: {
             //ca: '/es/certificates/ca.crt',
           //},
@@ -52,4 +47,4 @@ local jaeger(config, namespace) = {
   },
 };
 
-function(config, prev, namespace, pkg) jaeger(config, namespace)
+function(config, prev, namespace, pkg) jaeger(common.package(config, prev, namespace, pkg))
