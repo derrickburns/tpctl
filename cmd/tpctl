@@ -45,4 +45,4 @@ docker run -it \
   -v ${AWS_CONFIG}:/root/.aws:ro \
   -v ${KUBE_CONFIG}:/root/.kube/config \
   -v $(pwd):/root/workdir \
-  tidepool/tpctl /usr/local/bin/tpctl.sh  $*
+  tidepool/tpctl $*

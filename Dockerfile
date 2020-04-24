@@ -8,4 +8,4 @@ COPY lib  /templates/lib/
 COPY eksctl  /templates/eksctl/
 ENV TEMPLATE_DIR /templates/
 ENV COMMAND_DIR /usr/local/bin
-CMD [ "/usr/local/bin/tpctl.sh"  ]
+ENTRYPOINT [ "/usr/local/bin/tpctl.sh"  ]

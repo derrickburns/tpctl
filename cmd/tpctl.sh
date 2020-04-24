@@ -562,7 +562,7 @@ function make_cluster_config() {
   start "creating eksctl manifest"
   add_file "config.yaml"
   serviceAccountFile=$TMP_DIR/serviceaccounts
-  make_policy_manifests >$serviceAccountFile
+  make_policy_manifests | k8s_sort >$serviceAccountFile
   kubecfg show --tla-code-file config="$values" --tla-str-file serviceaccounts="$serviceAccountFile" ${TEMPLATE_DIR}eksctl/cluster_config.jsonnet | k8s_sort >config.yaml
   expect_success "Templating failure eksctl/cluster_config.jsonnet"
   complete "created eksctl manifest"
