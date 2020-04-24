@@ -32,6 +32,8 @@ if [ ! -f "$KUBE_CONFIG" ]; then
   touch $KUBE_CONFIG
 fi
 
+docker pull tidepool/tpctl
+
 docker run -it \
   --volumes-from=ssh-agent \
   -e SSH_AUTH_SOCK=/.ssh-agent/socket \
@@ -43,4 +45,4 @@ docker run -it \
   -v ${AWS_CONFIG}:/root/.aws:ro \
   -v ${KUBE_CONFIG}:/root/.kube/config \
   -v $(pwd):/root/workdir \
-  tidepool/tpctl cmd/tpctl.sh $*
+  tidepool/tpctl /usr/local/bin/tpctl.sh  $*
