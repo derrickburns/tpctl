@@ -280,8 +280,7 @@ local configmapNamesFromPod(pod) = lib.pruneList(
     },
   },
 
-  envField(name, path):: {
-    name: name,
+  _envField(path):: {
     valueFrom: {
       fieldRef: {
         fieldPath: path,
@@ -289,13 +288,19 @@ local configmapNamesFromPod(pod) = lib.pruneList(
     },
   },
 
-  envVar(env, value):: {
-    name: env,
+  envField(name, path):: $._envField(path) {
+    name: name,
+  },
+
+  _envVar(value):: {
     value: value,
   },
 
-  envConfigmap(env, cm, key, optional=false):: {
+  envVar(env, value):: $._envVar(value) {
     name: env,
+  },
+
+  _envConfigmap(cm, key, optional=false):: {
     valueFrom: {
       configMapKeyRef: {
         name: cm,
@@ -304,8 +309,12 @@ local configmapNamesFromPod(pod) = lib.pruneList(
       },
     },
   },
-  envSecret(env, secret, key, optional=false):: {
+
+  envConfigmap(env, cm, key, optional=false)::  $._envConfigmap(cm, key, optional) {
     name: env,
+  },
+
+  _envSecret(secret, key, optional=false):: {
     valueFrom: {
       secretKeyRef: {
         name: secret,
@@ -315,6 +324,10 @@ local configmapNamesFromPod(pod) = lib.pruneList(
     },
   },
 
+  envSecret(env, secret, key, optional=false):: $._envSecret(secret, key, optional) {
+    name: env,
+  },
+
   securityContext:: {
     // sysctls: [ {
     //name: "net.netfilter.nf_conntrack_tcp_timeout_close_waits",
@@ -322,7 +335,13 @@ local configmapNamesFromPod(pod) = lib.pruneList(
     //} ],
   },
 
-  // add image pull policy based on image tag
+  // convert container with _env map into container with env array
+  withEnv(container)::
+    if std.objectHas(container, '_env')
+    then container { env: lib.asArrayWithField(lib.getElse(container, '_env', {}), 'name') }
+    else container,
+
+  // set image pull policy based on image tag
   withImagePullPolicy(container):: 
     if std.endsWith(lib.getElse(container, 'image', ''), ':latest')
     then container { imagePullPolicy: 'Always' }
@@ -340,5 +359,7 @@ local configmapNamesFromPod(pod) = lib.pruneList(
 
   // add names and image pull policy to containers
   containers(me, this):: 
-    std.map( function(c) $.withImagePullPolicy(c), $.containersWithName(me, this)),
+    std.map(
+      $.withEnv,
+      std.map( $.withImagePullPolicy, $.containersWithName(me, this))),
 }

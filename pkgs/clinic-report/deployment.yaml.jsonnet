@@ -6,16 +6,16 @@ local lib = import '../../lib/lib.jsonnet';
 local deployment(me) = flux.deployment(me) {
   _containers:: {
     image: 'tidepool/clinic-report:latest',
-    env: [
-      k8s.envSecret('SALT_DEPLOY', 'userdata', 'UserIdSalt'),
-      k8s.envSecret('MONGO_SCHEME', 'mongo', 'Scheme'),
-      k8s.envSecret('MONGO_USERNAME', 'mongo', 'Username'),
-      k8s.envSecret('MONGO_PASSWORD', 'mongo', 'Password'),
-      k8s.envSecret('MONGO_ADDRESSES', 'mongo', 'Addresses'),
-      k8s.envSecret('MONGO_OPT_PARAMS', 'mongo', 'OptParams'),
-      k8s.envSecret('MONGO_SSL', 'mongo', 'Tls'),
-      k8s.envVar('MONGO_DATABASE', 'user'),
-    ],
+    _env:: {
+      SALT_DEPLOY: k8s._envSecret('userdata', 'UserIdSalt'),
+      MONGO_SCHEME: k8s._envSecret('mongo', 'Scheme'),
+      MONGO_USERNAME: k8s._envSecret('mongo', 'Username'),
+      MONGO_PASSWORD: k8s._envSecret('mongo', 'Password'),
+      MONGO_ADDRESSES: k8s._envSecret('mongo', 'Addresses'),
+      MONGO_OPT_PARAMS: k8s._envSecret('mongo', 'OptParams'),
+      MONGO_SSL: k8s._envSecret('mongo', 'Tls'),
+      MONGO_DATABASE: { value: 'user' },
+    },
     ports: [
       {
         containerPort: 27017,

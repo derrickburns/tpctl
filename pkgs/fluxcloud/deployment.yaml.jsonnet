@@ -10,14 +10,14 @@ local deployment(config, me) = k8s.deployment(me) {
         containerPort: 3032,
       },
     ],
-    env: [
-      k8s.envSecret('SLACK_URL', lib.getElse(me, 'secret', 'slack'), 'url'),
-      k8s.envVar('SLACK_CHANNEL', lib.getElse(me, 'channel', '#flux-%s' % config.cluster.metadata.name)),
-      k8s.envVar('SLACK_USERNAME', lib.getElse(me, 'username', 'derrickburns')),
-      k8s.envVar('SLACK_ICON_EMOJI', ':heart:'),
-      k8s.envVar('GITHUB_URL', config.general.github.https),
-      k8s.envVar('LISTEN_ADDRESS', ':3032'),
-    ],
+    _env:: {
+      SLACK_URL: k8s._envSecret( lib.getElse(me, 'secret', 'slack'), 'url'),
+      SLACK_CHANNEL: { value: lib.getElse(me, 'channel', '#flux-%s' % config.cluster.metadata.name) },
+      SLACK_USERNAME: { value: lib.getElse(me, 'username', 'derrickburns') },
+      SLACK_ICON_EMOJI: { value: ':heart:' },
+      GITHUB_URL: { value: config.general.github.https },
+      LISTEN_ADDRESS: { value: ':3032' },
+    },
   },
 };
 

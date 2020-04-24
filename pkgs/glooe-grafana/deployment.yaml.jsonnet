@@ -4,10 +4,10 @@ local lib = import '../../lib/lib.jsonnet';
 
 local deployment(me) = k8s.deployment(me) {
   _containers: {
-    env: [
-      k8s.envSecret('GF_SECURITY_ADMIN_USER', me.pkg, 'admin-user'),
-      k8s.envSecret('GF_SECURITY_ADMIN_PASSWORD', me.pkg, 'admin-password'),
-    ],
+    _env:: {
+      GF_SECURITY_ADMIN_USER: k8s._envSecret( me.pkg, 'admin-user'),
+      GF_SECURITY_ADMIN_PASSWORD: k8s._envSecret( me.pkg, 'admin-password'),
+    },
     image: 'grafana/grafana:6.4.2',
     livenessProbe: {
       failureThreshold: 10,

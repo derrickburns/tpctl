@@ -25,12 +25,12 @@ local deployment(me) = k8s.deployment(me) {
     command: [
       '/mongomirror/bin/mongomirror',
     ],
-    env: [
-      k8s.envSecret('HOST', me.pkg, 'HOST'),
-      k8s.envSecret('DESTINATION', me.pkg, 'DESTINATION'),
-      k8s.envSecret('DESTINATION_USERNAME', me.pkg, 'DESTINATION_USERNAME'),
-      k8s.envSecret('DESTINATION_PASSWORD', me.pkg, 'DESTINATION_PASSWORD'),
-    ],
+    _env:: {
+      HOST: k8s._envSecret(me.pkg, 'HOST'),
+      DESTINATION: k8s._envSecret(me.pkg, 'DESTINATION'),
+      DESTINATION_USERNAME: k8s._envSecret(me.pkg, 'DESTINATION_USERNAME'),
+      DESTINATION_PASSWORD: k8s._envSecret(me.pkg, 'DESTINATION_PASSWORD'),
+    },
     image: 'tidepool/mongomirror:latest',
     ports: [
       {

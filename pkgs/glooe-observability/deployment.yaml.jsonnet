@@ -4,10 +4,10 @@ local lib = import '../../lib/lib.jsonnet';
 
 local deployment(me) = k8s.deployment(me) {
   _containers: {
-    env: [
-      k8s.envSecret('GLOO_LICENSE_KEY', 'license', 'license-key'),
-      k8s.envField('POD_NAMESPACE', 'metadata.namespace'),
-    ],
+    _env:: {
+      GLOO_LICENSE_KEY: k8s._envSecret( 'license', 'license-key'),
+      POD_NAMESPACE: k8s._envField( 'metadata.namespace' ),
+    },
     envFrom: [
       {
         configMapRef: {
