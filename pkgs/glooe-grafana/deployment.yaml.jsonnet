@@ -1,78 +1,71 @@
-local k8s = import '../../lib/k8s.jsonnet';
 local common = import '../../lib/common.jsonnet';
+local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
 local deployment(me) = k8s.deployment(me) {
-  spec+: {
-    strategy+: {
-      type: 'RollingUpdate',
+  _containers: {
+    env: [
+      k8s.envSecret('GF_SECURITY_ADMIN_USER', me.pkg, 'admin-user'),
+      k8s.envSecret('GF_SECURITY_ADMIN_PASSWORD', me.pkg, 'admin-password'),
+    ],
+    image: 'grafana/grafana:6.4.2',
+    livenessProbe: {
+      failureThreshold: 10,
+      httpGet: {
+        path: '/api/health',
+        port: 3000,
+      },
+      initialDelaySeconds: 60,
+      timeoutSeconds: 30,
     },
+    ports: [
+      {
+        containerPort: 80,
+        name: 'service',
+        protocol: 'TCP',
+      },
+      {
+        containerPort: 3000,
+        name: 'grafana',
+        protocol: 'TCP',
+      },
+    ],
+    readinessProbe: {
+      httpGet: {
+        path: '/api/health',
+        port: 3000,
+      },
+    },
+    resources: {},
+    volumeMounts: [
+      {
+        mountPath: '/etc/grafana/grafana.ini',
+        name: 'config',
+        subPath: 'grafana.ini',
+      },
+      {
+        mountPath: '/var/lib/grafana',
+        name: 'storage',
+      },
+      {
+        mountPath: '/var/lib/grafana/dashboards/gloo',
+        name: 'dashboards-gloo',
+      },
+      {
+        mountPath: '/etc/grafana/provisioning/datasources/datasources.yaml',
+        name: 'config',
+        subPath: 'datasources.yaml',
+      },
+      {
+        mountPath: '/etc/grafana/provisioning/dashboards/dashboardproviders.yaml',
+        name: 'config',
+        subPath: 'dashboardproviders.yaml',
+      },
+    ],
+  },
+  spec+: {
     template+: {
       spec+: {
-        containers: [
-          {
-            env: [
-              k8s.envSecret('GF_SECURITY_ADMIN_USER', me.pkg, 'admin-user'),
-              k8s.envSecret('GF_SECURITY_ADMIN_PASSWORD', me.pkg, 'admin-password'),
-            ],
-            image: 'grafana/grafana:6.4.2',
-            imagePullPolicy: 'IfNotPresent',
-            livenessProbe: {
-              failureThreshold: 10,
-              httpGet: {
-                path: '/api/health',
-                port: 3000,
-              },
-              initialDelaySeconds: 60,
-              timeoutSeconds: 30,
-            },
-            name: me.pkg,
-            ports: [
-              {
-                containerPort: 80,
-                name: 'service',
-                protocol: 'TCP',
-              },
-              {
-                containerPort: 3000,
-                name: 'grafana',
-                protocol: 'TCP',
-              },
-            ],
-            readinessProbe: {
-              httpGet: {
-                path: '/api/health',
-                port: 3000,
-              },
-            },
-            resources: {},
-            volumeMounts: [
-              {
-                mountPath: '/etc/grafana/grafana.ini',
-                name: 'config',
-                subPath: 'grafana.ini',
-              },
-              {
-                mountPath: '/var/lib/grafana',
-                name: 'storage',
-              },
-              {
-                mountPath: '/var/lib/grafana/dashboards/gloo',
-                name: 'dashboards-gloo',
-              },
-              {
-                mountPath: '/etc/grafana/provisioning/datasources/datasources.yaml',
-                name: 'config',
-                subPath: 'datasources.yaml',
-              },
-              {
-                mountPath: '/etc/grafana/provisioning/dashboards/dashboardproviders.yaml',
-                name: 'config',
-                subPath: 'dashboardproviders.yaml',
-              },
-            ],
-          },
-        ],
         initContainers: [
           {
             command: [

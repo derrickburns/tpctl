@@ -222,6 +222,10 @@ local configmapNamesFromPod(pod) = lib.pruneList(
         spec+: {
           securityContext+: $.securityContext,
           restartPolicy: 'Always',
+          containers:
+            if std.objectHasAll(this, 'containerPatch') 
+	    then this.containerPatch(me.prev, this, $.containers(me, this))
+            else $.containers(me, this)
         },
       },
     },
@@ -317,4 +321,19 @@ local configmapNamesFromPod(pod) = lib.pruneList(
     //value: "240",
     //} ],
   },
+
+  withImagePullPolicy(container):: 
+    if std.endsWith(lib.getElse(container, 'image', ''), ':latest')
+    then container { imagePullPolicy: 'Always' }
+    else container { imagePullPolicy: 'IfNotPresent' },
+
+  containersWithName(me, this)::
+    if ! std.objectHasAll(this, '_containers') then []
+    else if std.isArray(this._containers) then this._containers
+    else if std.objectHas(this._containers, 'image') && std.isString(this._containers.image)
+    then [ this._containers { name: lib.getElse(this._containers, 'name', me.pkg) } ]
+    else lib.asArrayWithField(lib.getElse(this, '_containers', {}), 'name'),
+
+  containers(me, this):: 
+    std.map( function(c) $.withImagePullPolicy(c), $.containersWithName(me, this)),
 }

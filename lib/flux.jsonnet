@@ -32,13 +32,6 @@ local lib = import 'lib.jsonnet';
   ),
 
   deployment(me):: k8s.deployment(me) + $.metadata() {
-    local this = self,
-    spec+: {
-      template+: {
-        spec+: {
-          containers: $.patch(me.prev, this, if std.objectHasAll(this, '_containerMap') then lib.asArrayWithField(this._containerMap, 'name') else this._containers)
-        },
-      },
-    },
+    containerPatch:: $.patch
   }
 }
