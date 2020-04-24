@@ -322,11 +322,15 @@ local configmapNamesFromPod(pod) = lib.pruneList(
     //} ],
   },
 
+  // add image pull policy based on image tag
   withImagePullPolicy(container):: 
     if std.endsWith(lib.getElse(container, 'image', ''), ':latest')
     then container { imagePullPolicy: 'Always' }
     else container { imagePullPolicy: 'IfNotPresent' },
 
+
+  // Add names to containers if provided as map
+  // If a single container is provided, provide it the default name
   containersWithName(me, this)::
     if ! std.objectHasAll(this, '_containers') then []
     else if std.isArray(this._containers) then this._containers
@@ -334,6 +338,7 @@ local configmapNamesFromPod(pod) = lib.pruneList(
     then [ this._containers { name: lib.getElse(this._containers, 'name', me.pkg) } ]
     else lib.asArrayWithField(lib.getElse(this, '_containers', {}), 'name'),
 
+  // add names and image pull policy to containers
   containers(me, this):: 
     std.map( function(c) $.withImagePullPolicy(c), $.containersWithName(me, this)),
 }
