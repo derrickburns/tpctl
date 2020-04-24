@@ -1,6 +1,7 @@
 // Generate eksctl ClusterConfig file
 
 local lib = import '../lib/lib.jsonnet';
+local kubecfg = import 'kubecfg.libsonnet';
 
 local annotatedNodegroup(config, ng, clusterName) =
   ng {
@@ -26,6 +27,8 @@ local defaultClusterConfig = {
   },
 };
 
+local strip(k8slist) = std.map( function(c) lib.strip(c, ['apiVersion', 'kind']), k8slist);
+
 local all(config, serviceaccounts) =
   defaultClusterConfig
   {
@@ -37,8 +40,8 @@ local all(config, serviceaccounts) =
     cloudWatch+: config.cluster.cloudWatch,
     vpc+: lib.getElse(config, 'cluster.vpc', {}),
     nodeGroups+: config.cluster.nodeGroups,
-    iam+: lib.getElse(config, 'cluster.iam', {}) + { serviceAccounts+: serviceaccounts },
+    iam+: lib.getElse(config, 'cluster.iam', {}) + { serviceAccounts+: strip(serviceaccounts) },
   } +
   withAnnotatedNodeGroups(config);
 
-function(config, serviceaccounts) all(config, serviceaccounts)
+function(config, serviceaccounts) all(config, std.prune(kubecfg.parseYaml(serviceaccounts)))

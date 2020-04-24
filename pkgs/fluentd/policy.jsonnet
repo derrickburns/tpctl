@@ -3,7 +3,7 @@ local common = import '../../lib/common.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 local p = import '../../lib/policy.jsonnet';
 
-local policy(config, me) = k8s.metadata(me.pkg, me.namespace) + p.attachPolicy(
+local policy(config, me) = p.policy() + k8s.metadata(me.pkg, me.namespace) + p.attachPolicy(
   p.statement(
     [
       'arn:aws:logs:%s:%s:*' % [config.cluster.metadata.region, config.aws.accountNumber],

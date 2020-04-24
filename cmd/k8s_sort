@@ -1,0 +1,49 @@
+#!/usr/local/bin/python
+#
+# k8s_sort 
+#
+# Input: YAML stream of Kubernetes manifests (i.e. each object has metadata with apiVersion, kind, name)
+# Output: sorted YAML stream of same Kubernetes manifests
+#
+# Pre-condition:
+# 1) Input is sorted by apiVersion/kind
+#
+# Post-condition: 
+#
+# 1) Output is sorted by apiVersion/kind 
+# 2) Within apiVersion/kind, output is sorted by (namespace, name)
+
+from ruamel.yaml import YAML
+import sys
+
+yaml = YAML()
+
+kv_to_index = {}
+
+def to_kv_index(value):
+    k = "%s/%s" % ( value["apiVersion"], value["kind"] )
+    if k not in kv_to_index:
+        kv_to_index[k] = len(kv_to_index)
+    return kv_to_index[k]
+
+def sort_key(value):
+    metadata = value["metadata"]
+    t = (to_kv_index(value), metadata["namespace"] if "namespace" in metadata else "", metadata["name"])
+    return "%04d/%s/%s" % t
+
+def load(f):
+    input = []
+    for x in yaml.load_all(f):
+        if x != None:
+            input.append(x)
+    return input
+
+def dump(output):
+  yaml.dump_all(output, sys.stdout)
+
+def main():
+    input = load(sys.stdin)
+    output = sorted(input, key=sort_key)
+    dump(output)
+
+main()

@@ -1,6 +1,8 @@
 local k8s = import 'k8s.jsonnet';
 
 {
+  policy()::  k8s.k('tidepool.org/v1alpha', 'awsPolicy'),
+
   attachPolicy(allowed):: {
     attachPolicy+: {
       Statement+: allowed,
@@ -18,5 +20,5 @@ local k8s = import 'k8s.jsonnet';
 
   contentsArn(bucket):: '%s/*' % $.bucketArn(bucket),
 
-  policyAndMetadata(name, namespace, policy):: policy + k8s.metadata(name, namespace),
+  policyAndMetadata(name, namespace, policy):: policy + $.policy() + k8s.metadata(name, namespace),
 }

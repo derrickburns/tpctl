@@ -472,7 +472,7 @@ function update_kubeconfig() {
   start "updating kubeconfig"
   local values=$(get_values)
   yq r ./kubeconfig.yaml -j >$TMP_DIR/kubeconfig.yaml
-  jsonnet --tla-code-file prev=${TMP_DIR}/kubeconfig.yaml --tla-code-file config="$values" ${TEMPLATE_DIR}eksctl/kubeconfig.jsonnet | yq r -P - >kubeconfig.yaml
+  kubecfg show --tla-code-file prev=${TMP_DIR}/kubeconfig.yaml --tla-code-file config="$values" ${TEMPLATE_DIR}eksctl/kubeconfig.jsonnet | k8s_sort >kubeconfig.yaml
   expect_success "updating kubeconfig failed"
   complete "updated kubeconfig"
 }
@@ -562,8 +562,8 @@ function make_cluster_config() {
   start "creating eksctl manifest"
   add_file "config.yaml"
   serviceAccountFile=$TMP_DIR/serviceaccounts
-  make_policy_manifests | yq r - -j | jq >$serviceAccountFile
-  jsonnet --tla-code-file config="$values" --tla-code-file serviceaccounts="$serviceAccountFile" ${TEMPLATE_DIR}eksctl/cluster_config.jsonnet | yq r -P - >config.yaml
+  make_policy_manifests >$serviceAccountFile
+  kubecfg show --tla-code-file config="$values" --tla-str-file serviceaccounts="$serviceAccountFile" ${TEMPLATE_DIR}eksctl/cluster_config.jsonnet | k8s_sort >config.yaml
   expect_success "Templating failure eksctl/cluster_config.jsonnet"
   complete "created eksctl manifest"
 }
@@ -592,7 +592,8 @@ function template_service_accounts() {
       local newbasename=${file%.jsonnet}
       local out=$dir/${newbasename}
       add_file ${out}
-      jsonnet --tla-code prev="{}" --tla-code-file config=$values --tla-str namespace=$namespace $fullpath --tla-str pkg="$pkg" | jq '[.]' | yq r - --prettyPrint >$out
+      echo "---"
+      kubecfg show --tla-code prev="{}" --tla-code-file config=$values --tla-str namespace=$namespace $fullpath --tla-str pkg="$pkg" | k8s_sort >$out
       cat $out
       expect_success "Templating failure $dir/$filename"
     fi
@@ -600,7 +601,7 @@ function template_service_accounts() {
 }
 
 function expand_jsonnet() {
-  kubecfg show --tla-str-file prev=$1 --tla-code-file config=$2 --tla-str namespace=$3 --tla-str pkg=$4 $5
+  kubecfg show --tla-str-file prev=$1 --tla-code-file config=$2 --tla-str namespace=$3 --tla-str pkg=$4 $5 | k8s_sort
 }
 
 # template_files $1 $2 $3 $4 $5 - instantiates template for pkg in given namespace
@@ -665,6 +666,7 @@ function make_policy_manifests() {
     start "creating $ns policy files "
     local pkg
     for pkg in $(enabled_pkgs namespaces.$ns); do
+      echo "---"
       template_service_accounts "$values" ${TEMPLATE_DIR}pkgs/$pkg ${TEMPLATE_DIR}pkgs/ $ns
     done
     complete "created $ns policy files"

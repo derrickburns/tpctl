@@ -5,13 +5,11 @@ ENV TZ America/Los_Angeles
 ENV DEBIAN_FRONTEND noninteractive
 RUN apt update -y && apt upgrade -y && \
     apt install nano python3-pip curl git openjdk-8-jdk vim python3 build-essential file locales expect -y && \
-    pip3 install --upgrade --user awscli boto3 environs
+    pip3 install --upgrade --user awscli boto3 environs ruamel.yaml
 RUN curl -sL -o /usr/local/bin/jq https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64
 RUN locale-gen en_US.UTF-8
-RUN curl -sL "https://dl.google.com/go/go1.14.linux-amd64.tar.gz" | tar xz -C /tmp
+RUN curl -sL "https://dl.google.com/go/go1.14.2.linux-amd64.tar.gz" | tar xz -C /tmp
 ENV GOPATH /root/workdir/go
-RUN /tmp/go/bin/go get github.com/google/go-jsonnet/cmd/jsonnet
-RUN mv /root/workdir/go/bin/jsonnet /usr/local/bin/jsonnet
 RUN curl -sL /tmp/helm "https://get.helm.sh/helm-v3.2.0-linux-amd64.tar.gz" | tar xz -C /tmp && mv /tmp/linux-amd64/helm /usr/local/bin
 RUN curl -sL "https://github.com/weaveworks/eksctl/releases/download/0.15.0/eksctl_Linux_amd64.tar.gz" | tar xz -C /tmp && \
     mv /tmp/eksctl /usr/local/bin
