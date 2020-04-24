@@ -20,6 +20,7 @@ cluster-shared
 cluster-production
 '
 MANIFEST_DIR=manifests
+python3 -m pip install ruamel.yaml >/dev/null 2>&1
 
 function useFzf() {
   command -v fzf >/dev/null 2>&1
@@ -312,7 +313,9 @@ function clone_remote() {
     fi
     info $(basename $HTTPS_REMOTE_REPO)
     cd $(basename $HTTPS_REMOTE_REPO)
-    git pull >/dev/null
+    git pull --ff-only >/dev/null
+  else
+    git pull --ff-only >/dev/null
   fi
 }
 
@@ -715,6 +718,10 @@ function make_config() {
 
 # persist changes to config repo in GitHub
 function save_changes() {
+  if [ "$USE_LOCAL_FILESYSTEM" == "true" ]; then
+    return
+  fi
+
   git add .
   expect_success "git add failed"
   export GIT_PAGER=/bin/cat
