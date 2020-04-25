@@ -46,7 +46,8 @@ function template() {
     elif [ "${f: -13}" == ".yaml.jsonnet" ]; then
       expand_jsonnet $prev $values $namespace $pkg $f
     elif [ "${f: -17}" == "yaml.helm.jsonnet" ]; then
-      helmit <(expand_jsonnet $prev $values $namespace $pkg $f) 2>/dev/null 
+      expand_jsonnet $prev $values $namespace $pkg $f > $TMP_DIR/expanded
+      expand_helm $TMP_DIR/expanded 
     fi
   done
   popd >/dev/null 2>&1
@@ -71,7 +72,7 @@ function show() {
 }
 
 # expand the HelmRelease file, write to stdout
-function helmit() {
+function expand_helm() {
   file=$1
   hr=$(yq r $file -j)
   values=$(echo "$hr" | jq .spec.values | yq r - >/tmp/foobar)
@@ -80,12 +81,11 @@ function helmit() {
   name=$(echo "$hr" | jq .spec.chart.name | sed -e 's/"//g')
   release=$(echo "$hr" | jq .spec.releaseName | sed -e 's/"//g')
   namespace=$(echo "$hr" | jq .metadata.namespace | sed -e 's/"//g')
-  echo "$hr" | jq .spec.values | yq r - >$TMP_DIR/${name}-${namespace}.yaml
+  echo "$hr" | jq .spec.values | yq r - >$TMP_DIR/helmvalues.yaml
   release=${release:=${name}}
-  helm repo add $name $chart >/dev/null
+  helm repo add $name $chart  >/dev/null
   helm repo update >/dev/null
-  
-  helm template --version $version -f $TMP_DIR/${name}-${namespace}.yaml $release $name/$name --namespace ${namespace} 
+  helm template --version $version -f $TMP_DIR/helmvalues.yaml $release $name/$name --namespace ${namespace} 
 }
 
 function main() {
