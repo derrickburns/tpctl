@@ -1,0 +1,113 @@
+#!/usr/bin/env bash
+
+# expand_pkg - generates files for pkg
+#
+# $1 - namespace 
+# $2 - package to instantiate
+# $3 - configuration directory root; defaults to env variable $CONFIG_DIR
+# $4 - template directory root; defaults to $TEMPLATE_DIR
+
+set -e 
+
+CONFIG_DIR=${3:-${CONFIG_DIR:-.}}
+TEMPLATE_DIR=${4:-${TEMPATE_DIR:-~/go/src/github.com/tidepool-org/tpctl/pkgs}}
+MANIFEST_DIR=manifests
+
+# clean up all temporary files
+function cleanup() {
+  rm -rf $TMP_DIR
+}
+
+# clean up working area on exit
+function setup_tmpdir() {
+  TMP_DIR=$(mktemp -d 2>/dev/null || mktemp -d -t 'TMP_DIR')
+  trap cleanup EXIT
+}
+
+# evaluate jsonnet file, write to stdout
+function expand_jsonnet() {
+  kubecfg show --tla-str-file prev=$1 --tla-code-file config=$2 --tla-str namespace=$3 --tla-str pkg=$4 $5 | k8s_sort
+}
+
+# evaluate all files in a pkg directory, write to stdout
+function template_files() {
+  local values=$1
+  local absoluteTemplateDir=$2
+  local namespace=$3
+  local pkg=$4
+  local prev=$5
+
+  local absoluteTemplatePkgPath=$absoluteTemplateDir/$4
+
+  for absoluteTemplateFilePath in $(find $absoluteTemplatePkgPath -type f -print); do
+    local relativeFilePath=${absoluteTemplateFilePath#$absoluteTemplateDir/}
+    local relativeTargetDir=$MANIFEST_DIR/pkgs/$namespace/$(dirname $relativeFilePath)
+    local templateBasename=$(basename $relativeFilePath)
+
+    # make the directory to place the new file in, if it does not exist
+
+    if [ "${templateBasename: -5}" == ".yaml" ]; then
+      # copy a basic yaml file
+      local relativeTarget=$relativeTargetDir/$templateBasename
+      cat $absoluteTemplateFilePath 
+    elif [ "${templateBasename: -13}" == ".yaml.jsonnet" ]; then
+      # instantiate a jsonnet template into yaml
+      local targetBasename=${templateBasename%.jsonnet}
+      local relativeTarget=$relativeTargetDir/${targetBasename}
+      expand_jsonnet $prev $values $namespace $pkg $absoluteTemplateFilePath 
+    elif [ "${templateBasename: -17}" == "yaml.helm.jsonnet" ]; then
+      local targetBasename=${templateBasename%.helm.jsonnet}
+      local relativeTarget=$relativeTargetDir/${targetBasename}
+      local helmInput=$TMP_DIR/helm/${relativeTarget}
+      mkdir -p $(dirname $helmInput)
+      expand_jsonnet $prev $values $namespace $pkg $absoluteTemplateFilePath >$helmInput
+      helmit $helmInput 2>/dev/null
+    fi
+  done
+}
+
+# convert values file into json, write to stdout
+function get_values() {
+  yq r $1/values.yaml -j 
+  if [ $? -ne 0 ]; then
+    exit 1
+  fi
+}
+
+# write all YAMl files in given directory as YAML stream, write to stdout
+function show() {
+  for file in $(find $1 -type f -name \*.yaml) 
+  do
+    echo "---"
+    echo "# $file"
+    cat $file
+  done 2>/dev/null
+}
+
+# expand the HelmRelease file, write to stdout
+function helmit() {
+  file=$1
+  hr=$(yq r $file -j)
+  values=$(echo "$hr" | jq .spec.values | yq r - >/tmp/foobar)
+  chart=$(echo "$hr" | jq .spec.chart.repository | sed -e 's/"//g')
+  version=$(echo "$hr" | jq .spec.chart.version | sed -e 's/"//g')
+  name=$(echo "$hr" | jq .spec.chart.name | sed -e 's/"//g')
+  release=$(echo "$hr" | jq .spec.releaseName | sed -e 's/"//g')
+  namespace=$(echo "$hr" | jq .metadata.namespace | sed -e 's/"//g')
+  kubectl create namespace $namespace 2>/dev/null
+  echo "$hr" | jq .spec.values | yq r - >$TMP_DIR/${name}-${namespace}.yaml
+  release=${release:=${name}}
+  helm repo add $name $chart >/dev/stderr
+  helm repo update >/dev/stderr
+  
+  helm template --version $version -f $TMP_DIR/${name}-${namespace}.yaml $release $name/$name --namespace ${namespace} 
+}
+
+function main() {
+  setup_tmpdir
+  get_values $CONFIG_DIR >$TMP_DIR/values.json
+  show  $CONFIG_DIR/$MANIFEST_DIR/pkgs/$1/$2 >$TMP_DIR/prev.yaml
+  template_files $TMP_DIR/values.json $TEMPLATE_DIR $1 $2 $TMP_DIR/prev.yaml
+}
+
+main $*

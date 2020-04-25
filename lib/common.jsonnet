@@ -24,9 +24,10 @@ local exp = import 'expand.jsonnet';
 
   package(config, prev, namespace, pkg):: (
     local expanded = exp.expand(config);
-    expanded.namespaces[namespace][pkg] {
+    local me = lib.getElse(expanded, 'namespaces.' + namespace + '.' + pkg, {});
+    me {
       namespace:: lib.kebabCase(namespace),
-      pkg:: lib.kebabCase(lib.getElse(expanded.namespaces[namespace][pkg], 'pkg', pkg)),
+      pkg:: lib.kebabCase(lib.getElse(me, 'pkg', pkg)),
       config: expanded,
       prev:: kubecfg.parseYaml(prev),
     }
