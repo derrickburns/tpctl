@@ -20,7 +20,7 @@ local deployment(me) = flux.deployment(me) {
 
 local service(me) = k8s.service(me) {
   spec+: {
-    ports: [k8s.port(3200, 3200)],
+    ports: [k8s.port(8080, 3200)],
   },
 };
 
