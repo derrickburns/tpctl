@@ -46,6 +46,7 @@ function template_files() {
 
     # make the directory to place the new file in, if it does not exist
 
+    echo '---'
     if [ "${templateBasename: -5}" == ".yaml" ]; then
       # copy a basic yaml file
       local relativeTarget=$relativeTargetDir/$templateBasename
