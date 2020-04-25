@@ -75,7 +75,13 @@ local configmapNamesFromPod(pod) = lib.pruneList(
 
 {
 
-  key(o): "%s %s %s %s" % [o.apiVersion, o.kind, o.metadata.name, lib.getElse( o, 'metadata.namespace', '---')],
+  key(o): (
+    assert std.objectHas(o, 'apiVersion') : std.manifestJson(o);
+    assert std.objectHas(o, 'kind') : std.manifestJson(o);
+    assert std.objectHas(o, 'metadata') : std.manifestJson(o);
+    assert std.objectHas(o.metadata, 'name') : std.manifestJson(o);
+    "%s %s %s %s" % [o.apiVersion, o.kind, o.metadata.name, lib.getElse( o, 'metadata.namespace', '---')]
+  ),
 
   isResource(o):: std.isObject(o) && std.objectHas(o, 'apiVersion') && std.objectHas(o, 'kind'),
 
