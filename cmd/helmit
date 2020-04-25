@@ -7,7 +7,6 @@ version=$(echo "$hr" | jq .spec.chart.version | sed -e 's/"//g')
 name=$(echo "$hr" | jq .spec.chart.name | sed -e 's/"//g')
 release=$(echo "$hr" | jq .spec.releaseName | sed -e 's/"//g')
 namespace=$(echo "$hr" | jq .metadata.namespace | sed -e 's/"//g')
-kubectl create namespace $namespace 2>/dev/null
 echo "$hr" | jq .spec.values | yq r - >/tmp/${name}-${namespace}.yaml
 release=${release:=${name}}
 helm repo add $name $chart >/dev/stderr
@@ -15,6 +14,7 @@ helm repo update >/dev/stderr
 
 case ${2:-install} in
 install)
+  kubectl create namespace $namespace 2>/dev/null
   op="upgrade -i --force --version $version -f /tmp/${name}-${namespace}.yaml"
   ;;
 delete)

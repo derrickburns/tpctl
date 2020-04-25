@@ -94,11 +94,10 @@ function helmit() {
   name=$(echo "$hr" | jq .spec.chart.name | sed -e 's/"//g')
   release=$(echo "$hr" | jq .spec.releaseName | sed -e 's/"//g')
   namespace=$(echo "$hr" | jq .metadata.namespace | sed -e 's/"//g')
-  kubectl create namespace $namespace 2>/dev/null
   echo "$hr" | jq .spec.values | yq r - >$TMP_DIR/${name}-${namespace}.yaml
   release=${release:=${name}}
-  helm repo add $name $chart >/dev/stderr
-  helm repo update >/dev/stderr
+  helm repo add $name $chart >/dev/null
+  helm repo update >/dev/null
   
   helm template --version $version -f $TMP_DIR/${name}-${namespace}.yaml $release $name/$name --namespace ${namespace} 
 }
