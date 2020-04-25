@@ -10,7 +10,7 @@
 set -e 
 
 CONFIG_DIR=${3:-${CONFIG_DIR:-.}}
-TEMPLATE_DIR=${4:-${TEMPATE_DIR:-~/go/src/github.com/tidepool-org/tpctl/pkgs}}
+TEMPLATE_DIR=${4:-${TEMPLATE_DIR:-~/go/src/github.com/tidepool-org/tpctl/pkgs}}
 MANIFEST_DIR=manifests
 
 # clean up all temporary files
