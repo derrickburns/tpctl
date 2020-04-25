@@ -85,8 +85,11 @@ local configmapNamesFromPod(pod) = lib.pruneList(
 
   isResource(o):: std.isObject(o) && std.objectHas(o, 'apiVersion') && std.objectHas(o, 'kind'),
 
+  isList(o):: $.isResource(o) && lib.isEq(o, 'kind', 'List'),
+
   flatten(o)::
-    if $.isResource(o) then [o]
+    if $.isList(o) then std.flattenArrays(std.map($.flatten, o.items))
+    else if $.isResource(o) && !$.isK8sList() then std.flattenArrays(std.map($.flatten, o.items))
     else if std.isObject(o) then std.flattenArrays(std.map($.flatten, lib.values(o)))
     else if std.isArray(o) then std.flattenArrays(std.map($.flatten, o))
     else [],
