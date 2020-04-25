@@ -5,7 +5,6 @@ local common = import '../../lib/common.jsonnet';
   shadowNames(names):: std.map(function(x) '%s-shadow' % x, names),
 
   tpFor(config, name):: (
-    assert lib.getElse(config.namespaces, name + '.tidepool', null) != null : std.manifestJson({ c: config, n: name });
     lib.getElse(config.namespaces, name + '.tidepool', null)
   ),
 
