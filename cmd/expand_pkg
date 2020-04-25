@@ -30,42 +30,26 @@ function expand_jsonnet() {
 }
 
 # evaluate all files in a pkg directory, write to stdout
-function template_files() {
+function template() {
   local values=$1
   local absoluteTemplateDir=$2
   local namespace=$3
   local pkg=$4
   local prev=$5
 
-  local absoluteTemplatePkgPath=$absoluteTemplateDir/$4
-
-  for absoluteTemplateFilePath in $(find $absoluteTemplatePkgPath -type f -print); do
-    local relativeFilePath=${absoluteTemplateFilePath#$absoluteTemplateDir/}
-    local relativeTargetDir=$MANIFEST_DIR/pkgs/$namespace/$(dirname $relativeFilePath)
-    local templateBasename=$(basename $relativeFilePath)
-
-    # make the directory to place the new file in, if it does not exist
-
+  pushd $absoluteTemplateDir/$4 >/dev/null 2>&1
+  for f in $(find . -type f -print); do
+    echo "# file: ${f#./}, namespace: $namespace"
     echo '---'
-    echo "# $templateBasename"
-    if [ "${templateBasename: -5}" == ".yaml" ]; then
-      # copy a basic yaml file
-      local relativeTarget=$relativeTargetDir/$templateBasename
-      cat $absoluteTemplateFilePath 
-    elif [ "${templateBasename: -13}" == ".yaml.jsonnet" ]; then
-      # instantiate a jsonnet template into yaml
-      local targetBasename=${templateBasename%.jsonnet}
-      local relativeTarget=$relativeTargetDir/${targetBasename}
-      expand_jsonnet $prev $values $namespace $pkg $absoluteTemplateFilePath 
-    elif [ "${templateBasename: -17}" == "yaml.helm.jsonnet" ]; then
-      local targetBasename=${templateBasename%.helm.jsonnet}
-      local relativeTarget=$relativeTargetDir/${targetBasename}
-      local helmInput=$TMP_DIR/helm/${relativeTarget}
-      mkdir -p $(dirname $helmInput)
-      expand_jsonnet $prev $values $namespace $pkg $absoluteTemplateFilePath >$helmInput
-      helmit $helmInput 2>/dev/null
+    if [ "${f: -5}" == ".yaml" ]; then
+      cat $f
+    elif [ "${f: -13}" == ".yaml.jsonnet" ]; then
+      expand_jsonnet $prev $values $namespace $pkg $f
+    elif [ "${f: -17}" == "yaml.helm.jsonnet" ]; then
+      helmit <(expand_jsonnet $prev $values $namespace $pkg $f) 2>/dev/null 
     fi
   done
+  popd >/dev/null 2>&1
 }
 
 # convert values file into json, write to stdout
@@ -76,7 +60,7 @@ function get_values() {
   fi
 }
 
-# write all YAMl files in given directory as YAML stream, write to stdout
+# write all YAML files in given directory as YAML stream, write to stdout
 function show() {
   for file in $(find $1 -type f -name \*.yaml) 
   do
@@ -108,7 +92,7 @@ function main() {
   setup_tmpdir
   get_values $CONFIG_DIR >$TMP_DIR/values.json
   show $CONFIG_DIR/$MANIFEST_DIR/pkgs/$1/$2 >$TMP_DIR/prev.yaml
-  template_files $TMP_DIR/values.json $TEMPLATE_DIR $1 $2 $TMP_DIR/prev.yaml
+  template $TMP_DIR/values.json $TEMPLATE_DIR $1 $2 $TMP_DIR/prev.yaml
 }
 
 main $*
