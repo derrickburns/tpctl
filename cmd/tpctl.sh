@@ -571,8 +571,8 @@ function make_cluster_config() {
   complete "created eksctl manifest"
 }
 
-function prev() {
-  for file in $(find $TMP_DIR/$MANIFEST_DIR -type f -name \*.yaml)
+function show() {
+  for file in $(find $1/$2 -type f -name \*.yaml)
   do
     echo "---"
     cat $file 
@@ -686,7 +686,7 @@ function namespace_enabled() {
 function make_namespace_config() {
   local values=$(get_values)
   local ns
-  prev > $TMP_DIR/prev
+  show $TMP_DIR/$MANIFEST_DIR > $TMP_DIR/prev
   for ns in $(get_namespaces); do
     start "creating manifests for namespace $ns"
     local pkg
@@ -1184,6 +1184,7 @@ envoy                               - show envoy config
 linkerd_check                       - check Linkerd status
 peering                             - list peering relationships
 vpc                                 - identify the VPC
+show                                - show existing manifests as YAML stream
       
 ----- Cluster Commands
 await_deletion                      - await completion of deletion of the AWS EKS cluster
@@ -1451,6 +1452,13 @@ main() {
       ;;
     fluxoff)
       fluxoff
+      ;;
+    show)
+      check_remote_repo
+      expect_github_token
+      setup_tmpdir
+      clone_remote
+      show $MANIFEST_DIR $1
       ;;
     *)
       if useFzf; then
