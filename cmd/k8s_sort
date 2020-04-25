@@ -18,31 +18,33 @@ import sys
 
 yaml = YAML()
 
-kv_to_index = {}
+kv_index = {}
+
+def key(value):
+    return f"{value['apiVersion']}/{value['kind']}"
+
+def prepare(input):
+    for x in input:
+        k = key(x)
+        if k not in kv_index:
+            kv_index[k] = len(kv_index)
 
 def to_kv_index(value):
-    k = "%s/%s" % ( value["apiVersion"], value["kind"] )
-    if k not in kv_to_index:
-        kv_to_index[k] = len(kv_to_index)
-    return kv_to_index[k]
+    return kv_index[key(value)]
 
 def sort_key(value):
-    metadata = value["metadata"]
-    t = (to_kv_index(value), metadata["namespace"] if "namespace" in metadata else "", metadata["name"])
-    return "%04d/%s/%s" % t
+    m = value["metadata"]
+    return (to_kv_index(value), m["namespace"] if "namespace" in m else "", m["name"])
 
 def load(f):
-    input = []
-    for x in yaml.load_all(f):
-        if x != None:
-            input.append(x)
-    return input
+    return [ x for x in yaml.load_all(f) if x != None]
 
 def dump(output):
-  yaml.dump_all(output, sys.stdout)
+    yaml.dump_all(output, sys.stdout)
 
 def main():
     input = load(sys.stdin)
+    prepare(input)
     output = sorted(input, key=sort_key)
     dump(output)
 

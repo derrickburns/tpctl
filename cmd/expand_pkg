@@ -106,7 +106,7 @@ function helmit() {
 function main() {
   setup_tmpdir
   get_values $CONFIG_DIR >$TMP_DIR/values.json
-  show  $CONFIG_DIR/$MANIFEST_DIR/pkgs/$1/$2 >$TMP_DIR/prev.yaml
+  show $CONFIG_DIR/$MANIFEST_DIR/pkgs/$1/$2 >$TMP_DIR/prev.yaml
   template_files $TMP_DIR/values.json $TEMPLATE_DIR $1 $2 $TMP_DIR/prev.yaml
 }
 
