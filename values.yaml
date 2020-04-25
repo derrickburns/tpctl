@@ -265,3 +265,9 @@ namespaces:
       create: false
     velero:
       enabled: false
+  weave:
+    scope:
+      enabled: true
+      sso:
+        serviceName: weave-scope-app
+        port: 80
