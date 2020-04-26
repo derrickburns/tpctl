@@ -128,13 +128,13 @@ local svcs = [
   'hydrophone',
   'image',
   'jellyfish',
-  'message-api',
+  'messageapi',
   'migrations',
   'notification',
   'seagull',
   'shoreline',
   'task',
-  'tide-whisperer',
+  'tidewhisperer',
   'tools',
   'user',
 ];
@@ -379,12 +379,12 @@ local helmrelease(me) = k8s.helmrelease(me, {
         },
       },
 
-      'message-api': lib.mergeList([common, {
+      messageapi: lib.mergeList([common, {
         extraContainers: extraContainers,
         deployment+: {
-          image: lib.getElse(prev, 'spec.values.message-api.deployment.image', 'tidepool/message-api:master-latest'),
+          image: lib.getElse(prev, 'spec.values.messageapi.deployment.image', 'tidepool/message-api:master-latest'),
         },
-      }, lib.getElse(me, 'message-api', {})]),
+      }, lib.getElse(me, 'messageapi', {})]),
 
       migrations: lib.mergeList([common, {
         extraContainers: extraContainers,
@@ -434,13 +434,13 @@ local helmrelease(me) = k8s.helmrelease(me, {
         },
       },
 
-      'tide-whisperer': lib.mergeList([common, {
+      tidewhisperer: lib.mergeList([common, {
         extraContainers: extraContainers,
         deployment+: {
           replicas: 3,
-          image: lib.getElse(prev, 'spec.values.tide-whisperer.deployment.image', 'tidepool/tide-whisperer:master-latest'),
+          image: lib.getElse(prev, 'spec.values.tidewhisperer.deployment.image', 'tidepool/tide-whisperer:master-latest'),
         },
-      }, lib.getElse(me, 'tide-whisperer', {})]),
+      }, lib.getElse(me, 'tidewhisperer', {})]),
 
       tools: lib.mergeList([common, {
         extraContainers: extraContainers,
