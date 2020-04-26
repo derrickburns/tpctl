@@ -1,9 +1,8 @@
 local common = import '../../lib/common.jsonnet';
-local flux = import '../../lib/flux.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
-local deployment(me) = flux.deployment(me) {
+local deployment(me) = k8s.deployment(me) {
   _containers:: {
     image: 'mrvautin/adminmongo:latest',
     imagePullPolicy: 'Always',
