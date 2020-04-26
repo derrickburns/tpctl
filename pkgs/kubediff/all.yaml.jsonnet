@@ -14,7 +14,7 @@ local deployment(me) = k8s.deployment(me) {
       args: [
         '-repo=%s' % me.config.general.github.https,
         '-wait=60',
-        '-dest=/data/repo',
+        '-dest=manifests',
       ],
       env: [
         {
