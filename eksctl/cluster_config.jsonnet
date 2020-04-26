@@ -5,9 +5,6 @@ local kubecfg = import 'kubecfg.libsonnet';
 
 local annotatedNodegroup(config, ng, clusterName) =
   ng {
-    kubeletExtraConfig: {
-      allowedUnsafeSysctls: 'net.netfilter*',
-    },
     tags+: {
       'k8s.io/cluster-autoscaler/enabled': 'true',
       ['k8s.io/cluster-autoscaler/' + clusterName]: 'true',
