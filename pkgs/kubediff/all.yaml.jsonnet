@@ -14,7 +14,7 @@ local deployment(me) = k8s.deployment(me) {
       args: [
         '-repo=%s' % me.config.general.github.https,
         '-wait=60',
-        '-dest=manifests',
+        '-dest=/data/repo',
       ],
       env: [
         {
@@ -49,7 +49,7 @@ local deployment(me) = k8s.deployment(me) {
         '-period=60s',
         '-listen-addr=:80',
         '/kubediff',
-        '/data/repo/<location in your repo of yaml files>',
+        '/data/repo/manifests',
       ],
       image: 'weaveworks/kubediff',
       ports: [
