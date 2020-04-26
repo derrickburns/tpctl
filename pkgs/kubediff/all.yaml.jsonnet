@@ -22,7 +22,7 @@ local deployment(me) = k8s.deployment(me) {
           valueFrom: {
             secretKeyRef: {
               key: 'username',
-              name: 'kubediff-secret',
+              name: me.pkg,
             },
           },
         },
@@ -31,7 +31,7 @@ local deployment(me) = k8s.deployment(me) {
           valueFrom: {
             secretKeyRef: {
               key: 'password',
-              name: 'kubediff-secret',
+              name: me.pkg,
             },
           },
         },
