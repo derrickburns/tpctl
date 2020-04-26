@@ -9,7 +9,7 @@ local lookup(x, y) =
   if x == null then null
   else if y == '' then x
   else if std.isNumber(y) && std.isArray(x) && std.length(x) > y && y >= 0 then x[y]
-  else if std.isString(y) && std.isObject(x) && std.objectHas(x, y) then x[y]
+  else if std.isString(y) && std.isObject(x) && std.objectHasAll(x, y) then x[y]
   else null;
   
 {
