@@ -10,7 +10,7 @@ local deployment(me) = k8s.deployment(me) {
       k8s.envSecret('DB_USERNAME', 'mongo', 'Username'),
       k8s.envSecret('DB_PASSWORD', 'mongo', 'Password', true),
       k8s.envSecret('DB_HOST', 'mongo', 'Addresses'),
-      k8s.envSecret('DB_NAME', 'mongo', 'user'),
+      k8s.envVar('DB_NAME', 'user'),
       k8s.envVar('DB_PORT', '27017'),
       k8s.envVar('CONN_NAME', 'local'),
     ],
