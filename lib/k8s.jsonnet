@@ -106,6 +106,40 @@ local configmapNamesFromPod(pod) = lib.pruneList(
     kind: kind,
   },
 
+  // Add a namespace.
+  namespace(ns):: function(o) (
+    // Exclude non-namespaced resources
+    // See kubectl api-resources --namespaced=false
+    local nonNamespaced = std.set([
+      "ComponentStatus",
+      "Namespace",
+      "Node",
+      "PersistentVolume",
+      "MutatingWebhookConfiguration",
+      "ValidatingWebhookConfiguration",
+      "CustomResourceDefinition",
+      "APIService",
+      "TokenReview",
+      "SelfSubjectAccessReview",
+      "SelfSubjectRulesReview",
+      "SubjectAccessReview",
+      "CertificateSigningRequest",
+      "PodSecurityPolicy",
+      "ClusterRoleBinding",
+      "ClusterRole",
+      "PriorityClass",
+      "CSIDriver",
+      "CSINode",
+      "StorageClass",
+      "VolumeAttachment",
+    ]);
+    if !std.setMember(o.kind, nonNamespaced) then o + {
+      metadata+: {
+        namespace: ns
+      }
+    } else o
+  ),
+
   metadata(name, namespace=''):: {
     metadata: {
                 name: name,
