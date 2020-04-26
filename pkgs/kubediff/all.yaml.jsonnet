@@ -15,6 +15,7 @@ local clusterrole(me) = k8s.clusterrole(me) {
         'get',
       ],
     },
+  ]
 };
 
 local service(me) = k8s.service(me) {
