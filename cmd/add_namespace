@@ -1,0 +1,19 @@
+#!/usr/local/bin/bash
+#
+# add_namespace $yamlStreamFile $namespace
+#
+# Input: YAML stream of Kubernetes manifests (i.e. each object has metadata with apiVersion, kind, name)
+# Output: YAML stream with namespace added if missing
+#
+
+cat >/tmp/expand.jsonnet <<!
+local kubecfg = import 'kubecfg.libsonnet';
+local kustomize  = import 'kustomize.jsonnet';
+
+function(input, namespace) [ kustomize.namespace(namespace)(x) for x in kubecfg.parseYaml(input) if x != null ]
+!
+
+X=$( dirname "${BASH_SOURCE[0]}" )
+export LIBDIR=$( cd "$X"/../lib >/dev/null 2>&1 && pwd )
+
+kubecfg show -J $LIBDIR --tla-str-file input=$1 --tla-str namespace=$2 /tmp/expand.jsonnet

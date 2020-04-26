@@ -85,7 +85,8 @@ function expand_helm() {
   release=${release:=${name}}
   helm repo add $name $chart  >/dev/null
   helm repo update >/dev/null
-  helm template --version $version -f $TMP_DIR/helmvalues.yaml $release $name/$name --namespace ${namespace} 
+  helm template --version $version -f $TMP_DIR/helmvalues.yaml $release $name/$name --namespace ${namespace} >$TMP_DIR/xxx
+  add_namespace $TMP_DIR/xxx $namespace
 }
 
 function main() {
