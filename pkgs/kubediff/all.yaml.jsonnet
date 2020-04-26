@@ -2,6 +2,21 @@ local common = import '../../lib/common.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
+local clusterrole(me) = k8s.clusterrole(me) {
+  rules: [
+    {
+      apiGroups: [
+        '*',
+      ],
+      resources: [
+        '*',
+      ],
+      verbs: [
+        'get',
+      ],
+    },
+};
+
 local service(me) = k8s.service(me) {
   spec+: {
     ports: [k8s.port(8080, 80)],
@@ -68,6 +83,7 @@ local deployment(me) = k8s.deployment(me) {
   spec+: {
     template+: {
       spec+: {
+        serviceAccountName: me.pkg,
         volumes: [
           {
             emptyDir: {},
@@ -84,5 +100,8 @@ function(config, prev, namespace, pkg) (
   [
     service(me),
     deployment(me),
+    clusterrole(me),
+    k8s.clusterrolebinding(me),
+    k8s.serviceaccount(me),
   ]
 )
