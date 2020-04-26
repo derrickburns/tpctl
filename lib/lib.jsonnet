@@ -1,3 +1,17 @@
+local index(x) =
+  if std.endsWith(x, "]") 
+  then std.parseInt(std.substr(x,0, std.length(x)-1))
+  else x;
+
+local parts(x) = std.map(index, std.flattenArrays([ std.split(y, '.') for y in std.split(x, '[') ]));
+
+local lookup(x, y) =
+  if x == null then null
+  else if y == '' then x
+  else if std.isNumber(y) && std.isArray(x) && std.length(x) > y && y >= 0 then x[y]
+  else if std.isString(y) && std.isObject(x) && std.objectHas(x, y) then x[y]
+  else null;
+  
 {
   isEnabled(x):: $.isTrue(x, 'enabled'),
 
@@ -30,10 +44,7 @@
     then { [key]+: std.mapWithKey(remap, x[key]) }
     else {},
 
-  get(x, path, sep='.'):: (
-    local foldFunc(x, key) = if std.isObject(x) && std.objectHasAll(x, key) then x[key] else null;
-    std.foldl(foldFunc, std.split(path, sep), x)
-  ),
+  get(init, pattern):: std.foldl(lookup, parts(pattern), init),
 
   getElse(x, path, default):: (
     local found = $.get(x, path);
@@ -103,7 +114,8 @@
 
   pascalCase(kebabCaseWord):: $.camelCase(kebabCaseWord, true),
 
-  withKeyAsField(o, as): std.mapWithKey(function(name, val) val + if std.objectHas(o, as) then o else {[as]: name}, o),
+  withKeyAsField(o, as):: std.mapWithKey(function(name, val) val + if std.objectHas(o, as) then o else {[as]: name}, o),
 
-  asArrayWithField(o, as): $.values( $.withKeyAsField(o,as) ),
+  asArrayWithField(o, as):: $.values( $.withKeyAsField(o,as) ),
+
 }
