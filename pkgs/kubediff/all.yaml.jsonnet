@@ -13,7 +13,7 @@ local deployment(me) = k8s.deployment(me) {
     'git-sync':
       {
         args: [
-          '-repo=%s' % config.genera.github.https,
+          '-repo=%s' % me.config.genera.github.https,
           '-wait=60',
           '-dest=/data/repo',
         ],
