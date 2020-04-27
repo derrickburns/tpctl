@@ -1201,6 +1201,8 @@ vpa                                 - install vertical pod autoscaler
 dehelm \$namespace \$releaseName \$chartName - remove helmreleases 
 fluxon                              - turn on flux and helmoperator
 fluxoff                             - turn off flux and helmoperator
+images \$namespace \$service        - show images for service running in \$namespace
+workloads \$namespace               - show workloads for \$namespace
       
 ----- Other Commands
 buckets                             - create S3 buckets if needed and copy assets if does not exist
@@ -1459,6 +1461,12 @@ main() {
       setup_tmpdir
       clone_remote
       show $MANIFEST_DIR $1
+      ;;
+    images)
+      fluxctl list-images --k8s-fwd-ns flux -n ${1} --workload ${1}:deployment/${2} -l 60
+      ;;
+    workloads)
+      fluxctl list-workloads --k8s-fwd-ns flux -n ${1}
       ;;
     *)
       if useFzf; then

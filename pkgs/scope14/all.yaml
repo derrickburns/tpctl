@@ -190,7 +190,7 @@ items:
         containers:
         - args:
           - --mode=app
-          = --weave=false
+          - --weave=false
           command:
           - /home/weave/scope
           env: []
