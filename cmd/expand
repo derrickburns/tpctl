@@ -5,7 +5,6 @@ set -e
 MANIFEST_DIR=manifests
 VALUES_FILE=values.yaml
 
-
 # clean up working area on exit
 function setup_tmpdir() {
   TMP_DIR=$(mktemp -d 2>/dev/null || mktemp -d -t 'TMP_DIR')
@@ -96,7 +95,7 @@ function output() {
   local pkg=$2
   local src=$3
   echo "# namespace: $namespace, pkg: $pkg, src: $src" >/dev/stderr
-  cat </dev/stdin >/dev/stdout
+  cat </dev/stdin | add_annotation "tidepool.org/pkg" $pkg | add_annotation "tidepool.org/src" $src >/dev/stdout
 }
 
 # return list of enabled packages

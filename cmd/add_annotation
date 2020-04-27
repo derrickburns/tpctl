@@ -1,0 +1,34 @@
+#!/usr/bin/python3
+#
+# add_annotation key value
+#
+# Input: YAML stream of Kubernetes manifests (i.e. each object has metadata with apiVersion, kind, name)
+# Output: YAML stream with annotation added to each object
+#
+
+from ruamel.yaml import YAML
+import sys
+
+yaml = YAML()
+
+def load(f):
+    return [ x for x in yaml.load_all(f) if x != None]
+
+def annotated(x, key, value):
+    if "annotations" not in x["metadata"]:
+        x["metadata"]["annotations"] = {}
+    x["metadata"]["annotations"][key] = value
+    return x
+
+def annotate(input, key, value):
+    return [ annotated(x, key, value) for x in input ]
+
+def dump(output):
+    yaml.dump_all(output, sys.stdout)
+
+def main():
+    input = load(sys.stdin)
+    output = annotate(input, sys.argv[1], sys.argv[2])
+    dump(output)
+
+main()
