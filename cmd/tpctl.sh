@@ -19,7 +19,10 @@ cluster-integration
 cluster-shared
 cluster-production
 '
+CONFIG_DIR=.
 MANIFEST_DIR=manifests
+VALUES_FILE=values.yaml
+
 python3 -m pip install ruamel.yaml >/dev/null 2>&1
 
 function useFzf() {
@@ -208,24 +211,36 @@ function expect_success() {
   fi
 }
 
+LEVEL=0
+
+function indent() {
+  for i in $(seq 1 $LEVEL); do echo -n " "; done
+}
+
 # show info message
 function start() {
-  echo >&2 "${GREEN}[i] ${1}${RESET}"
+  echo >&2 "$(indent) ${GREEN}[i] ${1}${RESET}"
+  LEVEL=$(expr $LEVEL + 1 || true)
 }
 
 # show info message
 function complete() {
-  echo >&2 "${MAGENTA}[√] ${1}${RESET}"
+  LEVEL=$(expr $LEVEL - 1 || true)
+  echo >&2 "$(indent)${MAGENTA}[√] ${1}${RESET}"
 }
 
 # show info message
 function info() {
-  echo >&2 "${MAGENTA}[√] ${1}${RESET}"
+  LEVEL=$(expr $LEVEL + 1 || true)
+  echo >&2 "$(indent)${MAGENTA}[√] ${1}${RESET}"
+  LEVEL=$(expr $LEVEL - 1 || true)
 }
 
 # report that file is being added to config repo
 function add_file() {
-  echo >&2 "${GREEN}[ℹ] adding ${1}${RESET}"
+  LEVEL=$(expr $LEVEL + 1 || true)
+  echo >&2 "$(indent)${GREEN}[ℹ] adding ${1}${RESET}"
+  LEVEL=$(expr $LEVEL - 1 || true)
 }
 
 # report all files added to config repo from list given in stdin
@@ -572,11 +587,13 @@ function make_cluster_config() {
 }
 
 function show() {
-  for file in $(find $1/$2 -type f -name \*.yaml)
-  do
-    echo "---"
-    cat $file 
-  done
+  local directory=$1
+  if [ -d $directory ]; then
+    for file in $(find $directory -type f -print); do
+      echo "---"
+      cat $file
+    done
+  fi
 }
 
 # make service accounts  for namespace given config, path, prefix, and environment name
@@ -603,64 +620,6 @@ function template_service_accounts() {
   done
 }
 
-function expand_jsonnet() {
-  kubecfg show --tla-str-file prev=$1 --tla-code-file config=$2 --tla-str namespace=$3 --tla-str pkg=$4 $5 | k8s_sort
-}
-
-# template_files $1 $2 $3 $4 $5 - instantiates template for pkg in given namespace
-# $1 - json values file  (values file name)
-# $2 - the absolute path to the template directory
-# $3 - the target namespace for the instantiated templates
-# $4 - the name of the package to instantiate
-# $5 - the name of the file with the YAML manifests created during the last run
-#
-# copies files with suffix ".yaml"
-# evaluates templates for files with suffix ".yaml.jsonnet"
-# lists files created to stderr
-#
-function template_files() {
-  local values=$1
-  local absoluteTemplateDir=$2
-  local namespace=$3
-  local pkg=$4
-  local prev=$5
-
-  local absoluteTemplatePkgPath=$absoluteTemplateDir/$4
-
-  for absoluteTemplateFilePath in $(find $absoluteTemplatePkgPath -type f -print); do
-    local relativeFilePath=${absoluteTemplateFilePath#$absoluteTemplateDir/}
-    local relativeTargetDir=$MANIFEST_DIR/pkgs/$namespace/$(dirname $relativeFilePath)
-    local templateBasename=$(basename $relativeFilePath)
-
-    # make the directory to place the new file in, if it does not exist
-    mkdir -p $relativeTargetDir
-
-    if [ "${templateBasename: -5}" == ".yaml" ]; then
-      # copy a basic yaml file
-      local relativeTarget=$relativeTargetDir/$templateBasename
-      add_file $relativeTarget
-      cp $absoluteTemplateFilePath $relativeTarget
-    elif [ "${templateBasename: -13}" == ".yaml.jsonnet" ]; then
-      # instantiate a jsonnet template into yaml
-      local targetBasename=${templateBasename%.jsonnet}
-      local relativeTarget=$relativeTargetDir/${targetBasename}
-      add_file ${relativeTarget}
-      expand_jsonnet $prev $values $namespace $pkg $absoluteTemplateFilePath >$relativeTarget
-      expect_success "jsonnet templating failure ${relativeFilePath}"
-    elif [ "${templateBasename: -17}" == "yaml.helm.jsonnet" ]; then
-      local targetBasename=${templateBasename%.helm.jsonnet}
-      local relativeTarget=$relativeTargetDir/${targetBasename}
-      add_file ${relativeTarget}
-      local helmInput=$TMP_DIR/helm/${relativeTarget}
-      mkdir -p $(dirname $helmInput)
-      expand_jsonnet $prev $values $namespace $pkg $absoluteTemplateFilePath >$helmInput
-      expect_success "jsonnet templating failure ${relativeFilePath}"
-      ${COMMAND_DIR}/helmit $helmInput template > ${relativeTarget}
-      expect_success "helm templating failure ${relativeFilePath}"
-    fi
-  done
-}
-
 # make policy manifests
 function make_policy_manifests() {
   local values=$(get_values)
@@ -677,34 +636,170 @@ function make_policy_manifests() {
 }
 
 function namespace_enabled() {
-  local ns=$1
-  local enabled=$(yq r values.yaml namespaces.$ns.namespace.enabled)
+  local namespace=$1
+  local enabled=$(yq r $CONFIG_DIR/${VALUES_FILE} namespaces.${namespace}.namespace.enabled)
   [ "$enabled" == "true" ]
+}
+
+function show_enabled() {
+  local namespace=$1
+  start "processing enabled files for namespace $namespace"
+  if namespace_enabled $namespace; then
+    show $CONFIG_DIR/secrets/$namespace | output $namespace "namespace" "secrets/$namespace"
+    show $CONFIG_DIR/configmaps/$namespace | output $namespace "namespace" "configmaps/$namespace"
+  fi
+  complete "processed enabled files for namespace $namespace"
+}
+
+function output_dir() {
+  local namespace=$1
+  local pkg=$2
+  echo $CONFIG_DIR/manifests/pkgs/$namespace/$pkg
+}
+
+function output() {
+  local namespace=$1
+  local pkg=$2
+  local src=$3
+  local dest=$(output_dir $namespace $pkg)
+  mkdir -p $dest
+  echo "---" >>$dest/output.yaml
+  cat >>$dest/output.yaml
+  info "output namespace $namespace, pkg $pkg, src $src, dest $dest"
+}
+
+# expand the HelmRelease file, write to stdout
+function expand_helm() {
+  local namespace=$1
+  local pkg=$2
+  local src=$3
+  local file=$4
+  local hr=$(yq r $file -j)
+  local values=$(echo "$hr" | jq .spec.values | yq r - >/tmp/foobar)
+  local chart=$(echo "$hr" | jq .spec.chart.repository | sed -e 's/"//g')
+  local version=$(echo "$hr" | jq .spec.chart.version | sed -e 's/"//g')
+  local name=$(echo "$hr" | jq .spec.chart.name | sed -e 's/"//g')
+  local release=$(echo "$hr" | jq .spec.releaseName | sed -e 's/"//g')
+  local namespace=$(echo "$hr" | jq .metadata.namespace | sed -e 's/"//g')
+  local release=${release:=${name}}
+  local tmp=$TMP_DIR/helmvalues.yaml
+
+  start "expanding helm release from $src"
+  echo "$hr" | jq .spec.values | yq r - >$tmp
+  helm repo add $name $chart  >/dev/null
+  helm repo update >/dev/null
+  helm template --version $version -f $tmp $release $name/$name --namespace ${namespace} 
+  complete "expanded helm release for namespace $namespace, package $pkg, src $src"
+}
+
+# evaluate jsonnet file
+function expand_jsonnet() {
+  local values=$1
+  local prev=$2
+  local namespace=$3
+  local pkg=$4
+  local template=$5
+  start "expanding template $template"
+  kubecfg show --tla-str-file prev=$prev --tla-code-file config=$values --tla-str namespace=$namespace --tla-str pkg=$pkg $template | k8s_sort 
+  complete "expanded template $template"
+}
+
+# generate all files in a pkg directory
+function generate() {
+  local values=$1
+  local prev=$2
+  local namespace=$3
+  local pkg=$4
+  start "expanding package $pkg"
+
+  local base=${TEMPLATE_DIR}pkgs/$pkg
+  for f in $(find $base -type f -print); do
+    local src=${f#$base/}
+    echo '---' | output $namespace $pkg $src
+    if [ "${src: -5}" == ".yaml" ]; then
+      cat $f | output $namespace $pkg $src
+    elif [ "${src: -13}" == ".yaml.jsonnet" ]; then
+      expand_jsonnet $values $prev $namespace $pkg $f | output $namespace $pkg $src
+    elif [ "${src: -17}" == "yaml.helm.jsonnet" ]; then
+      expand_jsonnet $values $prev $namespace $pkg $f > $TMP_DIR/expanded
+      expand_helm $namespace $pkg $src $TMP_DIR/expanded | output $namespace $pkg $src
+    fi
+  done
+  complete "expanded package $pkg"
+}
+
+# transform files that were generated
+function transform() {
+  local values=$1
+  local namespace=$2
+  local pkg=$3
+
+  local base=${TEMPLATE_DIR}pkgs/$pkg
+  local src=transform.jsonnet
+  local transform=${base}/${src}
+
+  if [ -f "$transform" ]; then
+    start "transforming package $pkg"
+    local dir=$(output_dir $namespace $pkg)
+    local generated=$TMP_DIR/generated
+    show $dir >$generated
+    rm -rf $dir
+    expand_jsonnet $values $generated $namespace $pkg $transform | output $namespace $pkg $src
+    complete "transformed package $pkg"
+  fi
+}
+
+# compute all manifests for a package
+function expand_pkg() {
+  local values=$1
+  local prev=$2
+  local namespace=$3
+  local pkg
+  for pkg in $(enabled_pkgs namespaces.$namespace); do
+    start "expanding packages for namespace $namespace"
+    generate $values $prev $namespace $pkg
+    transform $values $namespace $pkg
+    complete "expanded packages for namespace $namespace"
+  done
+}
+
+# remove nulls (successive lines with "---" and trailing lines with "---"
+function cleanse_nulls() {
+  sed -e '$!N; /^\(---\)\n\1$/!P; D' | sed -e '${/^---$/d;}' 
+
+}
+
+function expand_namespace() {
+  local values=$1
+  local prev=$2
+  local namespace=$3
+  start "expanding namespace $namespace"
+  expand_pkg $values $prev $namespace
+  show_enabled $namespace
+  complete "expanded manifests for namespace $namespace"
+}
+
+function expand() {
+  local values=$1
+  local prev=$2
+  start "expanding all namespaces"
+  local namespace
+  for namespace in $(get_namespaces); do
+    expand_namespace $values $prev $namespace
+  done
+  for file in $(find ./manifests -type f -name \*.yaml); do
+    mv $file $TMP_DIR/dirty
+    cleanse_nulls < $TMP_DIR/dirty > $file
+    rm $TMP_DIR/dirty
+  done
+  complete "expanded all namespaces"
 }
 
 # make K8s manifests
 function make_namespace_config() {
   local values=$(get_values)
-  local ns
   show $TMP_DIR/$MANIFEST_DIR > $TMP_DIR/prev
-  for ns in $(get_namespaces); do
-    start "creating manifests for namespace $ns"
-    local pkg
-    for pkg in $(enabled_pkgs namespaces.$ns); do
-      template_files "$values" ${TEMPLATE_DIR}pkgs $ns $pkg $TMP_DIR/prev
-    done
-    if namespace_enabled $ns; then
-      if [ -d secrets/$ns ]; then
-        mkdir -p $MANIFEST_DIR/secrets/$ns
-        cp -r secrets/$ns/* $MANIFEST_DIR/secrets/$ns
-      fi
-      if [ -d configmaps/$ns ]; then
-        mkdir -p $MANIFEST_DIR/configmaps/$ns
-        cp -r configmaps/$ns/* $MANIFEST_DIR/configmaps/$ns
-      fi
-    fi
-    complete "created manifests for namespace $ns"
-  done
+  expand $values $TMP_DIR/prev
 }
 
 # create all K8s manifests and EKSCTL manifest
@@ -1460,7 +1555,7 @@ main() {
       expect_github_token
       setup_tmpdir
       clone_remote
-      show $MANIFEST_DIR $1
+      show $MANIFEST_DIR/$1
       ;;
     images)
       fluxctl list-images --k8s-fwd-ns flux -n ${1} --workload ${1}:deployment/${2} -l 60
