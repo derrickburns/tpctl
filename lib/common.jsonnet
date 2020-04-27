@@ -29,7 +29,7 @@ local exp = import 'expand.jsonnet';
       namespace:: lib.kebabCase(namespace),
       pkg:: lib.kebabCase(lib.getElse(me, 'pkg', pkg)),
       config: expanded,
-      prev:: lib.removeNulls(kubecfg.parseYaml(prev)),
+      prev:: kubecfg.parseYaml(prev),
     }
   ),
 

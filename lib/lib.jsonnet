@@ -118,5 +118,4 @@ local lookup(x, y) =
 
   asArrayWithField(o, as):: $.values( $.withKeyAsField(o,as) ),
 
-  removeNulls(objs):: std.filter( function(x) x != null, objs),
 }
