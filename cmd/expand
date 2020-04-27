@@ -1,0 +1,181 @@
+# make K8s manifests
+
+set -e
+
+MANIFEST_DIR=manifests
+VALUES_FILE=values.yaml
+
+
+# clean up working area on exit
+function setup_tmpdir() {
+  TMP_DIR=$(mktemp -d 2>/dev/null || mktemp -d -t 'TMP_DIR')
+  trap cleanup EXIT
+}
+
+# clean up all temporary files
+function cleanup() {
+  if [ -d "$TMP_DIR" ]; then
+    rm -rf $TMP_DIR
+  fi
+}
+
+# retrieve names of all namespaces to create
+function get_namespaces() {
+  local config_dir=$1
+  yq r $config_dir/${VALUES_FILE} -p p namespaces.* | sed -e "s/namespaces\.//"
+}
+
+# evaluate jsonnet file, write to stdout
+function expand_jsonnet() {
+  local values=$1
+  local prev=$2
+  local namespace=$3
+  local pkg=$4
+  local template=$5
+  kubecfg show --tla-str-file prev=$prev --tla-code-file config=$values --tla-str namespace=$namespace --tla-str pkg=$pkg $template | k8s_sort | output $namespace $pkg $template
+}
+
+# evaluate all files in a pkg directory, write to stdout
+function template() {
+  local config_dir=$1
+  local template_dir=$2
+  local values=$3
+  local prev=$4
+  local namespace=$5
+  local pkg=$6
+
+  pushd $template_dir/$pkg >/dev/null 2>&1
+  for f in $(find . -type f -print); do
+    local src=${f#./}
+    echo '---'
+    if [ "${src: -5}" == ".yaml" ]; then
+      cat $f | output $namespace $pkg $src
+    elif [ "${src: -13}" == ".yaml.jsonnet" ]; then
+      expand_jsonnet $values $prev $namespace $pkg $src
+    elif [ "${src: -17}" == "yaml.helm.jsonnet" ]; then
+      expand_jsonnet $values $prev $namespace $pkg $src > $TMP_DIR/expanded
+      expand_helm $namespace $pkg $src $TMP_DIR/expanded 
+    fi
+  done
+  popd >/dev/null 2>&1
+}
+
+# convert values file into json, write to stdout
+function get_values() {
+  local config_dir=$1
+  yq r ${config_dir}/${VALUES_FILE} -j 
+  if [ $? -ne 0 ]; then
+    exit 1
+  fi
+}
+
+# expand the HelmRelease file, write to stdout
+function expand_helm() {
+  local namespace=$1
+  local pkg=$2
+  local src=$3
+  local file=$4
+  local hr=$(yq r $file -j)
+  local values=$(echo "$hr" | jq .spec.values | yq r - >/tmp/foobar)
+  local chart=$(echo "$hr" | jq .spec.chart.repository | sed -e 's/"//g')
+  local version=$(echo "$hr" | jq .spec.chart.version | sed -e 's/"//g')
+  local name=$(echo "$hr" | jq .spec.chart.name | sed -e 's/"//g')
+  local release=$(echo "$hr" | jq .spec.releaseName | sed -e 's/"//g')
+  local namespace=$(echo "$hr" | jq .metadata.namespace | sed -e 's/"//g')
+  local release=${release:=${name}}
+  local tmp=$TMP_DIR/helmvalues.yaml
+
+  echo "$hr" | jq .spec.values | yq r - >$tmp
+  helm repo add $name $chart  >/dev/null
+  helm repo update >/dev/null
+  helm template --version $version -f $tmp $release $name/$name --namespace ${namespace} | output $namespace $pkg $src
+}
+
+function output() {
+  local namespace=$1
+  local pkg=$2
+  local src=$3
+  echo "# namespace: $namespace, pkg: $pkg, src: $src" >/dev/stderr
+  cat </dev/stdin >/dev/stdout
+}
+
+# return list of enabled packages
+function enabled_pkgs() {
+  local config_dir=$1
+  local key=$2
+  yq r values.yaml -p pv ${key}.*.enabled | grep "true" | sed -e 's/\.enabled:.*//'  -e 's/.*\.//'
+}
+
+function expand_pkg() {
+  local config_dir=$1
+  local template_dir=$2
+  local values=$3
+  local prev=$4
+  local namespace=$5
+  local pkg
+  for pkg in $(enabled_pkgs $config_dir namespaces.$namespace); do
+    template $config_dir $template_dir $values $prev $namespace $pkg
+  done
+}
+
+function show() {
+  local directory=$1
+  if [ -d $directory ]; then
+    for file in $(find $directory -type f -print); do
+      echo "---"
+      cat $file
+    done
+  fi
+}
+
+function namespace_enabled() {
+  local config_dir=$1
+  local namespace=$2
+  local enabled=$(yq r $config_dir/${VALUES_FILE} namespaces.${namespace}.namespace.enabled)
+  [ "$enabled" == "true" ]
+}
+
+function show_enabled() {
+  local config_dir=$1
+  local namespace=$2
+  if namespace_enabled $config_dir $namespace; then
+    show $config_dir/secrets/$namespace
+    show $config_dir/configmaps/$namespace
+  fi
+}
+
+function expand_namespace() {
+  local config_dir=$1
+  local template_dir=$2
+  local values=$3
+  local prev=$4
+  local namespace=$5
+  expand_pkg $config_dir $template_dir $values $prev $namespace
+  show_enabled $config_dir $namespace
+}
+
+function expand() {
+  local config_dir=$1
+  local template_dir=$2
+  local values=$3
+  local prev=$4
+  local namespace
+  for namespace in $(get_namespaces $config_dir); do
+    expand_namespace $config_dir $template_dir $values $prev $namespace
+  done
+}
+
+function main() {
+  local config_dir=$1
+  local template_dir=$2
+  setup_tmpdir
+  local values_file=$TMP_DIR/values.json
+  get_values $config_dir >$values_file
+  local prev_file=$TMP_DIR/prev.yaml
+  show $config_dir/$MANIFEST_DIR >$prev_file
+  expand $config_dir $template_dir $values_file $prev_file
+}
+
+CONFIG_DIR=${1:-${CONFIG_DIR:-.}}
+TEMPLATE_DIR=${2:-${TEMPLATE_DIR:-~/go/src/github.com/tidepool-org/tpctl/pkgs}}
+main $CONFIG_DIR $TEMPLATE_DIR
