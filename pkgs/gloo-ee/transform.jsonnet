@@ -25,6 +25,8 @@ local patch(me, proxy) = {
   },
 };
 
+local addnamespace(me) = std.map(kustomize.namespace(me.namespace), me.prev);
+
 local transform(me) = 
   k8s.patch( 
     k8s.patch(
@@ -34,6 +36,5 @@ local transform(me) =
       patch(me, 'internal-gateway-proxy')), 
     patch(me, 'pomerium-gateway-proxy'));
 
-local addnamespace(me) = std.map(kustomize.namespace(me.namespace), me.prev);
 
 function(config, prev, namespace, pkg) addnamespace(common.package(config, prev, namespace, pkg))
