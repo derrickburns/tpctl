@@ -15,9 +15,7 @@ local deployment(me) = flux.deployment(me) {
     ports: [{ containerPort: containerPort }],
   },
   spec+: {
-   template+: {
-     spec+: linkerd.metadata(me.config),
-   },
+    template+: linkerd.metadata(me, true),
   },
 };
 
