@@ -18,15 +18,68 @@ import sys
 
 yaml = YAML()
 
+known = [
+	{ "apiVersion": "/", "kind": "Namespace"},
+	{ "apiVersion": "networking.k8s.io/", "kind": "NetworkPolicy"},
+	{ "apiVersion": "/", "kind": "ResourceQuota"},
+	{ "apiVersion": "scheduling.k8s.io/", "kind": "PriorityClass"},
+	{ "apiVersion": "/", "kind": "LimitRange"},
+	{ "apiVersion": "policy/", "kind": "PodSecurityPolicy"},
+	{ "apiVersion": "policy/", "kind": "PodDisruptionBudget"},
+	{ "apiVersion": "/", "kind": "Secret"},
+	{ "apiVersion": "/", "kind": "ConfigMap"},
+	{ "apiVersion": "storage.k8s.io/", "kind": "StorageClass"},
+	{ "apiVersion": "/", "kind": "PersistentVolume"},
+	{ "apiVersion": "/", "kind": "PersistentVolumeClaim"},
+	{ "apiVersion": "/", "kind": "ServiceAccount"},
+	{ "apiVersion": "apiextensions.k8s.io/", "kind": "CustomResourceDefinition"},
+	{ "apiVersion": "rbac.authorization.k8s.io/", "kind": "ClusterRole"},
+	{ "apiVersion": "/", "kind": "ClusterRoleList"},
+	{ "apiVersion": "rbac.authorization.k8s.io/", "kind": "ClusterRoleBinding"},
+	{ "apiVersion": "rbac.authorization.k8s.io/", "kind": "ClusterRoleBindingList"},
+	{ "apiVersion": "rbac.authorization.k8s.io/", "kind": "Role"},
+	{ "apiVersion": "rbac.authorization.k8s.io/", "kind": "RoleList"},
+	{ "apiVersion": "rbac.authorization.k8s.io/", "kind": "RoleBinding"},
+	{ "apiVersion": "rbac.authorization.k8s.io/", "kind": "RoleBindingList"},
+	{ "apiVersion": "/", "kind": "Service"},
+	{ "apiVersion": "apps/", "kind": "DaemonSet"},
+	{ "apiVersion": "/", "kind": "Pod"},
+	{ "apiVersion": "/", "kind": "ReplicationController"},
+	{ "apiVersion": "apps/", "kind": "ReplicaSet"},
+	{ "apiVersion": "apps/", "kind": "Deployment"},
+	{ "apiVersion": "autoscaling/", "kind": "HorizontalPodAutoscaler"},
+	{ "apiVersion": "apps/", "kind": "StatefulSet"},
+	{ "apiVersion": "batch/", "kind": "Job"},
+	{ "apiVersion": "batch/", "kind": "CronJob"},
+	{ "apiVersion": "networking.k8s.io /", "kind": "Ingress"},
+	{ "apiVersion": "gloo.solo.io/", "kind": "Settings"},
+	{ "apiVersion": "gloo.solo.io/", "kind": "Upstream"},
+	{ "apiVersion": "gateway.solo.io/", "kind": "VirtualService"},
+	{ "apiVersion": "gateway.solo.io/", "kind": "Gateway"},
+	{ "apiVersion": "cert-manager.io/", "kind": "Issuer"},
+	{ "apiVersion": "cert-manager.io/", "kind": "ClusterIssuer"},
+	{ "apiVersion": "cert-manager.io/", "kind": "Certificate"},
+	{ "apiVersion": "monitoring.coreos.com/", "kind": "PodMonitor"},
+	{ "apiVersion": "monitoring.coreos.com/", "kind": "ServiceMonitor"},
+	{ "apiVersion": "jaegertracing.io/", "kind": "Jaeger"},
+	{ "apiVersion": "helm.fluxcd.io/", "kind": "HelmRelease"},
+        ]
+
 kv_index = {}
 
 def key(value):
-    return f"{value['apiVersion']}/{value['kind']}"
+    parts = value['apiVersion'].split("/")
+    if len(parts) == 1:
+        return f"/{value['kind']}"
+    else:
+        return f"{parts[0]}/{value['kind']}"
 
-def prepare(input):
+def prepare(input, silent):
     for x in input:
         k = key(x)
         if k not in kv_index:
+            if not silent:
+                print("adding", k)
             kv_index[k] = len(kv_index)
 
 def to_kv_index(value):
@@ -44,7 +97,8 @@ def dump(output):
 
 def main():
     input = load(sys.stdin)
-    prepare(input)
+    prepare(known, True)
+    prepare(input, True)
     output = sorted(input, key=sort_key)
     dump(output)
 
