@@ -2,11 +2,12 @@ local common = import '../../lib/common.jsonnet';
 local flux = import '../../lib/flux.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
+local linkerd = import '../../lib/linkerd.jsonnet';
 
 local port = 8080;
 local containerPort = 4000;
 
-local deployment(me) = flux.deployment(me) {
+local deployment(me) = flux.deployment(me) +  linkerd.metadata(me.config) {
   _containers:: [
     {
       image: 'tidepool/%s:latest' % me.pkg,
