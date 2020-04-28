@@ -1,7 +1,7 @@
 local k8s = import 'k8s.jsonnet';
 
 {
-  policy()::  k8s.k('tidepool.org/v1alpha', 'awsPolicy'),
+  policy()::  k8s.k('tidepool.org/v1alpha1', 'AwsPolicy'),
 
   attachPolicy(allowed):: {
     attachPolicy+: {
