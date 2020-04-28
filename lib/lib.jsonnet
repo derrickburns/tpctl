@@ -55,6 +55,8 @@ local lookup(x, y) =
 
   isTrue(x, path):: $.isEq(x, path, true) || $.isEq(x, path, 'true'),
 
+  isFalse(x, path):: $.isEq(x, path, false) || $.isEq(x, path, 'false'),
+
   mergeList(list):: std.foldl($.merge, list, {}),
 
   // JSON Merge Patch (RFC 7396)

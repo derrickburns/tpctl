@@ -217,10 +217,8 @@ local configmapNamesFromPod(pod) = lib.pruneList(
     local this = self,
     _secretNames:: secretNamesFromPod(this.spec.template.spec),
     _configmapNames:: configmapNamesFromPod(this.spec.template.spec),
-    metadata+: {
-      annotations+: {} + reloaderAnnotations(this) +
-                    (if automated then fluxAnnotations(me) else {}),
-    },
+    local annotations = reloaderAnnotations(this) + (if automated then fluxAnnotations(me) else {}),
+    metadata+: if annotations != {} then { annotations+: annotations } else {},
     spec+: {
       revisionHistoryLimit: 10,
       strategy: {
@@ -232,13 +230,12 @@ local configmapNamesFromPod(pod) = lib.pruneList(
           app: me.pkg,
         },
       },
-      template+: {
+      template+: linkerd.metadata(me) {
         metadata+: {
-          annotations+: linkerd.annotations(me),
           labels+: {
             app: me.pkg,
           },
-        },
+        } ,
         spec+: {
           securityContext+: $.securityContext,
           restartPolicy: 'Always',

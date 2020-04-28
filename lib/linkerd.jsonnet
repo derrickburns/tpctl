@@ -3,18 +3,24 @@ local lib = import 'lib.jsonnet';
 local tracing = import 'tracing.jsonnet';
 
 {
-  annotations(me,force=false)::
+  annotations(me, force=false)::
     if !global.isEnabled(me.config, 'linkerd')
     then {}
-    else lib.getElse(global.package(me.config, 'linkerd'), 'annotations', {}) + {
-      'linkerd.io/inject': if lib.isTrue(me, 'meshed') || force then 'enabled' else 'disabled'
-    } + (if global.isEnabled(me.config, 'oc-collector')
-         then { 'config.linkerd.io/trace-collector': tracing.address(me.config) }
-         else {}),
+    else lib.getElse(global.package(me.config, 'linkerd'), 'annotations', {}) +
+         (if lib.isTrue(me, 'meshed') || force then {
+            'linkerd.io/inject': 'enabled',
+          } else {}) + (if lib.isFalse(me, 'meshed') then {
+                          'linkerd.io/inject': 'disabled',
+                        } else {}) + (if global.isEnabled(me.config, 'oc-collector')
+                                      then { 'config.linkerd.io/trace-collector': tracing.address(me.config) }
+                                      else {}),
 
-  metadata(me):: {
-    metadata+: {
-      annotations+: $.annotations(me),
-    },
-  },
+  metadata(me, force=false):: (
+    local annotations = $.annotations(me, force);
+    if annotations != {} then {
+      metadata+: {
+        annotations+: annotations,
+      },
+    } else {}
+  ),
 }
