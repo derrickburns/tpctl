@@ -8,8 +8,8 @@ local tracing = import 'tracing.jsonnet';
     then {}
     else lib.getElse(global.package(me.config, 'linkerd'), 'annotations', {}) + {
       'linkerd.io/inject': if lib.isTrue(me, 'meshed') || force then 'enabled' else 'disabled'
-    } + (if global.isEnabled(config, 'oc-collector')
-         then { 'config.linkerd.io/trace-collector': tracing.address(config) }
+    } + (if global.isEnabled(me.config, 'oc-collector')
+         then { 'config.linkerd.io/trace-collector': tracing.address(me.config) }
          else {}),
 
   metadata(me):: {
