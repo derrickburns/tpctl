@@ -16,7 +16,7 @@ local Namespace(me) = (
         name: me.namespace,
         annotations:
           lib.getElse(me, 'annotations', {})
-          + (if meshed then linkerd.annotations(me.config) else {}),
+          + (if meshed then linkerd.annotations(me) else {}),
         labels:
           lib.getElse(me, 'labels', {})
           + { 'discovery.solo.io/function_discovery': if discoverable then 'enabled' else 'disabled' }

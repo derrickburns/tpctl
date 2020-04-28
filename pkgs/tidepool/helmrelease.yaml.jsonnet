@@ -156,7 +156,7 @@ local helmrelease(me) = k8s.helmrelease(me, {
     annotations+: annotations(me),
   },
   local common = {
-    podAnnotations: linkerd.annotations(config) + {
+    podAnnotations: linkerd.annotations(me, true) + {
       'cluster-autoscaler.kubernetes.io/safe-to-evict': 'true',  // XXX
     },
     securityContext: k8s.securityContext,

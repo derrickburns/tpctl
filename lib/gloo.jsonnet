@@ -339,7 +339,7 @@ local ExternalDnsHosts(hosts) = {
       httpPort: 8080,
       httpsPort: 8443,
       runAsUser: 10101,
-      extraAnnotations: linkerd.annotations(config) + {
+      extraAnnotations: linkerd.annotations(me, true) + {
         'config.linkerd.io/skip-inbound-ports': 8081,
       },
       resources: {

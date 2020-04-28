@@ -38,7 +38,7 @@ local deployment(me) = k8s.deployment(me) {
   spec+: {
     minReadySeconds: 5,
     progressDeadlineSeconds: 120,
-    template+: prom.metadata(me.config, 8888) + linkerd.metadata(me.config) {
+    template+: prom.metadata(me.config, 8888) + linkerd.metadata(me, true) {
       spec+: {
         containers: [
           {

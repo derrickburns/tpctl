@@ -1,4 +1,5 @@
 local lib = import 'lib.jsonnet';
+local linkerd = import 'linkerd.jsonnet';
 
 local providesHelmRepo(me) = std.objectHas(me, 'version') && std.objectHas(me, 'name') && std.objectHas(me, 'repository');
 
@@ -233,7 +234,8 @@ local configmapNamesFromPod(pod) = lib.pruneList(
       },
       template+: {
         metadata+: {
-          labels: {
+          annotations+: linkerd.annotations(me),
+          labels+: {
             app: me.pkg,
           },
         },
