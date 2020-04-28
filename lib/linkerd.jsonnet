@@ -12,9 +12,9 @@ local tracing = import 'tracing.jsonnet';
          then { 'config.linkerd.io/trace-collector': tracing.address(config) }
          else {}),
 
-  metadata(config):: {
+  metadata(me):: {
     metadata+: {
-      annotations+: $.annotations(config),
+      annotations+: $.annotations(me),
     },
   },
 }
