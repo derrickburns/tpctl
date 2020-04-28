@@ -211,28 +211,30 @@ function expect_success() {
   fi
 }
 
-LEVEL=0
+LEVEL=1
 
 function indent() {
   for i in $(seq 1 $LEVEL); do echo -n " "; done
 }
 
+colors=( ${GREEN} ${MAGENTA} ${CYAN} )
+
 # show info message
 function start() {
-  echo >&2 "$(indent) ${GREEN}[i] ${1}${RESET}"
+  echo >&2 "$(indent)$(tput setaf $LEVEL)[i] ${1}${RESET}"
   LEVEL=$(expr $LEVEL + 1 || true)
 }
 
 # show info message
 function complete() {
   LEVEL=$(expr $LEVEL - 1 || true)
-  echo >&2 "$(indent)${MAGENTA}[√] ${1}${RESET}"
+  echo >&2 "$(indent)$(tput setaf $LEVEL)[√] ${1}${RESET}"
 }
 
 # show info message
 function info() {
   LEVEL=$(expr $LEVEL + 1 || true)
-  echo >&2 "$(indent)${MAGENTA}[√] ${1}${RESET}"
+  echo >&2 "$(indent)$(tput setaf $LEVEL)[√] ${1}${RESET}"
   LEVEL=$(expr $LEVEL - 1 || true)
 }
 
@@ -592,6 +594,7 @@ function show() {
     for file in $(find $directory -type f -print); do
       echo "---"
       cat $file
+      echo
     done
   fi
 }
@@ -644,8 +647,12 @@ function namespace_enabled() {
 function show_enabled() {
   local namespace=$1
   start "processing enabled files for namespace $namespace"
+  local dir=$(output_dir $namespace namespace)
   if namespace_enabled $namespace; then
-    show $CONFIG_DIR/secrets/$namespace | output $namespace "namespace" "secrets/$namespace"
+    if [ -d "$CONFIG_DIR/secrets/$namespace" ]; then
+      mkdir -p $dir/secrets
+      cp $CONFIG_DIR/secrets/$namespace/* $dir/secrets/
+    fi
     show $CONFIG_DIR/configmaps/$namespace | output $namespace "namespace" "configmaps/$namespace"
   fi
   complete "processed enabled files for namespace $namespace"
@@ -665,7 +672,8 @@ function output() {
   mkdir -p $dest
   echo "---" >>$dest/output.yaml
   cat >>$dest/output.yaml
-  info "output namespace $namespace, pkg $pkg, src $src, dest $dest"
+  info "emit: src $src, dest $dest"
+  echo >>$dest/output.yaml
 }
 
 # expand the HelmRelease file, write to stdout
@@ -699,9 +707,10 @@ function expand_jsonnet() {
   local namespace=$3
   local pkg=$4
   local template=$5
-  start "expanding template $template"
+  local short=${template#${TEMPLATE_DIR}}
+  start "expanding template $short"
   kubecfg show --tla-str-file prev=$prev --tla-code-file config=$values --tla-str namespace=$namespace --tla-str pkg=$pkg $template | k8s_sort 
-  complete "expanded template $template"
+  complete "expanded template $short"
 }
 
 # generate all files in a pkg directory
@@ -712,12 +721,13 @@ function generate() {
   local pkg=$4
   start "expanding package $pkg"
 
+  local dir=$(output_dir $namespace $pkg)
   local base=${TEMPLATE_DIR}pkgs/$pkg
   for f in $(find $base -type f -print); do
     local src=${f#$base/}
     echo '---' | output $namespace $pkg $src
     if [ "${src: -5}" == ".yaml" ]; then
-      cat $f | output $namespace $pkg $src
+      cp $f $dir/$src
     elif [ "${src: -13}" == ".yaml.jsonnet" ]; then
       expand_jsonnet $values $prev $namespace $pkg $f | output $namespace $pkg $src
     elif [ "${src: -17}" == "yaml.helm.jsonnet" ]; then
@@ -765,8 +775,7 @@ function expand_pkg() {
 
 # remove nulls (successive lines with "---" and trailing lines with "---"
 function cleanse_nulls() {
-  sed -e '$!N; /^\(---\)\n\1$/!P; D' | sed -e '${/^---$/d;}' 
-
+  sed -e '${/^$/d;}' -e '$!N; /^\n---$/!P; D' | sed -e '$!N; /^---\n---$/!P; D' | sed -e '${/^---$/d;}'
 }
 
 function expand_namespace() {
@@ -776,6 +785,11 @@ function expand_namespace() {
   start "expanding namespace $namespace"
   expand_pkg $values $prev $namespace
   show_enabled $namespace
+  for file in $(find ./manifests -type f -name \*.yaml); do
+    mv $file $TMP_DIR/dirty
+    cleanse_nulls < $TMP_DIR/dirty > $file
+    rm $TMP_DIR/dirty
+  done
   complete "expanded manifests for namespace $namespace"
 }
 
@@ -786,11 +800,6 @@ function expand() {
   local namespace
   for namespace in $(get_namespaces); do
     expand_namespace $values $prev $namespace
-  done
-  for file in $(find ./manifests -type f -name \*.yaml); do
-    mv $file $TMP_DIR/dirty
-    cleanse_nulls < $TMP_DIR/dirty > $file
-    rm $TMP_DIR/dirty
   done
   complete "expanded all namespaces"
 }
@@ -825,9 +834,9 @@ function save_changes() {
     info "No changes made"
     return
   fi
-  info "==== BEGIN Changes"
+  start "==== BEGIN Changes"
   git diff --cached HEAD
-  info "==== END Changes"
+  complete "==== END Changes"
   local branch="tpctl-$(date '+%Y-%m-%d-%H-%M-%S')"
   establish_ssh
   start "saving changes to config repo"
