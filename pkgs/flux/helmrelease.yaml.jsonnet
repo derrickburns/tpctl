@@ -4,7 +4,7 @@ local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
 local helmrelease(me) = k8s.helmrelease(me, {
-  version: '1.2.0',
+  version: '1.3.0',
   repository: 'https://charts.fluxcd.io',
 }) {
 
