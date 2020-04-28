@@ -57,25 +57,8 @@ local lookup(x, y) =
 
   mergeList(list):: std.foldl($.merge, list, {}),
 
-  // merge two objects recursively, choose b for non-object parameters
-  merge(a, b)::
-    if (std.isObject(a) && std.isObject(b))
-    then (
-      {
-        [x]: a[x]
-        for x in std.objectFieldsAll(a)
-        if !std.objectHas(b, x)
-      } + {
-        [x]: b[x]
-        for x in std.objectFieldsAll(b)
-        if !std.objectHas(a, x)
-      } + {
-        [x]: $.merge(a[x], b[x])
-        for x in std.objectFieldsAll(b)
-        if std.objectHas(a, x)
-      }
-    )
-    else b,
+  // JSON Merge Patch (RFC 7396)
+  merge(a, b):: std.mergePatch(a,b),
 
   // strip the object of any field or subfield whose name is in given list
   strip(obj, list)::

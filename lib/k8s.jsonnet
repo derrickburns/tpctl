@@ -94,7 +94,9 @@ local configmapNamesFromPod(pod) = lib.pruneList(
     else if std.isArray(o) then std.flattenArrays(std.map($.flatten, o))
     else [],
 
-  asMap(resources):: { [$.key(x)]: x for x in resources },
+  asMap(o):: 
+    if $.isResource(o) then { [$.key(o)]+: o }
+    else { [$.key(x)]+: x for x in o },
 
   patch(resourceMap, p)::
     if std.objectHas(resourceMap, $.key(p))
