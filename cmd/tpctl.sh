@@ -26,6 +26,8 @@ LOG_LEVEL=3
 
 python3 -m pip install ruamel.yaml >/dev/null 2>&1
 
+declare -a timestack
+
 function useFzf() {
   command -v fzf >/dev/null 2>&1
 }
@@ -217,7 +219,8 @@ LEVEL=1
 function report() {
   if [ $LEVEL -le $LOG_LEVEL ]; then
     for i in $(seq 1 $LEVEL); do echo >&2 -n " "; done
-    echo >&2 "$(tput setaf $LEVEL)[i] ${1}${RESET}"
+
+    echo >&2 "$(tput setaf $LEVEL)[i] ${*}${RESET}"
   fi
 }
 
@@ -226,13 +229,16 @@ colors=( ${GREEN} ${MAGENTA} ${CYAN} )
 # show info message
 function start() {
   report "$@"
-  LEVEL=$(expr $LEVEL + 1 || true)
+  timearray[$LEVEL]=$(date +%s)
+  LEVEL=$((LEVEL + 1))
 }
 
 # show info message
 function complete() {
-  LEVEL=$(expr $LEVEL - 1 || true)
-  report "$@"
+  LEVEL=$(($LEVEL - 1))
+  starttime=timearray[$LEVEL]
+  endtime=$(date +%s)
+  report $@ , took $((endtime - starttime)) sec
 }
 
 # show info message
@@ -777,7 +783,7 @@ function expand_pkg() {
   done
 }
 
-# remove nulls (successive lines with "---" and trailing lines with "---"
+# remove null objects and unnecessary whitespace around header/separator pattern (---)
 function cleanse_nulls() {
   sed -e '${/^$/d;}' -e '$!N; /^\n---$/!P; D' | sed -e '$!N; /^---\n---$/!P; D' | sed -e '${/^---$/d;}'
 }
