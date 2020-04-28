@@ -22,7 +22,7 @@ cluster-production
 CONFIG_DIR=.
 MANIFEST_DIR=manifests
 VALUES_FILE=values.yaml
-LOG_LEVEL=2
+LOG_LEVEL=3
 
 python3 -m pip install ruamel.yaml >/dev/null 2>&1
 
@@ -215,7 +215,7 @@ function expect_success() {
 LEVEL=1
 
 function report() {
-  if [ $LEVEL -le 3 ]; then
+  if [ $LEVEL -le $LOG_LEVEL ]; then
     for i in $(seq 1 $LEVEL); do echo >&2 -n " "; done
     echo >&2 "$(tput setaf $LEVEL)[i] ${1}${RESET}"
   fi
@@ -1345,6 +1345,10 @@ main() {
       -l | --local)
         USE_LOCAL_FILESYSTEM=true
         shift 1
+        ;;
+      -v | --verbose)
+        LOG_LEVEL=$2
+	shift 2
         ;;
       -h | --help)
         help
