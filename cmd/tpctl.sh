@@ -22,6 +22,7 @@ cluster-production
 CONFIG_DIR=.
 MANIFEST_DIR=manifests
 VALUES_FILE=values.yaml
+LOG_LEVEL=2
 
 python3 -m pip install ruamel.yaml >/dev/null 2>&1
 
@@ -213,35 +214,38 @@ function expect_success() {
 
 LEVEL=1
 
-function indent() {
-  for i in $(seq 1 $LEVEL); do echo -n " "; done
+function report() {
+  if [ $LEVEL -le 3 ]; then
+    for i in $(seq 1 $LEVEL); do echo >&2 -n " "; done
+    echo >&2 "$(tput setaf $LEVEL)[i] ${1}${RESET}"
+  fi
 }
 
 colors=( ${GREEN} ${MAGENTA} ${CYAN} )
 
 # show info message
 function start() {
-  echo >&2 "$(indent)$(tput setaf $LEVEL)[i] ${1}${RESET}"
+  report "$@"
   LEVEL=$(expr $LEVEL + 1 || true)
 }
 
 # show info message
 function complete() {
   LEVEL=$(expr $LEVEL - 1 || true)
-  echo >&2 "$(indent)$(tput setaf $LEVEL)[√] ${1}${RESET}"
+  report "$@"
 }
 
 # show info message
 function info() {
   LEVEL=$(expr $LEVEL + 1 || true)
-  echo >&2 "$(indent)$(tput setaf $LEVEL)[√] ${1}${RESET}"
+  report "$@"
   LEVEL=$(expr $LEVEL - 1 || true)
 }
 
 # report that file is being added to config repo
 function add_file() {
   LEVEL=$(expr $LEVEL + 1 || true)
-  echo >&2 "$(indent)${GREEN}[ℹ] adding ${1}${RESET}"
+  report "$@"
   LEVEL=$(expr $LEVEL - 1 || true)
 }
 
@@ -254,7 +258,7 @@ function add_names() {
 
 # report renaming of file in config repo
 function rename_file() {
-  echo >&2 "${GREEN}[√] renaming ${1} ${2}${RESET}"
+  info $1
 }
 
 # conform action, else exit
