@@ -598,10 +598,11 @@ function make_cluster_config() {
   complete "created eksctl manifest"
 }
 
+# cat all yaml files in given directory to stdout
 function show() {
   local directory=$1
   if [ -d $directory ]; then
-    for file in $(find $directory -type f -print); do
+    for file in $(find $directory -type f -name \*.yaml -print); do
       echo "---"
       cat $file
       echo
@@ -741,8 +742,9 @@ function generate() {
     elif [ "${src: -13}" == ".yaml.jsonnet" ]; then
       expand_jsonnet $values $prev $namespace $pkg $f | output $namespace $pkg $src
     elif [ "${src: -17}" == "yaml.helm.jsonnet" ]; then
-      expand_jsonnet $values $prev $namespace $pkg $f > $TMP_DIR/expanded
-      expand_helm $namespace $pkg $src $TMP_DIR/expanded | output $namespace $pkg $src
+      local dehelmed=$dir/${src}.dehelmed
+      expand_jsonnet $values $prev $namespace $pkg $f > $dehelmed
+      expand_helm $namespace $pkg $src $dehelmed | output $namespace $pkg $src
     fi
   done
   complete "expanded package $pkg"
@@ -852,7 +854,6 @@ function save_changes() {
   start "saving changes to config repo"
   read -p "${GREEN}Commit Message [$1]? ${RESET} " -r
   local message=${REPLY:-$1}
-  git add .
   expect_success "git add failed"
   if [ "$branch" != "master" ]; then
     git >&2 checkout -b $branch

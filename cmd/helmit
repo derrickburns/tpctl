@@ -21,7 +21,7 @@ delete)
   op="delete"
   ;;
 template)
-  op="template --version $version -f /tmp/${name}-${namespace}.yaml"
+  op="template --debug --version $version -f /tmp/${name}-${namespace}.yaml"
   ;;
 esac
 
