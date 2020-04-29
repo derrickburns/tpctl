@@ -1,7 +1,6 @@
 FROM tidepool/tpctl-base:latest AS tpctl-base
 
 FROM ubuntu:18.04 AS tpctl
-WORKDIR /root/workdir
 ENV TERM xterm-256color
 ENV TZ America/Los_Angeles
 ENV DEBIAN_FRONTEND noninteractive
