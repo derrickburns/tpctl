@@ -221,7 +221,9 @@ declare -a msgs
 
 function report() {
   if [ $LEVEL -le $LOG_LEVEL ]; then
-    for i in $(seq 1 $LEVEL); do echo >&2 -n " "; done
+    if [ $LEVEL -gt 1 ]; then
+      for i in $(seq 2 $LEVEL); do echo >&2 -n " "; done
+    fi
     local msg=${msgs[$LEVEL]}
     echo >&2 "$(tput setaf $LEVEL)[$1]: $msg $2${RESET}"
   fi
@@ -842,6 +844,7 @@ function save_changes() {
     return
   fi
 
+  start "adding and diffing changes"
   git add .
   expect_success "git add failed"
   export GIT_PAGER=/bin/cat
@@ -850,45 +853,43 @@ function save_changes() {
     info "No changes made"
     return
   fi
-  start "==== BEGIN Changes"
   git diff --cached HEAD
   local branch="tpctl-$(date '+%Y-%m-%d-%H-%M-%S')"
   establish_ssh
-  start "saving changes to config repo"
   read -p "${GREEN}Commit Message [$1]? ${RESET} " -r
   local message=${REPLY:-$1}
-  expect_success "git add failed"
+  complete
+  start "saving changes"
   if [ "$branch" != "master" ]; then
     git >&2 checkout -b $branch
     expect_success "git checkout failed"
   fi
   expect_success "git checkout failed"
   git commit -m "$message"
-  expect_success "git commit failed"
   complete
+  expect_success "git commit failed"
   if [ "$SKIP_REVIEW" == true ]; then
-    echo "Skipping review"
+    start "merging locally"
     git checkout master
     git merge $branch
     git push
-    return
+    complete
+  else
+    start "pushing branch $branch"
+    git push origin $branch
+    expect_success "git push failed"
+    complete
+    info "Please select PR reviewer: "
+    select REVIEWER in none $REVIEWERS; do
+      if [ "$REVIEWER" == "none" ]; then
+        hub pull-request -m "$message"
+        expect_success "failed to create pull request, please create manually"
+      else
+        hub pull-request -m "$message" -r $REVIEWER
+        expect_success "failed to create pull request, please create manually"
+      fi
+    done
   fi
-  git push origin $branch
-  expect_success "git push failed"
-  complete
-  info "Please select PR reviewer: "
-  select REVIEWER in none $REVIEWERS; do
-    if [ "$REVIEWER" == "none" ]; then
-      hub pull-request -m "$message"
-      expect_success "failed to create pull request, please create manually"
-      complete
-    else
-      hub pull-request -m "$message" -r $REVIEWER
-      expect_success "failed to create pull request, please create manually"
-      complete
-    fi
-    return
-  done
 }
 
 # confirm cluster exists or exist
