@@ -147,10 +147,8 @@ function install_glooctl() {
     curl -sL -o /usr/local/bin/glooctl $name
     expect_success "Failed to download $name"
     chmod 755 /usr/local/bin/glooctl
-    complete 
-  else
-    complete 
   fi
+  complete 
 }
 
 function confirm_matching_cluster() {
@@ -517,11 +515,12 @@ function recreate_service_account() {
   local cluster=$(get_cluster)
   local namespace=$1
   local name=$2
-  start "deleting service account $namespace/$name"
+  start "recreating service account"
+  info "deleting service account $namespace/$name"
   eksctl delete iamserviceaccount --cluster $cluster --namespace $namespace --name $name || true
-  start "awaiting deletion of cloud formation stack for service account"
+  info "awaiting deletion of cloud formation stack for service account"
   aws cloudformation wait stack-delete-complete --stack-name eksctl-${cluster}-addon-iamserviceaccount-${namespace}-${name}
-  start "creating new service account"
+  info "creating new service account"
   eksctl create iamserviceaccount -f config.yaml --approve
   expect_success "eksctl create service account failed."
   complete 
@@ -622,6 +621,7 @@ function template_service_accounts() {
   local path=$2
   local prefix=$3
   local namespace=$4
+  start "creating AWS polices for $namespace"
   for fullpath in $(find $path -type f -print); do
     local filename=${fullpath#$prefix}
     local pkg=$(dirname $filename)
@@ -638,21 +638,22 @@ function template_service_accounts() {
       expect_success "Templating failure $dir/$filename"
     fi
   done
+  complete
 }
 
 # make policy manifests
 function make_policy_manifests() {
   local values=$(get_values)
   local ns
+  start "making policy manifests"
   for ns in $(get_namespaces); do
-    start "creating AWS polices for $ns"
     local pkg
     for pkg in $(enabled_pkgs namespaces.$ns); do
       echo "---"
       template_service_accounts "$values" ${TEMPLATE_DIR}pkgs/$pkg ${TEMPLATE_DIR}pkgs/ $ns
     done
-    complete
   done
+  complete
 }
 
 function namespace_enabled() {
@@ -742,8 +743,8 @@ function generate() {
   local prev=$2
   local namespace=$3
   local pkg=$4
-  start "package $pkg"
 
+  start "package $pkg"
   local dir=$(output_dir $namespace $pkg)
   local base=${TEMPLATE_DIR}pkgs/$pkg
   for f in $(find $base -type f -print); do
@@ -788,12 +789,14 @@ function expand_pkg() {
   local prev=$2
   local namespace=$3
   local pkg
+  start "expanding packages"
   for pkg in $(enabled_pkgs namespaces.$namespace); do
     start "expanding packages for namespace $namespace"
     generate $values $prev $namespace $pkg
     transform $values $namespace $pkg
     complete
   done
+  complete
 }
 
 function expand_namespace() {
@@ -835,7 +838,6 @@ function make_config() {
 
 # persist changes to config repo in GitHub
 function save_changes() {
-  complete
   if [ "$USE_LOCAL_FILESYSTEM" == "true" ]; then
     return
   fi
