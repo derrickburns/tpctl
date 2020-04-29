@@ -687,7 +687,9 @@ function output() {
   local src=$3
   local dir=$(output_dir $namespace $pkg)
   local name
-  if [[ $src == *".yaml"* ]]; then
+  if [[ $src == *"transform.jsonnet" ]]; then
+    name=$(echo $src | sed -e "s/jsonnet$/yaml/")
+  elif [[ $src == *".yaml"* ]]; then
     name=$(echo $src | sed -e "s/\.yaml.*$/.yaml/")
   else
     name=$(echo $src | sed -e "s/\..*$//")
