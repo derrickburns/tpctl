@@ -610,6 +610,7 @@ function show() {
   local directory=$1
   if [ -d $directory ]; then
     for file in $(find $directory -type f -name \*.yaml -print); do
+      kubeval $file | grep -v "PASS" |  grep -v 404 >>/dev/stderr || true
       echo "---"
       cat $file
       echo
