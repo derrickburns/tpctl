@@ -30,7 +30,7 @@ local helmrelease(me) = (
           server: {
             persistentVolume: {
               storageClass: 'gp2-expanding',
-              size: '30Gi',
+              size: lib.getElse(me, 'storage', '30Gi'),
             },
             resources: {
               limits: {
