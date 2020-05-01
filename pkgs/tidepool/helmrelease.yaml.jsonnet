@@ -293,6 +293,8 @@ local helmrelease(me) = k8s.helmrelease(me, {
           },
           default: {
             host: lib.getElse(me, 'gateway.host', '%s.%s' % [me.namespace, domain]),
+            apiHost: lib.getElse(me, 'gateway.host', '%s.%s' % [me.namespace, domain]),
+            appHost: lib.getElse(me, 'gateway.host', '%s.%s' % [me.namespace, domain]),
             protocol: lib.getElse(me, 'gateway.protocol', 'https'),
             domain: lib.getElse(me, 'gateway.domain', domain),
           },
