@@ -32,3 +32,4 @@ RUN curl -sL "https://github.com/smallstep/cli/releases/download/v0.14.0-rc.3/st
 RUN curl -sL -o /usr/local/bin/sops  "https://github.com/mozilla/sops/releases/download/v3.5.0/sops-v3.5.0.linux"
 RUN curl -sL -o /usr/local/bin/kubecfg "https://github.com/bitnami/kubecfg/releases/download/v0.16.0/kubecfg-linux-amd64"
 RUN curl -sL "https://github.com/instrumenta/kubeval/releases/download/0.15.0/kubeval-linux-386.tar.gz" | tar -xz -C /tmp && mv /tmp/kubeval /usr/local/bin
+RUN chmod +x /usr/local/bin/*
