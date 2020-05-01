@@ -7,7 +7,7 @@ local helmrelease(me) = (
   local version = lib.getElse(me, 'version', '1.3.17');
   k8s.helmrelease(me, { version: version, repository: 'https://storage.googleapis.com/solo-public-helm' }) {
     spec+: {
-      values: gloo.globalValues(me.config, me, version) + gloo.glooValues(me.config, me, version),
+      values: gloo.globalValues(me, version) + gloo.glooValues(me, version),
     },
   }
 );

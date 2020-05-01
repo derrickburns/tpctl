@@ -1,7 +1,5 @@
 local certmanager = import 'certmanager.jsonnet';
-local expand = import 'expand.jsonnet';
 local global = import 'global.jsonnet';
-local init = import 'init.jsonnet';
 local k8s = import 'k8s.jsonnet';
 local lib = import 'lib.jsonnet';
 local linkerd = import 'linkerd.jsonnet';
@@ -21,7 +19,7 @@ local ExternalDnsHosts(hosts) = {
   'external-dns.alpha.kubernetes.io/hostname': std.join(',', hosts),
 };
 
-{
+local i = {
 
   withDefault(obj, field, default)::
     if obj == null || std.objectHas(obj, field)
@@ -207,13 +205,6 @@ local ExternalDnsHosts(hosts) = {
     },
   },
 
-  gateways(config):: (
-    local vss = $.virtualServices(config);
-    local gloo = $.withNamespace(config.pkgs.gloo, 'gloo-system');
-    local gws = lib.values(std.mapWithKey(function(n, v) $.withName(v, n), gloo.gateways));
-    [$.gateway($.withNamespace(gw, gloo.namespace), vss) for gw in gws]
-  ),
-
   dnsNames(config, selector={ type: 'external' }):: (
     local vss = $.virtualServices(config);
     local externalVss = $.virtualServicesForSelector(vss, selector);
@@ -272,9 +263,7 @@ local ExternalDnsHosts(hosts) = {
     },
   },
 
-  gateway(gw, vss):: {
-    apiVersion: 'gateway.solo.io/v1',
-    kind: 'Gateway',
+  gateway(gw, vss):: k8s.k('gateway.solo.io/v1', 'Gateway') {
     metadata+: {
       annotations: {
         origin: 'default',
@@ -282,44 +271,33 @@ local ExternalDnsHosts(hosts) = {
       name: gw.name,
       namespace: gw.namespace,
     },
-    spec: {
-      httpGateway: {
+    spec+: {
+      httpGateway+: {
         virtualServiceSelector: gw.selector,
         virtualServiceNamespaces: ['*'],
         options:
-          (if lib.getElse(gw, 'options.healthCheck', false) then $.healthCheckOption else {})
-          + (if lib.getElse(gw, 'options.tracing', false) then $.httpConnectionManagerOption else {}),
+          (if lib.getElse(gw, 'options.healthCheck', false) then i.healthCheckOption else {})
+          + (if lib.getElse(gw, 'options.tracing', false) then i.httpConnectionManagerOption else {}),
       },
-      options: if lib.getElse(gw, 'options.accessLogging', false) then $.accessLoggingOption else {},
+      options: if lib.getElse(gw, 'options.accessLogging', false) then i.accessLoggingOption else {},
       bindAddress: '::',
-      bindPort: $.bindPort(gw.selector.protocol),
+      bindPort: i.bindPort(gw.selector.protocol),
       proxyNames: gw.proxies,
       useProxyProto: lib.getElse(gw, 'options.proxyProtocol', false),
       ssl: lib.getElse(gw, 'options.ssl', false),
     },
   },
 
-  virtualServicesForPackage(me):: (
-    local result = std.map($.virtualService, $.vsForNamespacedPackage(me));
-    std.filter(function(x) std.length(x.spec.virtualHost.domains) > 0, result)
-  ),
-
-  certificatesForPackage(me):: (
-    if global.isEnabled(me.config, 'certmanager')  || global.isEnabled(me.config, 'certmanager15')  
-    then lib.pruneList(std.map(function(x) $.certificate(x, me), $.vsForNamespacedPackage(me)))
-    else []
-  ),
 
   certificateSecretName(base, namespace):: namespace + '-' + base + '-certificate',
 
   certificate(vs, me):: (
-    if $.isHttps(vs) && std.length(vs.dnsNames) > 0
-    then certmanager.certificate(me, vs.dnsNames, $.certificateSecretName(vs.name, vs.namespace))
+    if i.isHttps(vs) && std.length(vs.dnsNames) > 0
+    then certmanager.certificate(me, vs.dnsNames, i.certificateSecretName(vs.name, vs.namespace))
     else {}
   ),
 
-  baseGatewayProxy(config, me, name):: {
-    //extraInitContainersHelper: std.manifestJsonEx( [ init.sysctl ], "  " ),
+  baseGatewayProxy(me, name):: {
     kind: {
       deployment: {
         replicas: lib.getElse(me, 'proxies.' + name + '.replicas', 2),
@@ -356,58 +334,10 @@ local ExternalDnsHosts(hosts) = {
     gatewaySettings: {
       disableGeneratedGateways: true,
     },
-    tracing: tracing.envoy(config),
+    tracing: tracing.envoy(me.config),
   },
 
-  globalValues(config, me, version):: {
-    global: {
-      glooStats: {
-        enabled: true,
-      },
-      glooRbac: {
-        create: true,
-      },
-      image: {
-        pullPolicy: 'IfNotPresent',
-        registry: 'quay.io/solo-io',
-        tag: version,
-      },
-    },
-    settings: {
-      create: false,
-      linkerd: true,
-    },
-  },
-
-  glooValues(config, me, version):: {
-    gloo: {
-      deployment: {
-        resources: {
-          requests: {
-            cpu: '500m',
-            memory: '256Mi',
-          },
-          limits: {
-            memory: '256Mi',
-          },
-        },
-      },
-    },
-    namespace: {
-      create: false,
-    },
-    discovery: {
-      enabled: true,
-      fdsMode: 'WHITELIST',
-      deployment: {
-        resources: {
-          limits: {
-            memory: '200Mi',
-          },
-        },
-      },
-    },
-    gateway: {
+  gatewayValues(me):: {
       deployment: {
         image: {
           repository: 'gateway',
@@ -429,30 +359,62 @@ local ExternalDnsHosts(hosts) = {
         alwaysAcceptResources: true,
       },
     },
-    gatewayProxies+: {
-      pomeriumGatewayProxy: $.baseGatewayProxy(config, me, 'pomeriumGatewayProxy') {
+
+    gatewayProxyValues(me):: {
+      pomeriumGatewayProxy: $.baseGatewayProxy(me, 'pomeriumGatewayProxy') {
         service+: {
           type: 'LoadBalancer',
           extraAnnotations+:
-            AwsTcpLoadBalancer(config) +
-            ExternalDnsHosts($.dnsNames(expand.expand(config), { type: 'pomerium' }) + pom.dnsNames(expand.expand(config))),
+            AwsTcpLoadBalancer(me.config) +
+            ExternalDnsHosts($.dnsNames(me.config, { type: 'pomerium' }) + pom.dnsNames(me.config)),
         },
       },
-      internalGatewayProxy: $.baseGatewayProxy(config, me, 'internalGatewayProxy') {
+      internalGatewayProxy: $.baseGatewayProxy(me, 'internalGatewayProxy') {
         service+: {
           type: 'ClusterIP',
         },
       },
-      gatewayProxy: $.baseGatewayProxy(config, me, 'gatewayProxy') {
+      gatewayProxy: $.baseGatewayProxy(me, 'gatewayProxy') {
         service+: {
           type: 'LoadBalancer',
           extraAnnotations+:
-            AwsTcpLoadBalancer(config) +
-            ExternalDnsHosts($.dnsNames(expand.expand(config), { type: 'external' })),
+            AwsTcpLoadBalancer(me.config) +
+            ExternalDnsHosts($.dnsNames(me.config, { type: 'external' })),
         },
       },
     },
-  },
+
+    discoveryValues(me):: {
+      enabled: true,
+      fdsMode: 'WHITELIST',
+      deployment: {
+        resources: {
+          limits: {
+            memory: '200Mi',
+          },
+        },
+      },
+    }
+};
+
+{
+  virtualServicesForPackage(me):: (
+    local result = std.map(i.virtualService, i.vsForNamespacedPackage(me));
+    std.filter(function(x) std.length(x.spec.virtualHost.domains) > 0, result)
+  ),
+
+  certificatesForPackage(me):: (
+    if global.isEnabled(me.config, 'certmanager')  || global.isEnabled(me.config, 'certmanager15')  
+    then lib.pruneList(std.map(function(x) i.certificate(x, me), i.vsForNamespacedPackage(me)))
+    else []
+  ),
+
+  gateways(config):: (
+    local vss = i.virtualServices(config);
+    local gloo = i.withNamespace(config.pkgs.gloo, 'gloo-system');
+    local gws = lib.values(std.mapWithKey(function(n, v) i.withName(v, n), gloo.gateways));
+    [i.gateway(i.withNamespace(gw, gloo.namespace), vss) for gw in gws]
+  ),
 
   settings(me):: k8s.k('gloo.solo.io/v1', 'Settings') + k8s.metadata('default', me.namespace) {
     metadata+: {
@@ -522,5 +484,47 @@ local ExternalDnsHosts(hosts) = {
       linkerd: global.isEnabled(me.config, 'linkerd'),
       refreshRate: '60s',
     },
+  },
+
+   globalValues(me, version):: {
+    global: {
+      glooStats: {
+        enabled: true,
+      },
+      glooRbac: {
+        create: true,
+      },
+      image: {
+        pullPolicy: 'IfNotPresent',
+        registry: 'quay.io/solo-io',
+        tag: version,
+      },
+    },
+    settings: {
+      create: false,
+      linkerd: global.isEnabled(me.config, 'linkerd'),
+    },
+  },
+
+  glooValues(me, version):: {
+    gloo: {
+      deployment: {
+        resources: {
+          requests: {
+            cpu: '500m',
+            memory: '256Mi',
+          },
+          limits: {
+            memory: '256Mi',
+          },
+        },
+      },
+    },
+    namespace: {
+      create: false,
+    },
+    discovery: i.discoveryValues(me),
+    gateway: i.gatewayValues(me),
+    gatewayProxies+: i.gatewayProxyValues(me), 
   },
 }

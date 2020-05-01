@@ -8,8 +8,8 @@ local helmrelease(me) = (
   local glooVersion = lib.getElse(me, 'gloo.version', '1.3.3');
   k8s.helmrelease(me, { name: 'gloo-ee', version: '1.3.3', repository: 'http://storage.googleapis.com/gloo-ee-helm' }) {
     spec+: {
-      values: gloo.globalValues(config, me, glooVersion) + {
-        gloo: gloo.glooValues(config, me, glooVersion),
+      values: gloo.globalValues(me, glooVersion) + {
+        gloo: gloo.glooValues(me, glooVersion),
         create_license_secret: false,
         global: {
           extensions: {
@@ -35,10 +35,10 @@ local helmrelease(me) = (
             },
             resources: {
               limits: {
-                memory: '3Gi',
+                memory: '4Gi',
               },
               requests: {
-                memory: '2Gi',
+                memory: '3Gi',
               },
             },
           },
