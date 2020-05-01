@@ -4,6 +4,10 @@ local flux = import '../../lib/flux.jsonnet';
 local deployment(me) = flux.deployment(me) {
   _containers:: {
     image: 'tidepool/keto:latest',
+    env: [
+      k8s.envVar('TIDEPOOL_KETO_HOST', 'keto'),
+      k8s.envVar('TIDEPOOL_KETO_PORT', '8080'),
+    ],
   },
 };
 
