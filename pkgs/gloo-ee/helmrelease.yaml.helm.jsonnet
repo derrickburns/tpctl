@@ -5,11 +5,10 @@ local lib = import '../../lib/lib.jsonnet';
 
 local helmrelease(me) = (
   local config = me.config;
-  local glooVersion = lib.getElse(me, 'gloo.version', '1.3.3');
   k8s.helmrelease(me, { name: 'gloo-ee', version: '1.3.3', repository: 'http://storage.googleapis.com/gloo-ee-helm' }) {
     spec+: {
-      values: gloo.globalValues(me, glooVersion) + {
-        gloo: gloo.glooValues(me, glooVersion),
+      values: gloo.globalValues(me) + {
+        gloo: gloo.glooValues(me),
         create_license_secret: false,
         global: {
           extensions: {

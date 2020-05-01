@@ -312,7 +312,7 @@ local i = {
       probes: true,
       image: {
         repository: if me.pkg == 'gloo' then 'gloo-envoy-wrapper' else 'gloo-ee-envoy-wrapper',
-        tag: lib.getElse(me, 'gloo.version', lib.getElse(me, 'version', '1.3.15')),
+        tag: lib.require(me, 'gloo.version'),
       },
       httpPort: 8080,
       httpsPort: 8443,
@@ -486,7 +486,7 @@ local i = {
     },
   },
 
-   globalValues(me, version):: {
+   globalValues(me):: {
     global: {
       glooStats: {
         enabled: true,
@@ -497,7 +497,7 @@ local i = {
       image: {
         pullPolicy: 'IfNotPresent',
         registry: 'quay.io/solo-io',
-        tag: version,
+	tag: me.version,
       },
     },
     settings: {
@@ -506,7 +506,7 @@ local i = {
     },
   },
 
-  glooValues(me, version):: {
+  glooValues(me):: {
     gloo: {
       deployment: {
         resources: {

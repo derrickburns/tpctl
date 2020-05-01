@@ -880,7 +880,7 @@ function save_changes() {
     git push origin $branch
     expect_success "git push failed"
     complete
-    info "Please select PR reviewer: "
+    echo "Please select PR reviewer: "
     select REVIEWER in none $REVIEWERS; do
       if [ "$REVIEWER" == "none" ]; then
         hub pull-request -m "$message"

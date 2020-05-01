@@ -13,6 +13,13 @@ local lookup(x, y) =
   else null;
   
 {
+
+  require(x, field):: (
+    local result = $.getElse(x, field, null);
+    assert result != null : 'object is missing required field %s: %s' % [ field, std.manifestJson(x) ];
+    result
+  ),
+
   isEnabled(x):: $.isTrue(x, 'enabled'),
 
   E(me, val):: if $.isEnabled(me) then val else null,
