@@ -674,7 +674,7 @@ function show_enabled() {
       mkdir -p $dir/secrets
       cp $CONFIG_DIR/secrets/$namespace/* $dir/secrets/
     fi
-    show $CONFIG_DIR/configmaps/$namespace | output $namespace "namespace" "configmaps/$namespace"
+    show $CONFIG_DIR/configmaps/$namespace | output $namespace "namespace" "configmaps.yaml"
   fi
   complete
 }
@@ -889,6 +889,7 @@ function save_changes() {
         hub pull-request -m "$message" -r $REVIEWER
         expect_success "failed to create pull request, please create manually"
       fi
+      break
     done
   fi
 }
