@@ -674,7 +674,10 @@ function show_enabled() {
       mkdir -p $dir/secrets
       cp $CONFIG_DIR/secrets/$namespace/* $dir/secrets/
     fi
-    show $CONFIG_DIR/configmaps/$namespace | output $namespace "namespace" "configmaps/$namespace"
+    if [ -d "$CONFIG_DIR/configmaps/$namespace" ]; then
+      mkdir -p $dir/configmaps
+      cp $CONFIG_DIR/configmaps/$namespace/* $dir/configmaps/
+    fi
   fi
   complete
 }
