@@ -1,5 +1,6 @@
 local common = import '../../lib/common.jsonnet';
 local flux = import '../../lib/flux.jsonnet';
+local k8s = import '../../lib/k8s.jsonnet';
 
 local deployment(me) = flux.deployment(me) {
   _containers:: {
