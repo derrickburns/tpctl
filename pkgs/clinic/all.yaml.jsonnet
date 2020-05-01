@@ -16,6 +16,7 @@ local deployment(me) = flux.deployment(me) {
       k8s.envVar('TIDEPOOL_STORE_DATABASE', 'clinic'),
       k8s.envVar('TIDEPOOL_KETO_HOST', 'keto'),
       k8s.envVar('TIDEPOOL_KETO_PORT', '8080'),
+      k8s.envVar('TIDEPOOL_KETO_TEMP', 'temp'),
     ],
   },
 };
