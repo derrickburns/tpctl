@@ -49,10 +49,10 @@ local lib = import '../../lib/lib.jsonnet';
           jwks: {
             remote: {
               upstream_ref: {
-                name: '%s-jwks-80' % me.namespace,
-                namespace: me.namespace,
+                name: '%s-jwks-80' % name,
+                namespace: name,
               },
-              url: 'http://jwks.%s/jwks.json' % me.namespace,
+              url: 'http://jwks.%s/jwks.json' % name,
             },
           },
         },
