@@ -137,6 +137,42 @@ local i = {
       },
     },
 
+  jwks(me):: {
+    jwt: {
+      providers: {
+        'tidepool-provider': {
+          issuer: me.gateway.apiHost,
+          audiences: [ me.gateway.apiHost ],
+          tokenSource: {
+            headers: [{
+              header: "x-tidepool-session-token",
+              prefix: "",
+            }],
+          },
+          keepToken: true,
+          claimToHeaders: [{
+            claim: 'sub',
+            header: 'x-tidepool-userid',
+            append: false,
+          }, {
+            claim: 'svr',
+            header: 'x-tidepool-isServer',
+            append: false,
+          }],
+          jwks: {
+            remote: {
+              upstream_ref: {
+                name: '%s-jwks-80' % me.namespace,
+                namespace:  me.namespace,
+              },
+              url: 'http://jwks.%s/jwks.json' % me.namespace,
+            },
+          },
+        },
+      },
+    },
+  },
+
   staticVirtualHostOptions: {
     cors: {
       cors: {
@@ -181,17 +217,17 @@ local i = {
     },
   },
 
-  virtualHostOptions(vs):: lib.getElse(vs, 'virtualHostOptions', {})
-                           + (if lib.isTrue(vs, 'cors.enabled') then $.staticVirtualHostOptions.cors else {})
-                           + (if lib.isTrue(vs, 'hsts.enabled') then $.staticVirtualHostOptions.hsts else {}),
+  virtualHostOptions(me, vs):: lib.getElse(vs, 'virtualHostOptions', {})
+                           + (if lib.isEnabled(vs, 'cors') then $.staticVirtualHostOptions.cors else {})
+                           + (if lib.isEnabled(vs, 'hsts') then $.staticVirtualHostOptions.hsts else {}),
 
-  virtualHost(vs):: {
+  virtualHost(me, vs):: {
     domains: $.domains(vs),
     routes: $.routes(vs),
-    options: $.virtualHostOptions(vs),
+    options: $.virtualHostOptions(me, vs),
   },
 
-  virtualService(vs):: {
+  virtualService(me, vs):: {
     apiVersion: 'gateway.solo.io/v1',
     kind: 'VirtualService',
     metadata: {
@@ -201,7 +237,7 @@ local i = {
     },
     spec: $.sslConfig(vs) + {
       displayName: lib.kebabCase(vs.name),
-      virtualHost: $.virtualHost(vs),
+      virtualHost: $.virtualHost(me, vs),
     },
   },
 
@@ -399,7 +435,7 @@ local i = {
 
 {
   virtualServicesForPackage(me):: (
-    local result = std.map(i.virtualService, i.vsForNamespacedPackage(me));
+    local result = std.map(function(x) i.virtualService(me, x), i.vsForNamespacedPackage(me));
     std.filter(function(x) std.length(x.spec.virtualHost.domains) > 0, result)
   ),
 
