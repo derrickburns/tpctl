@@ -1,5 +1,5 @@
-local lib = import '../../lib/lib.jsonnet';
 local common = import '../../lib/common.jsonnet';
+local lib = import '../../lib/lib.jsonnet';
 
 {
   shadowNames(names):: std.map(function(x) '%s-shadow' % x, names),
@@ -21,6 +21,43 @@ local common = import '../../lib/common.jsonnet';
   internalGatewayUpstream: {
     name: 'gloo-system-internal-gateway-proxy-80',
     namespace: 'gloo-system',  // XXX
+  },
+
+  jwks(config, name):: {
+    local me = $.tpFor(config, name),
+    jwt: {
+      providers: {
+        'tidepool-provider': {
+          issuer: me.gateway.apiHost,
+          audiences: [me.gateway.apiHost],
+          tokenSource: {
+            headers: [{
+              header: 'x-tidepool-session-token',
+              prefix: '',
+            }],
+          },
+          keepToken: true,
+          claimToHeaders: [{
+            claim: 'sub',
+            header: 'x-tidepool-userid',
+            append: false,
+          }, {
+            claim: 'svr',
+            header: 'x-tidepool-isServer',
+            append: false,
+          }],
+          jwks: {
+            remote: {
+              upstream_ref: {
+                name: '%s-jwks-80' % me.namespace,
+                namespace: me.namespace,
+              },
+              url: 'http://jwks.%s/jwks.json' % me.namespace,
+            },
+          },
+        },
+      },
+    },
   },
 
   expand(config, pkg, name):: (
@@ -56,7 +93,7 @@ local common = import '../../lib/common.jsonnet';
             stats: {
               virtualClusters: lib.getElse(pkg, 'virtualClusters', []),
             },
-          },
+          } + $.jwks(config, name),
           routeOptions: if $.hasShadow($.tpFor(config, name)) then {
             shadowing: {
               upstream: $.internalGatewayUpstream,

@@ -378,9 +378,7 @@ local helmrelease(me) = k8s.helmrelease(me, {
       }, lib.getElse(me, 'jellyfish', {})]),
 
       linkerdsupport: {
-        serviceProfiles: {
-          enabled: global.isEnabled(config, 'linkerd'),
-        },
+        enabled: global.isEnabled(config, 'linkerd'),
       },
 
       messageapi: lib.mergeList([common, {
