@@ -218,8 +218,8 @@ local i = {
   },
 
   virtualHostOptions(me, vs):: lib.getElse(vs, 'virtualHostOptions', {})
-                           + (if lib.isEnabled(vs, 'cors') then $.staticVirtualHostOptions.cors else {})
-                           + (if lib.isEnabled(vs, 'hsts') then $.staticVirtualHostOptions.hsts else {}),
+                           + (if lib.isEnabledAt(vs, 'cors') then $.staticVirtualHostOptions.cors else {})
+                           + (if lib.isEnabledAt(vs, 'hsts') then $.staticVirtualHostOptions.hsts else {}),
 
   virtualHost(me, vs):: {
     domains: $.domains(vs),
