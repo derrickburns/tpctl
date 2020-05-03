@@ -1,11 +1,11 @@
 local certmanager = import 'certmanager.jsonnet';
+local common = import 'common.jsonnet';
 local global = import 'global.jsonnet';
 local k8s = import 'k8s.jsonnet';
 local lib = import 'lib.jsonnet';
 local linkerd = import 'linkerd.jsonnet';
 local pom = import 'pom.jsonnet';
 local tracing = import 'tracing.jsonnet';
-local common = import 'common.jsonnet';
 
 local AwsTcpLoadBalancer(config) = {  // XXX AWS dependency
   'service.beta.kubernetes.io/aws-load-balancer-proxy-protocol': '*',
@@ -44,7 +44,7 @@ local i = {
     local taggedVsList(vsmap) = $.addName(vsmap);
 
     // add namespace
-    local taggedVsMap(vsmap) = std.map( function(x) x { namespace: me.namespace}, lib.values(taggedVsList(vsmap)));
+    local taggedVsMap(vsmap) = std.map(function(x) x { namespace: me.namespace }, lib.values(taggedVsList(vsmap)));
 
     // filter out disabled virtual services
     local enabledVsList(vsmap) =
@@ -142,11 +142,11 @@ local i = {
       providers: {
         'tidepool-provider': {
           issuer: me.gateway.apiHost,
-          audiences: [ me.gateway.apiHost ],
+          audiences: [me.gateway.apiHost],
           tokenSource: {
             headers: [{
-              header: "x-tidepool-session-token",
-              prefix: "",
+              header: 'x-tidepool-session-token',
+              prefix: '',
             }],
           },
           keepToken: true,
@@ -163,7 +163,7 @@ local i = {
             remote: {
               upstream_ref: {
                 name: 'jwks',
-                namespace:  me.namespace,
+                namespace: me.namespace,
               },
               url: 'http://jwks.%s/jwks.json' % me.namespace,
             },
@@ -218,8 +218,8 @@ local i = {
   },
 
   virtualHostOptions(me, vs):: lib.getElse(vs, 'virtualHostOptions', {})
-                           + (if lib.isEnabledAt(vs, 'cors') then $.staticVirtualHostOptions.cors else {})
-                           + (if lib.isEnabledAt(vs, 'hsts') then $.staticVirtualHostOptions.hsts else {}),
+                               + (if lib.isEnabledAt(vs, 'cors') then $.staticVirtualHostOptions.cors else {})
+                               + (if lib.isEnabledAt(vs, 'hsts') then $.staticVirtualHostOptions.hsts else {}),
 
   virtualHost(me, vs):: {
     domains: $.domains(vs),
@@ -374,63 +374,63 @@ local i = {
   },
 
   gatewayValues(me):: {
-      deployment: {
-        image: {
-          repository: 'gateway',
-        },
-        replicas: 1,
-        runAsUser: 10101,
-        stats: {
-          enabled: true,
-        },
+    deployment: {
+      image: {
+        repository: 'gateway',
       },
-      enabled: true,
-      proxyServiceAccount: {},
-      readGatewaysFromAllNamespaces: true,
-      upgrade: false,
-      validation: {
-        enabled: lib.isEnabledAt(me, 'validation'),
-        failurePolicy: 'Ignore',
-        secretName: 'gateway-validation-certs',
-        alwaysAcceptResources: true,
+      replicas: 1,
+      runAsUser: 10101,
+      stats: {
+        enabled: true,
       },
     },
+    enabled: true,
+    proxyServiceAccount: {},
+    readGatewaysFromAllNamespaces: true,
+    upgrade: false,
+    validation: {
+      enabled: lib.isEnabledAt(me, 'validation'),
+      failurePolicy: 'Ignore',
+      secretName: 'gateway-validation-certs',
+      alwaysAcceptResources: true,
+    },
+  },
 
-    gatewayProxyValues(me):: {
-      pomeriumGatewayProxy: $.baseGatewayProxy(me, 'pomeriumGatewayProxy') {
-        service+: {
-          type: 'LoadBalancer',
-          extraAnnotations+:
-            AwsTcpLoadBalancer(me.config) +
-            ExternalDnsHosts($.dnsNames(me.config, { type: 'pomerium' }) + pom.dnsNames(me.config)),
-        },
+  gatewayProxyValues(me):: {
+    pomeriumGatewayProxy: $.baseGatewayProxy(me, 'pomeriumGatewayProxy') {
+      service+: {
+        type: 'LoadBalancer',
+        extraAnnotations+:
+          AwsTcpLoadBalancer(me.config) +
+          ExternalDnsHosts($.dnsNames(me.config, { type: 'pomerium' }) + pom.dnsNames(me.config)),
       },
-      internalGatewayProxy: $.baseGatewayProxy(me, 'internalGatewayProxy') {
-        service+: {
-          type: 'ClusterIP',
-        },
+    },
+    internalGatewayProxy: $.baseGatewayProxy(me, 'internalGatewayProxy') {
+      service+: {
+        type: 'ClusterIP',
       },
-      gatewayProxy: $.baseGatewayProxy(me, 'gatewayProxy') {
-        service+: {
-          type: 'LoadBalancer',
-          extraAnnotations+:
-            AwsTcpLoadBalancer(me.config) +
-            ExternalDnsHosts($.dnsNames(me.config, { type: 'external' })),
+    },
+    gatewayProxy: $.baseGatewayProxy(me, 'gatewayProxy') {
+      service+: {
+        type: 'LoadBalancer',
+        extraAnnotations+:
+          AwsTcpLoadBalancer(me.config) +
+          ExternalDnsHosts($.dnsNames(me.config, { type: 'external' })),
+      },
+    },
+  },
+
+  discoveryValues(me):: {
+    enabled: true,
+    fdsMode: 'WHITELIST',
+    deployment: {
+      resources: {
+        limits: {
+          memory: '200Mi',
         },
       },
     },
-
-    discoveryValues(me):: {
-      enabled: true,
-      fdsMode: 'WHITELIST',
-      deployment: {
-        resources: {
-          limits: {
-            memory: '200Mi',
-          },
-        },
-      },
-    }
+  },
 };
 
 {
@@ -440,7 +440,7 @@ local i = {
   ),
 
   certificatesForPackage(me):: (
-    if global.isEnabled(me.config, 'certmanager')  || global.isEnabled(me.config, 'certmanager15')  
+    if global.isEnabled(me.config, 'certmanager') || global.isEnabled(me.config, 'certmanager15')
     then lib.pruneList(std.map(function(x) i.certificate(x, me), i.vsForNamespacedPackage(me)))
     else []
   ),
@@ -522,7 +522,7 @@ local i = {
     },
   },
 
-   globalValues(me):: {
+  globalValues(me):: {
     global: {
       glooStats: {
         enabled: true,
@@ -533,7 +533,7 @@ local i = {
       image: {
         pullPolicy: 'IfNotPresent',
         registry: 'quay.io/solo-io',
-	tag: me.version,
+        tag: me.version,
       },
     },
     settings: {
@@ -561,7 +561,7 @@ local i = {
     },
     discovery: i.discoveryValues(me),
     gateway: i.gatewayValues(me),
-    gatewayProxies+: i.gatewayProxyValues(me), 
+    gatewayProxies+: i.gatewayProxyValues(me),
   },
 
   upstream(me, name=me.pkg):: k8s.k('gloo.solo.io/v1', 'Upstream') + k8s.metadata(name, me.namespace),
@@ -573,19 +573,34 @@ local i = {
         serviceNamespace: me.namespace,
         servicePort: port,
       },
-    } 
+    },
   },
 
-  routetable(me, app='tidepool', name=me.pkg):: k8s.k('gateway.solo.io/v1', 'RouteTable') + k8s.metadata(name, me.namespace) {
+  simpleRoutetable(me, labels, name=me.pkg):: $.routetable(me, labels, name) {
+    routes: [{
+      matchers: [{
+        prefix: '/%s' % me.pkg,
+      }],
+      routeAction: {
+        single: {
+          upstream: {
+            name: me.pkg,
+            namespace: me.namespace,
+          },
+        },
+      },
+    }],
+  },
+
+  routetable(me, labels, name=me.pkg):: k8s.k('gateway.solo.io/v1', 'RouteTable') + k8s.metadata(name, me.namespace) {
     metadata+: {
-      labels+: {
+      labels+: labels {
         namespace: me.namespace,
-        app: app,
       },
     },
   },
 
-  virtualService(me, name=me.pkg)::  k8s.k('gateway.solo.io/v1', 'VirtualService') + k8s.metadata(name, me.namespace) {
+  virtualService(me, name=me.pkg):: k8s.k('gateway.solo.io/v1', 'VirtualService') + k8s.metadata(name, me.namespace) {
     spec+: {
       displayName: name,
     },
