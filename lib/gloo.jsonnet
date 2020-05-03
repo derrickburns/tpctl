@@ -431,26 +431,6 @@ local i = {
       },
     },
   },
-};
-
-{
-  virtualServicesForPackage(me):: (
-    local result = std.map(function(x) i.virtualService(me, x), i.vsForNamespacedPackage(me));
-    std.filter(function(x) std.length(x.spec.virtualHost.domains) > 0, result)
-  ),
-
-  certificatesForPackage(me):: (
-    if global.isEnabled(me.config, 'certmanager') || global.isEnabled(me.config, 'certmanager15')
-    then lib.pruneList(std.map(function(x) i.certificate(x, me), i.vsForNamespacedPackage(me)))
-    else []
-  ),
-
-  gateways(config):: (
-    local vss = i.virtualServices(config);
-    local gloo = i.withNamespace(config.pkgs.gloo, 'gloo-system');
-    local gws = lib.values(std.mapWithKey(function(n, v) i.withName(v, n), gloo.gateways));
-    [i.gateway(i.withNamespace(gw, gloo.namespace), vss) for gw in gws]
-  ),
 
   envoyRateLimits:: {
     configs: {
@@ -483,8 +463,29 @@ local i = {
       },
     },
   },
+};
+
+{
+  virtualServicesForPackage(me):: (
+    local result = std.map(function(x) i.virtualService(me, x), i.vsForNamespacedPackage(me));
+    std.filter(function(x) std.length(x.spec.virtualHost.domains) > 0, result)
+  ),
+
+  certificatesForPackage(me):: (
+    if global.isEnabled(me.config, 'certmanager') || global.isEnabled(me.config, 'certmanager15')
+    then lib.pruneList(std.map(function(x) i.certificate(x, me), i.vsForNamespacedPackage(me)))
+    else []
+  ),
+
+  gateways(config):: (
+    local vss = i.virtualServices(config);
+    local gloo = i.withNamespace(config.pkgs.gloo, 'gloo-system');
+    local gws = lib.values(std.mapWithKey(function(n, v) i.withName(v, n), gloo.gateways));
+    [i.gateway(i.withNamespace(gw, gloo.namespace), vss) for gw in gws]
+  ),
 
   // dependent on gloo version
+  // selects external auth and rate limiting
   globalValues(me):: {
     global: {
       glooStats: {
@@ -506,7 +507,7 @@ local i = {
     },
     rateLimit: {
       enabled: false,
-    }
+    },
   },
 
   glooValues(me):: {
@@ -530,8 +531,8 @@ local i = {
     gateway: i.gatewayValues(me),
     gatewayProxies+: i.gatewayProxyValues(me),
     settings: {
-      create: false,
-    }, 
+      create: false, // XXX check for gloo pkg vs gloo-ee
+    },
   },
 
   upstream(me, name=me.pkg):: k8s.k('gloo.solo.io/v1', 'Upstream') + k8s.metadata(name, me.namespace),
