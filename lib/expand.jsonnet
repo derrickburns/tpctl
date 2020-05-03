@@ -23,6 +23,7 @@ local addVirtualServiceIfNeeded(me, config, name, pkg) = me + (
 
 local dispatch = {
   tidepool:: import '../pkgs/tidepool/expand.jsonnet',
+  'gloo-ee':: import '../pkgs/gloo-ee/expand.jsonnet',
   pomerium:: import 'pom.jsonnet',
 };
 

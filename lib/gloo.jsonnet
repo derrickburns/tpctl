@@ -21,16 +21,11 @@ local ExternalDnsHosts(hosts) = {
 
 local i = {
 
-  withDefault(obj, field, default)::
-    if obj == null || std.objectHas(obj, field)
-    then obj
-    else obj { [field]: default },
-
   // add a default name to an object if it does not have one
-  withName(obj, default):: $.withDefault(obj, 'name', default),
+  withName(obj, default):: lib.withDefault(obj, 'name', default),
 
   // add a default namespace to an object if it does not have one
-  withNamespace(obj, default):: $.withDefault(obj, 'namespace', default),
+  withNamespace(obj, default):: lib.withDefault(obj, 'namespace', default),
 
   // add namespace field to each object under a map if it does not already have one
   addNamespace(map, ns):: std.mapWithKey(function(n, v) $.withNamespace(v, ns), map),
@@ -477,11 +472,10 @@ local i = {
     else []
   ),
 
-  gateways(config):: (
-    local vss = i.virtualServices(config);
-    local gloo = i.withNamespace(config.pkgs.gloo, 'gloo-system');
-    local gws = lib.values(std.mapWithKey(function(n, v) i.withName(v, n), gloo.gateways));
-    [i.gateway(i.withNamespace(gw, gloo.namespace), vss) for gw in gws]
+  gateways(me):: (
+    local vss = i.virtualServices(me.config);
+    local gws = lib.asArrayWithField(me.gateways, 'name');
+    [i.gateway(i.withNamespace(gw, me.namespace), vss) for gw in gws]
   ),
 
   // dependent on gloo version
@@ -531,7 +525,7 @@ local i = {
     gateway: i.gatewayValues(me),
     gatewayProxies+: i.gatewayProxyValues(me),
     settings: {
-      create: false, // XXX check for gloo pkg vs gloo-ee
+      create: me.pkg == 'gloo', // false for gloo-ee
     },
   },
 
