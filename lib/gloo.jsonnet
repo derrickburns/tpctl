@@ -452,76 +452,39 @@ local i = {
     [i.gateway(i.withNamespace(gw, gloo.namespace), vss) for gw in gws]
   ),
 
-  settings(me):: k8s.k('gloo.solo.io/v1', 'Settings') + k8s.metadata('default', me.namespace) {
-    metadata+: {
-      labels: {
-        app: 'gloo',
-      },
-    },
-    spec: {
-      extensions: {
-        configs: {
-          'envoy-rate-limit': {
-            customConfig: {
-              descriptors: [
-                {
-                  key: 'Unauthenticated',
-                  rateLimit: {
-                    requestsPerUnit: 60,
-                    unit: 'MINUTE',
-                  },
-                },
-                {
-                  key: 'Individual',
-                  rateLimit: {
-                    requestsPerUnit: 10,
-                    unit: 'MINUTE',
-                  },
-                },
-                {
-                  key: 'SmallClinic',
-                  rateLimit: {
-                    requestsPerUnit: 30,
-                    unit: 'MINUTE',
-                  },
-                },
-              ],
+  envoyRateLimits:: {
+    configs: {
+      'envoy-rate-limit': {
+        customConfig: {
+          descriptors: [
+            {
+              key: 'Unauthenticated',
+              rateLimit: {
+                requestsPerUnit: 60,
+                unit: 'MINUTE',
+              },
             },
-          },
-          extauth: {
-            extauthzServerRef: {
-              name: 'external-auth',
-              namespace: 'gloo-system',
+            {
+              key: 'Individual',
+              rateLimit: {
+                requestsPerUnit: 10,
+                unit: 'MINUTE',
+              },
             },
-          },
+            {
+              key: 'SmallClinic',
+              rateLimit: {
+                requestsPerUnit: 30,
+                unit: 'MINUTE',
+              },
+            },
+          ],
         },
       },
-      discovery: {
-        fdsMode: 'WHITELIST',
-      },
-      discoveryNamespace: 'gloo-system',
-      gateway: if lib.isEnabledAt(me, 'validation') then {
-        readGatewaysFromAllNamespaces: true,
-        validation: {
-          proxyValidationServerAddr: 'gloo:9988',
-          alwaysAccept: true,
-        },
-      } else null,
-      gloo: {
-        invalidConfigPolicy: {
-          invalidRouteResponseBody: 'Gloo Gateway has invalid configuration. Administrators should run `glooctl check` to find and fix config errors.',
-          invalidRouteResponseCode: 404,
-        },
-        xdsBindAddr: '0.0.0.0:9977',
-      },
-      kubernetesArtifactSource: {},
-      kubernetesConfigSource: {},
-      kubernetesSecretSource: {},
-      linkerd: global.isEnabled(me.config, 'linkerd'),
-      refreshRate: '60s',
     },
   },
 
+  // dependent on gloo version
   globalValues(me):: {
     global: {
       glooStats: {
@@ -535,11 +498,15 @@ local i = {
         registry: 'quay.io/solo-io',
         tag: me.version,
       },
+      extensions: {
+        extAuth: {
+          enabled: true,
+        },
+      },
     },
-    settings: {
-      create: false,
-      linkerd: global.isEnabled(me.config, 'linkerd'),
-    },
+    rateLimit: {
+      enabled: false,
+    }
   },
 
   glooValues(me):: {
@@ -562,6 +529,9 @@ local i = {
     discovery: i.discoveryValues(me),
     gateway: i.gatewayValues(me),
     gatewayProxies+: i.gatewayProxyValues(me),
+    settings: {
+      create: false,
+    }, 
   },
 
   upstream(me, name=me.pkg):: k8s.k('gloo.solo.io/v1', 'Upstream') + k8s.metadata(name, me.namespace),
