@@ -162,7 +162,7 @@ local i = {
           jwks: {
             remote: {
               upstream_ref: {
-                name: '%s-jwks-80' % me.namespace,
+                name: 'jwks',
                 namespace:  me.namespace,
               },
               url: 'http://jwks.%s/jwks.json' % me.namespace,
