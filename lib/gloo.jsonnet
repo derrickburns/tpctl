@@ -576,10 +576,10 @@ local i = {
     },
   },
 
-  simpleRoutetable(me, labels, name=me.pkg):: $.routetable(me, labels, name) {
+  simpleRoutetable(me, labels, name=me.pkg, prefix='/v2/%s' % me.pkg):: $.routetable(me, labels, name) {
     routes: [{
       matchers: [{
-        prefix: '/%s' % me.pkg,
+        prefix: prefix,
       }],
       routeAction: {
         single: {
