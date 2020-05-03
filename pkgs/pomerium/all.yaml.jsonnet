@@ -4,18 +4,16 @@ local global = import '../../lib/global.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 local pomerium = import '../../lib/pom.jsonnet';
+local gloo = import '../../lib/gloo.jsonnet';
 
-local upstream(me, name) = k8s.k('gloo.solo.io/v1', 'Upstream') + k8s.metadata(name, me.namespace) {
-  spec: {
+local upstream(me, name) = gloo.kubeupstream(me, 443, name) {
+  spec+: {
     discoveryMetadata: {},
-    kube: {
+    kube+: {
       selector: {
         'app.kubernetes.io/instance': 'pomerium',
         'app.kubernetes.io/name': name,
       },
-      serviceName: name,
-      serviceNamespace: me.namespace,
-      servicePort: 443,
     },
     sslConfig: {
       secretRef: {
@@ -26,7 +24,7 @@ local upstream(me, name) = k8s.k('gloo.solo.io/v1', 'Upstream') + k8s.metadata(n
   },
 };
 
-local virtualService(me, name) = k8s.k('gateway.solo.io/v1', 'VirtualService') + k8s.metadata(name, me.namespace) {
+local virtualService(me, name) = gloo.virtualService(me, name)  {
   local domain = pomerium.rootDomain(me.config),
   metadata+: {
     labels: {
@@ -34,8 +32,7 @@ local virtualService(me, name) = k8s.k('gateway.solo.io/v1', 'VirtualService') +
       type: 'pomerium',
     },
   },
-  spec: {
-    displayName: name,
+  spec+: {
     sslConfig: {
       secretRef: {
         name: '%s-tls' % me.pkg,
@@ -123,7 +120,7 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '5.0.3', repository: 'htt
   },
 };
 
-local httpsVirtualService(me) = k8s.k('gateway.solo.io/v1', 'VirtualService') + k8s.metadata('proxy-https', me.namespace) {
+local httpsVirtualService(me) = gloo.virtualService(me, 'proxy-https') {
   local domains = pomerium.dnsNames(me.config),
   metadata+: {
     labels: {
@@ -131,8 +128,7 @@ local httpsVirtualService(me) = k8s.k('gateway.solo.io/v1', 'VirtualService') + 
       type: 'pomerium',
     },
   },
-  spec: {
-    displayName: 'proxy-https',
+  spec+: {
     sslConfig: {
       secretRef: {
         name: 'pomerium-tls',
@@ -175,15 +171,14 @@ local httpsVirtualService(me) = k8s.k('gateway.solo.io/v1', 'VirtualService') + 
   },
 };
 
-local httpVirtualService(me) = k8s.k('gateway.solo.io/v1', 'VirtualService') + k8s.metadata('proxy-http', me.namespace) {
+local httpVirtualService(me) = gloo.virtualService(me, 'proxy-http') {
   metadata+: {
     labels: {
       protocol: 'http',
       type: 'pomerium',
     },
   },
-  spec: {
-    displayName: 'proxy-http',
+  spec+: {
     virtualHost: {
       domains: pomerium.dnsNames(me.config),
       routes: [

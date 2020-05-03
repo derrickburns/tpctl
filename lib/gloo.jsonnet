@@ -563,4 +563,31 @@ local i = {
     gateway: i.gatewayValues(me),
     gatewayProxies+: i.gatewayProxyValues(me), 
   },
+
+  upstream(me, name=me.pkg):: k8s.k('gloo.solo.io/v1', 'Upstream') + k8s.metadata(name, me.namespace),
+
+  kubeupstream(me, port=8080, name=me.pkg):: $.upstream(me, name) {
+    spec+: {
+      kube+: {
+        serviceName: name,
+        serviceNamespace: me.namespace,
+        servicePort: port,
+      },
+    } 
+  },
+
+  routetable(me, app='tidepool', name=me.pkg):: k8s.k('gateway.solo.io/v1', 'RouteTable') + k8s.metadata(name, me.namespace) {
+    metadata+: {
+      labels+: {
+        namespace: me.namespace,
+        app: app,
+      },
+    },
+  },
+
+  virtualService(me, name=me.pkg)::  k8s.k('gateway.solo.io/v1', 'VirtualService') + k8s.metadata(name, me.namespace) {
+    spec+: {
+      displayName: name,
+    },
+  },
 }

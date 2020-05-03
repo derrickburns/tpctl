@@ -3,8 +3,9 @@ local flux = import '../../lib/flux.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 local linkerd = import '../../lib/linkerd.jsonnet';
+local gloo = import '../../lib/gloo.jsonnet';
 
-local port = 8080;
+local servicePort = 8080;
 local containerPort = 4000;
 
 local deployment(me) = flux.deployment(me) {
@@ -21,17 +22,17 @@ local deployment(me) = flux.deployment(me) {
 
 local service(me) = k8s.service(me) {
   spec+: {
-    ports: [k8s.port(port, containerPort)],
+    ports: [k8s.port(servicePort, containerPort)],
   },
 };
 
-local upstream(me) = k8s.k('gloo.solo.io/v1', 'Upstream') + k8s.metadata(me.pkg, me.namespace) {
+local upstream(me) = gloo.upstream(me) {
   spec+: {
     static: {
       hosts: [
         {
           addr: '%s.%s.svc.cluster.local' % [me.pkg, me.namespace],
-          port: port,
+          port: servicePort,
         },
       ],
     },

@@ -2,7 +2,7 @@ local global = import 'global.jsonnet';
 local lib = import 'lib.jsonnet';
 
 {
-  certificate(me, dnsNames, secretName=''):: {
+  certificate(me, dnsNames, secretName='%s-tls' % me.pkg):: {
     apiVersion: 'cert-manager.io/v1alpha2',
     kind: 'Certificate',
     metadata: {
@@ -10,7 +10,7 @@ local lib = import 'lib.jsonnet';
       namespace: me.namespace,
     },
     spec: {
-      secretName: if secretName == '' then '%s-tls' %  me.pkg else secretName,
+      secretName: secretName,
       issuerRef: {
         name: lib.getElse(global.package(me.config, 'certmanager'), 'issuer', 'letsencrypt-production'),
         kind: 'ClusterIssuer',
