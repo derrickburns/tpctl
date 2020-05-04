@@ -352,7 +352,7 @@ local i = {
     else []
   ),
 
-  gateways(me, namespace='gloo-system'):: [i.gateway(gw { namespace: namespace }) for gw in lib.values(lib.getElse(me, 'gateways', {}))],
+  gateways(me):: [i.gateway(gw) for gw in lib.values(lib.getElse(me, 'gateways', {}))],
 
   // dependent on gloo version
   // selects external auth and rate limiting
