@@ -14,7 +14,9 @@ COPY --from=tpctl-base \
      /usr/local/bin/helm \
      /usr/local/bin/eksctl \
      /usr/local/bin/kubectl \
+     /usr/local/bin/kubecfg \
      /usr/local/bin/kubectx \
+     /usr/local/bin/kubeval \
      /usr/local/bin/kubens \
      /usr/local/bin/yq \
      /usr/local/bin/aws-iam-authenticator \
@@ -23,7 +25,6 @@ COPY --from=tpctl-base \
      /usr/local/bin/glooctl \
      /usr/local/bin/hub \
      /usr/local/bin/sops \
-     /usr/local/bin/kubecfg \
      /usr/local/bin/python3 \
      /usr/local/bin/
 COPY cmd /usr/local/bin/
