@@ -73,7 +73,7 @@ local accessLogging = {
             }],
           },
           keepToken: true,
-          claimToHeaders: [{
+          claimsToHeaders: [{
             claim: 'sub',
             header: 'x-tidepool-userid',
             append: false,
@@ -109,7 +109,6 @@ local accessLogging = {
   gateways:: {
     'gateway-proxy'+: {
       enabled: true,
-      namespace: 'gloo-system',
       accessLogging: accessLogging,
       options+: {
         healthCheck: true,
@@ -126,7 +125,6 @@ local accessLogging = {
     },
     'gateway-proxy-ssl'+: {
       enabled: true,
-      namespace: 'gloo-system',
       accessLogging: accessLogging,
       options+: {
         healthCheck: true,
@@ -144,7 +142,6 @@ local accessLogging = {
     },
     'internal-gateway-proxy'+: {
       enabled: true,
-      namespace: 'gloo-system',
       accessLogging: accessLogging,
       options+: {
         tracing: true,
@@ -159,7 +156,6 @@ local accessLogging = {
     },
     'internal-gateway-proxy-ssl'+: {
       enabled: true,
-      namespace: 'gloo-system',
       accessLogging: accessLogging,
       options+: {
         ssl: true,

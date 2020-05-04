@@ -32,6 +32,20 @@ local sysctl(me, proxy) = {
   },
 };
 
+local settings(me) = {
+  apiVersion: 'gloo.solo.io/v1',
+  kind: 'Settings',
+  metadata+: {
+    name: 'default',
+    namespace: me.namespace,
+  },
+  spec+: {
+    gateway+: {
+      readGatewaysFromAllNamespaces: true
+    },
+  },
+};
+
 local addnamespace(me) = std.map(kustomize.namespace(me.namespace), me.prev);
 
 local transform(me) = 
@@ -39,6 +53,7 @@ local transform(me) =
   k8s.asMap(sysctl(me, 'gateway-proxy')) +  // XXX hardcoded
   k8s.asMap(sysctl(me, 'internal-gateway-proxy')) + 
   k8s.asMap(sysctl(me, 'pomerium-gateway-proxy')) +
-  k8s.asMap(linkerd(me));
+  k8s.asMap(linkerd(me)) +
+  k8s.asMap(settings(me));
 
 function(config, prev, namespace, pkg) transform(common.package(config, prev, namespace, pkg))
