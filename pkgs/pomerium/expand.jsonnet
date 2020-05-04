@@ -87,6 +87,7 @@ local accessLoggingOption = {
   gateways:: {
     'pomerium-proxy': {
       enabled: true,
+      namespace: 'gloo-system',
       accessLogging: accessLoggingOption,
       options+: {
         healthCheck: true,
@@ -103,6 +104,7 @@ local accessLoggingOption = {
     },
     'pomerium-proxy-ssl': {
       enabled: true,
+      namespace: 'gloo-system',
       accessLogging: accessLoggingOption,
       options+: {
         healthCheck: true,

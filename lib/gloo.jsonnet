@@ -33,6 +33,9 @@ local i = {
   // provide an array of virtual services of a config
   virtualServices(config):: std.flattenArrays(std.map($.virtualServicesForNamespace, lib.values(config.namespaces))),
 
+  gatewaysForSelector(gateways, selector)::
+    std.filter(function(x) lib.matches(x.selector, selector), gateways),
+
   // flatten a map after adding name and namespace fields
   virtualServicesForSelector(vss, selector)::
     std.filter(function(x) lib.matches(x.labels, selector), vss),
@@ -145,6 +148,7 @@ local i = {
       virtualHost: $.virtualHost(me, vs),
     },
   },
+
 
   dnsNames(config, selector={ type: 'external' }):: (
     local vss = $.virtualServices(config);
@@ -334,6 +338,7 @@ local i = {
 };
 
 {
+
   virtualServicesForPackage(me):: (
     local toGlooVirtualService(x) = i.virtualService(me, x);
     local result = std.map(toGlooVirtualService, lib.values(lib.getElse(me, 'virtualServices', {})));
