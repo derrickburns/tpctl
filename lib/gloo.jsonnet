@@ -21,44 +21,19 @@ local ExternalDnsHosts(hosts) = {
 
 local i = {
 
-  // add a default name to an object if it does not have one
-  withName(obj, default):: lib.withDefault(obj, 'name', default),
-
   // add a default namespace to an object if it does not have one
   withNamespace(obj, default):: lib.withDefault(obj, 'namespace', default),
 
-  // add namespace field to each object under a map if it does not already have one
-  addNamespace(map, ns):: std.mapWithKey(function(n, v) $.withNamespace(v, ns), map),
+  // private an array of virtual services of a package
+  virtualServicesForPkg(me):: lib.values(lib.getElse(me, 'virtualServices', {})),
 
-  // add a name field to each entry of a map, where the name is the key
-  addName(map):: std.mapWithKey(function(n, v) $.withName(v, n), map),
+  // provide an array of virtual services of a namespace
+  virtualServicesForNamespace(ns):: std.flattenArrays( std.map( $.virtualServicesForPkg, lib.values(ns))),
 
-  vsForNamespacedPackage(me):: (
-
-    // add name
-    local taggedVsList(vsmap) = $.addName(vsmap);
-
-    // add namespace
-    local taggedVsMap(vsmap) = std.map(function(x) x { namespace: me.namespace }, lib.values(taggedVsList(vsmap)));
-
-    // filter out disabled virtual services
-    local enabledVsList(vsmap) =
-      lib.pruneList(std.filter(function(vs) lib.isEnabled(vs), taggedVsMap(vsmap)));
-
-    enabledVsList(lib.getElse(me, 'virtualServices', {}))
-  ),
-
-  // provide an array of virtual services for a config
-  virtualServices(config):: (
-    local vsForNamespace(name, namespace) = (
-      local vsForPackage(pkg, package) = $.vsForNamespacedPackage(common.package(config, {}, name, pkg));
-      std.flattenArrays(lib.values(std.mapWithKey(vsForPackage, namespace)))
-    );
-    std.flattenArrays(lib.values(std.mapWithKey(vsForNamespace, config.namespaces)))
-  ),
+  // provide an array of virtual services of a config
+  virtualServices(config):: std.flattenArrays( std.map( $.virtualServicesForNamespace, lib.values(config.namespaces))),
 
   // flatten a map after adding name and namespace fields
-
   virtualServicesForSelector(vss, selector)::
     std.filter(function(x) lib.matches(x.labels, selector), vss),
 
@@ -226,7 +201,7 @@ local i = {
     apiVersion: 'gateway.solo.io/v1',
     kind: 'VirtualService',
     metadata: {
-      name: lib.kebabCase(vs.name),
+      name: lib.kebabCase(lib.require(vs, 'name')),
       namespace: vs.namespace,
       labels: vs.labels,
     },
@@ -294,7 +269,7 @@ local i = {
     },
   },
 
-  gateway(gw, vss):: k8s.k('gateway.solo.io/v1', 'Gateway') {
+  gateway(gw):: k8s.k('gateway.solo.io/v1', 'Gateway') {
     metadata+: {
       annotations: {
         origin: 'default',
@@ -462,21 +437,19 @@ local i = {
 
 {
   virtualServicesForPackage(me):: (
-    local result = std.map(function(x) i.virtualService(me, x), i.vsForNamespacedPackage(me));
+    local toGlooVirtualService(x) = i.virtualService(me, x);
+    local result = std.map(toGlooVirtualService, lib.values(lib.getElse(me, 'virtualServices', {})));
     std.filter(function(x) std.length(x.spec.virtualHost.domains) > 0, result)
   ),
 
   certificatesForPackage(me):: (
+    local toCertificate(x) = i.certificate(x, me);
     if global.isEnabled(me.config, 'certmanager') || global.isEnabled(me.config, 'certmanager15')
-    then lib.pruneList(std.map(function(x) i.certificate(x, me), i.vsForNamespacedPackage(me)))
+    then std.map(toCertificate, lib.values(lib.getElse(me, 'virtualServices', {})))
     else []
   ),
 
-  gateways(me):: (
-    local vss = i.virtualServices(me.config);
-    local gws = lib.asArrayWithField(me.gateways, 'name');
-    [i.gateway(i.withNamespace(gw, me.namespace), vss) for gw in gws]
-  ),
+  gateways(me):: [i.gateway(gw) for gw in lib.values(lib.getElse(me, 'gateways', {}))],
 
   // dependent on gloo version
   // selects external auth and rate limiting
@@ -491,7 +464,7 @@ local i = {
       image: {
         pullPolicy: 'IfNotPresent',
         registry: 'quay.io/solo-io',
-        tag: me.version,
+        tag: me.gloo.version,
       },
       extensions: {
         extAuth: {
@@ -525,7 +498,7 @@ local i = {
     gateway: i.gatewayValues(me),
     gatewayProxies+: i.gatewayProxyValues(me),
     settings: {
-      create: me.pkg == 'gloo', // false for gloo-ee
+      create: me.pkg == 'gloo',  // false for gloo-ee
     },
   },
 

@@ -1,5 +1,5 @@
-local lib = import '../../lib/lib.jsonnet';
 local common = import '../../lib/common.jsonnet';
+local lib = import '../../lib/lib.jsonnet';
 local basepolicy = import '../../lib/policy.jsonnet';
 local tplib = import 'lib.jsonnet';
 local mylib = import 'policy-lib.jsonnet';

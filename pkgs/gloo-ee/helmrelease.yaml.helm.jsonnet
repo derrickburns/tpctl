@@ -10,9 +10,9 @@ local helmrelease(me) = (
       values: gloo.globalValues(me) + {
         gloo: gloo.glooValues(me),
         create_license_secret: false,
-        global: {
-          extensions: {
-            extAuth: {
+        global+: {
+          extensions+: {
+            extAuth+: {
               existingSecret: 'ext-auth-signing-key',
             },
           },

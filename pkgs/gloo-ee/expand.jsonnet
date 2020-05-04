@@ -1,7 +1,14 @@
+local lib = import '../../lib/lib.jsonnet';
+
 {
-  expand::
-    function(config, me, name) me {
-      gateways+: {
+  expand(config, me, namespace, pkg):: me + $.withGateways(config, me, namespace, pkg),
+
+  withGateways(config, me, namespace, pkg):: {
+    local update(name, x) = { name: name, namespace: namespace } + x,
+    gateways+: std.mapWithKey(update, $.gateways),
+  },
+
+  gateways:: {
         'pomerium-proxy': {
           enabled: true,
           options+: {
@@ -99,5 +106,5 @@
           },
         },
       },
-    },
+
 }

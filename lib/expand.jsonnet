@@ -1,7 +1,7 @@
 local lib = import 'lib.jsonnet';
 
 // a virtual service that exports the dns name for this package
-local virtualServiceDescription(me, config, pkg) = {
+local virtualServiceDescription(config, me, namespace, pkg) = {
   virtualServices: {
     [pkg]: {
       enabled: true,
@@ -15,41 +15,52 @@ local virtualServiceDescription(me, config, pkg) = {
 };
 
 // add virtual service description for packages that need one
-local addVirtualServiceIfNeeded(me, config, name, pkg) = me + (
+local addVirtualServiceIfNeeded(config, me, namespace, pkg) = me + (
   if (!std.objectHas(me, 'virtualServices')) && lib.getElse(me, 'export', false)
-  then virtualServiceDescription(me, config, pkg)
+  then virtualServiceDescription(config, me, namespace, pkg)
   else {}
 );
 
-local dispatch = {
-  tidepool:: import '../pkgs/tidepool/expand.jsonnet',
-  'gloo-ee':: import '../pkgs/gloo-ee/expand.jsonnet',
-  pomerium:: import 'pom.jsonnet',
+local labelVirtualServices(config, me, namespace, pkg) = me +  {
+  local update(vsname, vs) = { name: vsname, namespace: namespace } + vs,
+  virtualServices+: std.mapWithKey(update, lib.getElse(me, 'virtualServices', {}))
 };
 
-local addLocalChanges(me, config, name, pkg) =
-  if std.objectHasAll(dispatch, pkg)
-  then dispatch[pkg].expand(config, me, name)
-  else me;
+local dispatch = {
+  tidepool:: import '../pkgs/tidepool/expand.jsonnet',
+  pomerium:: import 'pom.jsonnet',
+  'gloo-ee':: import '../pkgs/gloo-ee/expand.jsonnet',
+};
 
-local purgeDisabled(me, config, name, pkg) = if lib.isEnabled(me) then me else {};
+local addNamespace(config, me, namespace, pkg) = me { namespace: namespace };
+
+local addLocalChanges(config, me, namespace, pkg) = (
+  if std.objectHasAll(dispatch, pkg)
+  then dispatch[pkg].expand(config, me, namespace, pkg)
+  else me
+);
+
+local purgeDisabled(config, me, namespace, pkg) = if lib.isEnabled(me) then me else {};
 
 // list of package expander functions to call in order
 local packageExpanders = [
+  addNamespace,
   addVirtualServiceIfNeeded,
+  labelVirtualServices,
   addLocalChanges,
+  labelVirtualServices,
   purgeDisabled,
 ];
 
 // expand all packages in a namespace
-local namespaceExpander(config, name, namespace) = (
-  local expand(key, pkg) = std.foldl(function(prev, f) f(prev, config, name, key), packageExpanders, pkg);
-  std.mapWithKey(expand, namespace)
+local namespaceExpander(config, namespace, namespaceObj) = (
+  local expand(pkg, me) = std.foldl(function(prev, f) f(config, prev, namespace, pkg), packageExpanders, me);
+  std.mapWithKey(expand, namespaceObj)
 );
 
 {
   expand(config):: (
-    local e(name, namespace) = namespaceExpander(config, name, namespace);
+    local e(namespace, namespaceObj) = namespaceExpander(config, namespace, namespaceObj);
     config { namespaces+: std.mapWithKey(e, config.namespaces) }
   ),
 }

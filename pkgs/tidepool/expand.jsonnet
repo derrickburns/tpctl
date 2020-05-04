@@ -6,9 +6,9 @@ local lib = import '../../lib/lib.jsonnet';
 
   tpFor(config, name):: lib.getElse(config, 'namespaces.' + name + '.tidepool', null),
 
-  isShadow(env):: lib.isTrue(env, 'shadow.enabled') && (lib.getElse(env, 'shadow.sender', null) != null),
+  isShadow(me):: lib.isTrue(me, 'shadow.enabled') && lib.nonNull(me, 'shadow.sender'),
 
-  hasShadow(env):: lib.isTrue(env, 'shadow.enabled') && (lib.getElse(env, 'shadow.receiver', null) != null),
+  hasShadow(me):: lib.isTrue(me, 'shadow.enabled') && lib.nonNull(me, 'shadow.receiver'),
 
   genDnsNames(config, name):: (
     local me = $.tpFor(config, name);
@@ -23,8 +23,8 @@ local lib = import '../../lib/lib.jsonnet';
     namespace: 'gloo-system',  // XXX
   },
 
-  jwks(config, name):: {
-    local me = $.tpFor(config, name),
+  jwks(config, namespace):: {
+    local me = $.tpFor(config, namespace),
     jwt: {
       providers: {
         'tidepool-provider': {
@@ -49,10 +49,10 @@ local lib = import '../../lib/lib.jsonnet';
           jwks: {
             remote: {
               upstream_ref: {
-                name: '%s-jwks-80' % name,
-                namespace: name,
+                name: 'jwks',
+                namespace: namespace,
               },
-              url: 'http://jwks.%s/jwks.json' % name,
+              url: 'http://jwks.%s/jwks.json' % namespace,
             },
           },
         },
@@ -60,29 +60,29 @@ local lib = import '../../lib/lib.jsonnet';
     },
   },
 
-  expand(config, pkg, name):: (
-    local dnsNames = lib.getElse(pkg, 'dnsNames', []);
-    local result = pkg {
+  expand(config, me, namespace, pkg):: (
+    local dnsNames = lib.getElse(me, 'dnsNames', []);
+    local result = me {
       virtualServices: {
         http: {
           dnsNames: dnsNames,
-          enabled: !$.isShadow($.tpFor(config, name)),
+          enabled: !$.isShadow(me),
           labels: {
             protocol: 'http',
             type: 'external',
-            namespace: name,
+            namespace: namespace,
           },
           virtualHostOptions: {
             stats: {
-              virtualClusters: lib.getElse(pkg, 'virtualClusters', []),
+              virtualClusters: lib.getElse(me, 'virtualClusters', []),
             },
           },
           redirect: true,
         },
         https: {
           dnsNames: dnsNames,
-          enabled: !$.isShadow($.tpFor(config, name)),
-          timeout: lib.getElse(pkg, 'maxTimeout', '120s'),
+          enabled: !$.isShadow(me),
+          timeout: lib.getElse(me, 'maxTimeout', '120s'),
           hsts: {
             enabled: true,
           },
@@ -91,10 +91,10 @@ local lib = import '../../lib/lib.jsonnet';
           },
           virtualHostOptions: {
             stats: {
-              virtualClusters: lib.getElse(pkg, 'virtualClusters', []),
+              virtualClusters: lib.getElse(me, 'virtualClusters', []),
             },
-          } + $.jwks(config, name),
-          routeOptions: if $.hasShadow($.tpFor(config, name)) then {
+          } + $.jwks(config, namespace),
+          routeOptions: if $.hasShadow(me) then {
             shadowing: {
               upstream: $.internalGatewayUpstream,
               percentage: 100.0,
@@ -108,7 +108,7 @@ local lib = import '../../lib/lib.jsonnet';
           labels: {
             protocol: 'https',
             type: 'external',
-            namespace: name,
+            namespace: namespace,
           },
         },
       },

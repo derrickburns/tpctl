@@ -16,7 +16,7 @@ local lib = import 'lib.jsonnet';
 
   dnsNames(config):: std.flattenArrays([$.dnsNamesForPkg(config, pkg) for pkg in global.packagesWithKey(config, 'sso')]),
 
-  expand(config, pkg, namespace):: pkg + $.expandPomeriumVirtualServices($.rootDomain(config)),
+  expand(config, me, namespace, pkg):: me + $.expandPomeriumVirtualServices($.rootDomain(config)),
 
   expandPomeriumVirtualServices(rootDomain):: {
     virtualServices: {

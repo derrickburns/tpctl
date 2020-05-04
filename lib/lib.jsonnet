@@ -22,6 +22,8 @@ local lookup(x, y) =
 
   isEnabled(x):: $.isTrue(x, 'enabled'),
 
+  nonNull(x,y):: $.getElse(x,y,null) != null,
+
   E(me, val):: if $.isEnabled(me) then val else null,
 
   isEnabledAt(x, prop):: $.isTrue(x, prop + '.enabled'),
@@ -34,7 +36,9 @@ local lookup(x, y) =
   pruneList(list):: std.foldl(function(a, b) if b == null || b == {} then a else a + [b], list, []),
 
   // return a list of the fields of the object given
-  values(obj):: [obj[field] for field in std.objectFields(obj)],
+  values(obj):: (
+    [obj[field] for field in std.objectFields(obj)]
+  ),
 
   // return a clone without the given field
   ignore(x, exclude):: { [f]: x[f] for f in std.objectFieldsAll(x) if f != exclude },
@@ -111,4 +115,6 @@ local lookup(x, y) =
   asArrayWithField(o, as):: $.values( $.withKeyAsField(o,as) ),
 
   removeNulls(objs):: std.filter( function(x) x != null, objs),
+
+
 }

@@ -609,12 +609,14 @@ function make_cluster_config() {
 function show() {
   local directory=$1
   if [ -d $directory ]; then
+    start "validating previous files"
     for file in $(find $directory -type f -name \*.yaml -print); do
       kubeval $file | grep -v "PASS" |  grep -v 404 >>/dev/stderr || true
       echo "---"
       cat $file
       echo
     done
+    complete
   fi
 }
 
