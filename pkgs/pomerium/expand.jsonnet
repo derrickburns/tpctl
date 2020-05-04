@@ -2,6 +2,38 @@ local common = import '../../lib/common.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 local pomerium = import '../../lib/pomerium.jsonnet';
 
+local accessLoggingOption = {
+    accessLoggingService: {
+      accessLog: [
+        {
+          fileSink: {
+            jsonFormat: {
+              authority: '%REQ(:authority)%',
+              authorization: '%REQ(authorization)%',
+              content: '%REQ(content-type)%',
+              duration: '%DURATION%',
+              forwardedFor: '%REQ(X-FORWARDED-FOR)%',
+              method: '%REQ(:method)%',
+              path: '%REQ(:path)%',
+              remoteAddress: '%DOWNSTREAM_REMOTE_ADDRESS_WITHOUT_PORT%',
+              response: '%RESPONSE_CODE%',
+              scheme: '%REQ(:scheme)%',
+              bytesReceived: '%BYTES_RECEIVED%',
+              responseCodeDetail: '%RESPONSE_CODE_DETAILS%',
+              requestDuration: '%REQUEST_DURATION%',
+              responseFlags: '%RESPONSE_FLAGS%',
+              startTime: '%START_TIME%',
+              upstream: '%UPSTREAM_CLUSTER%',
+              userAgent: '%REQ(user-agent)%',
+              referer: '%REQ(referer)%',
+            },
+            path: '/dev/stdout',
+          },
+        },
+      ],
+    },
+  };
+
 {
   expand(config, me, namespace, pkg):: 
     me
@@ -55,8 +87,8 @@ local pomerium = import '../../lib/pomerium.jsonnet';
   gateways:: {
     'pomerium-proxy': {
       enabled: true,
+      accessLogging: accessLoggingOption,
       options+: {
-        accessLogging: true,
         healthCheck: true,
         proxyProtocol: true,
         tracing: true,
@@ -71,8 +103,8 @@ local pomerium = import '../../lib/pomerium.jsonnet';
     },
     'pomerium-proxy-ssl': {
       enabled: true,
+      accessLogging: accessLoggingOption,
       options+: {
-        accessLogging: true,
         healthCheck: true,
         proxyProtocol: true,
         ssl: true,

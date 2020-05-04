@@ -1,6 +1,42 @@
 local common = import '../../lib/common.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
+local accessLogging = {
+    accessLoggingService: {
+      accessLog: [
+        {
+          fileSink: {
+            jsonFormat: {
+              authority: '%REQ(:authority)%',
+              authorization: '%REQ(authorization)%',
+              content: '%REQ(content-type)%',
+              duration: '%DURATION%',
+              forwardedFor: '%REQ(X-FORWARDED-FOR)%',
+              method: '%REQ(:method)%',
+              path: '%REQ(:path)%',
+              remoteAddress: '%DOWNSTREAM_REMOTE_ADDRESS_WITHOUT_PORT%',
+              request: '%REQ(x-tidepool-trace-request)%',
+              response: '%RESPONSE_CODE%',
+              scheme: '%REQ(:scheme)%',
+              bytesReceived: '%BYTES_RECEIVED%',
+              responseCodeDetail: '%RESPONSE_CODE_DETAILS%',
+              requestDuration: '%REQUEST_DURATION%',
+              responseFlags: '%RESPONSE_FLAGS%',
+              session: '%REQ(x-tidepool-trace-session)%',
+              startTime: '%START_TIME%',
+              token: '%REQ(x-tidepool-session-token)%',
+              upstream: '%UPSTREAM_CLUSTER%',
+              clientName: '%REQ(x-tidepool-client-name)%',
+              userAgent: '%REQ(user-agent)%',
+              referer: '%REQ(referer)%',
+            },
+            path: '/dev/stdout',
+          },
+        },
+      ],
+    },
+  };
+
 {
   shadowNames(names):: std.map(function(x) '%s-shadow' % x, names),
 
@@ -73,8 +109,8 @@ local lib = import '../../lib/lib.jsonnet';
   gateways:: {
     'gateway-proxy'+: {
       enabled: true,
+      accessLogging: accessLogging,
       options+: {
-        accessLogging: true,
         healthCheck: true,
         proxyProtocol: true,
         tracing: true,
@@ -89,8 +125,8 @@ local lib = import '../../lib/lib.jsonnet';
     },
     'gateway-proxy-ssl'+: {
       enabled: true,
+      accessLogging: accessLogging,
       options+: {
-        accessLogging: true,
         healthCheck: true,
         proxyProtocol: true,
         ssl: true,
@@ -106,8 +142,8 @@ local lib = import '../../lib/lib.jsonnet';
     },
     'internal-gateway-proxy'+: {
       enabled: true,
+      accessLogging: accessLogging,
       options+: {
-        accessLogging: true,
         tracing: true,
       },
       proxies: [
@@ -120,8 +156,8 @@ local lib = import '../../lib/lib.jsonnet';
     },
     'internal-gateway-proxy-ssl'+: {
       enabled: true,
+      accessLogging: accessLogging,
       options+: {
-        accessLogging: true,
         ssl: true,
         tracing: true,
       },
@@ -133,6 +169,34 @@ local lib = import '../../lib/lib.jsonnet';
         type: 'internal',
       },
     },
+  },
+
+  cors: {
+    allowCredentials: true,
+    allowHeaders: [
+      'authorization',
+      'content-type',
+      'x-tidepool-session-token',
+      'x-tidepool-trace-request',
+      'x-tidepool-trace-session',
+    ],
+    allowMethods: [
+      'GET',
+      'POST',
+      'PUT',
+      'PATCH',
+      'DELETE',
+      'OPTIONS',
+    ],
+    allowOriginRegex: [
+      '.*',
+    ],
+    exposeHeaders: [
+      'x-tidepool-session-token',
+      'x-tidepool-trace-request',
+      'x-tidepool-trace-session',
+    ],
+    maxAge: '600s',
   },
 
   withVirtualServices(config, me, namespace, pkg):: (
@@ -161,10 +225,8 @@ local lib = import '../../lib/lib.jsonnet';
           hsts: {
             enabled: true,
           },
-          cors: {
-            enabled: true,
-          },
           virtualHostOptions: {
+            cors: $.cors,
             stats: {
               virtualClusters: lib.getElse(me, 'virtualClusters', []),
             },

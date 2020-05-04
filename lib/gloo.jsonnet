@@ -28,10 +28,10 @@ local i = {
   virtualServicesForPkg(me):: lib.values(lib.getElse(me, 'virtualServices', {})),
 
   // provide an array of virtual services of a namespace
-  virtualServicesForNamespace(ns):: std.flattenArrays( std.map( $.virtualServicesForPkg, lib.values(ns))),
+  virtualServicesForNamespace(ns):: std.flattenArrays(std.map($.virtualServicesForPkg, lib.values(ns))),
 
   // provide an array of virtual services of a config
-  virtualServices(config):: std.flattenArrays( std.map( $.virtualServicesForNamespace, lib.values(config.namespaces))),
+  virtualServices(config):: std.flattenArrays(std.map($.virtualServicesForNamespace, lib.values(config.namespaces))),
 
   // flatten a map after adding name and namespace fields
   virtualServicesForSelector(vss, selector)::
@@ -107,72 +107,7 @@ local i = {
       },
     },
 
-  jwks(me):: {
-    jwt: {
-      providers: {
-        'tidepool-provider': {
-          issuer: me.gateway.apiHost,
-          audiences: [me.gateway.apiHost],
-          tokenSource: {
-            headers: [{
-              header: 'x-tidepool-session-token',
-              prefix: '',
-            }],
-          },
-          keepToken: true,
-          claimToHeaders: [{
-            claim: 'sub',
-            header: 'x-tidepool-userid',
-            append: false,
-          }, {
-            claim: 'svr',
-            header: 'x-tidepool-isServer',
-            append: false,
-          }],
-          jwks: {
-            remote: {
-              upstream_ref: {
-                name: 'jwks',
-                namespace: me.namespace,
-              },
-              url: 'http://jwks.%s/jwks.json' % me.namespace,
-            },
-          },
-        },
-      },
-    },
-  },
-
   staticVirtualHostOptions: {
-    cors: {
-      cors: {
-        allowCredentials: true,
-        allowHeaders: [
-          'authorization',
-          'content-type',
-          'x-tidepool-session-token',
-          'x-tidepool-trace-request',
-          'x-tidepool-trace-session',
-        ],
-        allowMethods: [
-          'GET',
-          'POST',
-          'PUT',
-          'PATCH',
-          'DELETE',
-          'OPTIONS',
-        ],
-        allowOriginRegex: [
-          '.*',
-        ],
-        exposeHeaders: [
-          'x-tidepool-session-token',
-          'x-tidepool-trace-request',
-          'x-tidepool-trace-session',
-        ],
-        maxAge: '600s',
-      },
-    },
     hsts: {
       headerManipulation: {
         requestHeadersToAdd: [
@@ -187,9 +122,9 @@ local i = {
     },
   },
 
-  virtualHostOptions(me, vs):: lib.getElse(vs, 'virtualHostOptions', {})
-                               + (if lib.isEnabledAt(vs, 'cors') then $.staticVirtualHostOptions.cors else {})
-                               + (if lib.isEnabledAt(vs, 'hsts') then $.staticVirtualHostOptions.hsts else {}),
+  virtualHostOptions(me, vs)::
+    lib.getElse(vs, 'virtualHostOptions', {})
+    + (if lib.isEnabledAt(vs, 'hsts') then $.staticVirtualHostOptions.hsts else {}),
 
   virtualHost(me, vs):: {
     domains: $.domains(vs),
@@ -216,42 +151,6 @@ local i = {
     local externalVss = $.virtualServicesForSelector(vss, selector);
     std.uniq(std.sort(std.flattenArrays(std.map(function(vs) lib.getElse(vs, 'dnsNames', []), externalVss))))
   ),
-
-  accessLoggingOption:: {
-    accessLoggingService: {
-      accessLog: [
-        {
-          fileSink: {
-            jsonFormat: {
-              authority: '%REQ(:authority)%',
-              authorization: '%REQ(authorization)%',
-              content: '%REQ(content-type)%',
-              duration: '%DURATION%',
-              forwardedFor: '%REQ(X-FORWARDED-FOR)%',
-              method: '%REQ(:method)%',
-              path: '%REQ(:path)%',
-              remoteAddress: '%DOWNSTREAM_REMOTE_ADDRESS_WITHOUT_PORT%',
-              request: '%REQ(x-tidepool-trace-request)%',
-              response: '%RESPONSE_CODE%',
-              scheme: '%REQ(:scheme)%',
-              bytesReceived: '%BYTES_RECEIVED%',
-              responseCodeDetail: '%RESPONSE_CODE_DETAILS%',
-              requestDuration: '%REQUEST_DURATION%',
-              responseFlags: '%RESPONSE_FLAGS%',
-              session: '%REQ(x-tidepool-trace-session)%',
-              startTime: '%START_TIME%',
-              token: '%REQ(x-tidepool-session-token)%',
-              upstream: '%UPSTREAM_CLUSTER%',
-              clientName: '%REQ(x-tidepool-client-name)%',
-              userAgent: '%REQ(user-agent)%',
-              referer: '%REQ(referer)%',
-            },
-            path: '/dev/stdout',
-          },
-        },
-      ],
-    },
-  },
 
   httpConnectionManagerOption:: {
     httpConnectionManagerSettings: {
@@ -285,7 +184,7 @@ local i = {
           (if lib.getElse(gw, 'options.healthCheck', false) then i.healthCheckOption else {})
           + (if lib.getElse(gw, 'options.tracing', false) then i.httpConnectionManagerOption else {}),
       },
-      options: if lib.getElse(gw, 'options.accessLogging', false) then i.accessLoggingOption else {},
+      options: lib.getElse(gw, 'accessLogging', {}),
       bindAddress: '::',
       bindPort: i.bindPort(gw.selector.protocol),
       proxyNames: gw.proxies,
@@ -448,7 +347,7 @@ local i = {
     else []
   ),
 
-  gateways(me, namespace='gloo-system'):: [i.gateway(gw {namespace: namespace}) for gw in lib.values(lib.getElse(me, 'gateways', {}))],
+  gateways(me, namespace='gloo-system'):: [i.gateway(gw { namespace: namespace }) for gw in lib.values(lib.getElse(me, 'gateways', {}))],
 
   // dependent on gloo version
   // selects external auth and rate limiting
