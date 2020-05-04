@@ -13,6 +13,9 @@ local linkerd(me) = {
   },
   spec+: {
     linkerd: global.isEnabled(me.config, 'linkerd'),
+    gateway: {
+     readGatewaysFromAllNamespaces: true
+    }
   }
 };
 

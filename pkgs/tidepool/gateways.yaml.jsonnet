@@ -5,5 +5,5 @@ local lib = import '../../lib/lib.jsonnet';
 
 function(config, prev, namespace, pkg) (
   local me = common.package(config, prev, namespace, pkg);
-  gloo.gateways(me)
+  if lib.isTrue(me, 'skipGateway') then {} else gloo.gateways(me) // XXX
 )

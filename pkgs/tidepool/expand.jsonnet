@@ -73,7 +73,7 @@ local accessLogging = {
             }],
           },
           keepToken: true,
-          claimToHeaders: [{
+          claimsToHeaders: [{
             claim: 'sub',
             header: 'x-tidepool-userid',
             append: false,
