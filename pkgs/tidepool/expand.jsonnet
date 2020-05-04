@@ -71,40 +71,6 @@ local lib = import '../../lib/lib.jsonnet';
   ),
 
   gateways:: {
-    'pomerium-proxy': {
-      enabled: true,
-      options+: {
-        accessLogging: true,
-        healthCheck: true,
-        proxyProtocol: true,
-        tracing: true,
-      },
-      proxies: [
-        'pomerium-gateway-proxy',
-      ],
-      selector: {
-        protocol: 'http',
-        type: 'pomerium',
-      },
-    },
-    'pomerium-proxy-ssl': {
-      enabled: true,
-      options+: {
-        accessLogging: true,
-        healthCheck: true,
-        proxyProtocol: true,
-        ssl: true,
-        tracing: true,
-      },
-      proxies: [
-        'pomerium-gateway-proxy',
-      ],
-      selector: {
-        protocol: 'https',
-        type: 'pomerium',
-      },
-    },
-
     'gateway-proxy'+: {
       enabled: true,
       options+: {

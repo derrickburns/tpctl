@@ -3,7 +3,7 @@ local common = import '../../lib/common.jsonnet';
 local global = import '../../lib/global.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
-local pomerium = import '../../lib/pom.jsonnet';
+local pomerium = import '../../lib/pomerium.jsonnet';
 local gloo = import '../../lib/gloo.jsonnet';
 
 local upstream(me, name) = gloo.kubeupstream(me, 443, name) {
@@ -209,5 +209,6 @@ function(config, prev, namespace, pkg) (
     upstream(me, 'pomerium-authenticate'),
     upstream(me, 'pomerium-authorize'),
     certificate(me),
+    gloo.gateways(me),
   ]
 )

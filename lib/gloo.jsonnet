@@ -4,7 +4,7 @@ local global = import 'global.jsonnet';
 local k8s = import 'k8s.jsonnet';
 local lib = import 'lib.jsonnet';
 local linkerd = import 'linkerd.jsonnet';
-local pom = import 'pom.jsonnet';
+local pom = import 'pomerium.jsonnet';
 local tracing = import 'tracing.jsonnet';
 
 local AwsTcpLoadBalancer(config) = {  // XXX AWS dependency
@@ -448,7 +448,7 @@ local i = {
     else []
   ),
 
-  gateways(me):: [i.gateway(gw) for gw in lib.values(lib.getElse(me, 'gateways', {}))],
+  gateways(me, namespace='gloo-system'):: [i.gateway(gw {namespace: namespace}) for gw in lib.values(lib.getElse(me, 'gateways', {}))],
 
   // dependent on gloo version
   // selects external auth and rate limiting
