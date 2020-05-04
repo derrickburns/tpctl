@@ -29,7 +29,6 @@ local labelVirtualServices(config, me, namespace, pkg) = me +  {
 local dispatch = {
   tidepool:: import '../pkgs/tidepool/expand.jsonnet',
   pomerium:: import 'pom.jsonnet',
-  'gloo-ee':: import '../pkgs/gloo-ee/expand.jsonnet',
 };
 
 local addNamespace(config, me, namespace, pkg) = me { namespace: namespace };

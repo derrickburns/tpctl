@@ -294,7 +294,6 @@ local i = {
     },
   },
 
-
   certificateSecretName(base, namespace):: namespace + '-' + base + '-certificate',
 
   certificate(vs, me):: (
