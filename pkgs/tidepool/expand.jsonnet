@@ -234,7 +234,7 @@ local accessLogging = {
             stats: {
               virtualClusters: lib.getElse(me, 'virtualClusters', []),
             },
-          } + $.jwks(config, namespace),
+          }, //+ $.jwks(config, namespace), // XXX - add back
           routeOptions: if $.hasShadow(me) then {
             shadowing: {
               upstream: $.internalGatewayUpstream,

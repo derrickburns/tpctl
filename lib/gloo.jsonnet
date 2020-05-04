@@ -371,7 +371,7 @@ local i = {
       },
       extensions: {
         extAuth: {
-          enabled: true,
+          enabled: lib.isEnabledAt(me, 'extAuth'),
         },
       },
     },
