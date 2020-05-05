@@ -32,7 +32,7 @@ function(config, prev, namespace, pkg) (
   [
     service(me),
     deployment(me),
-    gloo.simpleRoutetable(me, {app: 'tidepool'}),
+    gloo.simpleRoutetable(me, {app: 'tidepool'}, prefix='/clinics'),
     gloo.kubeupstream(me),
   ]
 )

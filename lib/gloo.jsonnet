@@ -418,19 +418,21 @@ local i = {
   },
 
   simpleRoutetable(me, labels, name=me.pkg, prefix='/v2/%s' % me.pkg):: $.routetable(me, labels, name) {
-    routes: [{
-      matchers: [{
-        prefix: prefix,
-      }],
-      routeAction: {
-        single: {
-          upstream: {
-            name: me.pkg,
-            namespace: me.namespace,
+    spec+: {
+      routes: [{
+        matchers: [{
+          prefix: prefix,
+        }],
+        routeAction: {
+          single: {
+            upstream: {
+              name: me.pkg,
+              namespace: me.namespace,
+            },
           },
         },
-      },
-    }],
+      }],
+    },
   },
 
   routetable(me, labels, name=me.pkg):: k8s.k('gateway.solo.io/v1', 'RouteTable') + k8s.metadata(name, me.namespace) {
