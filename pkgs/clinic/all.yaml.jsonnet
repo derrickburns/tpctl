@@ -32,8 +32,6 @@ function(config, prev, namespace, pkg) (
   [
     service(me),
     deployment(me),
-    gloo.virtualServicesForPackage(me),
-    gloo.certificatesForPackage(me),
     gloo.simpleRoutetable(me, {app: 'tidepool'}),
     gloo.kubeupstream(me),
   ]
