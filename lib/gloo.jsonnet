@@ -421,6 +421,7 @@ local i = {
     spec+: {
       routes: [{
         matchers: [{
+          methods: ["GET", "DELETE", "PATCH", "POST", "PUT"],
           prefix: prefix,
         }],
         routeAction: {
