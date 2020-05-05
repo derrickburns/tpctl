@@ -1,6 +1,7 @@
 local common = import '../../lib/common.jsonnet';
 local flux = import '../../lib/flux.jsonnet';
 local gloo = import '../../lib/gloo.jsonnet';
+local linkerd = import '../../lib/linkerd.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 
 local containerPort = 8080;
@@ -23,6 +24,9 @@ local deployment(me) = flux.deployment(me) {
     ports: [{
       containerPort: containerPort,
     }],
+  },
+  spec+: {
+    template+: linkerd.metadata(me, true),
   },
 };
 
