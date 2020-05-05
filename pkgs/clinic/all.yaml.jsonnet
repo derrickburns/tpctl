@@ -3,6 +3,8 @@ local flux = import '../../lib/flux.jsonnet';
 local gloo = import '../../lib/gloo.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 
+local containerPort = 8080;
+
 local deployment(me) = flux.deployment(me) {
   _containers:: {
     image: 'tidepool/clinic:latest',
@@ -18,12 +20,15 @@ local deployment(me) = flux.deployment(me) {
       k8s.envVar('TIDEPOOL_KETO_PORT', '8080'),
       k8s.envVar('TIDEPOOL_KETO_TEMP', 'temp'),
     ],
+    ports: [{
+      containerPort: containerPort,
+    }],
   },
 };
 
 local service(me) = k8s.service(me) {
   spec+: {
-    ports: [k8s.port(8080, 8080)],
+    ports: [k8s.port(8080, containerPort)],
   },
 };
 
