@@ -20,14 +20,20 @@ local deployment(me) = k8s.deployment(me) {
                 memory: '500Mi',
               },
             },
-            volumes: [
+            volumeMounts: [
               {
-                name: 'storage',
-                persistentVolumeClaim: {
-                  claimName: me.pkg,
-                },
-              },
+                mountPath: '/data',
+                name: me.pkg,
+              }
             ],
+          },
+        ],
+        volumes: [
+          {
+            name: me.pkg,
+            persistentVolumeClaim: {
+              claimName: me.pkg,
+            },
           },
         ],
         serviceAccountName: me.pkg,
