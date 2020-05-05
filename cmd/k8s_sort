@@ -54,6 +54,7 @@ known = [
 	{ "apiVersion": "networking.k8s.io /", "kind": "Ingress"},
 	{ "apiVersion": "gloo.solo.io/", "kind": "Settings"},
 	{ "apiVersion": "gloo.solo.io/", "kind": "Upstream"},
+	{ "apiVersion": "gateway.solo.io/", "kind": "RouteTable"},
 	{ "apiVersion": "gateway.solo.io/", "kind": "VirtualService"},
 	{ "apiVersion": "gateway.solo.io/", "kind": "Gateway"},
 	{ "apiVersion": "cert-manager.io/", "kind": "Issuer"},
