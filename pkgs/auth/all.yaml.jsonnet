@@ -16,7 +16,7 @@ local deployment(me) = lib.merge(flux.deployment(me) + {
     name: me.pkg,
     image: 'tidepool/auth:master-latest',
     imagePullPolicy: 'IfNotPresent',
-    env: tidepooo.mongo + tidepool.misc + tidepool.clients + [
+    env: tidepool.mongo + tidepool.misc + tidepool.clients + [
       // DEXCOM
       k8s.envSecret('TIDEPOOL_SERVICE_PROVIDER_DEXCOM_AUTHORIZE_URL', 'dexcom', 'AuthorizeURL', true),
       k8s.envSecret('TIDEPOOL_SERVICE_PROVIDER_DEXCOM_REDIRECT_URL', 'dexcom', 'RedirectURL', true),
@@ -39,14 +39,14 @@ local deployment(me) = lib.merge(flux.deployment(me) + {
       k8s.envSecret('TIDEPOOL_APPLE_DEVICE_CHECKER_USE_DEVELOPMENT', 'auth', 'AppleDeviceCheckUseDevelopment', true),
     ],
     ports: [{
-      containerPort: tidepool.ports.auth,
+      containerPort: me.tidepool.ports.auth,
     }],
   }],
 }, me.pkg.deployment.values);
 
 local service(me) = k8s.service(me) {
   spec+: {
-    ports: [k8s.port(tidepool.ports.auth, tidepool.ports.auth)],
+    ports: [k8s.port(me.tidepool.ports.auth, me.tidepool.ports.auth)],
   },
 };
 
