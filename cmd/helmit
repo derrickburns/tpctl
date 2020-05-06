@@ -16,6 +16,12 @@ else
   shift
 fi
 
+if [ ! -f "$file" ]
+then
+  echo "Helmrelease file $file not found"
+  exit 1
+fi
+
 function get_release() {
   local hr=$1
   echo "$hr" | jq '.spec.releaseName' | sed -e 's/"//g'
@@ -61,13 +67,14 @@ release=$(get_release "$hr")
 namespace=$(get_namespace "$hr")
 release=${release:=${name}}
 
-echo "version: $version"
-echo "repo: $repo"
-echo "name: $name"
-echo "namespace: $namespace"
-echo "release: $release"
-
 case $op in
+show)
+  echo "version: $version"
+  echo "repo: $repo"
+  echo "name: $name"
+  echo "namespace: $namespace"
+  echo "release: $release"
+  ;;
 install)
   load_chart $name $repo
   get_values "$hr" >/tmp/${name}-${namespace}.yaml
@@ -90,11 +97,15 @@ cmp)
   then
     tmp=/tmp/$name-$namespace-$release
     kubectl get helmrelease -n $namespace $name -o yaml > $tmp
-    echo "Retrieved helmrelease $namespace/$name"
     file2=$tmp
   else
     file2=$1
   fi
+  echo "comparing:"
+  helmit show $file
+  echo "---"
+  helmit show $file2
+  echo "+++"
   diff <(helmit template $file) <(helmit template $file2)
   ;;
 esac
