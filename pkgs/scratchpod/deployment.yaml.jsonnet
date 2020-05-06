@@ -8,16 +8,16 @@ local deployment(me) = k8s.deployment(me) {
       spec+: {
         containers: [
           {
-            image: 'ubuntu/ubuntu:latest',
+            image: lib.getElse(me, 'image', 'ubuntu:latest'),
             name: me.pkg,
             resources: {
               limits: {
-                cpu: 1,
-                memory: '1Gi',
+                cpu: lib.getElse(me, 'limits.cpu', 1),
+                memory: lib.getElse(me, 'limits.memory', '1Gi'),
               },
               requests: {
                 cpu: '100m',
-                memory: '500Mi',
+                memory: '1Gi',
               },
             },
             volumeMounts: [
@@ -25,6 +25,13 @@ local deployment(me) = k8s.deployment(me) {
                 mountPath: '/data',
                 name: me.pkg,
               }
+            ],
+            args: [
+              '-c',
+              'while true; do sleep 30; done;',
+            ],
+            command: [
+              '/bin/bash',
             ],
           },
         ],
@@ -42,10 +49,4 @@ local deployment(me) = k8s.deployment(me) {
   },
 };
 
-function(config, prev, namespace, pkg) (
-  local me = common.package(config, prev, namespace, pkg);
-  [
-    k8s.serviceaccount(me),
-    deployment(me),
-  ]
-)
+function(config, prev, namespace, pkg) (deployment(common.package(config, prev, namespace, pkg)))
