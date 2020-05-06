@@ -906,7 +906,7 @@ function expect_cluster_exists() {
 function install_helmrelease() {
   local file=$1
   start "bootstrapping $file"
-  if ! bash -x helmit $file >${TMP_DIR}/out 2>&1; then
+  if ! bash -x helmit install $file >${TMP_DIR}/out 2>&1; then
     cat $TMP_DIR/out
     panic "helm upgrade failed"
   fi

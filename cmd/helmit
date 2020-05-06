@@ -1,28 +1,100 @@
 #!/bin/bash
-file=$1
-hr=$(yq r $file -j)
-values=$(echo "$hr" | jq .spec.values | yq r - >/tmp/foobar)
-chart=$(echo "$hr" | jq .spec.chart.repository | sed -e 's/"//g')
-version=$(echo "$hr" | jq .spec.chart.version | sed -e 's/"//g')
-name=$(echo "$hr" | jq .spec.chart.name | sed -e 's/"//g')
-release=$(echo "$hr" | jq .spec.releaseName | sed -e 's/"//g')
-namespace=$(echo "$hr" | jq .metadata.namespace | sed -e 's/"//g')
-echo "$hr" | jq .spec.values | yq r - >/tmp/${name}-${namespace}.yaml
-release=${release:=${name}}
-helm repo add $name $chart >/dev/stderr
-helm repo update >/dev/stderr
+# Usage:
+#   helmit template ${file:-helmrelease.yaml} - expand template for HelmRelease
+#   helmit install ${file:-helmrelease.yaml} - install HelmRelease
+#   helmit delete ${file:-helmrelease.yaml} - delete HelmRelease
+#   helmit cmp ${file:-helmrelease.yaml} [$file2] - compare expanded HelmRelease outputs, if file2 is not given, extract from cluster
 
-case ${2:-install} in
+op=$1
+shift
+
+if [ "$#" -eq 0 ]
+then
+  file=helmrelease.yaml
+else
+  file=$1
+  shift
+fi
+
+function get_release() {
+  local hr=$1
+  echo "$hr" | jq '.spec.releaseName' | sed -e 's/"//g'
+}
+
+function get_name() {
+  local hr=$1
+  echo "$hr" | jq '.spec.chart.name' | sed -e 's/"//g'
+}
+
+function get_namespace() {
+  local hr=$1
+  echo "$hr" | jq '.metadata.namespace' | sed -e 's/"//g'
+}
+
+function get_version() {
+  local hr=$1
+  echo "$hr" | jq '.spec.chart.version' | sed -e 's/"//g'
+}
+
+function get_values() {
+  local hr=$1
+  echo "$hr" | jq '.spec.values' | yq r - 
+}
+
+function get_repository() {
+  local hr=$1
+  echo "$hr" | jq .spec.chart.repository | sed -e 's/"//g'
+}
+
+function load_chart() {
+  local name=$1
+  local repo=$2
+  helm repo add $name $repo >/dev/null 2>&1
+  helm repo update >/dev/null 2>&1
+}
+
+hr=$(yq r $file -j)
+version=$(get_version "$hr")
+repo=$(get_repository "$hr")
+name=$(get_name "$hr")
+release=$(get_release "$hr")
+namespace=$(get_namespace "$hr")
+release=${release:=${name}}
+
+echo "version: $version"
+echo "repo: $repo"
+echo "name: $name"
+echo "namespace: $namespace"
+echo "release: $release"
+
+case $op in
 install)
+  load_chart $name $repo
+  get_values "$hr" >/tmp/${name}-${namespace}.yaml
   kubectl create namespace $namespace 2>/dev/null
   op="upgrade -i --force --version $version -f /tmp/${name}-${namespace}.yaml"
+  helm $op $release $name/$name --namespace ${namespace} 
   ;;
 delete)
-  op="delete"
+  load_chart $name $repo
+  helm delete $release $name/$name --namespace ${namespace} 
   ;;
 template)
-  op="template --debug --version $version -f /tmp/${name}-${namespace}.yaml"
+  load_chart $name $repo
+  get_values "$hr" >/tmp/${name}-${namespace}.yaml
+  op="template --version $version -f /tmp/${name}-${namespace}.yaml"
+  helm $op $release $name/$name --namespace ${namespace} 
+  ;;
+cmp)
+  if [ "$#" -eq 0 ]
+  then
+    tmp=/tmp/$name-$namespace-$release
+    kubectl get helmrelease -n $namespace $name -o yaml > $tmp
+    echo "Retrieved helmrelease $namespace/$name"
+    file2=$tmp
+  else
+    file2=$1
+  fi
+  diff <(helmit template $file) <(helmit template $file2)
   ;;
 esac
-
-helm $op $release $name/$name --namespace ${namespace} 
