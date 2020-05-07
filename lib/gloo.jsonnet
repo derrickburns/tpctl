@@ -73,6 +73,9 @@ local i = {
         namespace: vs.namespace,
       },
       sniDomains: lib.getElse(vs, 'dnsNames', []),
+      parameters: {
+        minimumProtocolVersion: "TLSv1_2",
+      },
     },
   } else {},
 
@@ -449,4 +452,4 @@ local i = {
       displayName: name,
     },
   },
-}
+}-
