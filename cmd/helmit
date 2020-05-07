@@ -7,10 +7,9 @@
 
 TMP_DIR=$(mktemp -d 2>/dev/null || mktemp -d -t 'TMP_DIR')
 
-if [ ! -f /usr/local/bin/yamldiff ]
+if [ ! -f /usr/local/bin/dyff ]
 then
-  curl -sL -o /usr/local/bin/yamldiff "https://github.com/sahilm/yamldiff/releases/download/0.1.0/yamldiff-v0.1.0-darwin-amd64" 
-  chmod +x /usr/local/bin/yamldiff
+  brew install dyff
 fi
 
 # clean up all temporary files
@@ -130,31 +129,28 @@ cmp)
   if [ "$#" -eq 0 ]
   then
     tmp=/tmp/$name-$namespace-$release
-    kubectl get helmrelease -n $namespace $name -o yaml > $tmp
-    file2=$tmp
+    kubectl get helmrelease -n $namespace $name -o yaml | yq d - 'metadata.annotations."kubectl.kubernetes.io/last-applied-configuration"'  | yq d - 'status'> $tmp
+    file2=$file
+    file=$tmp
   else
     file2=$1
   fi
-  echo "HelmReleases"
-  show $file
-  show $file2
-  echo "+++"
-  echo "===DIFFERENCES==="
+  echo "=== HelmRelease Differences ==="
+  #yamldiff --file1 $file --file2 $file2
+  dyff between $file $file2 2>/dev/null
+  echo "=== Helm Template Differences ==="
 
   helmit template $file 2>/dev/null | separate_files $TMP_DIR/left >$TMP_DIR/leftlist
   helmit template $file2 2>/dev/null | separate_files $TMP_DIR/right >$TMP_DIR/rightlist
 
-  echo "removed/added resources"
-  diff $TMP_DIR/leftlist $TMP_DIR/rightlist
-  echo
-  echo "changed resources"
+  (cd $TMP_DIR; grc diff leftlist rightlist)
+  echo "== Resources Changed ==="
   for file in $(find $TMP_DIR/left )
   do
-    base=${file#$TMP_DIR/left}
+    base=${file#$TMP_DIR/left/}
     if [ -f $TMP_DIR/right/$base ]
     then
-      echo "# file: $base"
-      yamldiff --file1 $TMP_DIR/left/$base --file2 $TMP_DIR/right/$base
+      dyff between $TMP_DIR/left/$base $TMP_DIR/right/$base 2>/dev/null
     fi
   done
   ;;
