@@ -5,6 +5,24 @@
 #   helmit delete ${file:-helmrelease.yaml} - delete HelmRelease
 #   helmit cmp ${file:-helmrelease.yaml} [$file2] - compare expanded HelmRelease outputs, if file2 is not given, extract from cluster
 
+TMP_DIR=$(mktemp -d 2>/dev/null || mktemp -d -t 'TMP_DIR')
+
+if [ ! -f /usr/local/bin/yamldiff ]
+then
+  curl -sL -o /usr/local/bin/yamldiff "https://github.com/sahilm/yamldiff/releases/download/0.1.0/yamldiff-v0.1.0-darwin-amd64" 
+  chmod +x /usr/local/bin/yamldiff
+fi
+
+# clean up all temporary files
+function cleanup() {
+  if [ -f "$TMP_DIR" ]; then
+    cd /
+    rm -rf $TMP_DIR
+  fi
+}
+
+trap cleanup EXIT
+
 op=$1
 shift
 
@@ -121,7 +139,23 @@ cmp)
   show $file
   show $file2
   echo "+++"
-  echo "DIFFERENCES"
-  diff <(helmit template $file 2>/dev/null) <(helmit template $file2 2>/dev/null)
+  echo "===DIFFERENCES==="
+
+  helmit template $file 2>/dev/null | separate_files $TMP_DIR/left >$TMP_DIR/leftlist
+  helmit template $file2 2>/dev/null | separate_files $TMP_DIR/right >$TMP_DIR/rightlist
+
+  echo "removed/added resources"
+  diff $TMP_DIR/leftlist $TMP_DIR/rightlist
+  echo
+  echo "changed resources"
+  for file in $(find $TMP_DIR/left )
+  do
+    base=${file#$TMP_DIR/left}
+    if [ -f $TMP_DIR/right/$base ]
+    then
+      echo "# file: $base"
+      yamldiff --file1 $TMP_DIR/left/$base --file2 $TMP_DIR/right/$base
+    fi
+  done
   ;;
 esac

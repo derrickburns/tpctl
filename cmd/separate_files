@@ -1,16 +1,19 @@
 #!/usr/bin/python3
 #
-# Generate separate files (into the current directory) from a YAML map  whose keys are the file names and the values are file contents
-# Optionally add a header and a footer
+# Generate separate files (into the current directory) from a Kuberbetes manifest
+# Name the directory by the namespace, apiversion, and kind of the resource
+# Name the file by the name of the resource
 #
 
-import yaml
 import os
 import sys
 import re
 import errno
+from ruamel.yaml import YAML
+yaml = YAML()
 
-input = yaml.safe_load_all(sys.stdin)
+input = yaml.load_all(sys.stdin)
+outdir = sys.argv[1]
 
 
 def convert(name):
@@ -33,14 +36,18 @@ def process(value):
             for v in value["items"]:
                 process(v)
         else:
-            path = "%s/%s" % (convert(value["metadata"]["namespace"])
-                              if "namespace" in value["metadata"] else "global", value["kind"])
+            path = "%s/%s/%s" % (
+                    convert(value["metadata"]["namespace"]) if "namespace" in value["metadata"] else "global",
+                    value["apiVersion"],
+                    value["kind"])
             name = "%s.yaml" % value["metadata"]["name"]
-            mkdir_p(path)
+            mkdir_p(outdir + "/" + path)
             print(path + "/" + name)
-            with open(path + "/" + name, "w") as out:
-                yaml.dump(value, out, encoding='utf-8')
+            with open(outdir + "/" + path + "/" + name, "w") as out:
+                yaml.dump(value, out)
                 out.flush()
 
 for value in input:
     process(value)
+
+
