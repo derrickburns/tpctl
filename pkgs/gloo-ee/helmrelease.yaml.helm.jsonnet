@@ -21,12 +21,14 @@ local helmrelease(me) = (
           enabled: true,
         },
         grafana: {
+          defaultInstallationEnabled: lib.isEnabledAt(me, 'grafana'),
           persistence: {
             size: '1Gi',
             storageClassName: 'gp2-expanding',
           },
         },
         prometheus: {
+          enabled: lib.isEnabledAt(me, 'prometheus'),
           server: {
             persistentVolume: {
               storageClass: 'gp2-expanding',
