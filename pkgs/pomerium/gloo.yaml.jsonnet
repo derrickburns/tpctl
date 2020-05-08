@@ -72,22 +72,6 @@ local dnsNames(me) =
 
 local certificate(me) = certmanager.certificate(me, dnsNames(me));
 
-local getPoliciesForPackage(me) = [
-  {
-    local config = me.config,
-    local port = lib.getElse(sso, 'port', 8080),
-    local suffix = if port == 80 then '' else ':%s' % port,
-    from: 'https://' + pomerium.dnsNameForSso(config, me, sso),
-    to: 'http://' + lib.getElse(sso, 'serviceName', me.pkg) + '.' + me.namespace + '.svc.cluster.local' + suffix,
-    allowed_groups: lib.getElse(sso, 'allowed_groups', lib.getElse(config, 'general.sso.allowed_groups', [])),
-    allowed_users: lib.getElse(sso, 'allowed_users', lib.getElse(config, 'general.sso.allowed_users', [])),
-    allow_websockets: lib.getElse(sso, 'allow_websockets', lib.getElse(config, 'general.sso.allow_websockets', true)),
-  }
-  for sso in pomerium.ssoList(me)
-];
-
-local getPolicy(me) = std.flattenArrays([getPoliciesForPackage(pkg) for pkg in global.packagesWithKey(me.config, 'sso')]);
-
 local httpsVirtualService(me) = gloo.virtualService(me, 'proxy-https') {
   local domains = pomerium.dnsNames(me.config),
   metadata+: {
@@ -168,7 +152,6 @@ local httpVirtualService(me) = gloo.virtualService(me, 'proxy-http') {
 function(config, prev, namespace, pkg) (
   local me = common.package(config, prev, namespace, pkg);
   [
-    helmrelease(me),
     httpVirtualService(me),
     httpsVirtualService(me),
     virtualService(me, 'authorize'),
