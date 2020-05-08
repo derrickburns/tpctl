@@ -60,11 +60,6 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '5.0.3', repository: 'htt
   local domain = pomerium.rootDomain(me.config),
   spec+: {
     values+: {
-      authenticate: {
-        idp: {
-          serviceAccount: true,
-        },
-      },
       extraEnv: {
         log_level: lib.getElse(me, 'logLevel', lib.getElse(me.config, 'general.logLevel', 'info')),
       },
@@ -81,6 +76,14 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '5.0.3', repository: 'htt
       },
       ingress: {
         enabled: false,
+      },
+      tracing: {
+        provider: 'jaeger',
+        jaeger: {
+           collector_endpoint: tracing.collector(me),
+           agent_endpoint: "". // XXXX
+
+        },
       },
     },
   },
