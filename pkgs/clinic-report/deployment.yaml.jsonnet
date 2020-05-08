@@ -16,11 +16,6 @@ local deployment(me) = flux.deployment(me) {
       k8s.envSecret('MONGO_SSL', 'mongo', 'Tls'),
       k8s.envVar('MONGO_DATABASE', 'user'),
     ],
-    ports: [
-      {
-        containerPort: 27017,
-      },
-    ],
   },
   spec+: {
     template+: {
