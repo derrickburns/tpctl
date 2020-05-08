@@ -125,6 +125,9 @@ get)
   kubectl get helmrelease -n $namespace $name -o yaml > $tmp
   show $tmp
   ;;
+source)
+  helm pull $name/$name --version $version --untar
+  ;;
 cmp)
   if [ "$#" -eq 0 ]
   then
@@ -143,14 +146,15 @@ cmp)
   helmit template $file 2>/dev/null | separate_files $TMP_DIR/left >$TMP_DIR/leftlist
   helmit template $file2 2>/dev/null | separate_files $TMP_DIR/right >$TMP_DIR/rightlist
 
-  (cd $TMP_DIR; grc diff leftlist rightlist)
+  cd $TMP_DIR
+  grc diff leftlist rightlist
   echo "== Resources Changed ==="
-  for file in $(find $TMP_DIR/left )
+  for file in $(find left)
   do
-    base=${file#$TMP_DIR/left/}
-    if [ -f $TMP_DIR/right/$base ]
+    base=${file#left/}
+    if [ -f right/$base ]
     then
-      dyff between $TMP_DIR/left/$base $TMP_DIR/right/$base 2>/dev/null
+      dyff between left/$base right/$base 2>/dev/null
     fi
   done
   ;;
