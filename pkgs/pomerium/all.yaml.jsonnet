@@ -88,38 +88,6 @@ local getPoliciesForPackage(me) = [
 
 local getPolicy(me) = std.flattenArrays([getPoliciesForPackage(pkg) for pkg in global.packagesWithKey(me.config, 'sso')]);
 
-local helmrelease(me) = k8s.helmrelease(me, { version: '5.0.3', repository: 'https://helm.pomerium.io' }) {
-  _secretNames:: ['pomerium'],
-  _configmapNames:: ['pomerium'],
-  local domain = pomerium.rootDomain(me.config),
-  spec+: {
-    values+: {
-      authenticate: {
-        idp: {
-          serviceAccount: true,
-        },
-      },
-      extraEnv: {
-        log_level: lib.getElse(me, 'logLevel', lib.getElse(me.config, 'general.logLevel', 'info')),
-      },
-      service: {
-        type: 'ClusterIP',
-      },
-      config: {
-        rootDomain: domain,
-        existingSecret: $._secretNames[0],
-        policy: getPolicy(me),
-      },
-      forwardAuth: {
-        enabled: false,
-      },
-      ingress: {
-        enabled: false,
-      },
-    },
-  },
-};
-
 local httpsVirtualService(me) = gloo.virtualService(me, 'proxy-https') {
   local domains = pomerium.dnsNames(me.config),
   metadata+: {
