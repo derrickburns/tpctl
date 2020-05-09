@@ -30,6 +30,7 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '5.0.3', repository: 'htt
     values+: {
       authenticate: {
         idp: {
+          provider: 'google',
           serviceAccount: true,
         },
       },
@@ -43,6 +44,13 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '5.0.3', repository: 'htt
         rootDomain: domain,
         existingSecret: $._secretNames[0],
         policy: getPolicy(me),
+        forceGenerateSigningKey: true,
+        forceGenerateTLS: "true",
+        tracing: {
+          provider: 'jaeger',
+            collector_endpoint: 'http://jaeger-collector.tracing:14268/api/traces', // XXX
+            agent_endpoint: 'http://jaeger-agent.tracing', //XXX
+        },
       },
       forwardAuth: {
         enabled: false,
@@ -54,7 +62,7 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '5.0.3', repository: 'htt
   },
 };
 
-local helmrelease(me) = k8s.helmrelease(me, { version: '5.0.3', repository: 'https://helm.pomerium.io' }) {
+local helmrelease(me) = k8s.helmrelease(me, { version: '8.5.4', repository: 'https://helm.pomerium.io' }) {
   _secretNames:: ['pomerium'],
   _configmapNames:: ['pomerium'],
   local domain = pomerium.rootDomain(me.config),
