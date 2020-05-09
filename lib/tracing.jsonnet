@@ -4,7 +4,9 @@ local lib = import 'lib.jsonnet';
 {
   address(config):: 'oc-collector.%s:55678' % lib.getElse(global.package(config, 'oc-collector'), 'namespace', null),  // XXX
 
-  jaegerCollector(me):: 'http://jaeger-collector.%s:14268/api/traces' %  lib.getElse(global.package(me.config, 'oc-collector')),
+  collector(me):: 'http://jaeger-collector.%s:14268/api/traces' %  lib.getElse(global.package(me.config, 'jaeger')),
+
+  agent(me):: 'http://jaeger-agent.%s' %  lib.getElse(global.package(me.config, 'jaeger')),
 
   envoy(config):: if global.isEnabled(config, 'oc-collector') then {
     provider: {

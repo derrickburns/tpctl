@@ -87,14 +87,13 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '8.5.4', repository: 'htt
       ingress: {
         enabled: false,
       },
-      tracing: {
+      tracing: if global.isEnabled(me.config, 'jaeger') then {
         provider: 'jaeger',
         jaeger: {
            collector_endpoint: tracing.collector(me),
-           agent_endpoint: "". // XXXX
-
+           agent_endpoint: tracing.agent(me),
         },
-      },
+      } else {},
     },
   },
 };
