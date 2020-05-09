@@ -5,6 +5,7 @@ local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 local pomerium = import '../../lib/pomerium.jsonnet';
 local gloo = import '../../lib/gloo.jsonnet';
+local tracing = import '../../lib/tracing.jsonnet';
 
 local getPoliciesForPackage(me) = [
   {
