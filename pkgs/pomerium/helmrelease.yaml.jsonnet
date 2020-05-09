@@ -48,6 +48,7 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '5.0.3', repository: 'htt
         forceGenerateTLS: "true",
         tracing: {
           provider: 'jaeger',
+          jaeger: {
             collector_endpoint: 'http://jaeger-collector.tracing:14268/api/traces', // XXX
             agent_endpoint: 'http://jaeger-agent.tracing', //XXX
         },
