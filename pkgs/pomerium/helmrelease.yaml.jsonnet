@@ -23,7 +23,7 @@ local getPoliciesForPackage(me) = [
 
 local getPolicy(me) = std.flattenArrays([getPoliciesForPackage(pkg) for pkg in global.packagesWithKey(me.config, 'sso')]);
 
-local helmrelease(me) = k8s.helmrelease(me, { version: '5.0.3', repository: 'https://helm.pomerium.io' }) {
+local helmrelease(me) = k8s.helmrelease(me, { version: '8.5.4', repository: 'https://helm.pomerium.io' }) {
   _secretNames:: ['pomerium'],
   _configmapNames:: ['pomerium'],
   local domain = pomerium.rootDomain(me.config),
@@ -35,42 +35,6 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '5.0.3', repository: 'htt
           serviceAccount: true,
         },
       },
-      extraEnv: {
-        log_level: lib.getElse(me, 'logLevel', lib.getElse(me.config, 'general.logLevel', 'info')),
-      },
-      service: {
-        type: 'ClusterIP',
-      },
-      config: {
-        rootDomain: domain,
-        existingSecret: $._secretNames[0],
-        policy: getPolicy(me),
-        forceGenerateSigningKey: true,
-        forceGenerateTLS: "true",
-        tracing: {
-          provider: 'jaeger',
-          jaeger: {
-            collector_endpoint: 'http://jaeger-collector.tracing:14268/api/traces', // XXX
-            agent_endpoint: 'http://jaeger-agent.tracing', //XXX
-          },
-        },
-      },
-      forwardAuth: {
-        enabled: false,
-      },
-      ingress: {
-        enabled: false,
-      },
-    },
-  },
-};
-
-local helmrelease(me) = k8s.helmrelease(me, { version: '8.5.4', repository: 'https://helm.pomerium.io' }) {
-  _secretNames:: ['pomerium'],
-  _configmapNames:: ['pomerium'],
-  local domain = pomerium.rootDomain(me.config),
-  spec+: {
-    values+: {
       extraEnv: {
         log_level: lib.getElse(me, 'logLevel', lib.getElse(me.config, 'general.logLevel', 'info')),
       },
