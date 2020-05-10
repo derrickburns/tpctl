@@ -45,7 +45,7 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '8.5.4', repository: 'htt
         forceGenerateTLS: "true",
         rootDomain: domain,
         existingSecret: $._secretNames[0],
-        policy: getPolicy(me),
+        policy: std.base64(std.manifestJson(getPolicy(me))),
       },
       forwardAuth: {
         enabled: false,
