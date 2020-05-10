@@ -32,7 +32,6 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '8.5.4', repository: 'htt
       authenticate+: {
         idp+: {
           provider: 'google',
-          serviceAccount: true,
         },
       },
       extraEnv: {
