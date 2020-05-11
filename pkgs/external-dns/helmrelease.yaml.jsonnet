@@ -10,6 +10,7 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '2.20.8', repository: 'ht
         region: me.config.cluster.metadata.region,
         zoneType: 'public',
       },
+      interval: me.getElse('interval', "3m"),
       logLevel: me.config.general.logLevel,
       metrics: {
         enabled: global.isEnabled(me.config, 'prometheus'),
