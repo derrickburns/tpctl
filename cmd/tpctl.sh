@@ -5,7 +5,7 @@
 
 set -e
 export FLUX_FORWARD_NAMESPACE=flux
-export REVIEWERS="derrickburns pazaan jamesraby todd haroldbernard"
+export REVIEWERS="derrickburns pazaan jamesraby todd haroldbernard adinhodovic"
 export APPROVE=false
 export USE_LOCAL_FILESYSTEM=false
 export SKIP_REVIEW=false
