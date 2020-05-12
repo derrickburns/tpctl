@@ -1,6 +1,6 @@
 local common = import '../../lib/common.jsonnet';
 
-local clusterrole2(me) = k8s.clusterrole(me) {
+local clusterrole(me) = k8s.clusterrole(me) {
   rules: [
     {
       apiGroups: [
