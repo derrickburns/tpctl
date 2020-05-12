@@ -6,7 +6,7 @@ local deployment(me) = k8s.deployment(me) {
     env: [
       {
         name: 'PUBSUB_URL',
-        value: 'nats://keptn-nats-cluster', // XXX
+        value: 'nats://keptn-nats-cluster',
       },
       {
         name: 'PUBSUB_IMPL',
