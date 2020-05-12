@@ -6,18 +6,12 @@ local lib = import 'lib.jsonnet';
 local linkerd = import 'linkerd.jsonnet';
 local pom = import 'pomerium.jsonnet';
 local tracing = import 'tracing.jsonnet';
+local aws = import 'aws.jsonnet';
+local dns = import 'external-dns.jsonnet';
 
-local AwsTcpLoadBalancer(config) = {  // XXX AWS dependency
-  'service.beta.kubernetes.io/aws-load-balancer-proxy-protocol': '*',
-  'service.beta.kubernetes.io/aws-load-balancer-backend-protocol': 'tcp',
-  'service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled': 'true',
-  'service.beta.kubernetes.io/aws-load-balancer-additional-resource-tags': 'cluster:%s' % config.cluster.metadata.name,
-};
-
-local ExternalDnsHosts(hosts) = {
-  'external-dns.alpha.kubernetes.io/alias': 'true',
-  'external-dns.alpha.kubernetes.io/hostname': std.join(',', hosts),
-};
+// TODO this file needs to be refactored. 
+//
+// The envoy rate limits should be passed in.
 
 local i = {
 
@@ -276,8 +270,8 @@ local i = {
       service+: {
         type: 'LoadBalancer',
         extraAnnotations+:
-          AwsTcpLoadBalancer(me.config) +
-          ExternalDnsHosts($.dnsNames(me.config, { type: 'pomerium' }) + pom.dnsNames(me.config)),
+          aws.tcpLoadBalancer(me.config) +
+          dns.externalDnsHosts($.dnsNames(me.config, { type: 'pomerium' }) + pom.dnsNames(me.config)),
       },
     },
     internalGatewayProxy: $.baseGatewayProxy(me, 'internalGatewayProxy') {
@@ -289,8 +283,8 @@ local i = {
       service+: {
         type: 'LoadBalancer',
         extraAnnotations+:
-          AwsTcpLoadBalancer(me.config) +
-          ExternalDnsHosts($.dnsNames(me.config, { type: 'external' })),
+          aws.tcpLoadBalancer(me.config) +
+          dns.externalDnsHosts($.dnsNames(me.config, { type: 'external' })),
       },
     },
   },
@@ -360,11 +354,11 @@ local i = {
   // dependent on gloo version
   // selects external auth and rate limiting
   globalValues(me):: {
-    global: {
-      glooStats: {
+    global+: {
+      glooStats+: {
         enabled: true,
       },
-      glooRbac: {
+      glooRbac+: {
         create: true,
       },
       image: {
@@ -372,38 +366,38 @@ local i = {
         registry: 'quay.io/solo-io',
         tag: me.gloo.version,
       },
-      extensions: {
-        extAuth: {
+      extensions+: {
+        extAuth+: {
           enabled: lib.isEnabledAt(me, 'extAuth'),
         },
       },
     },
-    rateLimit: {
-      enabled: false,
+    rateLimit+: {
+      enabled: lib.isEnabledAt(me, 'rateLimit'),
     },
   },
 
   glooValues(me):: {
-    gloo: {
-      deployment: {
-        resources: {
-          requests: {
+    gloo+: {
+      deployment+: {
+        resources+: {
+          requests+: {
             cpu: '500m',
             memory: '256Mi',
           },
-          limits: {
+          limits+: {
             memory: '256Mi',
           },
         },
       },
     },
-    namespace: {
+    namespace+: {
       create: false,
     },
-    discovery: i.discoveryValues(me),
-    gateway: i.gatewayValues(me),
+    discovery+: i.discoveryValues(me),
+    gateway+: i.gatewayValues(me),
     gatewayProxies+: i.gatewayProxyValues(me),
-    settings: {
+    settings+: {
       create: me.pkg == 'gloo',  // false for gloo-ee
     },
   },
