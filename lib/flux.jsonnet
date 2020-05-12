@@ -3,12 +3,12 @@ local lib = import 'lib.jsonnet';
 
 {
   // default metadata for flux gitops
-  metadata():: {
+  metadata(me):: {
     local this = self,
-    local default = lib.getElse(this, 'gitops.default', 'regex:^master-[0-9A-Fa-f]{40}$'),
+    local default = lib.getElse(me, 'gitops.default', 'regex:^master-[0-9A-Fa-f]{40}$'),
     metadata+: {
       annotations+:
-        { 'fluxcd.io/automated': if lib.getElse(this, 'gitops.enabled', true) then 'true' else 'false' } +
+        { 'fluxcd.io/automated': if lib.getElse(me, 'gitops.enabled', true) then 'true' else 'false' } +
         { ['fluxcd.io/tag.%s' % container.name]: default for container in $.containers(this) },
     },
   },
@@ -31,7 +31,7 @@ local lib = import 'lib.jsonnet';
     std.map(function(c) updateContainer(map, c), containers)
   ),
 
-  deployment(me):: k8s.deployment(me) + $.metadata() {
+  deployment(me):: k8s.deployment(me) + $.metadata(me) {
     containerPatch:: $.patch
   }
 }
