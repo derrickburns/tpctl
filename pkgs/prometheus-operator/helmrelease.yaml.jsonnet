@@ -15,6 +15,7 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '8.12.7' }) {
           enabled: true,
           prometheusSpec: {
             serviceMonitorSelectorNilUsesHelmValues: false,
+            podMonitorSelectorNilUsesHelmValues: false,
           },
         }
       ),

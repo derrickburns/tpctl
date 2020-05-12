@@ -3,7 +3,7 @@ local global = import '../../lib/global.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
-local linkerdController(me) = k8s.k('monitoring.coreos.com/v1', 'ServiceMonitor') + k8s.metadata('linkerd-controller', me.namespace) {
+local linkerdController(me) = k8s.k('monitoring.coreos.com/v1', 'PodMonitor') + k8s.metadata('linkerd-controller', me.namespace) {
   spec+: {
     jobLabel: me.namespace + '/linkerd-controller',
     namespaceSelector: {
@@ -16,6 +16,9 @@ local linkerdController(me) = k8s.k('monitoring.coreos.com/v1', 'ServiceMonitor'
         'linkerd.io/control-plane-ns': 'linkerd',
       },
     },
+    podMetricsEndpoints: [
+      { port: '4191' },
+    ],
   },
 };
 
