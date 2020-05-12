@@ -6,7 +6,7 @@ local deployment = k8s.deployment(me) {
     env: [
       {
         name: 'CONFIGURATION_SERVICE',
-        value: 'http://configuration-service.%s.svc.cluster.local:8080' % me.namespace,
+        value: 'http://keptn-configuration-service.%s.svc.cluster.local:8080' % me.namespace,
       },
       {
         name: 'EVENTBROKER',
