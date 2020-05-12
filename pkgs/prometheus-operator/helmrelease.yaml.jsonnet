@@ -1,5 +1,5 @@
-local lib = import '../../lib/lib.jsonnet';
 local common = import '../../lib/common.jsonnet';
+local lib = import '../../lib/lib.jsonnet';
 
 local k8s = import '../../lib/k8s.jsonnet';
 
@@ -8,7 +8,16 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '8.12.7' }) {
     values+: {
       grafana: lib.getElse(me, 'grafana', { enabled: false }),
       alertmanager: lib.getElse(me, 'alertmanager', { enabled: false }),
-      prometheus: lib.getElse(me, 'prometheus', { enabled: true }),
+      prometheus: lib.getElse(
+        me,
+        'prometheus',
+        {
+          enabled: true,
+          prometheusSpec: {
+            serviceMonitorSelectorNilUsesHelmValues: false,
+          },
+        }
+      ),
       prometheusOperator: {
         admissionWebhooks: {
           enabled: false,
