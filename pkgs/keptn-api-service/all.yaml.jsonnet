@@ -21,7 +21,7 @@ local deployment = k8s.deployment(me) {
         valueFrom: {
           secretKeyRef: {
             key: 'keptn-api-token',
-            name: 'keptn-api-token',
+            name: 'keptn-api-token', // XXX who generates this
           },
         },
       },
