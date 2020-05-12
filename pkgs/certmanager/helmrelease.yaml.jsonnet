@@ -7,6 +7,7 @@ local helmrelease(me) = lib.E(me, k8s.helmrelease(me, { name: 'cert-manager', ve
     values+: {
       serviceAccount: {
         create: false,
+        name: me.pkg,
       },
     },
   },
