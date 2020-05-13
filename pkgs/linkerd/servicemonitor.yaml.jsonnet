@@ -16,8 +16,25 @@ local linkerdController(me) = k8s.k('monitoring.coreos.com/v1', 'PodMonitor') + 
         'linkerd.io/control-plane-component': '.*',
       },
     },
+    podTargetLabels: [
+      'linkerd.io/control-plane-component',
+    ],
     podMetricsEndpoints: [
-      { port: 'linkerd-admin' },
+      {
+        port: 'linkerd-admin',
+        relabelings: [
+          {
+            sourceLabels: [
+              'linkerd_io_control_plane_component',
+            ],
+            targetLabel: 'component',
+          },
+          {
+            regex: 'linkerd_io_control_plane_component',
+            action: 'labeldrop',
+          },
+        ],
+      },
     ],
   },
 };
@@ -37,7 +54,21 @@ local linkerdProxy(me) = k8s.k('monitoring.coreos.com/v1', 'PodMonitor') + k8s.m
       },
     },
     podMetricsEndpoints: [
-      { port: 'linkerd-admin' },
+      {
+        port: 'linkerd-admin',
+        relabelings: [
+          {
+            sourceLabels: [
+              'linkerd_io_proxy_deployment',
+            ],
+            targetLabel: 'deployment',
+          },
+          {
+            regex: 'linkerd_io_proxy_deployment',
+            action: 'labeldrop',
+          },
+        ],
+      },
     ],
   },
 };
