@@ -13,7 +13,7 @@ local linkerdController(me) = k8s.k('monitoring.coreos.com/v1', 'PodMonitor') + 
     },
     selector: {
       matchLabels: {
-        'linkerd.io/control-plane-component': 'controller',
+        'linkerd.io/control-plane-component': '.*',
       },
     },
     podMetricsEndpoints: [
