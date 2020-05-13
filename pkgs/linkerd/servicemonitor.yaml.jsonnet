@@ -22,11 +22,32 @@ local linkerdController(me) = k8s.k('monitoring.coreos.com/v1', 'PodMonitor') + 
   },
 };
 
+local linkerdProxy(me) = k8s.k('monitoring.coreos.com/v1', 'PodMonitor') + k8s.metadata('linkerd-proxy', me.namespace) {
+  spec+: {
+    jobLabel: me.namespace + '/linkerd-proxy',
+    namespaceSelector: {
+      any: true,
+    },
+    podTargetLabels: [
+      'linkerd.io/proxy-deployment',
+    ],
+    selector: {
+      matchLabels: {
+        'linkerd.io/control-plane-ns': 'linkerd$',
+      },
+    },
+    podMetricsEndpoints: [
+      { port: 'linkerd-admin' },
+    ],
+  },
+};
+
 function(config, prev, namespace, pkg) (
   local me = common.package(config, prev, namespace, pkg);
   if global.isEnabled(me.config, 'prometheus-operator')
   then [
     linkerdController(me),
+    linkerdProxy(me),
   ]
   else {}
 )
