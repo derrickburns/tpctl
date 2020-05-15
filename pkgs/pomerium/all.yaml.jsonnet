@@ -1,10 +1,10 @@
 local certmanager = import '../../lib/certmanager.jsonnet';
 local common = import '../../lib/common.jsonnet';
 local global = import '../../lib/global.jsonnet';
+local gloo = import '../../lib/gloo.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 local pomerium = import '../../lib/pomerium.jsonnet';
-local gloo = import '../../lib/gloo.jsonnet';
 
 local upstream(me, name) = gloo.kubeupstream(me, 443, name) {
   spec+: {
@@ -24,7 +24,7 @@ local upstream(me, name) = gloo.kubeupstream(me, 443, name) {
   },
 };
 
-local virtualService(me, name) = gloo.virtualService(me, name)  {
+local virtualService(me, name) = gloo.virtualService(me, name) {
   local domain = pomerium.rootDomain(me.config),
   metadata+: {
     labels: {
@@ -88,7 +88,7 @@ local getPoliciesForPackage(me) = [
 
 local getPolicy(me) = std.flattenArrays([getPoliciesForPackage(pkg) for pkg in global.packagesWithKey(me.config, 'sso')]);
 
-local helmrelease(me) = k8s.helmrelease(me, { version: '5.0.3', repository: 'https://helm.pomerium.io' }) {
+local helmrelease(me) = k8s.helmrelease(me, { version: '9.0.0', repository: 'https://helm.pomerium.io' }) {
   _secretNames:: ['pomerium'],
   _configmapNames:: ['pomerium'],
   local domain = pomerium.rootDomain(me.config),
@@ -100,15 +100,17 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '5.0.3', repository: 'htt
         },
       },
       extraEnv: {
-        log_level: lib.getElse(me, 'logLevel', lib.getElse(me.config, 'general.logLevel', 'info')),
+        LOG_LEVEL: lib.getElse(me, 'logLevel', lib.getElse(me.config, 'general.logLevel', 'info')),
+        POLICY: std.base64(std.manifestJson(getPolicy(me))),
       },
       service: {
         type: 'ClusterIP',
       },
       config: {
+        forceGenerateSigningKey: true,
+        forceGenerateTLS: 'true',
         rootDomain: domain,
         existingSecret: $._secretNames[0],
-        policy: getPolicy(me),
       },
       forwardAuth: {
         enabled: false,
