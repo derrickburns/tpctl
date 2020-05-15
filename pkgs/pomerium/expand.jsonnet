@@ -3,41 +3,41 @@ local lib = import '../../lib/lib.jsonnet';
 local pomerium = import '../../lib/pomerium.jsonnet';
 
 local accessLoggingOption = {
-    accessLoggingService: {
-      accessLog: [
-        {
-          fileSink: {
-            jsonFormat: {
-              authority: '%REQ(:authority)%',
-              authorization: '%REQ(authorization)%',
-              content: '%REQ(content-type)%',
-              duration: '%DURATION%',
-              forwardedFor: '%REQ(X-FORWARDED-FOR)%',
-              method: '%REQ(:method)%',
-              path: '%REQ(:path)%',
-              remoteAddress: '%DOWNSTREAM_REMOTE_ADDRESS_WITHOUT_PORT%',
-              response: '%RESPONSE_CODE%',
-              scheme: '%REQ(:scheme)%',
-              bytesReceived: '%BYTES_RECEIVED%',
-              responseCodeDetail: '%RESPONSE_CODE_DETAILS%',
-              requestDuration: '%REQUEST_DURATION%',
-              responseFlags: '%RESPONSE_FLAGS%',
-              startTime: '%START_TIME%',
-              upstream: '%UPSTREAM_CLUSTER%',
-              userAgent: '%REQ(user-agent)%',
-              referer: '%REQ(referer)%',
-            },
-            path: '/dev/stdout',
+  accessLoggingService: {
+    accessLog: [
+      {
+        fileSink: {
+          jsonFormat: {
+            authority: '%REQ(:authority)%',
+            authorization: '%REQ(authorization)%',
+            content: '%REQ(content-type)%',
+            duration: '%DURATION%',
+            forwardedFor: '%REQ(X-FORWARDED-FOR)%',
+            method: '%REQ(:method)%',
+            path: '%REQ(:path)%',
+            remoteAddress: '%DOWNSTREAM_REMOTE_ADDRESS_WITHOUT_PORT%',
+            response: '%RESPONSE_CODE%',
+            scheme: '%REQ(:scheme)%',
+            bytesReceived: '%BYTES_RECEIVED%',
+            responseCodeDetail: '%RESPONSE_CODE_DETAILS%',
+            requestDuration: '%REQUEST_DURATION%',
+            responseFlags: '%RESPONSE_FLAGS%',
+            startTime: '%START_TIME%',
+            upstream: '%UPSTREAM_CLUSTER%',
+            userAgent: '%REQ(user-agent)%',
+            referer: '%REQ(referer)%',
           },
+          path: '/dev/stdout',
         },
-      ],
-    },
-  };
+      },
+    ],
+  },
+};
 
 {
-  expand(config, me, namespace, pkg):: 
+  expand(config, me, namespace, pkg)::
     me
-    +  $.withGateways(config, me, namespace, pkg)
+    + $.withGateways(config, me, namespace, pkg)
     + $.withVirtualServices(pomerium.rootDomain(config)),
 
   withVirtualServices(rootDomain):: {

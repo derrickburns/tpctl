@@ -1,11 +1,8 @@
-local certmanager = import '../../lib/certmanager.jsonnet';
 local common = import '../../lib/common.jsonnet';
 local global = import '../../lib/global.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 local pomerium = import '../../lib/pomerium.jsonnet';
-local gloo = import '../../lib/gloo.jsonnet';
-local tracing = import '../../lib/tracing.jsonnet';
 
 local getPoliciesForPackage(me) = [
   {
@@ -21,17 +18,18 @@ local getPoliciesForPackage(me) = [
   for sso in pomerium.ssoList(me)
 ];
 
+
 local getPolicy(me) = std.flattenArrays([getPoliciesForPackage(pkg) for pkg in global.packagesWithKey(me.config, 'sso')]);
 
-local helmrelease(me) = k8s.helmrelease(me, { version: '8.5.4', repository: 'https://helm.pomerium.io' }) {
+local helmrelease(me) = k8s.helmrelease(me, { version: '9.0.0', repository: 'https://helm.pomerium.io' }) {
   _secretNames:: ['pomerium'],
   _configmapNames:: ['pomerium'],
   local domain = pomerium.rootDomain(me.config),
   spec+: {
     values+: {
-      authenticate+: {
-        idp+: {
-          provider: 'google',
+      authenticate: {
+        idp: {
+          serviceAccount: true,
         },
       },
       extraEnv: {
@@ -43,7 +41,7 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '8.5.4', repository: 'htt
       },
       config: {
         forceGenerateSigningKey: true,
-        forceGenerateTLS: "true",
+        forceGenerateTLS: 'true',
         rootDomain: domain,
         existingSecret: $._secretNames[0],
       },
@@ -53,13 +51,6 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '8.5.4', repository: 'htt
       ingress: {
         enabled: false,
       },
-      tracing: if global.isEnabled(me.config, 'jaeger') then {
-        provider: 'jaeger',
-        jaeger: {
-           collector_endpoint: tracing.collector(me),
-           agent_endpoint: tracing.agent(me),
-        },
-      } else {},
     },
   },
 };

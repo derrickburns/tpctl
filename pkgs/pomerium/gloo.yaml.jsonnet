@@ -1,10 +1,10 @@
 local certmanager = import '../../lib/certmanager.jsonnet';
 local common = import '../../lib/common.jsonnet';
 local global = import '../../lib/global.jsonnet';
+local gloo = import '../../lib/gloo.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 local pomerium = import '../../lib/pomerium.jsonnet';
-local gloo = import '../../lib/gloo.jsonnet';
 
 local upstream(me, name) = gloo.kubeupstream(me, 443, name) {
   spec+: {
@@ -24,7 +24,7 @@ local upstream(me, name) = gloo.kubeupstream(me, 443, name) {
   },
 };
 
-local virtualService(me, name) = gloo.virtualService(me, name)  {
+local virtualService(me, name) = gloo.virtualService(me, name) {
   local domain = pomerium.rootDomain(me.config),
   metadata+: {
     labels: {
