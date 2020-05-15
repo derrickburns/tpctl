@@ -3,6 +3,7 @@ local global = import '../../lib/global.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 local pomerium = import '../../lib/pomerium.jsonnet';
+local tracing = import '../../lib/tracing.jsonnet';
 
 local getPoliciesForPackage(me) = [
   {
@@ -51,6 +52,13 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '9.0.0', repository: 'htt
       ingress: {
         enabled: false,
       },
+      tracing: if global.isEnabled(me.config, 'jaeger') then {
+        provider: 'jaeger',
+        jaeger: {
+          collector_endpoint: tracing.collector(me),
+          agent_endpoint: tracing.agent(me),
+        },
+      } else {},
     },
   },
 };
