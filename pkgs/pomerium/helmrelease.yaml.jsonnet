@@ -41,8 +41,6 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '9.0.0', repository: 'htt
         type: 'ClusterIP',
       },
       config: {
-        forceGenerateSigningKey: true,
-        forceGenerateTLS: 'true',
         rootDomain: domain,
         existingSecret: $._secretNames[0],
       },
