@@ -6,7 +6,20 @@ local k8s = import '../../lib/k8s.jsonnet';
 local helmrelease(me) = k8s.helmrelease(me, { version: '8.12.7' }) {
   spec+: {
     values+: {
-      grafana: lib.getElse(me, 'grafana', { enabled: false }),
+      grafana: lib.getElse(me, 'grafana', {
+        enabled: true,
+        env: [
+          k8s.envSecret('GF_PATHS_CONFIG', me.pkg, '/etc/grafana/grafana-config.ini'),
+        ],
+        extraConfigmapMounts: [
+          {
+            name: 'grafana-ini',
+            mountPath: '/etc/grafana/grafana-config.ini',
+            configMap: 'grafana-ini',
+            subPath: 'grafana.ini',
+          },
+        ],
+      }),
       alertmanager: lib.getElse(me, 'alertmanager', { enabled: false }),
       prometheus: lib.getElse(
         me,
