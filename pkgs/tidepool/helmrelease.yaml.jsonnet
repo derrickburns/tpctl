@@ -7,6 +7,42 @@ local lib = import '../../lib/lib.jsonnet';
 local linkerd = import '../../lib/linkerd.jsonnet';
 local mylib = import 'lib.jsonnet';
 
+local jwks(me) = {
+  jwt: {
+    providers: {
+      'tidepool-provider': {
+        issuer: me.gateway.apiHost,
+        audiences: [me.gateway.apiHost],
+        tokenSource: {
+          headers: [{
+            header: 'x-tidepool-session-token',
+            prefix: '',
+          }],
+        },
+        keepToken: true,
+        claimsToHeaders: [{
+          claim: 'sub',
+          header: 'x-tidepool-userid',
+          append: false,
+        }, {
+          claim: 'svr',
+          header: 'x-tidepool-isServer',
+          append: false,
+        }],
+        jwks: {
+          remote: {
+            upstream_ref: {
+              name: 'jwks',
+              namespace: me.namespace,
+            },
+            url: 'http://jwks.%s/jwks.json' % me.namespace,
+          },
+        },
+      },
+    },
+  },
+};
+
 local dataBucket(config, namespace) = 'tidepool-%s-%s-data' % [config.cluster.metadata.name, namespace];
 local assetBucket(config, namespace) = 'tidepool-%s-%s-asset' % [config.cluster.metadata.name, namespace];
 local virtualBucket(config, bucket) = bucket;
@@ -256,6 +292,10 @@ local helmrelease(me) = k8s.helmrelease(me, {
 
       glooingress: lib.merge({
         enabled: true,
+        jwt: {
+          enabled: true
+          config: jwks(me),
+        },
         gloo: {
           enabled: false,
         },
