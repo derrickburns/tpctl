@@ -620,6 +620,25 @@ function show() {
   fi
 }
 
+function create_jwks_configmap() {
+  namespace=$1
+  # generate private and public keys
+  openssl genrsa 2048 > $TMP_DIR/private-key.pem
+  openssl rsa -in $TMP_DIR/private-key.pem -pubout > $TMP_DIR/public-key.pem
+  # save in secret
+  mkdir -p secrets/${namespace}
+  kubectl -n ${namespace} create secret generic token-signing-key --from-file=public=$TMP_DIR/public-key.pem --from-file=private=$TMP_DIR/private-key.pem -o yaml --dry-run=client >secrets/${namespace}/token-signing-key.yaml
+  sops -e -i secrets/${namespace}/token-signing-key.yaml
+
+  # convert to JWKS format
+  npm install -g pem-jwk
+  cat $TMP_DIR/public-key.pem | pem-jwk | jq . > $TMP_DIR/jwks.json
+  jq '.+{alg:"RS256"}|.+{use:"sig"}' jwks.json | tee $TMP_DIR/tmp.json && mv $TMP_DIR/tmp.json $TMP_DIR/jwks.json
+  jq '{"keys":[.]}' $TMP_DIR/jwks.json | tee $TMP_DIR/tmp.json && mv $TMP_DIR/tmp.json $TMP_DIR/jwks.json
+  mkdir -p configmaps/${namespace}
+  kubectl -n ${namespace} create configmap jwks --from-file=jwks.json=$TMP_DIR/jwks.json -o yaml --dry-run=client > configmaps/${namespace}/jwks.yaml
+}
+
 # make service accounts  for namespace given config, path, prefix, and environment name
 function template_service_accounts() {
   local values=$1
@@ -1333,6 +1352,7 @@ kmskey                              - create a new Amazon KMS key for the cluste
 merge_kubeconfig                    - copy the KUBECONFIG into the local $KUBECONFIG file
 remove_mesh                         - uninstall the service mesh
 update_kubeconfig                   - modify context and user for kubeconfig
+jwks \$namespace                    - create token signing key and key set for namespace
 '
 
 # show help
@@ -1468,6 +1488,14 @@ main() {
       clone_remote
       expect_github_token
       install_fluxkey
+      ;;
+    jwks)
+      check_remote_repo
+      setup_tmpdir
+      clone_remote
+      confirm_matching_cluster
+      create_jwks_configmap $1
+      save_changes "Created new signing token"
       ;;
     kmskey)
       check_remote_repo
