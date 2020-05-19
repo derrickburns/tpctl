@@ -8,7 +8,7 @@ local servicePort = 80;
 local containerPort = 80;
 
 local deployment(me) = flux.deployment(me) {
-  _containers:: [{
+  _containers:: {
     image: 'nginx',
     ports: [{
       containerPort: containerPort,
@@ -17,7 +17,7 @@ local deployment(me) = flux.deployment(me) {
       mountPath: "/usr/share/nginx/html",
       name: me.pkg,
     }],
-  }],
+  },
   spec+: {
     template+: {
       spec+: {
