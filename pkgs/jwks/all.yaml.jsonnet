@@ -14,7 +14,7 @@ local deployment(me) = flux.deployment(me) {
       containerPort: containerPort,
     }],
     volumeMounts: [{
-      mountPath: /usr/share/nginx/html
+      mountPath: "/usr/share/nginx/html",
       name: me.pkg,
     }],
   }],
