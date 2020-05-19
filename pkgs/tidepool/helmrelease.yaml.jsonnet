@@ -293,7 +293,7 @@ local helmrelease(me) = k8s.helmrelease(me, {
       glooingress: lib.merge({
         enabled: true,
         jwt: {
-          enabled: true
+          enabled: true,
           config: jwks(me),
         },
         gloo: {
