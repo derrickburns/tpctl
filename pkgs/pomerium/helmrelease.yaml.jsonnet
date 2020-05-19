@@ -22,7 +22,7 @@ local getPoliciesForPackage(me) = [
 
 local getPolicy(me) = std.flattenArrays([getPoliciesForPackage(pkg) for pkg in global.packagesWithKey(me.config, 'sso')]);
 
-local helmrelease(me) = k8s.helmrelease(me, { version: '8.6.0', repository: 'https://helm.pomerium.io' }) {
+local helmrelease(me) = k8s.helmrelease(me, { version: '7.0.0', repository: 'https://helm.pomerium.io' }) {
   _secretNames:: ['pomerium'],
   _configmapNames:: ['pomerium'],
   local domain = pomerium.rootDomain(me.config),
@@ -36,6 +36,7 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '8.6.0', repository: 'htt
       extraEnv: {
         LOG_LEVEL: lib.getElse(me, 'logLevel', lib.getElse(me.config, 'general.logLevel', 'info')),
         POLICY: std.base64(std.manifestJson(getPolicy(me))),
+        JWT_CLAIMS_HEADERS: 'email,groups,user',
       },
       service: {
         type: 'ClusterIP',
