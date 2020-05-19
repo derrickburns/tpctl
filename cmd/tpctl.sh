@@ -20,7 +20,8 @@ cluster-shared
 cluster-production
 '
 CONFIG_DIR=.
-MANIFEST_DIR=manifests
+OLD_MANIFEST_DIR=manifests/pkgs
+MANIFEST_DIR=generated
 VALUES_FILE=values.yaml
 LOG_LEVEL=3
 
@@ -583,9 +584,15 @@ function enabled_pkgs() {
 # make K8s manifest files for shared services
 function make_shared_config() {
   start "copying old manifests"
+
+  if [ -d "$OLD_MANIFEST_DIR" ]
+  then
+    mv $OLD_MANIFEST_DIR $MANIFEST_DIR
+  fi
+
   mkdir -p $TMP_DIR/$MANIFEST_DIR
-  if [ -d $MANIFEST_DIR/$pkgs ]; then
-    cp -r $MANIFEST_DIR/pkgs $TMP_DIR/$MANIFEST_DIR
+  if [ -d $MANIFEST_DIR ]; then
+    cp -r $MANIFEST_DIR/* $TMP_DIR/$MANIFEST_DIR
     rm -rf $MANIFEST_DIR
   fi
   complete 
@@ -649,7 +656,7 @@ function template_service_accounts() {
   for fullpath in $(find $path -type f -print); do
     local filename=${fullpath#$prefix}
     local pkg=$(dirname $filename)
-    local dir=$MANIFEST_DIR/pkgs/$namespace/$pkg
+    local dir=$MANIFEST_DIR/$namespace/$pkg
     local file=$(basename $filename)
     mkdir -p $dir
     if [ "${filename: -14}" == "policy.jsonnet" ]; then
@@ -703,7 +710,7 @@ function show_enabled() {
 function output_dir() {
   local namespace=$1
   local pkg=$2
-  echo $CONFIG_DIR/manifests/pkgs/$namespace/$pkg
+  echo $CONFIG_DIR/$MANIFEST_DIR/$namespace/$pkg
 }
 
 function output() {
@@ -799,7 +806,7 @@ function transform() {
   if [ -f "$transform" ]; then
     start "transforming package $pkg"
     local dir=$(output_dir $namespace $pkg)
-    local generated=$TMP_DIR/generated
+    local generated=$TMP_DIR/generated_data
     show $dir >$generated
     rm -rf $dir
     expand_jsonnet $values $generated $namespace $pkg $transform | output $namespace $pkg $src
@@ -937,9 +944,9 @@ function install_helmrelease() {
 function bootstrap_flux() {
   start "bootstrapping flux"
   establish_ssh
-  install_helmrelease $MANIFEST_DIR/pkgs/flux/flux/flux-helmrelease.yaml
+  install_helmrelease $MANIFEST_DIR/flux/flux/flux-helmrelease.yaml
   install_fluxkey
-  install_helmrelease $MANIFEST_DIR/pkgs/flux/flux/helm-operator-helmrelease.yaml
+  install_helmrelease $MANIFEST_DIR/flux/flux/helm-operator-helmrelease.yaml
   complete
 }
 

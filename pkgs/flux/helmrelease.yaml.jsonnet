@@ -31,7 +31,7 @@ local helmrelease(me) = k8s.helmrelease(me, {
         label: me.config.cluster.metadata.name,
         email: me.config.general.email,
         url: '%s.git' % me.config.general.github.git,
-        path: 'manifests',
+        path: 'generated',
       },
 
       prometheus: {
