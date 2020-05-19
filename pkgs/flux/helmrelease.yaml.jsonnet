@@ -41,6 +41,10 @@ local helmrelease(me) = k8s.helmrelease(me, {
         },
       },
 
+      serviceAccount: {
+        create: false
+      },
+
       sync: {
         timeout: '10m',
       },
