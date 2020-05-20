@@ -606,18 +606,27 @@ function make_cluster_config() {
   complete
 }
 
-# cat all yaml files in given directory to stdout
-function show() {
+# valdiate all yaml files in given directory 
+function validate() {
   local directory=$1
   if [ -d $directory ]; then
     start "validating previous files"
     for file in $(find $directory -type f -name \*.yaml -print); do
       kubeval $file | grep -v "PASS" |  grep -v 404 >>/dev/stderr || true
+    done
+    complete
+  fi
+}
+
+# cat all yaml files in given directory to stdout
+function show() {
+  local directory=$1
+  if [ -d $directory ]; then
+    for file in $(find $directory -type f -name \*.yaml -print); do
       echo "---"
       cat $file
       echo
     done
-    complete
   fi
 }
 
@@ -1328,6 +1337,7 @@ linkerd_check                       - check Linkerd status
 peering                             - list peering relationships
 vpc                                 - identify the VPC
 show                                - show existing manifests as YAML stream
+validate                            - validate that all generated manifests files are valid YAML
       
 ----- Cluster Commands
 await_deletion                      - await completion of deletion of the AWS EKS cluster
@@ -1617,6 +1627,13 @@ main() {
       setup_tmpdir
       clone_remote
       show $MANIFEST_DIR/$1
+      ;;
+    validate)
+      check_remote_repo
+      expect_github_token
+      setup_tmpdir
+      clone_remote
+      validate $MANIFEST_DIR
       ;;
     images)
       fluxctl list-images --k8s-fwd-ns flux -n ${1} --workload ${1}:deployment/${2} -l 60
