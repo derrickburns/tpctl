@@ -43,6 +43,7 @@ local helmrelease(me) = k8s.helmrelease(me, {
 
       serviceAccount: {
         create: false,
+        name: 'flux',
       },
 
       sync: {
