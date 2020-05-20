@@ -292,17 +292,6 @@ local helmrelease(me) = k8s.helmrelease(me, {
       }, lib.getElse(me, 'gatekeeper', {})]),
 
       glooingress: lib.merge({
-        enabled: true,
-        jwt: {
-          enabled: lib.isEnabledAt(me, 'jwks'),
-          config: jwks(me),
-        },
-        gloo: {
-          enabled: false,
-        },
-        discovery: {
-          namespace: 'gloo-system',
-        },
         virtualServices+: {
           http+: {
             name: 'http-internal',
@@ -327,6 +316,13 @@ local helmrelease(me) = k8s.helmrelease(me, {
       global: {
         local domain = lib.getElse(config, 'cluster.metadata.domain', 'tidepool.org'),
         logLevel: lib.getElse(config, 'general.logLevel', 'info'),
+        glooingress: {
+          enabled: true,
+          jwt: {
+            enabled: lib.isEnabledAt(me, 'jwks'),
+            config: jwks(me),
+          },
+        },
         gateway: {
           proxy: {
             name: 'internal-gateway-proxy',
