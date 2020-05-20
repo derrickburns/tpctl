@@ -7,7 +7,7 @@ import sys
 import tempfile
 from ruamel.yaml import YAML
 
-MANIFEST_DIR=manifests
+MANIFEST_DIR=generated
 VALUES_FILE=values.yaml
 
 def values_object(config_dir):

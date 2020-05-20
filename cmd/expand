@@ -2,7 +2,7 @@
 
 set -e
 
-MANIFEST_DIR=manifests
+MANIFEST_DIR=generated
 VALUES_FILE=values.yaml
 
 # clean up working area on exit
