@@ -1,5 +1,5 @@
-local global = import '../../lib/global.jsonnet';
 local common = import '../../lib/common.jsonnet';
+local global = import '../../lib/global.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
@@ -41,6 +41,10 @@ local helmrelease(me) = k8s.helmrelease(me, {
         },
       },
 
+      serviceAccount: {
+        create: false,
+      },
+
       sync: {
         timeout: '10m',
       },
@@ -51,8 +55,8 @@ local helmrelease(me) = k8s.helmrelease(me, {
       },
 
       additionalArgs:
-       [ '--registry-exclude-image=*velero*' ] // XXX hardcoded
-       + if lib.isTrue(ns, 'fluxcloud.enabled') then ['--connect=ws://fluxcloud'] else [],
+        ['--registry-exclude-image=*velero*']  // XXX hardcoded
+        + if lib.isTrue(ns, 'fluxcloud.enabled') then ['--connect=ws://fluxcloud'] else [],
 
       extraContainers:
         if lib.isEnabledAt(ns, 'fluxrecv') && lib.isTrue(ns, 'fluxrecv.sidecar')
