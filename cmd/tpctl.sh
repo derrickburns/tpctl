@@ -20,7 +20,6 @@ cluster-shared
 cluster-production
 '
 CONFIG_DIR=.
-OLD_MANIFEST_DIR=manifests/pkgs
 MANIFEST_DIR=generated
 VALUES_FILE=values.yaml
 LOG_LEVEL=3
@@ -584,11 +583,6 @@ function enabled_pkgs() {
 # make K8s manifest files for shared services
 function make_shared_config() {
   start "copying old manifests"
-
-  if [ -d "$OLD_MANIFEST_DIR" ]
-  then
-    mv $OLD_MANIFEST_DIR $MANIFEST_DIR
-  fi
 
   mkdir -p $TMP_DIR/$MANIFEST_DIR
   if [ -d $MANIFEST_DIR ]; then
