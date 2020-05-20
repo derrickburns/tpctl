@@ -168,6 +168,7 @@ local svcs = [
   'messageapi',
   'migrations',
   'notification',
+  'prescription',
   'seagull',
   'shoreline',
   'task',
@@ -446,6 +447,13 @@ local helmrelease(me) = k8s.helmrelease(me, {
           image: lib.getElse(prev, 'spec.values.notification.deployment.image', 'tidepool/platform-notification:master-latest'),
         },
       }, lib.getElse(me, 'notification', {})]),
+
+      prescription: lib.mergeList([common, {
+        extraContainers: extraContainers,
+        deployment+: {
+          image: lib.getElse(prev, 'spec.values.prescription.deployment.image', 'tidepool/platform-prescription:master-latest'),
+        },
+      }, lib.getElse(me, 'prescription', {})]),
 
       seagull: lib.mergeList([common, {
         extraContainers: extraContainers,
