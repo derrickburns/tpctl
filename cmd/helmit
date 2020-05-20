@@ -100,7 +100,7 @@ install)
   load_chart $name $repo
   get_values "$hr" >/tmp/${name}-${namespace}.yaml
   kubectl create namespace $namespace 2>/dev/null
-  op="upgrade -i --force --version $version -f /tmp/${name}-${namespace}.yaml"
+  op="upgrade -i --version $version -f /tmp/${name}-${namespace}.yaml"
   helm $op $release $name/$name --namespace ${namespace} 
   ;;
 delete)
