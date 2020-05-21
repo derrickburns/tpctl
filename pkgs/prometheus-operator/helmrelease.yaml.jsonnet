@@ -8,6 +8,10 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '8.12.7' }) {
     values+: {
       grafana: lib.getElse(me, 'grafana', {
         enabled: true,
+        persistence: {
+          enabled: true,
+          existingClaim: 'grafana',
+        },
         env: [
           k8s.envSecret('GF_PATHS_CONFIG', me.pkg, '/etc/grafana/grafana-config.ini'),
         ],
