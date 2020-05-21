@@ -19,6 +19,42 @@ local linkerd(me) = {
   }
 };
 
+local gatewayAnnotations(me) = {
+  apiVersion: 'apps/v1',
+  kind: 'Deployment',
+  metadata: {
+    name: 'gateway',
+    namespace: me.namespace,
+  },
+  spec+ {
+    template+: {
+      metadata+: {
+        annotations+: {
+          'linkerd.io/inject': 'disabled',
+        },
+      },
+    },
+  }
+};
+
+local glooAnnotations(me) = {
+  apiVersion: 'apps/v1',
+  kind: 'Deployment',
+  metadata: {
+    name: 'gloo',
+    namespace: me.namespace,
+  },
+  spec+ {
+    template+: {
+      metadata+: {
+        annotations+: {
+          'linkerd.io/inject': 'disabled',
+        },
+      },
+    },
+  }
+};
+
 local sysctl(me, proxy) = {
   apiVersion: 'apps/v1',
   kind: 'Deployment',
@@ -42,6 +78,8 @@ local transform(me) =
   k8s.asMap(sysctl(me, 'gateway-proxy')) +  // XXX hardcoded
   k8s.asMap(sysctl(me, 'internal-gateway-proxy')) + 
   k8s.asMap(sysctl(me, 'pomerium-gateway-proxy')) +
-  k8s.asMap(linkerd(me));
+  k8s.asMap(linkerd(me)) +
+  k8s.asMap(gatewayAnnotations(me)) +
+  k8s.asMap(glooAnnotations(me));
 
 function(config, prev, namespace, pkg) transform(common.package(config, prev, namespace, pkg))
