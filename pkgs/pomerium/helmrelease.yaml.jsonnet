@@ -36,7 +36,6 @@ local helmrelease(me) = k8s.helmrelease(me, { version: lib.getElse(me, 'version'
       extraEnv: {
         LOG_LEVEL: lib.getElse(me, 'logLevel', lib.getElse(me.config, 'general.logLevel', 'info')),
         POLICY: std.base64(std.manifestJson(getPolicy(me))),
-        JWT_CLAIMS_HEADERS: 'email',
       },
       service: {
         type: 'ClusterIP',
@@ -44,9 +43,6 @@ local helmrelease(me) = k8s.helmrelease(me, { version: lib.getElse(me, 'version'
       config: {
         rootDomain: domain,
         existingSecret: $._secretNames[0],
-        extraOpts: {
-          jwt_claims_headers: 'email',
-        },
       },
       forwardAuth: {
         enabled: false,
