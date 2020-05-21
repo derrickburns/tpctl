@@ -294,6 +294,10 @@ local helmrelease(me) = k8s.helmrelease(me, {
       glooingress: lib.merge({
         virtualServices+: {
           http+: {
+            jwt: {
+              enabled: lib.isEnabledAt(me, 'jwks'),
+              config: jwks(me),
+            },
             name: 'http-internal',
             dnsNames: mylib.genDnsNames(config, me.namespace),
             enabled: true,
@@ -313,16 +317,15 @@ local helmrelease(me) = k8s.helmrelease(me, {
           },
         },
       }, lib.getElse(me, 'glooingress', {})),
+
       global: {
         local domain = lib.getElse(config, 'cluster.metadata.domain', 'tidepool.org'),
         logLevel: lib.getElse(config, 'general.logLevel', 'info'),
-        glooingress: {
-          enabled: true,
-          jwt: {
-            enabled: lib.isEnabledAt(me, 'jwks'),
-            config: jwks(me),
-          },
+
+        linkerdsupport: {
+          enabled: global.isEnabled(config, 'linkerd'),
         },
+
         gateway: {
           proxy: {
             name: 'internal-gateway-proxy',
@@ -413,10 +416,6 @@ local helmrelease(me) = k8s.helmrelease(me, {
           image: lib.getElse(prev, 'spec.values.jellyfish.deployment.image', 'tidepool/jellyfish:master-latest'),
         },
       }, lib.getElse(me, 'jellyfish', {})]),
-
-      linkerdsupport: {
-        enabled: global.isEnabled(config, 'linkerd'),
-      },
 
       messageapi: lib.mergeList([common, {
         extraContainers: extraContainers,
