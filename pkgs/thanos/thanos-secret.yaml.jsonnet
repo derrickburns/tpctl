@@ -1,7 +1,7 @@
-local global = import '../../lib/global.jsonnet';
 local common = import '../../lib/common.jsonnet';
-local lib = import '../../lib/lib.jsonnet';
+local global = import '../../lib/global.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
+local lib = import '../../lib/lib.jsonnet';
 
 local secret(me) = k8s.secret(me) {
   local config = me.config,
@@ -24,7 +24,7 @@ local secret(me) = k8s.secret(me) {
         trace: {
           enable: false,  // XXX
         },
-	part_size: 0,
+        part_size: 0,
       },
     })),
   },
