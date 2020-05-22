@@ -11,8 +11,8 @@ local jwks(me) = {
   jwt: {
     providers: {
       'tidepool-provider': {
-        issuer: "https://%s" % me.gateway.apiHost,
-        audiences: ["https://%s" % me.gateway.apiHost],
+        issuer: me.gateway.apiHost,
+        audiences: [me.gateway.apiHost],
         tokenSource: {
           headers: [{
             header: 'x-tidepool-session-token',

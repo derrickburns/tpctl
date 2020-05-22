@@ -22,7 +22,7 @@ local linkerd(me) = {
 local gatewayAnnotations(me) = {
   apiVersion: 'apps/v1',
   kind: 'Deployment',
-  metadata: {
+  metadata+: {
     name: 'gateway',
     namespace: me.namespace,
   },
@@ -40,7 +40,7 @@ local gatewayAnnotations(me) = {
 local glooAnnotations(me) = {
   apiVersion: 'apps/v1',
   kind: 'Deployment',
-  metadata: {
+  metadata+: {
     name: 'gloo',
     namespace: me.namespace,
   },
