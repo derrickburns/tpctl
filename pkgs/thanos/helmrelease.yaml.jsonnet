@@ -2,7 +2,7 @@ local common = import '../../lib/common.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
-local helmrelease(me) = k8s.helmrelease(me, { version: '0.3.18', repository: 'https://kubernetes-charts.banzaicloud.com' }) {
+local helmrelease(me) = k8s.helmrelease(me, { version: '0.3.21', repository: 'https://kubernetes-charts.banzaicloud.com' }) {
   _secretNames:: ['thanos'],
 
   spec+: {

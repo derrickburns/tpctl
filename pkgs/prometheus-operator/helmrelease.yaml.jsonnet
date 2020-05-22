@@ -34,6 +34,7 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '8.12.7' }) {
           prometheusSpec: {
             serviceMonitorSelectorNilUsesHelmValues: false,
             podMonitorSelectorNilUsesHelmValues: false,
+            enableAdminAPI: true
             thanos: {
               image: 'quay.io/thanos/thanos:v0.12.2',
               version: 'v0.12.2',
