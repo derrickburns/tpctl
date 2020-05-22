@@ -36,6 +36,7 @@ local helmrelease(me) = k8s.helmrelease(me, { version: lib.getElse(me, 'version'
       extraEnv: {
         LOG_LEVEL: lib.getElse(me, 'logLevel', lib.getElse(me.config, 'general.logLevel', 'info')),
         POLICY: std.base64(std.manifestJson(getPolicy(me))),
+        AUTHENTICATE_CALLBACK_PATH: "/oauth2/callback?prompt=consent&access_type=offline",
       },
       service: {
         type: 'ClusterIP',
