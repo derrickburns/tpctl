@@ -39,24 +39,37 @@ then
   exit 1
 fi
 
-function get_release() {
+function get_value() {
   local hr=$1
-  echo "$hr" | jq '.spec.releaseName' | sed -e 's/"//g'
+  echo "$hr" | jq "$2" | sed -e 's/"//g'
+}
+
+function get_release() {
+  get_value "$1" ".spec.releaseName"
 }
 
 function get_name() {
-  local hr=$1
-  echo "$hr" | jq '.spec.chart.name' | sed -e 's/"//g'
+  get_value "$1" ".spec.chart.name"
 }
 
 function get_namespace() {
-  local hr=$1
-  echo "$hr" | jq '.metadata.namespace' | sed -e 's/"//g'
+  get_value "$1" ".metadata.namespace"
 }
 
 function get_version() {
-  local hr=$1
-  echo "$hr" | jq '.spec.chart.version' | sed -e 's/"//g'
+  get_value "$1" ".spec.chart.version"
+}
+
+function get_git() {
+  get_value "$1" ".spec.chart.git"
+}
+
+function get_path() {
+  get_value "$1" ".spec.chart.path"
+}
+
+function get_ref() {
+  get_value "$1" ".spec.chart.ref"
 }
 
 function get_values() {
@@ -65,8 +78,7 @@ function get_values() {
 }
 
 function get_repository() {
-  local hr=$1
-  echo "$hr" | jq .spec.chart.repository | sed -e 's/"//g'
+  get_value "$1" ".spec.chart.repository"
 }
 
 function load_chart() {
@@ -77,12 +89,20 @@ function load_chart() {
 }
 
 hr=$(yq r $file -j)
-version=$(get_version "$hr")
-repo=$(get_repository "$hr")
 name=$(get_name "$hr")
-release=$(get_release "$hr")
 namespace=$(get_namespace "$hr")
-release=${release:=${name}}
+
+version=$(get_version "$hr")
+if [ -z "$version" ]
+then
+  git=$(get_git)
+  ref=$(get_ref)
+  path=$(get_path)
+else
+  release=$(get_release "$hr")
+  release=${release:=${name}}
+  repo=$(get_repository "$hr")
+fi
 
 function show() {
   echo "---"

@@ -26,7 +26,7 @@ local gatewayAnnotations(me) = {
     name: 'gateway',
     namespace: me.namespace,
   },
-  spec+ {
+  spec+: {
     template+: {
       metadata+: {
         annotations+: {
@@ -44,7 +44,7 @@ local glooAnnotations(me) = {
     name: 'gloo',
     namespace: me.namespace,
   },
-  spec+ {
+  spec+: {
     template+: {
       metadata+: {
         annotations+: {
