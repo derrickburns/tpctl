@@ -12,11 +12,10 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '8.12.7' }) {
           enabled: true,
           existingClaim: 'grafana',
         },
-        env: [
-          k8s.envSecret('GF_PATHS_CONFIG', me.pkg, '/etc/grafana/grafana-config.ini'),
-          k8s.envSecret('GF_SECURITY_ADMIN_USER', me.pkg, 'admin'),
-          k8s.envSecret('GF_SECURITY_ADMIN_PASSWORD', me.pkg, 'tidepool'),
-        ],
+        env: {
+          GF_PATHS_CONFIG: '/etc/grafana/grafana-config.ini',
+          GF_SECURITY_ADMIN_PASSWORD: 'tidepool',
+        },
         extraConfigmapMounts: [
           {
             name: 'grafana-ini',
