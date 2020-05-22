@@ -35,6 +35,20 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '8.12.7' }) {
           prometheusSpec: {
             serviceMonitorSelectorNilUsesHelmValues: false,
             podMonitorSelectorNilUsesHelmValues: false,
+            thanos: {
+              image: 'quay.io/thanos/thanos:v0.12.2',
+              version: 'v0.12.2',
+              resources: {
+                limits: {
+                  cpu: '0.25',
+                  memory: '250M',
+                },
+              },
+              objectStorageConfig: {
+                name: 'thanos',
+                key: 'object-store.yaml',
+              },
+            },
           },
         }
       ),
