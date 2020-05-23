@@ -41,7 +41,7 @@ fi
 
 function get_value() {
   local hr=$1
-  echo "$hr" | jq "$2" | sed -e 's/"//g'
+  cat $hr | jq "$2" | sed -e 's/"//g'
 }
 
 function get_release() {
@@ -74,7 +74,7 @@ function get_ref() {
 
 function get_values() {
   local hr=$1
-  echo "$hr" | jq '.spec.values' | yq r - 
+  echo $hr | jq '.spec.values' | yq r - 
 }
 
 function get_repository() {
@@ -88,20 +88,29 @@ function load_chart() {
   helm repo update >/dev/null 2>&1
 }
 
-hr=$(yq r $file -j)
-name=$(get_name "$hr")
-namespace=$(get_namespace "$hr")
+hr=$TMP_DIR/hr
+yq r $file -j >$hr
+name=$(get_name $hr)
+namespace=$(get_namespace $hr)
 
-version=$(get_version "$hr")
-if [ -z "$version" ]
+version=$(get_version $hr)
+if [ "$version" == "null" ]
 then
-  git=$(get_git)
-  ref=$(get_ref)
-  path=$(get_path)
+  git=$(get_git $hr)
+  ref=$(get_ref $hr)
+  path=$(get_path $hr)
+  pushd $TMP_DIR >/dev/null 2>&1
+  git clone $git >/dev/null 2>&1
+  cd $(echo $git | sed -e 's/\.git$//' -e "s/.*\///")
+  git checkout $ref >/dev/null 
+  cd $path
+  CHART=$(pwd)
+  popd >/dev/null 2>&1
 else
-  release=$(get_release "$hr")
+  release=$(get_release $hr)
   release=${release:=${name}}
-  repo=$(get_repository "$hr")
+  repo=$(get_repository $hr)
+  CHART=$name/$name
 fi
 
 function show() {
@@ -118,10 +127,10 @@ install)
   echo "installing $file" >/dev/stderr
   show $file >/dev/stderr 
   load_chart $name $repo
-  get_values "$hr" >/tmp/${name}-${namespace}.yaml
+  get_values $hr >/tmp/${name}-${namespace}.yaml
   kubectl create namespace $namespace 2>/dev/null
   op="upgrade -i --version $version -f /tmp/${name}-${namespace}.yaml"
-  helm $op $release $name/$name --namespace ${namespace} 
+  helm $op $release $CHART --namespace ${namespace} 
   ;;
 delete)
   echo "deleting $file" >/dev/stderr
@@ -129,15 +138,15 @@ delete)
   load_chart $name $repo
   echo "deleting" >/dev/stderr
   show $file >/dev/stderr
-  helm delete $release $name/$name --namespace ${namespace} 
+  helm delete $release $CHART --namespace ${namespace} 
   ;;
 template)
   echo "templating $file" >/dev/stderr
   show $file >/dev/stderr 
   load_chart $name $repo
-  get_values "$hr" >/tmp/${name}-${namespace}.yaml
-  op="template --version $version -f /tmp/${name}-${namespace}.yaml"
-  helm $op $release $name/$name --namespace ${namespace} 
+  get_values $hr >/tmp/${name}-${namespace}.yaml
+  op="template --debug --version $version -f /tmp/${name}-${namespace}.yaml"
+  helm $op $release $CHART --namespace ${namespace} 
   ;;
 get)
   echo "getting in cluster $namespace/$name"
@@ -146,7 +155,7 @@ get)
   show $tmp
   ;;
 source)
-  helm pull $name/$name --version $version --untar
+  helm pull $CHART --version $version --untar
   ;;
 cmp)
   if [ "$#" -eq 0 ]
