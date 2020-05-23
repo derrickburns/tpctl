@@ -16,16 +16,15 @@ local configmap(me) = k8s.configmap(me) {
         receivers: [
           {
             name: "slack",
-            slack: {
-              token: "${SLACK_API_TOKEN}",
-              channel: lib.getElse(me, 'channel', '#flux-%s' % me.config.cluster.metadata.name),
-              message: "{{ .Message }}",
-              fields: {
-                namespace: "{{ .Namespace }}",
-                reason: "{{ .Reason }}",
-                object: "{{ .InvolvedObject.Name }}",
+            webhook: {
+              endpoint: "${SLACK_WEBHOOK_URL}",
+              headers: {
+                "user-agent": "kube-event-exporter"
+              },
+              layout: {
+                text: "{{ .Message }}"
               }
-            },
+            }
           },
         ],
       }

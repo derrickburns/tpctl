@@ -5,7 +5,7 @@ local lib = import '../../lib/lib.jsonnet';
 local deployment(me) = k8s.deployment(me) {
   _containers:: {
     env: [
-      k8s.envSecret('SLACK_API_TOKEN', lib.getElse(me, 'secret', me.pkg), 'slack-api-token'),
+      k8s.envSecret('SLACK_WEBHOOK_URL', lib.getElse(me, 'secret', me.pkg), 'slack-webhook-url'),
     ],
     image: 'opsgenie/kubernetes-event-exporter:0.7',
     imagePullPolicy: 'IfNotPresent',
@@ -14,7 +14,7 @@ local deployment(me) = k8s.deployment(me) {
     ],
     volumeMounts: [
       {
-        mountPath: '/data',
+        mountPath: '/data/config.yaml',
         name: 'config',
         subPath: 'config.yaml',
       },
