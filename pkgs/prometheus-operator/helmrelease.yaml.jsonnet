@@ -53,7 +53,7 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '8.12.7' }) {
             retention: '30d',
             storageSpec: {
               volumeClaimTemplate: {
-                metedata: {
+                metadata: {
                   name: 'prometheus',
                   namespace: me.namespace,
                 },
