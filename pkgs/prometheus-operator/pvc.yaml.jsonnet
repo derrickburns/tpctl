@@ -16,7 +16,6 @@ local grafanapvc(me) = k8s.pvc(me, '30Gi') {
   },
 };
 
-
 function(config, prev, namespace, pkg) (
   local me = common.package(config, prev, namespace, pkg);
   [

@@ -49,6 +49,24 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '8.12.7' }) {
                 key: 'object-store.yaml',
               },
             },
+            retentionSize: '140GiB',
+            retention: '30d',
+            storageSpec: {
+              volumeClaimTemplate: {
+                metedata: {
+                  name: 'prometheus',
+                  namespace: me.namespace,
+                },
+                spec: {
+                  storageClassName: 'gp2-expanding',
+                  resources: {
+                    requests: {
+                      storage: '150Gi',
+                    },
+                  },
+                },
+              },
+            },
           },
         }
       ),
