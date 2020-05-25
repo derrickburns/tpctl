@@ -74,7 +74,7 @@ function get_ref() {
 
 function get_values() {
   local hr=$1
-  echo $hr | jq '.spec.values' | yq r - 
+  cat $hr | jq '.spec.values' | yq r - 
 }
 
 function get_repository() {
