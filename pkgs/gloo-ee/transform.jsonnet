@@ -78,8 +78,8 @@ local transform(me) =
   k8s.asMap(sysctl(me, 'gateway-proxy')) +  // XXX hardcoded
   k8s.asMap(sysctl(me, 'internal-gateway-proxy')) + 
   k8s.asMap(sysctl(me, 'pomerium-gateway-proxy')) +
-  k8s.asMap(linkerd(me)) +
-  k8s.asMap(gatewayAnnotations(me)) +
-  k8s.asMap(glooAnnotations(me));
+  k8s.asMap(linkerd(me));
+  // k8s.asMap(gatewayAnnotations(me)) +
+  // k8s.asMap(glooAnnotations(me));
 
 function(config, prev, namespace, pkg) transform(common.package(config, prev, namespace, pkg))
