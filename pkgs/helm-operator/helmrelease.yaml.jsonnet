@@ -1,9 +1,9 @@
-local global = import '../../lib/global.jsonnet';
 local common = import '../../lib/common.jsonnet';
+local global = import '../../lib/global.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
-local helmrelease(me) = k8s.helmrelease(me, { name: 'helm-operator', version: '1.0.0', repository: 'https://charts.fluxcd.io' }) {
+local helmrelease(me) = k8s.helmrelease(me, { name: 'helm-operator', version: lib.getElse(me, 'version', '1.0.0'), repository: 'https://charts.fluxcd.io' }) {
   _secretNames:: ['flux-git-deploy', 'flux-helm-repositories'],
   spec+: {
     values+: {
