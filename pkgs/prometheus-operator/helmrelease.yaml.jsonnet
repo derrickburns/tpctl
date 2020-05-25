@@ -35,6 +35,14 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '8.12.7' }) {
             serviceMonitorSelectorNilUsesHelmValues: false,
             podMonitorSelectorNilUsesHelmValues: false,
             enableAdminAPI: true,
+            resources: {
+              requests: {
+                memory: '3000m',
+              },
+              limits: {
+                memory: '5000m',
+              },
+            },
             thanos: {
               image: 'quay.io/thanos/thanos:v0.12.2',
               version: 'v0.12.2',
