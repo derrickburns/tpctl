@@ -37,10 +37,7 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '8.12.7' }) {
             enableAdminAPI: true,
             resources: {
               requests: {
-                memory: '5000M',
-              },
-              limits: {
-                memory: '7000M',
+                memory: '4000M',
               },
             },
             thanos: {
