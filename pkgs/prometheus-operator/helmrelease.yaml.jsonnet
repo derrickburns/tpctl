@@ -37,7 +37,7 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '8.12.7' }) {
             enableAdminAPI: true,
             resources: {
               requests: {
-                memory: '4000M',
+                memory: '3000M',
               },
             },
             thanos: {
@@ -55,7 +55,7 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '8.12.7' }) {
               },
             },
             retentionSize: '140GiB',
-            retention: '30d',
+            retention: '10d',  // default prometheus-operator
             storageSpec: {
               volumeClaimTemplate: {
                 metadata: {
