@@ -7,7 +7,6 @@ local helmrelease(me) = (
   local config = me.config;
   k8s.helmrelease(me, { name: 'gloo-ee', version: '1.3.5', repository: 'http://storage.googleapis.com/gloo-ee-helm' }) {
     spec+: {
-.Values.apiServer.deployment.server.resources
       values: gloo.globalValues(me) + {
         gloo: gloo.glooValues(me),
         create_license_secret: false,
