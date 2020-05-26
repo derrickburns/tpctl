@@ -7,6 +7,7 @@ local helmrelease(me) = (
   local config = me.config;
   k8s.helmrelease(me, { name: 'gloo-ee', version: '1.3.5', repository: 'http://storage.googleapis.com/gloo-ee-helm' }) {
     spec+: {
+.Values.apiServer.deployment.server.resources
       values: gloo.globalValues(me) + {
         gloo: gloo.glooValues(me),
         create_license_secret: false,
@@ -14,6 +15,20 @@ local helmrelease(me) = (
           extensions+: {
             extAuth+: {
               existingSecret: 'ext-auth-signing-key',
+            },
+          },
+        },
+        apiServer: {
+          deployment: {
+            server: {
+              resources: {
+                limits: {
+                  memory: '200Mi',
+                },
+                requests: {
+                  memory: '100Mi',
+                }, 
+              },
             },
           },
         },
