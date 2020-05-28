@@ -268,6 +268,9 @@ local configmapNamesFromPod(pod) = lib.pruneList(
     },
   },
 
+  storageclass(me):: $.k('storage.k8s.io/v1', 'StorageClass') + $.metadata(me.pkg, me.namespace) {
+  },
+
   pvc(me, storage=''):: $.k('v1', 'PersistentVolumeClaim') + $.metadata(me.pkg, me.namespace) {
     spec+: {
       accessModes: [
