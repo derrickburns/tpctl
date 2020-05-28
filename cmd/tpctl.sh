@@ -563,7 +563,7 @@ function delete_node_group() {
   fi
   local cluster=$(get_cluster)
   start "delete nodegroup for $cluster"
-  # eksctl delete nodegroup --config-file=config.yaml --include="$1"
+  eksctl delete nodegroup --config-file=config.yaml --include="$1"
   expect_success "eksctl create nodegroup failed."
   complete
 }
