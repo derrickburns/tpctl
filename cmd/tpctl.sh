@@ -549,6 +549,15 @@ function create_node_group() {
   complete
 }
 
+# Delete node group
+function create_node_group() {
+  local cluster=$(get_cluster)
+  start "creating nodegroup for $cluster"
+  eksctl delete nodegroup --config-file=config.yaml --include="$1"
+  expect_success "eksctl create nodegroup failed."
+  complete
+}
+
 function merge_kubeconfig() {
   local local_kube_config=$(realpath ./kubeconfig.yaml)
   local kubeconfig=$(get_kubeconfig)
@@ -1352,6 +1361,7 @@ validate                            - validate that all generated manifests file
 await_deletion                      - await completion of deletion of the AWS EKS cluster
 cluster                             - create AWS EKS cluster, add system:master USERS
 create_node_group                   - Create a node group with the matching glob
+delete_node_group                   - Delete a node group with the matching glob
 delete_cluster                      - (initiate) deletion of the AWS EKS cluster
 flux                                - install flux GitOps controller and deploy flux public key into GitHub
 mesh                                - install service mesh
@@ -1468,6 +1478,15 @@ main() {
       make_cluster_config
       create_node_group $1
       save_changes "Added nodegroup $1"
+      ;;
+    delete_node_group)
+      check_remote_repo
+      setup_tmpdir
+      clone_remote
+      set_template_dir
+      make_cluster_config
+      delete_node_group $1
+      save_changes "Deleted nodegroup $1"
       ;;
     config)
       check_remote_repo
