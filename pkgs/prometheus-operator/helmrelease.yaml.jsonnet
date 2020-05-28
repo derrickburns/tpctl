@@ -80,7 +80,7 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '8.12.7' }) {
                   namespace: me.namespace,
                 },
                 spec: {
-                  storageClassName: 'gp2-expanding',
+                  storageClassName: 'monitoring-expanding',
                   resources: {
                     requests: {
                       storage: '150Gi',
