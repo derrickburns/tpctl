@@ -10,6 +10,17 @@ local service(me) = k8s.service(me) {
   },
 };
 
+local configmap(me) = k8s.configmap(me) {
+  data+: {
+    'liftbridge.yaml': std.manifestJson({
+      listen: '0.0.0.0:%s' % grpcPort,
+      'logging.level': "debug",
+      'nats.servers': [ "nats://nats.%s.svc:4222" % me.namespace ],
+      'clustering.min.insync.replicas': 1
+    }),
+  },
+};
+
 local natscluster(me) = k8s.k('nats.io/v1alpha2', 'NatsCluster') + k8s.metadata(me.namespace, me.pkg) {
   spec+: {
     natsConfig: {
