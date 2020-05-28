@@ -542,6 +542,11 @@ function make_cluster() {
 
 # Create node group
 function create_node_group() {
+  if [ $# -eq 0 ]
+    then
+      echo "No argument for nodegroup supplied"
+      exit 1
+  fi
   local cluster=$(get_cluster)
   start "creating nodegroup for $cluster"
   eksctl create nodegroup --config-file=config.yaml --include="$1"
@@ -550,10 +555,15 @@ function create_node_group() {
 }
 
 # Delete node group
-function create_node_group() {
+function delete_node_group() {
+  if [ $# -eq 0 ]
+    then
+      echo "No argument for nodegroup supplied"
+      exit 1
+  fi
   local cluster=$(get_cluster)
-  start "creating nodegroup for $cluster"
-  eksctl delete nodegroup --config-file=config.yaml --include="$1"
+  start "delete nodegroup for $cluster"
+  # eksctl delete nodegroup --config-file=config.yaml --include="$1"
   expect_success "eksctl create nodegroup failed."
   complete
 }
