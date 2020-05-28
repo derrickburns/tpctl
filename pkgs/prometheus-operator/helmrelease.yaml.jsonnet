@@ -45,8 +45,8 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '8.12.7' }) {
               },
             ],
             resources: {
-              requests: {
-                memory: '3000M',
+              limits: {
+                memory: '20G',
               },
             },
             tolerations: [
