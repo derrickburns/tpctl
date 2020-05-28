@@ -1,0 +1,46 @@
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: liftbridge
+spec:
+  serviceName: "liftbridge-headless"
+  podManagementPolicy: "Parallel"
+  replicas: 3
+  selector:
+    matchLabels:
+      app: liftbridge
+  template:
+    metadata:
+      labels:
+        app: liftbridge
+    spec:
+      containers:
+        - name: liftbridge
+          image: liftbridge:v1.0.0
+          ports:
+            - name: grpc
+              containerPort: 9292
+          readinessProbe:
+            exec:
+              command: ["/bin/grpc_health_probe", "-service=proto.API", "-addr=:9292"]
+            initialDelaySeconds: 5
+          volumeMounts:
+            - name: liftbridge-data
+              mountPath: /data
+            - mountPath: /etc/liftbridge.yaml
+              name: liftbridge-config
+              subPath: liftbridge.yaml
+      volumes:
+        - configMap:
+            name: config
+          name: liftbridge-config
+  volumeClaimTemplates:
+    - metadata:
+        name: liftbridge-data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: liftbridge
+        resources:
+          requests:
+            storage: 5Gi
