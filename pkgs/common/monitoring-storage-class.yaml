@@ -14,3 +14,6 @@ allowedTopologies:
     - key: alpha.eksctl.io/nodegroup-name
       values:
         - ngc-monitoring
+    - key: failure-domain.beta.kubernetes.io/zone
+      values:
+        - us-west-2a
