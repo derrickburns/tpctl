@@ -2,9 +2,11 @@ local common = import '../../lib/common.jsonnet';
 local global = import '../../lib/global.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 
+local grpcPort = 9292;
+
 local service(me) = k8s.service(me) {
   spec+: {
-    ports: [k8s.port(9292, 'grpc', 'grpc')],
+    ports: [k8s.port(grpcPort, 'grpc', 'grpc')],
   },
 };
 
@@ -35,7 +37,7 @@ local statefulset(me) = k8s.statefulset(me) {
     image: 'liftbridge:v1.0.0',
     ports: [
       {
-        containerPort: 9292,
+        containerPort: grpcPort,
         name: 'grpc',
       },
     ],
@@ -44,7 +46,7 @@ local statefulset(me) = k8s.statefulset(me) {
         command: [
           '/bin/grpc_health_probe',
           '-service=proto.API',
-          '-addr=:9292',
+          '-addr=:%s' % grpcPort,
         ],
       },
       initialDelaySeconds: 5,
