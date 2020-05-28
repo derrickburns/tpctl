@@ -49,6 +49,21 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '8.12.7' }) {
                 memory: '20G',
               },
             },
+            affinity: {
+              nodeAffinity: {
+                requiredDuringSchedulingIgnoredDuringExecution: {
+                  nodeSelectorTerms: [{
+                    matchExpressions: [
+                      {
+                        key: 'alpha.eksctl.io/nodegroup-name',
+                        operator: 'In',
+                        values: ['ngc-monitoring'],
+                      },
+                    ],
+                  }],
+                },
+              },
+            },
             tolerations: [
               {
                 key: 'role',
