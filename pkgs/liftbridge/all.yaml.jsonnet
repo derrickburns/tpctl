@@ -45,7 +45,7 @@ local natscluster(me) = k8s.k('nats.io/v1alpha2', 'NatsCluster') + k8s.metadata(
 
 local statefulset(me) = k8s.statefulset(me) {
   _containers:: {
-    image: 'liftbridge:v1.0.0',
+    image: 'liftbridge/liftbridge:v1.0.0',
     ports: [
       {
         containerPort: grpcPort,
