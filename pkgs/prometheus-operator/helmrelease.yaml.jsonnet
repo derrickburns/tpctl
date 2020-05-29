@@ -55,9 +55,9 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '8.12.7' }) {
                   nodeSelectorTerms: [{
                     matchExpressions: [
                       {
-                        key: 'alpha.eksctl.io/nodegroup-name',
+                        key: 'role',
                         operator: 'In',
-                        values: ['ngc-monitoring'],
+                        values: ['monitoring'],
                       },
                     ],
                   }],
