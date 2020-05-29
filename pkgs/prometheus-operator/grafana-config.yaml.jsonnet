@@ -6,10 +6,17 @@ local grafanaConfig(me) = k8s.configmap(me, 'grafana-ini') {
   data: {
     'grafana.ini': std.manifestIni({
       sections: {
-        'auth.anonymous': {
-          org_name: 'Main Org.',
-          org_role: 'Editor',
-          enabled: 'true',
+        users: {
+          allow_sign_up: false,
+          auto_assign_org: true,
+          auto_assign_org_role: 'Editor',
+        },
+        'auth.proxy': {
+          enabled: true,
+          header_name: 'x-pomerium-authenticated-user-email',
+          header_property: 'email',
+          auto_sign_up: true,
+          sync_ttl: '60',
         },
         log: {
           mode: 'console',
