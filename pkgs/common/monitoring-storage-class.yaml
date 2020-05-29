@@ -11,9 +11,9 @@ volumeBindingMode: WaitForFirstConsumer
 allowVolumeExpansion: true
 allowedTopologies:
   - matchLabelExpressions:
-    - key: alpha.eksctl.io/nodegroup-name
+    - key: role
       values:
-        - ngc-monitoring
+        - monitoring
     - key: failure-domain.beta.kubernetes.io/zone
       values:
         - us-west-2a
