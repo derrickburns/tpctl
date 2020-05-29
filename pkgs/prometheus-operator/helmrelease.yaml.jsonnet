@@ -24,6 +24,29 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '8.12.7' }) {
             subPath: 'grafana.ini',
           },
         ],
+        affinity: {
+          nodeAffinity: {
+            requiredDuringSchedulingIgnoredDuringExecution: {
+              nodeSelectorTerms: [{
+                matchExpressions: [
+                  {
+                    key: 'role',
+                    operator: 'In',
+                    values: ['monitoring'],
+                  },
+                ],
+              }],
+            },
+          },
+        },
+        tolerations: [
+          {
+            key: 'role',
+            operator: 'Equal',
+            value: 'monitoring',
+            effect: 'NoSchedule',
+          },
+        ],
       }),
       alertmanager: lib.getElse(me, 'alertmanager', { enabled: false }),
       prometheus: lib.getElse(
