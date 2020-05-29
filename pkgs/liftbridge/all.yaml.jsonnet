@@ -114,6 +114,7 @@ local statefulset(me) = k8s.statefulset(me) {
 function(config, prev, namespace, pkg) (
   local me = common.package(config, prev, namespace, pkg);
   [
+    configmap(me),
     service(me),
     statefulset(me),
     natscluster(me),
