@@ -5,6 +5,7 @@ local deployment(me) = k8s.deployment(me) {
   _containers:: {
     args: [
       'nats-operator',
+      '--feature-gates=ClusterScoped=true',
     ],
     env: [
       {
@@ -25,6 +26,8 @@ local deployment(me) = k8s.deployment(me) {
       },
     ],
     image: 'connecteverything/nats-operator:0.6.0',
+    imagePullPolicy: 'Always',
+    name: 'nats-operator',
     ports: [
       {
         containerPort: 8080,
@@ -177,10 +180,10 @@ local clusterrole(me) = k8s.clusterrole(me) {
 
 function(config, prev, namespace, pkg) (
   local me = common.package(config, prev, namespace, pkg);
-   [
-     k8s.serviceaccount(me),
-     k8s.clusterrolebinding(me),
-     clusterrole(me),
-     deployment(me),
-   ]
+  [
+    k8s.serviceaccount(me),
+    k8s.clusterrolebinding(me),
+    clusterrole(me),
+    deployment(me),
+  ]
 )
