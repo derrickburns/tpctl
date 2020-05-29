@@ -12,7 +12,7 @@ local grafanapvc(me) = k8s.pvc(me, '30Gi') {
     },
   },
   spec+: {
-    storageClassName: 'gp2-expanding',
+    storageClassName: 'monitoring-expanding',
   },
 };
 
