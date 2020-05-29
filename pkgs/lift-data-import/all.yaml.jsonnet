@@ -31,7 +31,7 @@ function(config, prev, namespace, pkg) (
   [
     service(me),
     deployment(me),
-    gloo.simpleRoutetable(me, {app: 'tidepool'}, prefix='/liftdataimport'),
+    gloo.simpleRoutetable(me, {app: 'tidepool'}, prefix='/lift'),
     gloo.kubeupstream(me),
   ]
 )
