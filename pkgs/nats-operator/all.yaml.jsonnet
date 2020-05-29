@@ -2,7 +2,7 @@ local common = import '../../lib/common.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 
 local deployment(me) = k8s.deployment(me) {
-  _containers: {
+  _containers:: {
     args: [
       'nats-operator',
     ],
