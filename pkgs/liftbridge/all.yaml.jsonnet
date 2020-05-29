@@ -83,7 +83,7 @@ local statefulset(me) = k8s.statefulset(me) {
         volumes: [
           {
             configMap: {
-              name: 'config',
+              name: me.pkg,
             },
             name: 'liftbridge-config',
           },
@@ -109,11 +109,6 @@ local statefulset(me) = k8s.statefulset(me) {
       },
     ],
   },
-};
-
-local storageclass(me) = k8s.storageclass(me) {
-  provisioner: 'kubernetes.io/host-path',
-  reclaimPolicy: 'Retain',
 };
 
 function(config, prev, namespace, pkg) (
