@@ -104,7 +104,7 @@ local statefulset(me) = k8s.statefulset(me) {
               storage: '5Gi',
             },
           },
-          storageClassName: 'liftbridge',
+          storageClassName: 'gp2-expanding',
         },
       },
     ],
@@ -120,7 +120,6 @@ function(config, prev, namespace, pkg) (
   local me = common.package(config, prev, namespace, pkg);
   [
     service(me),
-    storageclass(me),
     statefulset(me),
     natscluster(me),
   ]
