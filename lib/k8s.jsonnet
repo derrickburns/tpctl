@@ -182,6 +182,12 @@ local configmapNamesFromPod(pod) = lib.pruneList(
             app: me.pkg,
           },
         },
+        spec+: {
+          containers:
+            if std.objectHasAll(this, 'containerPatch')
+            then this.containerPatch(me.prev, this, $.containers(me, this))
+            else $.containers(me, this)
+        },
       },
     },
   },
@@ -208,6 +214,10 @@ local configmapNamesFromPod(pod) = lib.pruneList(
         },
         spec+: {
           restartPolicy: 'Always',
+          containers:
+            if std.objectHasAll(this, 'containerPatch')
+            then this.containerPatch(me.prev, this, $.containers(me, this))
+            else $.containers(me, this)
         },
       },
     },
