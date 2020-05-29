@@ -8,7 +8,7 @@ local containerPort = 8080;
 
 local deployment(me) = flux.deployment(me) {
   _containers:: {
-    image: 'tidepool/liftDataImport:latest',
+    image: 'tidepool/lift-data-import:latest',
     ports: [{
       containerPort: containerPort,
     }],
