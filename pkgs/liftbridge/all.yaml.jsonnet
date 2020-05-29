@@ -21,7 +21,7 @@ local configmap(me) = k8s.configmap(me) {
   },
 };
 
-local natscluster(me) = k8s.k('nats.io/v1alpha2', 'NatsCluster') + k8s.metadata(me.namespace, me.pkg) {
+local natscluster(me) = k8s.k('nats.io/v1alpha2', 'NatsCluster') + k8s.metadata(me.pkg, me.namespace) {
   spec+: {
     natsConfig: {
       writeDeadline: '5s',
