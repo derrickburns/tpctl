@@ -21,28 +21,6 @@ local configmap(me) = k8s.configmap(me) {
   },
 };
 
-local natscluster(me) = k8s.k('nats.io/v1alpha2', 'NatsCluster') + k8s.metadata(me.pkg, me.namespace) {
-  spec+: {
-    natsConfig: {
-      writeDeadline: '5s',
-    },
-    pod: {
-      annotations: {
-        'sidecar.istio.io/inject': 'false',
-      },
-      enableConfigReload: true,
-      enableMetrics: true,
-      metricsImage: 'synadia/prometheus-nats-exporter',
-      metricsImageTag: '0.5.0',
-      reloaderImage: 'connecteverything/nats-server-config-reloader',
-      reloaderImagePullPolicy: 'IfNotPresent',
-      reloaderImageTag: '0.6.0',
-    },
-    size: 3,
-    version: '2.1.0',
-  },
-};
-
 local statefulset(me) = k8s.statefulset(me) {
   _containers:: {
     image: 'liftbridge/liftbridge:v1.0.0',
@@ -117,6 +95,5 @@ function(config, prev, namespace, pkg) (
     configmap(me),
     service(me),
     statefulset(me),
-    natscluster(me),
   ]
 )
