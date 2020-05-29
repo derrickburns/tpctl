@@ -1,6 +1,13 @@
 local k8s = import 'k8s.jsonnet';
 local lib = import 'lib.jsonnet';
 
+local patchedImage(map, container) = (
+  local newImage = lib.getElse(map, container.name + '.image', container.image);
+  local oldParts = std.split(container.image, ":"); 
+  local newParts = std.split(newImage, ":"); 
+  if oldParts[0] == newParts[0] then newImage else container.image
+);
+
 {
   // default metadata for flux gitops
   metadata(me):: {
@@ -26,8 +33,7 @@ local lib = import 'lib.jsonnet';
   patch(old, this, containers):: (
     local matching = k8s.findMatch(old, this);
     local map = { [c.name]: c for c in $.containers(matching) };
-    local updateContainer(map, container) =
-      container { image: lib.getElse(map, container.name + '.image', container.image) };
+    local updateContainer(map, container) = container { image: patchedImage(map, container) };
     std.map(function(c) updateContainer(map, c), containers)
   ),
 

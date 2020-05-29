@@ -5,7 +5,7 @@ local global = import '../../lib/global.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 local linkerd = import '../../lib/linkerd.jsonnet';
-local mylib = import 'lib.jsonnet';
+local mylib = import 'lib.libjsonnet';
 
 local jwks(me) = {
   jwt: {

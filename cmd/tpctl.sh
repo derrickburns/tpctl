@@ -344,7 +344,7 @@ function clone_remote() {
       expect_success "Cannot clone $HTTPS_REMOTE_REPO"
       complete 
     fi
-    info $(basename $HTTPS_REMOTE_REPO)
+    info "repo=$(basename $HTTPS_REMOTE_REPO)"
     cd $(basename $HTTPS_REMOTE_REPO)
     git pull --ff-only >/dev/null
   else
@@ -356,6 +356,7 @@ function set_template_dir() {
   if [ -z "$TEMPLATE_DIR" ]; then
     export TEMPLATE_DIR="$(CDPATH= cd -- "$DIR" && cd .. && pwd -P)/"
   fi
+  info "TEMPLATE_DIR=$TEMPLATE_DIR"
   if [ -z "$COMMAND_DIR" ]; then
     export COMMAND_DIR=$TEMPLATE_DIR/cmd/
   fi
@@ -583,12 +584,9 @@ function enabled_pkgs() {
 # make K8s manifest files for shared services
 function make_shared_config() {
   start "copying old manifests"
-
-  mkdir -p $TMP_DIR/$MANIFEST_DIR
-  if [ -d $MANIFEST_DIR ]; then
-    cp -r $MANIFEST_DIR/* $TMP_DIR/$MANIFEST_DIR
-    rm -rf $MANIFEST_DIR
-  fi
+  mkdir -p $TMP_DIR/old
+  cp -r * $TMP_DIR/old
+  rm -rf $MANIFEST_DIR config.yaml
   complete 
 }
 
@@ -598,11 +596,11 @@ function make_shared_config() {
 function make_cluster_config() {
   local values=$(get_values)
   start "creating eksctl manifest"
-  add_file "config.yaml"
   serviceAccountFile=$TMP_DIR/serviceaccounts
   make_policy_manifests | k8s_sort >$serviceAccountFile
   kubecfg show --tla-code-file config="$values" --tla-str-file serviceaccounts="$serviceAccountFile" ${TEMPLATE_DIR}eksctl/cluster_config.jsonnet | k8s_sort >config.yaml
   expect_success "Templating failure eksctl/cluster_config.jsonnet"
+  add_file "config.yaml"
   complete
 }
 
@@ -665,11 +663,11 @@ function template_service_accounts() {
     if [ "${filename: -14}" == "policy.jsonnet" ]; then
       local newbasename=${file%.jsonnet}
       local out=$dir/${newbasename}
-      add_file ${out}
       echo "---"
       kubecfg show --tla-code prev="{}" --tla-code-file config=$values --tla-str namespace=$namespace $fullpath --tla-str pkg="$pkg" | k8s_sort >$out
-      cat $out
       expect_success "Templating failure $dir/$filename"
+      add_file ${out}
+      cat $out
     fi
   done
   complete
@@ -783,15 +781,25 @@ function generate() {
   local base=${TEMPLATE_DIR}pkgs/$pkg
   for f in $(find $base -type f -print); do
     local src=${f#$base/}
+    start "file $src"
     if [ "${src: -5}" == ".yaml" ]; then
       cp $f $dir/$src
     elif [ "${src: -13}" == ".yaml.jsonnet" ]; then
-      expand_jsonnet $values $prev $namespace $pkg $f | output $namespace $pkg $src
+      expand_jsonnet $values $prev $namespace $pkg $f | output $namespace $pkg $src 
     elif [ "${src: -17}" == "yaml.helm.jsonnet" ]; then
       local dehelmed=$dir/${src}.dehelmed
       expand_jsonnet $values $prev $namespace $pkg $f > $dehelmed
       expand_helm $namespace $pkg $src $dehelmed | output $namespace $pkg $src
+    elif [ "${src: -14}" == "policy.jsonnet" ]; then
+      :
+    elif [ "${src: -17}" == "transform.jsonnet" ]; then
+      :
+    elif [ "${src: -11}" == ".libjsonnet" ]; then
+      :
+    else
+      echo "unknown file type $src" >/dev/stderr
     fi
+    complete
   done
   complete
 }
@@ -857,7 +865,7 @@ function expand() {
 # make K8s manifests
 function make_namespace_config() {
   local values=$(get_values)
-  show $TMP_DIR/$MANIFEST_DIR > $TMP_DIR/prev
+  show $TMP_DIR/old/$MANIFEST_DIR > $TMP_DIR/prev
   expand $values $TMP_DIR/prev
 }
 
@@ -876,7 +884,7 @@ function save_changes() {
     return
   fi
 
-  start "adding and diffing changes"
+  start "adding and diffing changes for directory $(pwd)"
   git add .
   expect_success "git add failed"
   export GIT_PAGER=/bin/cat
@@ -1121,7 +1129,6 @@ function expect_values_not_exist() {
 # create initial values file
 function make_values() {
   start "creating values.yaml"
-  add_file "values.yaml"
   cat $TMP_DIR/tpctl/values.yaml >values.yaml
   cat >>values.yaml <<!
 general:
@@ -1137,6 +1144,7 @@ general:
   if [ "$APPROVE" != "true" ]; then
     ${EDITOR:-vi} values.yaml
   fi
+  add_file "values.yaml"
   complete
 }
 

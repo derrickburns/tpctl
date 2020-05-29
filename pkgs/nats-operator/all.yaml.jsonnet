@@ -25,7 +25,7 @@ local deployment(me) = k8s.deployment(me) {
         },
       },
     ],
-    image: 'connecteverything/nats-operator:0.6.0',
+    image: 'connecteverything/nats-operator:0.7.2',
     imagePullPolicy: 'Always',
     name: 'nats-operator',
     ports: [
