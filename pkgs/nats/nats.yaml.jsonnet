@@ -2,7 +2,7 @@ local common = import '../../lib/common.jsonnet';
 local global = import '../../lib/global.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 
-local natscluster(me) = k8s.k('nats.io/v1alpha2', 'NatsCluster') + k8s.metadata(me.pkg + "-nats", me.namespace) {
+local natscluster(me) = k8s.k('nats.io/v1alpha2', 'NatsCluster') + k8s.metadata(me.pkg, me.namespace) {
   spec+: {
     natsConfig: {
       writeDeadline: '5s',

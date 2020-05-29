@@ -10,7 +10,7 @@ local deployment(me) = k8s.deployment(me) {
     env: [
       {
         name: 'WAIT_FOR_HOST',
-        value: '%s-nats-mgmt.%s.svc.cluster.local' % [ me.pkg, me.namespace],
+        value: 'nats-mgmt.%s.svc.cluster.local' % me.namespace,
       },
       {
         name: 'WAIT_FOR_PORT',
@@ -18,7 +18,7 @@ local deployment(me) = k8s.deployment(me) {
       },
       {
         name: 'NATS_MON_URL',
-        value: 'http://%s-nats-mgmt.%s.svc.cluster.local:8222' % [ me.pkg, me.namespace ],
+        value: 'http://nats-mgmt.%s.svc.cluster.local:8222' % me.namespace,
       },
     ],
     image: 'natsboard',
