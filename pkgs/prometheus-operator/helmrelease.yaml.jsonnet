@@ -10,7 +10,8 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '8.12.7' }) {
         enabled: true,
         persistence: {
           enabled: true,
-          existingClaim: 'grafana',
+          storageClassName: 'monitoring-expanding',
+          size: '20Gi',
         },
         env: {
           GF_PATHS_CONFIG: '/etc/grafana/grafana-config.ini',
