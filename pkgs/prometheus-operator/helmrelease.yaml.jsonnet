@@ -24,6 +24,11 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '8.12.7' }) {
             subPath: 'grafana.ini',
           },
         ],
+        resources: {
+          limits: {
+            memory: '2G',
+          },
+        },
         affinity: {
           nodeAffinity: {
             requiredDuringSchedulingIgnoredDuringExecution: {
