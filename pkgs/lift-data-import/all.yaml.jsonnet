@@ -7,13 +7,13 @@ local k8s = import '../../lib/k8s.jsonnet';
 local containerPort = 8080;
 
 local deployment(me) = flux.deployment(me) {
-  _containers:: {
+  _containers:: [{
     image: 'tidepool/lift-data-import:latest',
     imagePullPolicy: 'Always',
     ports: [{
       containerPort: containerPort,
     }],
-  },
+  }],
   spec+: {
     template+: linkerd.metadata(me, true),
   },
