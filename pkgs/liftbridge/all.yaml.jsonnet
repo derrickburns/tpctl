@@ -15,7 +15,7 @@ local configmap(me) = k8s.configmap(me) {
     'liftbridge.yaml': std.manifestJson({
       listen: '0.0.0.0:%s' % grpcPort,
       'logging.level': "debug",
-      'nats.servers': [ "nats://nats.%s.svc.cluster.local:4222" % [me.pkg, me.namespace] ],
+      'nats.servers': [ "nats://nats.%s.svc.cluster.local:4222" % me.namespace ],
       'clustering.min.insync.replicas': 1
     }),
   },
