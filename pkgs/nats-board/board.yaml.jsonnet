@@ -4,9 +4,6 @@ local k8s = import '../../lib/k8s.jsonnet';
 
 local deployment(me) = k8s.deployment(me) {
   _containers:: {
-    command: [
-      '/usr/bin/natsboard',
-    ],
     env: [
       {
         name: 'WAIT_FOR_HOST',
