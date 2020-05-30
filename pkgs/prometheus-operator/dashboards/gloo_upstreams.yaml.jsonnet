@@ -12,7 +12,7 @@ local configmap(me) = k8s.configmap(me, configmapName) {
     },
   },
   data: {
-    'dashboard.json': std.manifestJsonEx(
+    ['%s.json' % dashboardName]: std.manifestJsonEx(
       {
         annotations: {
           list: [
