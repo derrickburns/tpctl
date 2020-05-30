@@ -21,7 +21,7 @@ local deployment(me) = k8s.deployment(me) {
         value: 'http://nats-mgmt.%s.svc.cluster.local:8222' % me.namespace,
       },
     ],
-    image: 'natsboard',
+    image: 'chrkaatz/natsboard:latest',
     ports: [
       {
         containerPort: 3000,
