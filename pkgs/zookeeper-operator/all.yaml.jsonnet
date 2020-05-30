@@ -105,7 +105,7 @@ function(config, prev, namespace, pkg) (
   [
     deployment(me),
     k8s.serviceaccount(me),
-    k8s.clusterbinding(me),
+    k8s.clusterrolebinding(me),
     clusterrole(me),
   ]
 )
