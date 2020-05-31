@@ -703,7 +703,9 @@ function show_enabled() {
       mkdir -p $dir/secrets
       cp $CONFIG_DIR/secrets/$namespace/* $dir/secrets/
     fi
-    show $CONFIG_DIR/configmaps/$namespace | output $namespace "namespace" "configmaps.yaml"
+    if [ -d "$CONFIG_DIR/configmaps/$namespace" ]; then
+      show $CONFIG_DIR/configmaps/$namespace | output $namespace "namespace" "configmaps.yaml"
+    fi
   fi
   complete
 }
