@@ -10,6 +10,9 @@ local rolebinding1(me) = k8s.rolebinding(me) {
 };
 
 local rolebinding2(me) = k8s.rolebinding(me) {
+  metadata+: {
+    name: 'strimzi-cluster-operator-namespaced',
+  },
   roleRef+: {
     kind: 'ClusterRole',
     name: 'strimzi-cluster-operator-namespaced'
@@ -17,6 +20,9 @@ local rolebinding2(me) = k8s.rolebinding(me) {
 };
 
 local rolebinding3(me) = k8s.rolebinding(me) {
+  metadata+: {
+    name: 'strimzi-topic-operator',
+  },
   roleRef+: {
     kind: 'ClusterRole',
     name: 'strimzi-topic-operator',
