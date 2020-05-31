@@ -138,7 +138,7 @@ local configmapNamesFromPod(pod) = lib.pruneList(
 
   role(me):: $.k('rbac.authorization.k8s.io/v1', 'Role') + $.metadata(me.pkg),
 
-  rolebinding(me):: $.k('rbac.authorization.k8s.io/v1', 'RoleBinding') + $.metadata(me.pkg) {
+  rolebinding(me):: $.k('rbac.authorization.k8s.io/v1', 'RoleBinding') + $.metadata(me.pkg, me.namespace) {
     roleRef: {
       apiGroup: 'rbac.authorization.k8s.io',
       kind: 'Role',
@@ -246,7 +246,10 @@ local configmapNamesFromPod(pod) = lib.pruneList(
             app: me.pkg,
           },
         } ,
-        spec+: {
+        spec+: 
+          (if lib.isTrue(this, '_serviceAccount')
+          then { serviceAccountName: me.pkg }
+          else {}) + {
           securityContext+: $.securityContext,
           restartPolicy: 'Always',
           containers:
