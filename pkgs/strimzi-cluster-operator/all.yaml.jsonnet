@@ -154,7 +154,7 @@ function(config, prev, namespace, pkg) (
     k8s.serviceAccount(me),
     rolebinding1(me),
     rolebinding2(me),
-    rolebinding3(me)
+    rolebinding3(me),
     deployment(me),
   ]
 )
