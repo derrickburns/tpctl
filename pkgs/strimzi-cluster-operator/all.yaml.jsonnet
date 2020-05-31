@@ -24,7 +24,7 @@ local rolebinding3(me) = k8s.rolebinding(me) {
 };
 
 local deployment(me) = k8s.deployment(me) {
-  _serviceAccount: true,
+  _serviceAccount:: true,
   _containers:: {
     args: [
       '/opt/strimzi/bin/cluster_operator_run.sh',
