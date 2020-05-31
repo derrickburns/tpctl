@@ -3,21 +3,21 @@ local global = import '../../lib/global.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 
 local rolebinding1(me) = k8s.rolebinding(me) {
-  roleRef: {
+  roleRef+: {
     kind: 'ClusterRole',
     name: 'strimzi-entity-operator',
   }
 };
 
 local rolebinding2(me) = k8s.rolebinding(me) {
-  roleRef: {
+  roleRef+: {
     kind: 'ClusterRole',
     name: 'strimzi-cluster-operator-namespaced'
   }
 };
 
 local rolebinding3(me) = k8s.rolebinding(me) {
-  roleRef: {
+  roleRef+: {
     kind: 'ClusterRole',
     name: 'strimzi-topic-operator',
   }
