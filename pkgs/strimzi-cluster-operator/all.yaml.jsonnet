@@ -151,7 +151,7 @@ local deployment(me) = k8s.deployment(me) {
 function(config, prev, namespace, pkg) (
   local me = common.package(config, prev, namespace, pkg);
   [
-    k8s.serviceAccount(me),
+    k8s.serviceaccount(me),
     rolebinding1(me),
     rolebinding2(me),
     rolebinding3(me),
