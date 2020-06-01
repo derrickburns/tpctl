@@ -983,8 +983,8 @@ local configmap(me) = k8s.configmap(me, configmapName) {
           ],
         },
         timezone: '',
-        title: 'Linkerd Namespace',
-        uid: 'linkerd-namespace',
+        title: 'Linkerd Topline',
+        uid: 'linkerd-topline',
         version: 15,
       }, '  '
     ),
