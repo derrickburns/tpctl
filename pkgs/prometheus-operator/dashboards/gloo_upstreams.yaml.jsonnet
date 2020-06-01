@@ -31,8 +31,7 @@ local configmap(me) = k8s.configmap(me, configmapName) {
         editable: true,
         gnetId: null,
         graphTooltip: 0,
-        id: 55,
-        iteration: 1590845680757,
+        iteration: 1590964460526,
         links: [],
         panels: [
           {
@@ -325,8 +324,9 @@ local configmap(me) = k8s.configmap(me, configmapName) {
             {
               allValue: null,
               current: {
-                text: 'auth_dev1',
-                value: 'auth_dev1',
+                selected: true,
+                text: 'dev1-clinic-8080_gloo-system',
+                value: 'dev1-clinic-8080_gloo-system',
               },
               datasource: 'Prometheus',
               definition: 'label_values(envoy_cluster_name)',
@@ -338,7 +338,7 @@ local configmap(me) = k8s.configmap(me, configmapName) {
               options: [],
               query: 'label_values(envoy_cluster_name)',
               refresh: 1,
-              regex: '',
+              regex: '.*gloo-system',
               skipUrlSync: false,
               sort: 0,
               tagValuesQuery: '',
@@ -350,7 +350,7 @@ local configmap(me) = k8s.configmap(me, configmapName) {
           ],
         },
         time: {
-          from: 'now-15m',
+          from: 'now-6h',
           to: 'now',
         },
         timepicker: {
@@ -381,7 +381,7 @@ local configmap(me) = k8s.configmap(me, configmapName) {
         timezone: '',
         title: 'Gloo Upstreams',
         uid: 'gloo_upstreams',
-        version: 5,
+        version: 11883,
       }, '  '
     ),
   },
