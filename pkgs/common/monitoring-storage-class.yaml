@@ -14,6 +14,3 @@ allowedTopologies:
     - key: role
       values:
         - monitoring
-    - key: failure-domain.beta.kubernetes.io/zone
-      values:
-        - us-west-2a
