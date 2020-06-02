@@ -40,6 +40,9 @@ local helmrelease(me) = k8s.helmrelease(me, { version: lib.getElse(me, 'version'
       service: {
         type: 'ClusterIP',
       },
+      serviceMonitor: {
+        enabled: global.isEnabled(me.config, 'prometheus-operator'),
+      },
       config: {
         rootDomain: domain,
         existingSecret: $._secretNames[0],
