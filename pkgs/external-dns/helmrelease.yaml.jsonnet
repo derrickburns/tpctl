@@ -1,5 +1,5 @@
-local global = import '../../lib/global.jsonnet';
 local common = import '../../lib/common.jsonnet';
+local global = import '../../lib/global.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
@@ -10,10 +10,10 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '2.20.8', repository: 'ht
         region: me.config.cluster.metadata.region,
         zoneType: 'public',
       },
-      interval: lib.getElse(me, 'interval', "3m"),
+      interval: lib.getElse(me, 'interval', '3m'),
       logLevel: me.config.general.logLevel,
       metrics: {
-        enabled: global.isEnabled(me.config, 'prometheus'),
+        enabled: global.isEnabled(me.config, 'prometheus-operator'),
         serviceMonitor: {
           enabled: global.isEnabled(me.config, 'prometheus-operator'),
         },
