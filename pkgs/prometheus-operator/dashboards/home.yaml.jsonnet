@@ -340,6 +340,29 @@ local dashboardConfig = {
       title: 'External DNS',
       type: 'dashlist',
     },
+    {
+      datasource: null,
+      folderId: null,
+      gridPos: {
+        h: 5,
+        w: 8,
+        x: 8,
+        y: 32,
+      },
+      headings: true,
+      id: 18,
+      limit: 10,
+      options: {},
+      query: 'Cert Manager',
+      recent: false,
+      search: true,
+      starred: false,
+      tags: [],
+      timeFrom: null,
+      timeShift: null,
+      title: 'Cert Manager',
+      type: 'dashlist',
+    },
   ],
   schemaVersion: 22,
   style: 'dark',
@@ -368,7 +391,7 @@ local dashboardConfig = {
   timezone: '',
   title: 'Home',
   uid: 'HRN3fEzGk',
-  version: 9,
+  version: 10,
 };
 
 local configmap(me) = grafana.dashboard(me, 'home', dashboardConfig);
