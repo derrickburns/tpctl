@@ -1,4 +1,5 @@
 local common = import '../../lib/common.jsonnet';
+local global = import '../../lib/global.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
 local k8s = import '../../lib/k8s.jsonnet';
@@ -98,7 +99,7 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '8.12.7' }) {
               effect: 'NoSchedule',
             },
           ],
-          thanos: {
+          thanos: if global.isEnabled(me.config, 'thanos') then {
             image: 'quay.io/thanos/thanos:v0.12.2',
             version: 'v0.12.2',
             resources: {
@@ -111,7 +112,7 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '8.12.7' }) {
               name: 'thanos',
               key: 'object-store.yaml',
             },
-          },
+          } else {},
           retentionSize: '140GiB',
           retention: '10d',  // default prometheus-operator
           storageSpec: {
