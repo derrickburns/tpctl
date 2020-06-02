@@ -6,8 +6,8 @@ local k8s = import '../../lib/k8s.jsonnet';
 local helmrelease(me) = k8s.helmrelease(me, { version: '8.12.7' }) {
   spec+: {
     values+: {
-      grafana: lib.getElse(me, 'grafana', {
-        enabled: true,
+      grafana: {
+        enabled: lib.getElse(me, 'grafana.enabled', false,),
         persistence: {
           enabled: true,
           storageClassName: 'monitoring-expanding',
@@ -53,89 +53,85 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '8.12.7' }) {
             effect: 'NoSchedule',
           },
         ],
-      }),
+      },
       alertmanager: lib.getElse(me, 'alertmanager', { enabled: false }),
-      prometheus: lib.getElse(
-        me,
-        'prometheus',
-        {
-          enabled: true,
-          prometheusSpec: {
-            serviceMonitorSelectorNilUsesHelmValues: false,
-            podMonitorSelectorNilUsesHelmValues: false,
-            enableAdminAPI: true,
-            containers: [
-              {
-                name: 'prometheus',
-                readinessProbe: {
-                  initialDelaySeconds: 60,
-                  failureThreshold: 300,
-                },
+      prometheus: {
+        enabled: lib.getElse(me, 'prometheus.enabled', false,),
+        prometheusSpec: {
+          serviceMonitorSelectorNilUsesHelmValues: false,
+          podMonitorSelectorNilUsesHelmValues: false,
+          enableAdminAPI: true,
+          containers: [
+            {
+              name: 'prometheus',
+              readinessProbe: {
+                initialDelaySeconds: 60,
+                failureThreshold: 300,
               },
-            ],
+            },
+          ],
+          resources: {
+            limits: {
+              memory: '20G',
+            },
+          },
+          affinity: {
+            nodeAffinity: {
+              requiredDuringSchedulingIgnoredDuringExecution: {
+                nodeSelectorTerms: [{
+                  matchExpressions: [
+                    {
+                      key: 'role',
+                      operator: 'In',
+                      values: ['monitoring'],
+                    },
+                  ],
+                }],
+              },
+            },
+          },
+          tolerations: [
+            {
+              key: 'role',
+              operator: 'Equal',
+              value: 'monitoring',
+              effect: 'NoSchedule',
+            },
+          ],
+          thanos: {
+            image: 'quay.io/thanos/thanos:v0.12.2',
+            version: 'v0.12.2',
             resources: {
               limits: {
-                memory: '20G',
+                cpu: '0.25',
+                memory: '250M',
               },
             },
-            affinity: {
-              nodeAffinity: {
-                requiredDuringSchedulingIgnoredDuringExecution: {
-                  nodeSelectorTerms: [{
-                    matchExpressions: [
-                      {
-                        key: 'role',
-                        operator: 'In',
-                        values: ['monitoring'],
-                      },
-                    ],
-                  }],
-                },
-              },
+            objectStorageConfig: {
+              name: 'thanos',
+              key: 'object-store.yaml',
             },
-            tolerations: [
-              {
-                key: 'role',
-                operator: 'Equal',
-                value: 'monitoring',
-                effect: 'NoSchedule',
+          },
+          retentionSize: '140GiB',
+          retention: '10d',  // default prometheus-operator
+          storageSpec: {
+            volumeClaimTemplate: {
+              metadata: {
+                name: 'prometheus',
+                namespace: me.namespace,
               },
-            ],
-            thanos: {
-              image: 'quay.io/thanos/thanos:v0.12.2',
-              version: 'v0.12.2',
-              resources: {
-                limits: {
-                  cpu: '0.25',
-                  memory: '250M',
-                },
-              },
-              objectStorageConfig: {
-                name: 'thanos',
-                key: 'object-store.yaml',
-              },
-            },
-            retentionSize: '140GiB',
-            retention: '10d',  // default prometheus-operator
-            storageSpec: {
-              volumeClaimTemplate: {
-                metadata: {
-                  name: 'prometheus',
-                  namespace: me.namespace,
-                },
-                spec: {
-                  storageClassName: 'monitoring-expanding',
-                  resources: {
-                    requests: {
-                      storage: '150Gi',
-                    },
+              spec: {
+                storageClassName: 'monitoring-expanding',
+                resources: {
+                  requests: {
+                    storage: '150Gi',
                   },
                 },
               },
             },
           },
-        }
-      ),
+        },
+      },
       prometheusOperator: {
         admissionWebhooks: {
           enabled: false,
