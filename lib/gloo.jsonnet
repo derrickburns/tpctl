@@ -414,13 +414,18 @@ local i = {
     },
   },
 
-  simpleRoutetable(me, labels, name=me.pkg, prefix='/v2/%s' % me.pkg):: $.routetable(me, labels, name) {
+  simpleRoutetable(me, labels, name=me.pkg, prefix='/v2/%s' % me.pkg, noauth=false):: $.routetable(me, labels, name) {
     spec+: {
       routes: [{
         matchers: [{
           methods: ["GET", "DELETE", "PATCH", "POST", "PUT"],
           prefix: prefix,
         }],
+        options: {
+          jwt: {
+            disable: noauth
+          },
+        },
         routeAction: {
           single: {
             upstream: {
