@@ -13,7 +13,6 @@ local helmrelease(me) = k8s.helmrelease(me, { name: 'helm-operator', version: li
       },
 
       prometheus: {
-        enabled: global.isEnabled(me.config, 'prometheus'),
         serviceMonitor: {
           create: global.isEnabled(me.config, 'prometheus-operator'),
         },
