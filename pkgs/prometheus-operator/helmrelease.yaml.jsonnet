@@ -116,7 +116,7 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '8.12.7' }) {
             },
           } else {},
           retentionSize: '140GiB',
-          retention: '10d',  // default prometheus-operator
+          retention: '20d',
           storageSpec: {
             volumeClaimTemplate: {
               metadata: {

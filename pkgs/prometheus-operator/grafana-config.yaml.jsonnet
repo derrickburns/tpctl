@@ -9,7 +9,7 @@ local grafanaConfig(me) = k8s.configmap(me, 'grafana-ini') {
         users: {
           allow_sign_up: false,
           auto_assign_org: true,
-          auto_assign_org_role: 'Editor',
+          auto_assign_org_role: 'Admin',
         },
         'auth.proxy': {
           enabled: true,
