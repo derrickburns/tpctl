@@ -31,7 +31,7 @@ function(config, prev, namespace, pkg) (
   [
     service(me),
     deployment(me),
-    gloo.simpleRoutetable(me, {app: 'tidepool'}, prefix='/kafka'),
+    gloo.simpleRoutetable(me, {app: 'tidepool'}, prefix='/kafka', noauth=true),
     gloo.kubeupstream(me),
   ]
 )
