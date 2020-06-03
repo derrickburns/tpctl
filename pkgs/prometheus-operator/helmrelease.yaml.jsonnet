@@ -135,6 +135,22 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '8.12.7' }) {
           },
         },
       },
+      defaultRules: {
+        // Not monitoring etcd, kube-scheduler, or kube-controller-manager because it is managed by EKS
+        rules: {
+          etcd: false,
+          kubeScheduler: false,
+        },
+      },
+      kubeControllerManager: {
+        enabled: false,
+      },
+      kubeEtcd: {
+        enabled: false,
+      },
+      kubeScheduler: {
+        enabled: false,
+      },
       prometheusOperator: {
         admissionWebhooks: {
           enabled: false,
