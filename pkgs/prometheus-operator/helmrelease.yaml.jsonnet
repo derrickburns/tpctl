@@ -55,7 +55,9 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '8.12.7' }) {
           },
         ],
       },
-      alertmanager: lib.getElse(me, 'alertmanager', { enabled: false }),
+      alertmanager: {
+        enabled: lib.getElse(me, 'alertmanager.enabled', false,),
+      },
       prometheus: {
         enabled: lib.getElse(me, 'prometheus.enabled', false,),
         prometheusSpec: {
