@@ -18,8 +18,7 @@ local dashboardConfig = {
   editable: true,
   gnetId: null,
   graphTooltip: 1,
-  id: 85,
-  iteration: 1590964848719,
+  iteration: 1591199293269,
   links: [],
   panels: [
     {
@@ -1865,12 +1864,14 @@ local dashboardConfig = {
       dashes: false,
       datasource: 'Prometheus',
       fill: 1,
+      fillGradient: 0,
       gridPos: {
         h: 7,
         w: 8,
         x: 0,
         y: 39,
       },
+      hiddenSeries: false,
       id: 85,
       legend: {
         avg: false,
@@ -1885,7 +1886,9 @@ local dashboardConfig = {
       linewidth: 2,
       links: [],
       nullPointMode: 'null',
-      options: {},
+      options: {
+        dataLinks: [],
+      },
       percentage: false,
       pointradius: 5,
       points: false,
@@ -1953,12 +1956,14 @@ local dashboardConfig = {
       dashes: false,
       datasource: 'Prometheus',
       fill: 0,
+      fillGradient: 0,
       gridPos: {
         h: 7,
         w: 8,
         x: 8,
         y: 39,
       },
+      hiddenSeries: false,
       id: 86,
       legend: {
         avg: false,
@@ -1973,7 +1978,9 @@ local dashboardConfig = {
       linewidth: 2,
       links: [],
       nullPointMode: 'null',
-      options: {},
+      options: {
+        dataLinks: [],
+      },
       percentage: false,
       pointradius: 5,
       points: false,
@@ -2047,12 +2054,14 @@ local dashboardConfig = {
       dashes: false,
       datasource: 'Prometheus',
       fill: 1,
+      fillGradient: 0,
       gridPos: {
         h: 7,
         w: 8,
         x: 16,
         y: 39,
       },
+      hiddenSeries: false,
       id: 87,
       legend: {
         avg: false,
@@ -2067,7 +2076,9 @@ local dashboardConfig = {
       linewidth: 2,
       links: [],
       nullPointMode: 'null',
-      options: {},
+      options: {
+        dataLinks: [],
+      },
       percentage: false,
       pointradius: 5,
       points: false,
@@ -2142,26 +2153,8 @@ local dashboardConfig = {
         alignLevel: null,
       },
     },
-    {
-      content: "<div>\n  <div style=\"position: absolute; top: 0, left: 0\">\n    <a href=\"https://linkerd.io\" target=\"_blank\"><img src=\"https://linkerd.io/images/identity/svg/linkerd_primary_color_white.svg\" style=\"height: 30px;\"></a>\n  </div>\n  <div id=\"version\" style=\"position: absolute; top: 0; right: 0; font-size: 15px\">\n  </div>\n</div>\n<script type=\"text/javascript\">\nvar localReqURL =\n  window.location.href.substring(\n    0,\n    window.location.href.indexOf(\n    \"/grafana/\"\n    )\n  )+'/overview';\n\nfetch(localReqURL, {\n  credentials: 'include',\n  headers: {\n    \"Content-Type\": \"text/html; charset=utf-8\",\n  },\n})\n.then(response => response.text())\n.then(text => (new window.DOMParser()).parseFromString(text, \"text/html\"))\n.then(html => {\n  var main = html.getElementById('main');\n  var localVersion = main.getAttribute(\"data-release-version\");\n  var versionElem = document.getElementById('version');\n\n  var channel;\n  var parts = localVersion.split(\"-\", 2);\n  if (parts.length === 2) {\n    channel = parts[0];\n    versionElem.innerHTML += 'Running Linkerd ' + parts[1] + ' (' + parts[0] + ')' + '.<br>';\n  } else {\n    versionElem.innerHTML += 'Running Linkerd ' + localVersion + '.<br>';\n  }\n  var uuid = main.getAttribute(\"data-uuid\");\n\n  fetch('https://versioncheck.linkerd.io/version.json?version='+localVersion+'&uuid='+uuid+'&source=grafana', {\n    credentials: 'include',\n    headers: {\n      \"Content-Type\": \"application/json; charset=utf-8\",\n    },\n  })\n  .then(response => response.json())\n  .then(json => {\n    if (!channel || !json[channel]) {\n      versionElem.innerHTML += 'Version check failed.'\n    } else if (json[channel] === localVersion) {\n      versionElem.innerHTML += 'Linkerd is up to date.';\n    } else {\n      parts = json[channel].split(\"-\", 2);\n      if (parts.length === 2) {\n        versionElem.innerHTML += \"A new \"+parts[0]+\" version (\"+parts[1]+\") is available.\"\n      } else {\n        versionElem.innerHTML += \"A new version (\"+json[channel]+\") is available.\"\n      }\n      versionElem.innerHTML += \" <a href='https://versioncheck.linkerd.io/update' target='_blank'>Update now</a>.\";\n    }\n  });\n});\n</script>",
-      datasource: null,
-      gridPos: {
-        h: 3,
-        w: 24,
-        x: 0,
-        y: 46,
-      },
-      height: '1px',
-      id: 171,
-      links: [],
-      mode: 'html',
-      options: {},
-      title: '',
-      transparent: true,
-      type: 'text',
-    },
   ],
-  refresh: '1m',
+  refresh: false,
   schemaVersion: 22,
   style: 'dark',
   tags: [
@@ -2172,8 +2165,8 @@ local dashboardConfig = {
       {
         allValue: '.*',
         current: {
-          text: 'default',
-          value: 'default',
+          text: 'pomerium',
+          value: 'pomerium',
         },
         datasource: 'Prometheus',
         definition: '',
@@ -2197,10 +2190,8 @@ local dashboardConfig = {
       {
         allValue: '.*',
         current: {
-          isNone: true,
-          selected: false,
-          text: 'None',
-          value: '',
+          text: 'pomerium-proxy-745f45d5d9-hjzq6',
+          value: 'pomerium-proxy-745f45d5d9-hjzq6',
         },
         datasource: 'Prometheus',
         definition: '',
@@ -2224,10 +2215,8 @@ local dashboardConfig = {
       {
         allValue: '.*',
         current: {
-          isNone: true,
-          selected: false,
-          text: 'None',
-          value: '',
+          text: 'pomerium-authenticate',
+          value: 'pomerium-authenticate',
         },
         datasource: 'Prometheus',
         definition: 'label_values(process_start_time_seconds{namespace="$namespace"}, deployment)',
@@ -2303,8 +2292,8 @@ local dashboardConfig = {
     ],
   },
   time: {
-    from: 'now-5m',
-    to: 'now',
+    from: '2020-06-03T02:19:54.997Z',
+    to: '2020-06-04T02:19:54.997Z',
   },
   timepicker: {
     refresh_intervals: [
@@ -2334,7 +2323,7 @@ local dashboardConfig = {
   timezone: '',
   title: 'Linkerd Pod',
   uid: 'linkerd-pod',
-  version: 2,
+  version: 4,
 };
 
 local configmap(me) = grafana.dashboard(me, 'linkerd-pod', dashboardConfig);
