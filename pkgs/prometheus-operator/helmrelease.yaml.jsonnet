@@ -14,6 +14,9 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '8.12.7' }) {
           storageClassName: 'monitoring-expanding',
           size: '20Gi',
         },
+        annotations: {
+          'cluster-autoscaler.kubernetes.io/safe-to-evict': false,
+        },
         env: {
           GF_PATHS_CONFIG: '/etc/grafana/grafana-config.ini',
           GF_SECURITY_ADMIN_PASSWORD: 'tidepool',
@@ -60,6 +63,9 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '8.12.7' }) {
       },
       prometheus: {
         enabled: lib.getElse(me, 'prometheus.enabled', false,),
+        annotations: {
+          'cluster-autoscaler.kubernetes.io/safe-to-evict': false,
+        },
         prometheusSpec: {
           serviceMonitorSelectorNilUsesHelmValues: false,
           podMonitorSelectorNilUsesHelmValues: false,
