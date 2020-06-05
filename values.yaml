@@ -194,18 +194,6 @@ namespaces:
       shadow:
         enabled: false
         receiver: qa1-mirror
-      jellyfish:
-        shadowing:
-          upstream:
-            name: 'kafka-data-import'
-            namespace: 'dev1'
-          percentage: 100
-      data:
-        shadowing:
-          upstream:
-            name: 'kafka-data-import'
-            namespace: 'dev1'
-          percentage: 100
       task:
         deployment:
           replicas: 0
