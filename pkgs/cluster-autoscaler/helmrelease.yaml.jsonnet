@@ -1,5 +1,5 @@
-local global = import '../../lib/global.jsonnet';
 local common = import '../../lib/common.jsonnet';
+local global = import '../../lib/global.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
@@ -11,9 +11,6 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '7.1.0' }) {
       },
       awsRegion: me.config.cluster.metadata.region,
       extraArgs: {
-        'scale-down-utilization-threshold': 0.5,
-        'skip-nodes-with-local-storage': false,
-        'skip-nodes-with-system-pods': false,
         v: 5,
       },
       image: {
