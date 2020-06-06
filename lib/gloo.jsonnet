@@ -132,7 +132,7 @@ local i = {
     options: $.virtualHostOptions(me, vs),
   },
 
-  virtualService(me, vs):: {
+  virtualService(me):: function(vs) {
     apiVersion: 'gateway.solo.io/v1',
     kind: 'VirtualService',
     metadata: {
@@ -196,7 +196,7 @@ local i = {
 
   certificateSecretName(base, namespace):: namespace + '-' + base + '-certificate',
 
-  certificate(vs, me):: (
+  certificate(me):: function(vs) (
     if i.isHttps(vs) && std.length(vs.dnsNames) > 0
     then certmanager.certificate(me, vs.dnsNames, i.certificateSecretName(vs.name, vs.namespace))
     else {}
@@ -337,15 +337,13 @@ local i = {
 {
 
   virtualServicesForPackage(me):: (
-    local toGlooVirtualService(x) = i.virtualService(me, x);
-    local result = std.map(toGlooVirtualService, lib.values(lib.getElse(me, 'virtualServices', {})));
+    local result = std.map(i.virtualService(me), lib.values(lib.getElse(me, 'virtualServices', {})));
     std.filter(function(x) std.length(x.spec.virtualHost.domains) > 0, result)
   ),
 
   certificatesForPackage(me):: (
-    local toCertificate(x) = i.certificate(x, me);
     if global.isEnabled(me.config, 'certmanager') || global.isEnabled(me.config, 'certmanager15')
-    then std.map(toCertificate, lib.values(lib.getElse(me, 'virtualServices', {})))
+    then std.map(i.certificate(me), lib.values(lib.getElse(me, 'virtualServices', {})))
     else []
   ),
 
