@@ -15,20 +15,14 @@ local dns = import 'external-dns.jsonnet';
 
 local i = {
 
-  // add a default namespace to an object if it does not have one
-  withNamespace(obj, default):: lib.withDefault(obj, 'namespace', default),
-
-  // private an array of virtual services of a package
+  // virtualServicesForPkg provides an array of virtual services of a package
   virtualServicesForPkg(me):: lib.values(lib.getElse(me, 'virtualServices', {})),
 
-  // provide an array of virtual services of a namespace
+  // virtualServicesForNamespace provides an array of virtual services of a namespace
   virtualServicesForNamespace(ns):: std.flattenArrays(std.map($.virtualServicesForPkg, lib.values(ns))),
 
-  // provide an array of virtual services of a config
+  // virtualServices provides an array of virtual services of a config
   virtualServices(config):: std.flattenArrays(std.map($.virtualServicesForNamespace, lib.values(config.namespaces))),
-
-  gatewaysForSelector(gateways, selector)::
-    std.filter(function(x) lib.matches(x.selector, selector), gateways),
 
   // flatten a map after adding name and namespace fields
   virtualServicesForSelector(vss, selector)::
@@ -60,6 +54,7 @@ local i = {
 
   isHttps(vs):: lib.getElse(vs, 'labels.protocol', 'http') == 'https',
 
+  // sslConfig takes namespace and dns names from virtual service 
   sslConfig(vs):: if $.isHttps(vs) then {
     sslConfig: {
       secretRef: {
@@ -122,30 +117,27 @@ local i = {
     },
   },
 
-  virtualHostOptions(me, vs)::
+  virtualHostOptions(vs):: 
     lib.getElse(vs, 'virtualHostOptions', {})
     + (if lib.isEnabledAt(vs, 'hsts') then $.staticVirtualHostOptions.hsts else {}),
 
-  virtualHost(me, vs):: {
+  virtualHost(vs):: {
     domains: $.domains(vs),
     routes: $.routes(vs),
-    options: $.virtualHostOptions(me, vs),
+    options: $.virtualHostOptions(vs),
   },
 
-  virtualService(me):: function(vs) {
-    apiVersion: 'gateway.solo.io/v1',
-    kind: 'VirtualService',
-    metadata: {
+  virtualService(vs):: k8s.k('gateway.solo.io/v1', 'VirtualService') {
+    metadata+: {
       name: lib.kebabCase(lib.require(vs, 'name')),
       namespace: vs.namespace,
       labels: vs.labels,
     },
     spec: $.sslConfig(vs) + {
       displayName: lib.kebabCase(vs.name),
-      virtualHost: $.virtualHost(me, vs),
+      virtualHost: $.virtualHost(vs),
     },
   },
-
 
   dnsNames(config, selector={ type: 'external' }):: (
     local vss = $.virtualServices(config);
@@ -337,7 +329,7 @@ local i = {
 {
 
   virtualServicesForPackage(me):: (
-    local result = std.map(i.virtualService(me), lib.values(lib.getElse(me, 'virtualServices', {})));
+    local result = std.map(i.virtualService, lib.values(lib.getElse(me, 'virtualServices', {})));
     std.filter(function(x) std.length(x.spec.virtualHost.domains) > 0, result)
   ),
 
