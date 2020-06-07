@@ -60,6 +60,9 @@ local pomeriumGatewayProxy(me) = k8s.k('v1', 'Service') {
 local serviceMonitor(me) = k8s.k('monitoring.coreos.com/v1', 'ServiceMonitor') + k8s.metadata('gateway-proxy', me.namespace) {
   spec+: {
     jobLabel: me.namespace + '/gateway-proxy',
+    targetLabels: [
+      'gateway-proxy-id',
+    ],
     namespaceSelector: {
       matchNames: [
         me.namespace,
