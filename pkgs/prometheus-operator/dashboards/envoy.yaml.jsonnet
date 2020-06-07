@@ -18,7 +18,7 @@ local dashboardConfig = {
   editable: true,
   gnetId: null,
   graphTooltip: 0,
-  iteration: 1591567825531,
+  iteration: 1591567825535,
   links: [],
   panels: [
     {
@@ -773,8 +773,8 @@ local dashboardConfig = {
         allValue: null,
         current: {
           selected: true,
-          text: 'internal-gateway-proxy',
-          value: 'internal-gateway-proxy',
+          text: 'pomerium-gateway-proxy',
+          value: 'pomerium-gateway-proxy',
         },
         datasource: 'Prometheus',
         definition: 'label_values(envoy_http_downstream_rq_total, gateway_proxy_id)',
@@ -783,25 +783,9 @@ local dashboardConfig = {
         label: 'Proxy',
         multi: false,
         name: 'proxy',
-        options: [
-          {
-            selected: false,
-            text: 'gateway-proxy',
-            value: 'gateway-proxy',
-          },
-          {
-            selected: true,
-            text: 'internal-gateway-proxy',
-            value: 'internal-gateway-proxy',
-          },
-          {
-            selected: false,
-            text: 'pomerium-gateway-proxy',
-            value: 'pomerium-gateway-proxy',
-          },
-        ],
+        options: [],
         query: 'label_values(envoy_http_downstream_rq_total, gateway_proxy_id)',
-        refresh: 0,
+        refresh: 1,
         regex: '',
         skipUrlSync: false,
         sort: 0,
