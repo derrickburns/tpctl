@@ -18,7 +18,7 @@ local dashboardConfig = {
   editable: true,
   gnetId: null,
   graphTooltip: 0,
-  id: 2,
+  iteration: 1591567825535,
   links: [],
   panels: [
     {
@@ -63,7 +63,7 @@ local dashboardConfig = {
       steppedLine: false,
       targets: [
         {
-          expr: 'sum(irate(envoy_http_downstream_rq_total[1m]))',
+          expr: 'sum(irate(envoy_http_downstream_rq_total{gateway_proxy_id="$proxy"}[1m]))',
           format: 'time_series',
           intervalFactor: 1,
           legendFormat: 'requests',
@@ -157,21 +157,21 @@ local dashboardConfig = {
       steppedLine: false,
       targets: [
         {
-          expr: 'sum(irate(envoy_http_downstream_rq_xx{envoy_response_code_class="2"}[1m])) / sum(irate(envoy_http_downstream_rq_total[1m]))',
+          expr: 'sum(irate(envoy_http_downstream_rq_xx{envoy_response_code_class="2", gateway_proxy_id="$proxy"}[1m])) / sum(irate(envoy_http_downstream_rq_total{gateway_proxy_id="$proxy"}[1m]))',
           format: 'time_series',
           intervalFactor: 1,
           legendFormat: '% 2xx',
           refId: 'B',
         },
         {
-          expr: 'sum(irate(envoy_http_downstream_rq_xx{envoy_response_code_class="4"}[1m])) / sum(irate(envoy_http_downstream_rq_total[1m]))',
+          expr: 'sum(irate(envoy_http_downstream_rq_xx{envoy_response_code_class="4", gateway_proxy_id="$proxy"}[1m])) / sum(irate(envoy_http_downstream_rq_total{gateway_proxy_id="$proxy"}[1m]))',
           format: 'time_series',
           intervalFactor: 1,
           legendFormat: '% 4xx',
           refId: 'C',
         },
         {
-          expr: 'sum(irate(envoy_http_downstream_rq_xx{envoy_response_code_class="5"}[1m])) / sum(irate(envoy_http_downstream_rq_total[1m]))',
+          expr: 'sum(irate(envoy_http_downstream_rq_xx{envoy_response_code_class="5", gateway_proxy_id="$proxy"}[1m])) / sum(irate(envoy_http_downstream_rq_total{gateway_proxy_id="$proxy"}[1m]))',
           format: 'time_series',
           intervalFactor: 1,
           legendFormat: '% 5xx',
@@ -265,21 +265,21 @@ local dashboardConfig = {
       steppedLine: false,
       targets: [
         {
-          expr: 'sum(irate(envoy_http_downstream_rq_xx{envoy_response_code_class="2"}[1m]))',
+          expr: 'sum(irate(envoy_http_downstream_rq_xx{envoy_response_code_class="2", gateway_proxy_id="$proxy"}[1m]))',
           format: 'time_series',
           intervalFactor: 1,
           legendFormat: '2xx',
           refId: 'A',
         },
         {
-          expr: 'sum(irate(envoy_http_downstream_rq_xx{envoy_response_code_class="4"}[1m]))',
+          expr: 'sum(irate(envoy_http_downstream_rq_xx{envoy_response_code_class="4", gateway_proxy_id="$proxy"}[1m]))',
           format: 'time_series',
           intervalFactor: 1,
           legendFormat: '4xx',
           refId: 'B',
         },
         {
-          expr: 'sum(irate(envoy_http_downstream_rq_xx{envoy_response_code_class="5"}[1m]))',
+          expr: 'sum(irate(envoy_http_downstream_rq_xx{envoy_response_code_class="5", gateway_proxy_id="$proxy"}[1m]))',
           format: 'time_series',
           intervalFactor: 1,
           legendFormat: '5xx',
@@ -371,14 +371,14 @@ local dashboardConfig = {
       steppedLine: false,
       targets: [
         {
-          expr: 'sum(rate(envoy_cluster_upstream_rq_time_sum{envoy_cluster_name=~".*_Prometheus-system",envoy_cluster_name!~"kube*|Prometheus*"}[1m])) / sum(rate(envoy_cluster_upstream_rq_time_count{envoy_cluster_name=~".*_Prometheus-system",envoy_cluster_name!~"kube*|Prometheus*"}[1m]))',
+          expr: 'sum(rate(envoy_cluster_upstream_rq_time_sum{envoy_cluster_name=~".*_Prometheus-system",envoy_cluster_name!~"kube*|Prometheus*", gateway_proxy_id="$proxy"}[1m])) / sum(rate(envoy_cluster_upstream_rq_time_count{envoy_cluster_name=~".*_Prometheus-system",envoy_cluster_name!~"kube*|Prometheus*", gateway_proxy_id="$proxy"}[1m]))',
           format: 'time_series',
           intervalFactor: 1,
           legendFormat: 'average time to upstream',
           refId: 'A',
         },
         {
-          expr: 'sum(rate(envoy_http_downstream_rq_time_sum{envoy_http_conn_manager_prefix!~"admin|prometheus|async-client"}[1m])) / sum(rate(envoy_http_downstream_rq_time_count{envoy_http_conn_manager_prefix!~"(admin|prometheus|async-client)"}[1m]))',
+          expr: 'sum(rate(envoy_http_downstream_rq_time_sum{envoy_http_conn_manager_prefix!~"admin|prometheus|async-client", gateway_proxy_id="$proxy"}[1m])) / sum(rate(envoy_http_downstream_rq_time_count{envoy_http_conn_manager_prefix!~"(admin|prometheus|async-client)", gateway_proxy_id="$proxy"}[1m]))',
           format: 'time_series',
           hide: false,
           intervalFactor: 1,
@@ -476,21 +476,21 @@ local dashboardConfig = {
       steppedLine: false,
       targets: [
         {
-          expr: 'histogram_quantile(0.90, sum(rate(envoy_cluster_upstream_rq_time_bucket[1m])) by (le))',
+          expr: 'histogram_quantile(0.90, sum(rate(envoy_cluster_upstream_rq_time_bucket{gateway_proxy_id="$proxy"}[1m])) by (le))',
           format: 'time_series',
           intervalFactor: 1,
           legendFormat: 'P90',
           refId: 'C',
         },
         {
-          expr: 'histogram_quantile(0.95, sum(rate(envoy_cluster_upstream_rq_time_bucket[1m])) by (le))',
+          expr: 'histogram_quantile(0.95, sum(rate(envoy_cluster_upstream_rq_time_bucket{gateway_proxy_id="$proxy"}[1m])) by (le))',
           format: 'time_series',
           intervalFactor: 1,
           legendFormat: 'P95',
           refId: 'A',
         },
         {
-          expr: 'histogram_quantile(0.99, sum(rate(envoy_cluster_upstream_rq_time_bucket[1m])) by (le))',
+          expr: 'histogram_quantile(0.99, sum(rate(envoy_cluster_upstream_rq_time_bucket{gateway_proxy_id="$proxy"}[1m])) by (le))',
           format: 'time_series',
           intervalFactor: 1,
           legendFormat: 'P99',
@@ -584,21 +584,21 @@ local dashboardConfig = {
       steppedLine: false,
       targets: [
         {
-          expr: 'histogram_quantile(0.90, sum(rate(envoy_http_downstream_rq_time_bucket[1m])) by (le))',
+          expr: 'histogram_quantile(0.90, sum(rate(envoy_http_downstream_rq_time_bucket{gateway_proxy_id="$proxy"}[1m])) by (le))',
           format: 'time_series',
           intervalFactor: 1,
           legendFormat: 'P90',
           refId: 'A',
         },
         {
-          expr: 'histogram_quantile(0.95, sum(rate(envoy_http_downstream_rq_time_bucket[1m])) by (le))',
+          expr: 'histogram_quantile(0.95, sum(rate(envoy_http_downstream_rq_time_bucket{gateway_proxy_id="$proxy"}[1m])) by (le))',
           format: 'time_series',
           intervalFactor: 1,
           legendFormat: 'P95',
           refId: 'B',
         },
         {
-          expr: 'histogram_quantile(0.99, sum(rate(envoy_http_downstream_rq_time_bucket[1m])) by (le))',
+          expr: 'histogram_quantile(0.99, sum(rate(envoy_http_downstream_rq_time_bucket{gateway_proxy_id="$proxy"}[1m])) by (le))',
           format: 'time_series',
           intervalFactor: 1,
           legendFormat: 'P99',
@@ -694,28 +694,28 @@ local dashboardConfig = {
       steppedLine: false,
       targets: [
         {
-          expr: 'sum(increase(envoy_cluster_ext_authz_ok[1m]))',
+          expr: 'sum(increase(envoy_cluster_ext_authz_ok{gateway_proxy_id="$proxy"}[1m]))',
           format: 'time_series',
           intervalFactor: 1,
           legendFormat: 'OK',
           refId: 'A',
         },
         {
-          expr: 'sum(increase(envoy_cluster_ext_authz_denied[1m]))',
+          expr: 'sum(increase(envoy_cluster_ext_authz_denied{gateway_proxy_id="$proxy"}[1m]))',
           format: 'time_series',
           intervalFactor: 1,
           legendFormat: 'Denied',
           refId: 'B',
         },
         {
-          expr: 'sum(increase(envoy_cluster_ext_authz_error[1m]))',
+          expr: 'sum(increase(envoy_cluster_ext_authz_error{gateway_proxy_id="$proxy"}[1m]))',
           format: 'time_series',
           intervalFactor: 1,
           legendFormat: 'Error',
           refId: 'C',
         },
         {
-          expr: 'sum(increase(envoy_cluster_ext_authz_ok[1m])) + sum(increase(envoy_cluster_ext_authz_denied[1m])) + sum(increase(envoy_cluster_ext_authz_error[1m]))',
+          expr: 'sum(increase(envoy_cluster_ext_authz_ok{gateway_proxy_id="$proxy"}[1m])) + sum(increase(envoy_cluster_ext_authz_denied{gateway_proxy_id="$proxy"}[1m])) + sum(increase(envoy_cluster_ext_authz_error{gateway_proxy_id="$proxy"}[1m]))',
           format: 'time_series',
           intervalFactor: 1,
           legendFormat: 'Total',
@@ -768,7 +768,34 @@ local dashboardConfig = {
   style: 'dark',
   tags: [],
   templating: {
-    list: [],
+    list: [
+      {
+        allValue: null,
+        current: {
+          selected: true,
+          text: 'pomerium-gateway-proxy',
+          value: 'pomerium-gateway-proxy',
+        },
+        datasource: 'Prometheus',
+        definition: 'label_values(envoy_http_downstream_rq_total, gateway_proxy_id)',
+        hide: 0,
+        includeAll: false,
+        label: 'Proxy',
+        multi: false,
+        name: 'proxy',
+        options: [],
+        query: 'label_values(envoy_http_downstream_rq_total, gateway_proxy_id)',
+        refresh: 1,
+        regex: '',
+        skipUrlSync: false,
+        sort: 0,
+        tagValuesQuery: '',
+        tags: [],
+        tagsQuery: '',
+        type: 'query',
+        useTags: false,
+      },
+    ],
   },
   time: {
     from: 'now-6h',
