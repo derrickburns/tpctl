@@ -22,6 +22,7 @@ local linkerdController(me) = k8s.k('monitoring.coreos.com/v1', 'PodMonitor') + 
     podMetricsEndpoints: [
       {
         port: 'linkerd-admin',
+        interval: '10s',
         relabelings: [
           {
             sourceLabels: [
@@ -56,6 +57,7 @@ local linkerdProxy(me) = k8s.k('monitoring.coreos.com/v1', 'PodMonitor') + k8s.m
     podMetricsEndpoints: [
       {
         port: 'linkerd-admin',
+        interval: '10s',
         relabelings: [
           {
             sourceLabels: [
