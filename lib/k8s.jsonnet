@@ -263,12 +263,13 @@ local configmapNamesFromPod(pod) = lib.pruneList(
 
   helmrelease(me, chartValues):: $.k('helm.fluxcd.io/v1', 'HelmRelease') + $.metadata(me.pkg, me.namespace) {
     local this = self,
+    local vals = chart(me, chartValues),
     spec+: {
       values+: {
         annotations+: reloaderAnnotations(this),
       },
       releaseName: lib.getElse(me, 'releaseName', me.pkg),
-      chart: chart(me, chartValues),
+      chart: vals,
     },
   },
 

@@ -161,13 +161,11 @@ local i = {
     },
   },
 
-  gateway(gw):: k8s.k('gateway.solo.io/v1', 'Gateway') {
+  gateway(gw):: k8s.k('gateway.solo.io/v1', 'Gateway') + k8s.metadata(gw.name, gw.namespace) {
     metadata+: {
       annotations: {
         origin: 'default',
       },
-      name: gw.name,
-      namespace: gw.namespace,
     },
     spec+: {
       httpGateway+: {
@@ -214,9 +212,7 @@ local i = {
       httpPort: 8080,
       httpsPort: 8443,
       runAsUser: 10101,
-      extraAnnotations: linkerd.annotations(me, true) + {
-        'config.linkerd.io/skip-inbound-ports': 8081,
-      },
+      extraAnnotations: linkerd.annotations(me, true, skipInboundPorts=8081),
       resources: {
         limits: {
           memory: '200Mi',

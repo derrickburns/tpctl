@@ -3,10 +3,12 @@ local lib = import 'lib.jsonnet';
 local tracing = import 'tracing.jsonnet';
 
 {
-  annotations(me, force=false)::
+  annotations(me, force=false, skipInboundPorts='')::
     if !global.isEnabled(me.config, 'linkerd')
     then {}
-    else lib.getElse(global.package(me.config, 'linkerd'), 'annotations', {}) +
+    else 
+       (if skipInboundPorts != '' then { 'config.linkerd.io/skip-inbound-ports': skipInboundPorts } else {}) +
+       lib.getElse(global.package(me.config, 'linkerd'), 'annotations', {}) +
          (if lib.isTrue(me, 'meshed') || force then {
             'linkerd.io/inject': 'enabled',
           } else {}) + (if lib.isFalse(me, 'meshed') then {
