@@ -19,7 +19,7 @@ local dashboardConfig = {
   editable: true,
   gnetId: null,
   graphTooltip: 0,
-  iteration: 1591574168004,
+  iteration: 1591624124547,
   links: [],
   panels: [
     {
@@ -64,7 +64,7 @@ local dashboardConfig = {
       steppedLine: false,
       targets: [
         {
-          expr: 'envoy_cluster_upstream_cx_active{ envoy_cluster_name="$upstream", gateway_proxy_id="$proxy" }',
+          expr: 'envoy_cluster_upstream_cx_active{ envoy_cluster_name="$upstream", gateway_proxy_id="$proxy"}',
           format: 'time_series',
           intervalFactor: 2,
           legendFormat: '{{envoy_cluster_name}}',
@@ -313,8 +313,8 @@ local dashboardConfig = {
         allValue: null,
         current: {
           selected: true,
-          text: 'cert-manager-cert-manager-9402_gloo-system',
-          value: 'cert-manager-cert-manager-9402_gloo-system',
+          text: 'tidewhisperer_qa1',
+          value: 'tidewhisperer_qa1',
         },
         datasource: 'Prometheus',
         definition: 'label_values(envoy_cluster_name)',
@@ -326,7 +326,7 @@ local dashboardConfig = {
         options: [],
         query: 'label_values(envoy_cluster_name)',
         refresh: 1,
-        regex: '.*gloo-system',
+        regex: '^(?!.*gloo-system|kube-svc).*$',
         skipUrlSync: false,
         sort: 0,
         tagValuesQuery: '',
@@ -339,8 +339,8 @@ local dashboardConfig = {
         allValue: null,
         current: {
           selected: true,
-          text: 'gateway-proxy',
-          value: 'gateway-proxy',
+          text: 'internal-gateway-proxy',
+          value: 'internal-gateway-proxy',
         },
         datasource: 'Prometheus',
         definition: 'label_values(envoy_http_downstream_rq_total, gateway_proxy_id)',
@@ -364,7 +364,7 @@ local dashboardConfig = {
     ],
   },
   time: {
-    from: 'now-15m',
+    from: 'now-6h',
     to: 'now',
   },
   timepicker: {
@@ -395,7 +395,7 @@ local dashboardConfig = {
   timezone: '',
   title: 'Gloo Upstreams',
   uid: 'gloo_upstreams',
-  version: 72855,
+  version: 2,
 };
 
 local configmap(me) = grafana.dashboard(me, 'gloo-upstreams', dashboardConfig);

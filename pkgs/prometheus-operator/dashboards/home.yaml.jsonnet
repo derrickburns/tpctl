@@ -318,6 +318,31 @@ local dashboardConfig = {
       type: 'dashlist',
     },
     {
+      datasource: null,
+      folderId: null,
+      gridPos: {
+        h: 5,
+        w: 8,
+        x: 16,
+        y: 28,
+      },
+      headings: true,
+      id: 23,
+      limit: 10,
+      options: {},
+      query: '',
+      recent: false,
+      search: true,
+      starred: false,
+      tags: [
+        'pomerium',
+      ],
+      timeFrom: null,
+      timeShift: null,
+      title: 'Pomerium',
+      type: 'dashlist',
+    },
+    {
       content: '<h3 style="text-align: center;">\nUtils\n</h3>\n<hr/>\n\n',
       datasource: null,
       gridPos: {
@@ -473,7 +498,7 @@ local dashboardConfig = {
   timezone: '',
   title: 'Home',
   uid: 'HRN3fEzGk',
-  version: 14,
+  version: 1,
 };
 
 local configmap(me) = grafana.dashboard(me, 'home', dashboardConfig);
