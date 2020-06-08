@@ -47,7 +47,7 @@ local dashboardConfig = {
         'rgba(237, 129, 40, 0.89)',
         '#299c46',
       ],
-      datasource: 'prometheus',
+      datasource: 'Prometheus',
       decimals: null,
       format: 'percentunit',
       gauge: {
@@ -132,7 +132,7 @@ local dashboardConfig = {
         'rgba(237, 129, 40, 0.89)',
         '#d44a3a',
       ],
-      datasource: 'prometheus',
+      datasource: 'Prometheus',
       decimals: null,
       format: 'none',
       gauge: {
@@ -217,7 +217,7 @@ local dashboardConfig = {
         'rgba(237, 129, 40, 0.89)',
         '#d44a3a',
       ],
-      datasource: 'prometheus',
+      datasource: 'Prometheus',
       decimals: null,
       format: 'none',
       gauge: {
@@ -301,7 +301,7 @@ local dashboardConfig = {
         'rgba(237, 129, 40, 0.89)',
         '#d44a3a',
       ],
-      datasource: 'prometheus',
+      datasource: 'Prometheus',
       format: 'none',
       gauge: {
         maxValue: 100,
@@ -396,7 +396,7 @@ local dashboardConfig = {
       bars: false,
       dashLength: 10,
       dashes: false,
-      datasource: 'prometheus',
+      datasource: 'Prometheus',
       fill: 1,
       gridPos: {
         h: 7,
@@ -483,7 +483,7 @@ local dashboardConfig = {
       bars: false,
       dashLength: 10,
       dashes: false,
-      datasource: 'prometheus',
+      datasource: 'Prometheus',
       fill: 0,
       gridPos: {
         h: 7,
@@ -577,7 +577,7 @@ local dashboardConfig = {
       bars: false,
       dashLength: 10,
       dashes: false,
-      datasource: 'prometheus',
+      datasource: 'Prometheus',
       fill: 1,
       gridPos: {
         h: 7,
@@ -689,7 +689,7 @@ local dashboardConfig = {
           bars: false,
           dashLength: 10,
           dashes: false,
-          datasource: 'prometheus',
+          datasource: 'Prometheus',
           fill: 1,
           gridPos: {
             h: 7,
@@ -776,7 +776,7 @@ local dashboardConfig = {
           bars: false,
           dashLength: 10,
           dashes: false,
-          datasource: 'prometheus',
+          datasource: 'Prometheus',
           fill: 0,
           gridPos: {
             h: 7,
@@ -870,7 +870,7 @@ local dashboardConfig = {
             mode: 'spectrum',
           },
           dataFormat: 'timeseries',
-          datasource: 'prometheus',
+          datasource: 'Prometheus',
           gridPos: {
             h: 7,
             w: 8,
@@ -983,7 +983,7 @@ local dashboardConfig = {
           bars: false,
           dashLength: 10,
           dashes: false,
-          datasource: 'prometheus',
+          datasource: 'Prometheus',
           fill: 1,
           gridPos: {
             h: 7,
@@ -1071,7 +1071,7 @@ local dashboardConfig = {
           bars: false,
           dashLength: 10,
           dashes: false,
-          datasource: 'prometheus',
+          datasource: 'Prometheus',
           fill: 0,
           gridPos: {
             h: 7,
@@ -1165,7 +1165,7 @@ local dashboardConfig = {
           bars: false,
           dashLength: 10,
           dashes: false,
-          datasource: 'prometheus',
+          datasource: 'Prometheus',
           fill: 1,
           gridPos: {
             h: 7,
@@ -1300,7 +1300,7 @@ local dashboardConfig = {
       bars: false,
       dashLength: 10,
       dashes: false,
-      datasource: 'prometheus',
+      datasource: 'Prometheus',
       fill: 1,
       gridPos: {
         h: 7,
@@ -1387,7 +1387,7 @@ local dashboardConfig = {
       bars: false,
       dashLength: 10,
       dashes: false,
-      datasource: 'prometheus',
+      datasource: 'Prometheus',
       fill: 0,
       gridPos: {
         h: 7,
@@ -1480,7 +1480,7 @@ local dashboardConfig = {
       bars: false,
       dashLength: 10,
       dashes: false,
-      datasource: 'prometheus',
+      datasource: 'Prometheus',
       fill: 1,
       gridPos: {
         h: 7,
@@ -1576,7 +1576,7 @@ local dashboardConfig = {
           bars: false,
           dashLength: 10,
           dashes: false,
-          datasource: 'prometheus',
+          datasource: 'Prometheus',
           fill: 1,
           gridPos: {
             h: 7,
@@ -1663,7 +1663,7 @@ local dashboardConfig = {
           bars: false,
           dashLength: 10,
           dashes: false,
-          datasource: 'prometheus',
+          datasource: 'Prometheus',
           fill: 0,
           gridPos: {
             h: 7,
@@ -1757,7 +1757,7 @@ local dashboardConfig = {
             mode: 'spectrum',
           },
           dataFormat: 'timeseries',
-          datasource: 'prometheus',
+          datasource: 'Prometheus',
           gridPos: {
             h: 7,
             w: 8,
@@ -1870,7 +1870,7 @@ local dashboardConfig = {
           bars: false,
           dashLength: 10,
           dashes: false,
-          datasource: 'prometheus',
+          datasource: 'Prometheus',
           fill: 1,
           gridPos: {
             h: 7,
@@ -1957,7 +1957,7 @@ local dashboardConfig = {
           bars: false,
           dashLength: 10,
           dashes: false,
-          datasource: 'prometheus',
+          datasource: 'Prometheus',
           fill: 0,
           gridPos: {
             h: 7,
@@ -2050,7 +2050,7 @@ local dashboardConfig = {
           bars: false,
           dashLength: 10,
           dashes: false,
-          datasource: 'prometheus',
+          datasource: 'Prometheus',
           fill: 1,
           gridPos: {
             h: 7,
@@ -2183,7 +2183,7 @@ local dashboardConfig = {
           text: 'qa1',
           value: 'qa1',
         },
-        datasource: 'prometheus',
+        datasource: 'Prometheus',
         definition: '',
         hide: 0,
         includeAll: false,
@@ -2209,7 +2209,7 @@ local dashboardConfig = {
           text: 'blob',
           value: 'blob',
         },
-        datasource: 'prometheus',
+        datasource: 'Prometheus',
         definition: '',
         hide: 0,
         includeAll: false,
@@ -2234,7 +2234,7 @@ local dashboardConfig = {
           text: 'All',
           value: '$__all',
         },
-        datasource: 'prometheus',
+        datasource: 'Prometheus',
         definition: '',
         hide: 2,
         includeAll: true,
@@ -2259,7 +2259,7 @@ local dashboardConfig = {
           text: 'All',
           value: '$__all',
         },
-        datasource: 'prometheus',
+        datasource: 'Prometheus',
         definition: '',
         hide: 2,
         includeAll: true,
