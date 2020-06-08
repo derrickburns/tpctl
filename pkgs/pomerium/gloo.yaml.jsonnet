@@ -53,9 +53,6 @@ local virtualService(me, name) = gloo.virtualService(me, name) {
               prefix: '/',
             },
           ],
-          options: {
-            timeout: '90s',
-          },
           routeAction: {
             single: {
               upstream: {
@@ -109,6 +106,7 @@ local httpsVirtualService(me) = gloo.virtualService(me, 'proxy-https') {
             },
           },
           options: {
+            timeout: '90s',
             headerManipulation: {
               requestHeadersToRemove: ['Origin'],
             },
