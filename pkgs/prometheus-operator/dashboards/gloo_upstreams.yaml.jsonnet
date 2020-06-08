@@ -19,7 +19,7 @@ local dashboardConfig = {
   editable: true,
   gnetId: null,
   graphTooltip: 0,
-  iteration: 1591574167976,
+  iteration: 1591574168004,
   links: [],
   panels: [
     {
@@ -313,8 +313,8 @@ local dashboardConfig = {
         allValue: null,
         current: {
           selected: true,
-          text: 'admin_port_cluster',
-          value: 'admin_port_cluster',
+          text: 'cert-manager-cert-manager-9402_gloo-system',
+          value: 'cert-manager-cert-manager-9402_gloo-system',
         },
         datasource: 'Prometheus',
         definition: 'label_values(envoy_cluster_name)',
@@ -326,7 +326,7 @@ local dashboardConfig = {
         options: [],
         query: 'label_values(envoy_cluster_name)',
         refresh: 1,
-        regex: '',
+        regex: '.*gloo-system',
         skipUrlSync: false,
         sort: 0,
         tagValuesQuery: '',
@@ -338,6 +338,7 @@ local dashboardConfig = {
       {
         allValue: null,
         current: {
+          selected: true,
           text: 'gateway-proxy',
           value: 'gateway-proxy',
         },

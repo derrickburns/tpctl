@@ -170,21 +170,6 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '8.12.7' }) {
         tlsProxy: {
           enabled: false,
         },
-        affinity: {
-          nodeAffinity: {
-            requiredDuringSchedulingIgnoredDuringExecution: {
-              nodeSelectorTerms: [{
-                matchExpressions: [
-                  {
-                    key: 'role',
-                    operator: 'In',
-                    values: ['monitoring'],
-                  },
-                ],
-              }],
-            },
-          },
-        },
       },
     },
   },
