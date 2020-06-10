@@ -278,7 +278,7 @@ local i = {
   },
 
   discoveryValues(me):: {
-    enabled: true,
+    enabled: false,
     fdsMode: 'WHITELIST',
     deployment: {
       resources: {
