@@ -45,8 +45,8 @@ local accessLogging = {
   hasShadow(me):: lib.isTrue(me, 'shadow.enabled') && lib.nonNull(me, 'shadow.receiver'),
 
   internalGatewayUpstream: {
-    name: 'gloo-system-internal-gateway-proxy-80',
-    namespace: 'gloo-system',  // XXX
+    name: 'internal-gateway-proxy',
+    namespace: 'gloo-system',
   },
 
   expand(config, me, namespace, pkg)::
