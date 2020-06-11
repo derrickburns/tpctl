@@ -704,7 +704,7 @@ function show_enabled() {
       cp $CONFIG_DIR/secrets/$namespace/* $dir/secrets/
     fi
     if [ -d "$CONFIG_DIR/configmaps/$namespace" ]; then
-      show $CONFIG_DIR/configmaps/$namespace | output $namespace "namespace" "configmaps.yaml"
+      show $CONFIG_DIR/configmaps/$namespace | k8s_sort | output $namespace "namespace" "configmaps.yaml"
     fi
   fi
   complete
