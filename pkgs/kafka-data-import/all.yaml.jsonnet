@@ -47,7 +47,7 @@ local virtualService(me) = k8s.k('gateway.solo.io/v1', 'VirtualService') {
           delegateAction: {
             selector: {
               labels: {
-                app: 'tidepool',
+                app: 'tidepool-shadow',
                 namespace: me.namespace,
               },
             },
@@ -69,7 +69,7 @@ function(config, prev, namespace, pkg) (
   [
     service(me),
     deployment(me),
-    gloo.simpleRoutetable(me, { app: 'tidepool' }, prefix='/', noauth=true),
+    gloo.simpleRoutetable(me, { app: 'tidepool-shadow' }, prefix='/', noauth=true),
     virtualService(me),
     gloo.kubeupstream(me),
   ]
