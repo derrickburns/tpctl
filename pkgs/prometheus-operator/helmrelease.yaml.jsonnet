@@ -4,6 +4,31 @@ local lib = import '../../lib/lib.jsonnet';
 
 local k8s = import '../../lib/k8s.jsonnet';
 
+local affinity = {
+  nodeAffinity: {
+    requiredDuringSchedulingIgnoredDuringExecution: {
+      nodeSelectorTerms: [{
+        matchExpressions: [
+          {
+            key: 'role',
+            operator: 'In',
+            values: ['monitoring'],
+          },
+        ],
+      }],
+    },
+  },
+};
+
+local tolerations = [
+  {
+    key: 'role',
+    operator: 'Equal',
+    value: 'monitoring',
+    effect: 'NoSchedule',
+  },
+];
+
 local helmrelease(me) = k8s.helmrelease(me, { version: '8.14.0' }) {
   spec+: {
     values+: {
@@ -33,56 +58,14 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '8.14.0' }) {
             memory: '2G',
           },
         },
-        affinity: {
-          nodeAffinity: {
-            requiredDuringSchedulingIgnoredDuringExecution: {
-              nodeSelectorTerms: [{
-                matchExpressions: [
-                  {
-                    key: 'role',
-                    operator: 'In',
-                    values: ['monitoring'],
-                  },
-                ],
-              }],
-            },
-          },
-        },
-        tolerations: [
-          {
-            key: 'role',
-            operator: 'Equal',
-            value: 'monitoring',
-            effect: 'NoSchedule',
-          },
-        ],
+        affinity: affinity,
+        tolerations: tolerations,
       },
       alertmanager: {
         enabled: lib.getElse(me, 'alertmanager.enabled', false,),
         alertmanagerSpec: {
-          affinity: {
-            nodeAffinity: {
-              requiredDuringSchedulingIgnoredDuringExecution: {
-                nodeSelectorTerms: [{
-                  matchExpressions: [
-                    {
-                      key: 'role',
-                      operator: 'In',
-                      values: ['monitoring'],
-                    },
-                  ],
-                }],
-              },
-            },
-          },
-          tolerations: [
-            {
-              key: 'role',
-              operator: 'Equal',
-              value: 'monitoring',
-              effect: 'NoSchedule',
-            },
-          ],
+          affinity: affinity,
+          tolerations: tolerations,
           retention: '240h',
         },
       },
@@ -109,29 +92,8 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '8.14.0' }) {
               memory: '20G',
             },
           },
-          affinity: {
-            nodeAffinity: {
-              requiredDuringSchedulingIgnoredDuringExecution: {
-                nodeSelectorTerms: [{
-                  matchExpressions: [
-                    {
-                      key: 'role',
-                      operator: 'In',
-                      values: ['monitoring'],
-                    },
-                  ],
-                }],
-              },
-            },
-          },
-          tolerations: [
-            {
-              key: 'role',
-              operator: 'Equal',
-              value: 'monitoring',
-              effect: 'NoSchedule',
-            },
-          ],
+          affinity: affinity,
+          tolerations: tolerations,
           thanos: if global.isEnabled(me.config, 'thanos') then {
             image: 'quay.io/thanos/thanos:v0.12.2',
             version: 'v0.12.2',
@@ -183,6 +145,8 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '8.14.0' }) {
         enabled: false,
       },
       prometheusOperator: {
+        affinity: affinity,
+        tolerations: tolerations,
         annotations: {
           'cluster-autoscaler.kubernetes.io/safe-to-evict': 'false',
         },
