@@ -75,6 +75,14 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '8.14.0' }) {
               },
             },
           },
+          tolerations: [
+            {
+              key: 'role',
+              operator: 'Equal',
+              value: 'monitoring',
+              effect: 'NoSchedule',
+            },
+          ],
           retention: '240h',
         },
       },
