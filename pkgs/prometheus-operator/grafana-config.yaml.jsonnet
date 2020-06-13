@@ -6,6 +6,9 @@ local grafanaConfig(me) = k8s.configmap(me, 'grafana-ini') {
   data: {
     'grafana.ini': std.manifestIni({
       sections: {
+        security: {
+          admin_password: 'tidepool',
+        },
         users: {
           allow_sign_up: false,
           auto_assign_org: true,

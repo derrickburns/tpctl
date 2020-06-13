@@ -19,7 +19,6 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '8.14.0' }) {
         },
         env: {
           GF_PATHS_CONFIG: '/etc/grafana/grafana-config.ini',
-          GF_SECURITY_ADMIN_PASSWORD: 'tidepool',
         },
         extraConfigmapMounts: [
           {
