@@ -60,6 +60,24 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '8.12.7' }) {
       },
       alertmanager: {
         enabled: lib.getElse(me, 'alertmanager.enabled', false,),
+        alertmanagerSpec: {
+          affinity: {
+            nodeAffinity: {
+              requiredDuringSchedulingIgnoredDuringExecution: {
+                nodeSelectorTerms: [{
+                  matchExpressions: [
+                    {
+                      key: 'role',
+                      operator: 'In',
+                      values: ['monitoring'],
+                    },
+                  ],
+                }],
+              },
+            },
+          },
+        },
+        retention: '7d',
       },
       prometheus: {
         enabled: lib.getElse(me, 'prometheus.enabled', false,),
