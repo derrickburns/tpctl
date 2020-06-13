@@ -76,8 +76,8 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '8.14.0' }) {
               },
             },
           },
+          retention: '240h',
         },
-        retention: '7d',
       },
       prometheus: {
         enabled: lib.getElse(me, 'prometheus.enabled', false,),
