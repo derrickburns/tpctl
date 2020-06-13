@@ -4,7 +4,7 @@ local lib = import '../../lib/lib.jsonnet';
 
 local k8s = import '../../lib/k8s.jsonnet';
 
-local helmrelease(me) = k8s.helmrelease(me, { version: '8.12.7' }) {
+local helmrelease(me) = k8s.helmrelease(me, { version: '8.14.0' }) {
   spec+: {
     values+: {
       grafana: {
