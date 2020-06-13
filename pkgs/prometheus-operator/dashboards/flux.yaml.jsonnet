@@ -19,7 +19,7 @@ local dashboardConfig = {
   editable: true,
   gnetId: 10475,
   graphTooltip: 0,
-  iteration: 1591962454414,
+  iteration: 1592050926485,
   links: [],
   panels: [
     {
@@ -32,6 +32,12 @@ local dashboardConfig = {
         '#299c46',
       ],
       datasource: null,
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       format: 'none',
       gauge: {
         maxValue: 100,
@@ -63,7 +69,6 @@ local dashboardConfig = {
       maxDataPoints: 100,
       nullPointMode: 'connected',
       nullText: null,
-      options: {},
       postfix: '',
       postfixFontSize: '50%',
       prefix: '',
@@ -83,10 +88,13 @@ local dashboardConfig = {
         ymax: null,
         ymin: null,
       },
-      tableColumn: '',
+      tableColumn: 'flux_daemon_sync_manifests{endpoint="http", instance="10.47.56.218:3030", job="flux", namespace="flux", pod="flux-6476d44c96-c5b2g", service="flux", success="true"}',
       targets: [
         {
           expr: 'flux_daemon_sync_manifests{success="true"}',
+          instant: true,
+          interval: '',
+          legendFormat: '',
           refId: 'A',
         },
       ],
@@ -115,6 +123,12 @@ local dashboardConfig = {
         '#d44a3a',
       ],
       datasource: null,
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       format: 'none',
       gauge: {
         maxValue: 100,
@@ -146,7 +160,6 @@ local dashboardConfig = {
       maxDataPoints: 100,
       nullPointMode: 'connected',
       nullText: null,
-      options: {},
       postfix: '',
       postfixFontSize: '50%',
       prefix: '',
@@ -166,10 +179,13 @@ local dashboardConfig = {
         ymax: null,
         ymin: null,
       },
-      tableColumn: '',
+      tableColumn: 'flux_daemon_sync_manifests{endpoint="http", instance="10.47.56.218:3030", job="flux", namespace="flux", pod="flux-6476d44c96-c5b2g", service="flux", success="false"}',
       targets: [
         {
           expr: 'flux_daemon_sync_manifests{success="false"}',
+          instant: true,
+          interval: '',
+          legendFormat: '',
           refId: 'A',
         },
       ],
@@ -194,6 +210,12 @@ local dashboardConfig = {
       dashLength: 10,
       dashes: false,
       datasource: null,
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       fill: 1,
       fillGradient: 0,
       gridPos: {
@@ -233,6 +255,7 @@ local dashboardConfig = {
         {
           expr: 'flux_daemon_queue_length_count',
           format: 'time_series',
+          interval: '',
           intervalFactor: 1,
           legendFormat: 'jobs',
           refId: 'A',
@@ -248,6 +271,7 @@ local dashboardConfig = {
         sort: 0,
         value_type: 'individual',
       },
+      transformations: [],
       type: 'graph',
       xaxis: {
         buckets: null,
@@ -285,6 +309,12 @@ local dashboardConfig = {
       dashLength: 10,
       dashes: false,
       datasource: null,
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       fill: 1,
       fillGradient: 0,
       gridPos: {
@@ -322,8 +352,9 @@ local dashboardConfig = {
       steppedLine: false,
       targets: [
         {
-          expr: 'flux_daemon_job_duration_seconds_sum{job="$instance"}',
+          expr: 'flux_daemon_job_duration_seconds_sum',
           format: 'time_series',
+          interval: '',
           intervalFactor: 1,
           legendFormat: 'Total',
           refId: 'A',
@@ -376,6 +407,12 @@ local dashboardConfig = {
       dashLength: 10,
       dashes: false,
       datasource: null,
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       fill: 1,
       fillGradient: 0,
       gridPos: {
@@ -413,8 +450,9 @@ local dashboardConfig = {
       steppedLine: false,
       targets: [
         {
-          expr: 'sum(rate(flux_fluxd_connection_duration_seconds{job="$instance"}[5m]))',
+          expr: 'sum(rate(flux_fluxd_connection_duration_seconds[5m]))',
           format: 'time_series',
+          interval: '',
           intervalFactor: 1,
           legendFormat: 'Connection duration',
           refId: 'A',
@@ -467,6 +505,12 @@ local dashboardConfig = {
       dashLength: 10,
       dashes: false,
       datasource: null,
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       fill: 1,
       fillGradient: 0,
       gridPos: {
@@ -504,8 +548,9 @@ local dashboardConfig = {
       steppedLine: false,
       targets: [
         {
-          expr: 'flux_daemon_queue_duration_seconds_sum{job=~"$instance"}',
+          expr: 'flux_daemon_queue_duration_seconds_sum',
           format: 'time_series',
+          interval: '',
           intervalFactor: 1,
           legendFormat: 'Total',
           refId: 'A',
@@ -558,6 +603,12 @@ local dashboardConfig = {
       dashLength: 10,
       dashes: false,
       datasource: null,
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       fill: 1,
       fillGradient: 0,
       gridPos: {
@@ -595,8 +646,9 @@ local dashboardConfig = {
       steppedLine: false,
       targets: [
         {
-          expr: 'sum(rate(flux_daemon_sync_duration_seconds_sum{job="$instance"}[5m])) by (success)',
+          expr: 'sum(rate(flux_daemon_sync_duration_seconds_sum[5m])) by (success)',
           format: 'time_series',
+          interval: '',
           intervalFactor: 1,
           legendFormat: 'success: {{success}}',
           refId: 'A',
@@ -649,6 +701,12 @@ local dashboardConfig = {
       dashLength: 10,
       dashes: false,
       datasource: null,
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       fill: 1,
       fillGradient: 0,
       gridPos: {
@@ -686,8 +744,9 @@ local dashboardConfig = {
       steppedLine: false,
       targets: [
         {
-          expr: 'sum(rate(flux_client_fetch_duration_seconds_sum{job="$instance"}[5m])) by (kind)',
+          expr: 'sum(rate(flux_client_fetch_duration_seconds_sum[5m])) by (kind)',
           format: 'time_series',
+          interval: '',
           intervalFactor: 1,
           legendFormat: '{{kind}}',
           refId: 'A',
@@ -740,6 +799,12 @@ local dashboardConfig = {
       dashLength: 10,
       dashes: false,
       datasource: null,
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       fill: 1,
       fillGradient: 0,
       gridPos: {
@@ -777,9 +842,10 @@ local dashboardConfig = {
       steppedLine: false,
       targets: [
         {
-          expr: 'sum(rate(flux_cache_request_duration_seconds_sum{job="$instance"}[5m])) by (method)',
+          expr: 'sum(rate(flux_cache_request_duration_seconds_sum[5m])) by (method)',
           format: 'time_series',
           hide: false,
+          interval: '',
           intervalFactor: 1,
           legendFormat: '{{method}}',
           refId: 'A',
@@ -832,6 +898,12 @@ local dashboardConfig = {
       dashLength: 10,
       dashes: false,
       datasource: null,
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       fill: 1,
       fillGradient: 0,
       gridPos: {
@@ -869,8 +941,9 @@ local dashboardConfig = {
       steppedLine: false,
       targets: [
         {
-          expr: 'sum(rate(flux_registry_fetch_duration_seconds_sum{job="$instance"}[5m]))',
+          expr: 'sum(rate(flux_registry_fetch_duration_seconds_sum[5m]))',
           format: 'time_series',
+          interval: '',
           intervalFactor: 1,
           legendFormat: 'Registry fetch',
           refId: 'A',
@@ -919,45 +992,18 @@ local dashboardConfig = {
     },
   ],
   refresh: false,
-  schemaVersion: 22,
+  schemaVersion: 25,
   style: 'dark',
   tags: [],
   templating: {
-    list: [
-      {
-        allValue: null,
-        current: {
-          text: 'flux',
-          value: 'flux',
-        },
-        datasource: 'Prometheus',
-        definition: 'label_values(flux_daemon_job_duration_seconds_bucket, job)',
-        hide: 0,
-        includeAll: false,
-        label: 'Instance',
-        multi: true,
-        name: 'instance',
-        options: [],
-        query: 'label_values(flux_daemon_job_duration_seconds_bucket, job)',
-        refresh: 1,
-        regex: '',
-        skipUrlSync: false,
-        sort: 0,
-        tagValuesQuery: '',
-        tags: [],
-        tagsQuery: '',
-        type: 'query',
-        useTags: false,
-      },
-    ],
+    list: [],
   },
   time: {
-    from: 'now-15m',
+    from: 'now-2d',
     to: 'now',
   },
   timepicker: {
     refresh_intervals: [
-      '5s',
       '10s',
       '30s',
       '1m',
