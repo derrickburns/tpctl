@@ -10,6 +10,14 @@ local deployment(me) = flux.deployment(me) {
   _containers:: [{
     name: me.pkg,
     image: 'tidepool/kafka-database-import:latest',
+    env: [
+      k8s.envSecret('TIDEPOOL_STORE_SCHEME', 'mongo', 'Scheme'),
+      k8s.envSecret('TIDEPOOL_STORE_USERNAME', 'mongo', 'Username'),
+      k8s.envSecret('TIDEPOOL_STORE_PASSWORD', 'mongo', 'Password'),
+      k8s.envSecret('TIDEPOOL_STORE_ADDRESSES', 'mongo', 'Addresses'),
+      k8s.envSecret('TIDEPOOL_STORE_OPT_PARAMS', 'mongo', 'OptParams'),
+      k8s.envSecret('TIDEPOOL_STORE_TLS', 'mongo', 'Tls'),
+    ],
     imagePullPolicy: 'Always',
     ports: [{
       containerPort: containerPort,
