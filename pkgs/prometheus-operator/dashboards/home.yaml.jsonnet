@@ -36,6 +36,12 @@ local dashboardConfig = {
     },
     {
       datasource: null,
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       folderId: null,
       gridPos: {
         h: 5,
@@ -46,7 +52,6 @@ local dashboardConfig = {
       headings: false,
       id: 29,
       limit: 10,
-      options: {},
       query: '',
       recent: false,
       search: true,
@@ -76,6 +81,12 @@ local dashboardConfig = {
     {
       content: '<h3 style="text-align: center;">\nKubernetes Resources\n</h3>\n<hr/>\n\n',
       datasource: null,
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       gridPos: {
         h: 2,
         w: 24,
@@ -84,7 +95,6 @@ local dashboardConfig = {
       },
       id: 6,
       mode: 'html',
-      options: {},
       timeFrom: null,
       timeShift: null,
       title: '',
@@ -93,6 +103,12 @@ local dashboardConfig = {
     },
     {
       datasource: null,
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       folderId: null,
       gridPos: {
         h: 9,
@@ -103,7 +119,6 @@ local dashboardConfig = {
       headings: true,
       id: 2,
       limit: 10,
-      options: {},
       query: 'cluster',
       recent: false,
       search: true,
@@ -116,6 +131,12 @@ local dashboardConfig = {
     },
     {
       datasource: null,
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       folderId: null,
       gridPos: {
         h: 9,
@@ -126,7 +147,6 @@ local dashboardConfig = {
       headings: true,
       id: 13,
       limit: 10,
-      options: {},
       query: 'Node',
       recent: false,
       search: true,
@@ -139,6 +159,12 @@ local dashboardConfig = {
     },
     {
       datasource: null,
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       folderId: null,
       gridPos: {
         h: 9,
@@ -149,7 +175,6 @@ local dashboardConfig = {
       headings: true,
       id: 17,
       limit: 10,
-      options: {},
       query: 'Pods',
       recent: false,
       search: true,
@@ -162,6 +187,12 @@ local dashboardConfig = {
     },
     {
       datasource: null,
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       folderId: null,
       gridPos: {
         h: 4,
@@ -172,7 +203,6 @@ local dashboardConfig = {
       headings: false,
       id: 4,
       limit: 10,
-      options: {},
       query: 'Autoscaler',
       recent: false,
       search: true,
@@ -186,6 +216,12 @@ local dashboardConfig = {
     {
       content: '<hr/>\n',
       datasource: null,
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       gridPos: {
         h: 2,
         w: 24,
@@ -194,7 +230,6 @@ local dashboardConfig = {
       },
       id: 19,
       mode: 'html',
-      options: {},
       timeFrom: null,
       timeShift: null,
       title: '',
@@ -204,6 +239,12 @@ local dashboardConfig = {
     {
       content: '<h3 style="text-align: center;">\nAPI Gateway\n</h3>\n<hr/>\n\n',
       datasource: null,
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       gridPos: {
         h: 2,
         w: 12,
@@ -212,7 +253,6 @@ local dashboardConfig = {
       },
       id: 8,
       mode: 'html',
-      options: {},
       timeFrom: null,
       timeShift: null,
       title: '',
@@ -222,6 +262,12 @@ local dashboardConfig = {
     {
       content: '<h3 style="text-align: center;">\nLinkerd\n</h3>\n<hr/>\n\n',
       datasource: null,
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       gridPos: {
         h: 2,
         w: 12,
@@ -230,7 +276,6 @@ local dashboardConfig = {
       },
       id: 9,
       mode: 'html',
-      options: {},
       timeFrom: null,
       timeShift: null,
       title: '',
@@ -239,6 +284,12 @@ local dashboardConfig = {
     },
     {
       datasource: null,
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       folderId: null,
       gridPos: {
         h: 7,
@@ -249,7 +300,6 @@ local dashboardConfig = {
       headings: true,
       id: 3,
       limit: 10,
-      options: {},
       query: 'envoy',
       recent: false,
       search: true,
@@ -262,6 +312,12 @@ local dashboardConfig = {
     },
     {
       datasource: null,
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       folderId: null,
       gridPos: {
         h: 7,
@@ -272,7 +328,6 @@ local dashboardConfig = {
       headings: true,
       id: 11,
       limit: 10,
-      options: {},
       query: 'gloo',
       recent: false,
       search: true,
@@ -285,6 +340,12 @@ local dashboardConfig = {
     },
     {
       datasource: null,
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       folderId: null,
       gridPos: {
         h: 7,
@@ -295,7 +356,6 @@ local dashboardConfig = {
       headings: true,
       id: 5,
       limit: 10,
-      options: {},
       query: 'linkerd',
       recent: false,
       search: true,
@@ -309,6 +369,12 @@ local dashboardConfig = {
     {
       content: '<h3 style="text-align: center;">\nCI/CD\n</h3>\n<hr/>\n\n',
       datasource: null,
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       gridPos: {
         h: 2,
         w: 24,
@@ -317,7 +383,6 @@ local dashboardConfig = {
       },
       id: 12,
       mode: 'html',
-      options: {},
       timeFrom: null,
       timeShift: null,
       title: '',
@@ -326,6 +391,12 @@ local dashboardConfig = {
     },
     {
       datasource: null,
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       folderId: null,
       gridPos: {
         h: 5,
@@ -336,7 +407,6 @@ local dashboardConfig = {
       headings: true,
       id: 10,
       limit: 10,
-      options: {},
       query: 'Flux',
       recent: false,
       search: true,
@@ -349,6 +419,12 @@ local dashboardConfig = {
     },
     {
       datasource: null,
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       folderId: null,
       gridPos: {
         h: 5,
@@ -359,7 +435,6 @@ local dashboardConfig = {
       headings: true,
       id: 14,
       limit: 10,
-      options: {},
       query: 'Helm Operator',
       recent: false,
       search: true,
@@ -372,6 +447,12 @@ local dashboardConfig = {
     },
     {
       datasource: null,
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       folderId: null,
       gridPos: {
         h: 5,
@@ -382,7 +463,6 @@ local dashboardConfig = {
       headings: true,
       id: 23,
       limit: 10,
-      options: {},
       query: '',
       recent: false,
       search: true,
@@ -398,6 +478,12 @@ local dashboardConfig = {
     {
       content: '<h3 style="text-align: center;">\nUtils\n</h3>\n<hr/>\n\n',
       datasource: null,
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       gridPos: {
         h: 2,
         w: 24,
@@ -406,7 +492,6 @@ local dashboardConfig = {
       },
       id: 15,
       mode: 'html',
-      options: {},
       timeFrom: null,
       timeShift: null,
       title: '',
@@ -415,6 +500,12 @@ local dashboardConfig = {
     },
     {
       datasource: null,
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       folderId: null,
       gridPos: {
         h: 5,
@@ -425,7 +516,6 @@ local dashboardConfig = {
       headings: true,
       id: 16,
       limit: 10,
-      options: {},
       query: 'External DNS',
       recent: false,
       search: true,
@@ -438,6 +528,12 @@ local dashboardConfig = {
     },
     {
       datasource: null,
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       folderId: null,
       gridPos: {
         h: 5,
@@ -448,7 +544,6 @@ local dashboardConfig = {
       headings: true,
       id: 18,
       limit: 10,
-      options: {},
       query: 'Cert Manager',
       recent: false,
       search: true,
@@ -462,6 +557,12 @@ local dashboardConfig = {
     {
       content: '<h3 style="text-align: center;">\nMonitoring\n</h3>\n<hr/>\n\n',
       datasource: null,
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       gridPos: {
         h: 2,
         w: 24,
@@ -470,7 +571,6 @@ local dashboardConfig = {
       },
       id: 20,
       mode: 'html',
-      options: {},
       timeFrom: null,
       timeShift: null,
       title: '',
@@ -479,6 +579,12 @@ local dashboardConfig = {
     },
     {
       datasource: null,
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       folderId: null,
       gridPos: {
         h: 5,
@@ -489,7 +595,6 @@ local dashboardConfig = {
       headings: true,
       id: 21,
       limit: 10,
-      options: {},
       query: 'Grafana',
       recent: false,
       search: true,
@@ -502,6 +607,12 @@ local dashboardConfig = {
     },
     {
       datasource: null,
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       folderId: null,
       gridPos: {
         h: 5,
@@ -512,7 +623,6 @@ local dashboardConfig = {
       headings: true,
       id: 22,
       limit: 10,
-      options: {},
       query: 'Prometheus',
       recent: false,
       search: true,
@@ -523,8 +633,35 @@ local dashboardConfig = {
       title: 'Prometheus',
       type: 'dashlist',
     },
+    {
+      datasource: null,
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
+      gridPos: {
+        h: 5,
+        w: 8,
+        x: 16,
+        y: 49,
+      },
+      headings: false,
+      id: 30,
+      limit: 10,
+      query: 'Alertmanager',
+      recent: false,
+      search: true,
+      starred: false,
+      tags: [],
+      timeFrom: null,
+      timeShift: null,
+      title: 'Alertmanager',
+      type: 'dashlist',
+    },
   ],
-  schemaVersion: 22,
+  schemaVersion: 25,
   style: 'dark',
   tags: [],
   templating: {
@@ -551,7 +688,7 @@ local dashboardConfig = {
   timezone: '',
   title: 'Home',
   uid: 'HRN3fEzGk',
-  version: 2,
+  version: 1,
 };
 
 local configmap(me) = grafana.dashboard(me, 'home', dashboardConfig);
