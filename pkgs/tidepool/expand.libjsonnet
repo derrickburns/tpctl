@@ -128,7 +128,7 @@ local accessLogging = {
     },
   },
 
-  cors: {
+  cors(config):: {
     allowCredentials: true,
     allowHeaders: [
       'authorization',
@@ -146,7 +146,7 @@ local accessLogging = {
       'OPTIONS',
     ],
     allowOriginRegex: [
-      '.*',
+      '.*%s$' % config.cluster.metadata.domain,
     ],
     exposeHeaders: [
       'x-tidepool-session-token',
@@ -183,7 +183,7 @@ local accessLogging = {
             enabled: true,
           },
           virtualHostOptions: {
-            cors: $.cors,
+            cors: $.cors(config),
             stats: {
               virtualClusters: lib.getElse(me, 'virtualClusters', []),
             },
