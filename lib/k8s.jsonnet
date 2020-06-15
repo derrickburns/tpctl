@@ -289,11 +289,12 @@ local configmapNamesFromPod(pod) = lib.pruneList(
   storageclass(me):: $.k('storage.k8s.io/v1', 'StorageClass') + $.metadata(me.pkg, me.namespace) {
   },
 
-  pvc(me, storage=''):: $.k('v1', 'PersistentVolumeClaim') + $.metadata(me.pkg, me.namespace) {
+  pvc(me, storage='', storageClassName='gp2-expanding'):: $.k('v1', 'PersistentVolumeClaim') + $.metadata(me.pkg, me.namespace) {
     spec+: {
       accessModes: [
         'ReadWriteOnce',
       ],
+      storageClassName: storageClassName,
     } + if storage != ''
     then {
       resources: {
@@ -379,7 +380,6 @@ local configmapNamesFromPod(pod) = lib.pruneList(
   // add names and image pull policy to containers
   containers(me, this)::
     std.map(function(c) $.withImagePullPolicy(c), $.containersWithName(me, this)),
-
 
   toleration(key='role', operator='Equal', value='monitoring', effect='NoSchedule'):: {
     key: key,
