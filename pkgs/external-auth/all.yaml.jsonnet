@@ -11,7 +11,6 @@ local containerPort = 4000;
 local deployment(me) = flux.deployment(me) {
   _containers:: {
     image: 'tidepool/%s:latest' % me.pkg,
-    imagePullPolicy: 'Always',
     env: [k8s.envSecret('API_SECRET', 'shoreline', 'ServiceAuth')],
     ports: [{ containerPort: containerPort }],
   },

@@ -3,46 +3,36 @@ local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
 local statefulset(me) = k8s.statefulset(me) {
-  spec+: {
-    template+: {
-      spec+: {
-        containers: [
-          {
-            args: [
-              'manager',
-              '--operator-roles',
-              'all',
-              '--enable-debug-logs=false',
-            ],
-            env: [
-              k8s.envField('OPERATOR_NAMESPACE', 'metadata.namespace'),
-              k8s.envVar('WEBHOOK_SECRET', 'webhook-server-secret'),
-              k8s.envVar('WEBHOOK_PODS_LABEL', me.pkg),
-              k8s.envVar('OPERATOR_IMAGE', 'docker.elastic.co/eck/eck-operator:1.0.0-beta1'),
-            ],
-            image: 'docker.elastic.co/eck/eck-operator:1.0.0-beta1',
-            name: me.pkg,
-            ports: [
-              {
-                containerPort: 9876,
-                name: 'webhook-server',
-                protocol: 'TCP',
-              },
-            ],
-            resources: {
-              limits: {
-                cpu: 1,
-                memory: '150Mi',
-              },
-              requests: {
-                cpu: '100m',
-                memory: '50Mi',
-              },
-            },
-          },
-        ],
-        serviceAccountName: me.pkg,
-        terminationGracePeriodSeconds: 10,
+  _serviceAccount: true,
+  _containers:: {
+    args: [
+      'manager',
+      '--operator-roles',
+      'all',
+      '--enable-debug-logs=false',
+    ],
+    env: [
+      k8s.envField('OPERATOR_NAMESPACE', 'metadata.namespace'),
+      k8s.envVar('WEBHOOK_SECRET', 'webhook-server-secret'),
+      k8s.envVar('WEBHOOK_PODS_LABEL', me.pkg),
+      k8s.envVar('OPERATOR_IMAGE', 'docker.elastic.co/eck/eck-operator:1.0.0-beta1'),
+    ],
+    image: 'docker.elastic.co/eck/eck-operator:1.0.0-beta1',
+    ports: [
+      {
+        containerPort: 9876,
+        name: 'webhook-server',
+        protocol: 'TCP',
+      },
+    ],
+    resources: {
+      limits: {
+        cpu: 1,
+        memory: '150Mi',
+      },
+      requests: {
+        cpu: '100m',
+        memory: '50Mi',
       },
     },
   },
@@ -232,4 +222,3 @@ function(config, prev, namespace, pkg) (
     clusterrole(me),
   ]
 )
-

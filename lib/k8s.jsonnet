@@ -182,7 +182,11 @@ local configmapNamesFromPod(pod) = lib.pruneList(
             app: me.pkg,
           },
         },
-        spec+: {
+        spec+:
+          (if lib.isTrue(this, '_serviceAccount')
+          then { serviceAccountName: me.pkg }
+          else {}) + {
+          restartPolicy: 'Always',
           containers:
             if std.objectHasAll(this, 'containerPatch')
             then this.containerPatch(me.prev, this, $.containers(me, this))

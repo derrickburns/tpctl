@@ -5,7 +5,7 @@ local k8s = import '../../lib/k8s.jsonnet';
 local elasticsearch(me) = k8s.k( 'elasticsearch.k8s.elastic.co/v1beta1', 'Elasticsearch') {
   local config = me.config,
   metadata+: {
-    name: 'jaeger', // XXX check
+    name: me.pkg, 
     namespace: me.namespace,
   },
   spec+: {
