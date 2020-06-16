@@ -45,14 +45,14 @@ function update_utils() {
   start "updating utils"
   start "cordns"
   eksctl utils update-coredns -f config.yaml --approve
-  complete 
+  complete
   start "aws-node"
   eksctl utils update-aws-node -f config.yaml --approve
-  complete 
+  complete
   start "kube-proxy"
   eksctl utils update-kube-proxy -f config.yaml --approve
-  complete 
-  complete 
+  complete
+  complete
 }
 
 function create_kmskey() {
@@ -108,7 +108,7 @@ function delete_peering_connections() {
     info "deleting peering connection $id"
     aws ec2 delete-vpc-peering-connection --vpc-peering-connection-id $id
   done
-  complete 
+  complete
 }
 
 function cluster_in_context() {
@@ -130,7 +130,7 @@ function make_envrc() {
   echo "export REMOTE_REPO=cluster-$cluster" >>.envrc # XXX fix name
   echo "export FLUX_FORWARD_NAMESPACE=flux" >>.envrc
   add_file ".envrc"
-  complete 
+  complete
 }
 
 function cluster_in_repo() {
@@ -148,7 +148,7 @@ function install_glooctl() {
     expect_success "Failed to download $name"
     chmod 755 /usr/local/bin/glooctl
   fi
-  complete 
+  complete
 }
 
 function confirm_matching_cluster() {
@@ -322,7 +322,7 @@ function setup_tmpdir() {
   if [[ ! -d $TMP_DIR ]]; then
     start "creating temporary working directory"
     TMP_DIR=$(mktemp -d 2>/dev/null || mktemp -d -t 'TMP_DIR')
-    complete 
+    complete
     trap cleanup EXIT
     #cd $TMP_DIR
   fi
@@ -342,7 +342,7 @@ function clone_remote() {
       start "cloning configuration repo"
       git clone $(repo_with_token $HTTPS_REMOTE_REPO)
       expect_success "Cannot clone $HTTPS_REMOTE_REPO"
-      complete 
+      complete
     fi
     info "repo=$(basename $HTTPS_REMOTE_REPO)"
     cd $(basename $HTTPS_REMOTE_REPO)
@@ -462,12 +462,12 @@ function make_asset_bucket() {
     start "creating asset bucket $asset_bucket"
     aws s3 mb s3://$asset_bucket >/dev/null 2>&1
     expect_success "Cannot create asset bucket"
-    complete 
+    complete
 
     start "copying dev assets into $asset_bucket"
     aws s3 cp s3://tidepool-dev-asset s3://$asset_bucket
     expect_success "Cannot cp dev assets to asset bucket"
-    complete 
+    complete
   fi
 }
 
@@ -479,7 +479,7 @@ function make_data_bucket() {
     start "creating data bucket $data_bucket"
     aws s3 mb s3://$data_bucket >/dev/null 2>&1
     expect_success "Cannot create data bucket"
-    complete 
+    complete
   fi
 }
 
@@ -511,7 +511,7 @@ function update_kubeconfig() {
   yq r ./kubeconfig.yaml -j >$TMP_DIR/kubeconfig.yaml
   kubecfg show --tla-code-file prev=${TMP_DIR}/kubeconfig.yaml --tla-code-file config="$values" ${TEMPLATE_DIR}eksctl/kubeconfig.jsonnet | k8s_sort >kubeconfig.yaml
   expect_success "updating kubeconfig failed"
-  complete 
+  complete
 }
 
 function recreate_service_account() {
@@ -526,7 +526,7 @@ function recreate_service_account() {
   info "creating new service account"
   eksctl create iamserviceaccount -f config.yaml --approve
   expect_success "eksctl create service account failed."
-  complete 
+  complete
 }
 
 # create EKS cluster using config.yaml file, add kubeconfig to config repo
@@ -587,7 +587,7 @@ function make_shared_config() {
   mkdir -p $TMP_DIR/old
   cp -r * $TMP_DIR/old
   rm -rf $MANIFEST_DIR config.yaml
-  complete 
+  complete
 }
 
 # make K8s manifests for enviroments given config, path, prefix, and environment name
@@ -604,7 +604,7 @@ function make_cluster_config() {
   complete
 }
 
-# valdiate all yaml files in given directory 
+# valdiate all yaml files in given directory
 function validate() {
   local directory=$1
   if [ -d $directory ]; then
@@ -755,8 +755,8 @@ function expand_helm() {
   echo "$hr" | jq .spec.values | yq r - >$tmp
   helm repo add $name $chart  >/dev/null
   helm repo update >/dev/null
-  helm template --version $version -f $tmp $release $name/$name --namespace ${namespace} 
-  complete 
+  helm template --version $version -f $tmp $release $name/$name --namespace ${namespace}
+  complete
 }
 
 # evaluate jsonnet file
@@ -768,7 +768,7 @@ function expand_jsonnet() {
   local template=$5
   local short=${template#${TEMPLATE_DIR}}
   info "template" "$short"
-  kubecfg show --tla-str-file prev=$prev --tla-code-file config=$values --tla-str namespace=$namespace --tla-str pkg=$pkg $template | k8s_sort 
+  kubecfg show --tla-str-file prev=$prev --tla-code-file config=$values --tla-str namespace=$namespace --tla-str pkg=$pkg $template | k8s_sort
 }
 
 # generate all files in a pkg directory
@@ -787,7 +787,7 @@ function generate() {
     if [ "${src: -5}" == ".yaml" ]; then
       cp $f $dir/$src
     elif [ "${src: -13}" == ".yaml.jsonnet" ]; then
-      expand_jsonnet $values $prev $namespace $pkg $f | output $namespace $pkg $src 
+      expand_jsonnet $values $prev $namespace $pkg $f | output $namespace $pkg $src
     elif [ "${src: -17}" == "yaml.helm.jsonnet" ]; then
       local dehelmed=$dir/${src}.dehelmed
       expand_jsonnet $values $prev $namespace $pkg $f > $dehelmed
@@ -835,9 +835,9 @@ function expand_pkg() {
   local pkg
   start "expanding packages"
   for pkg in $(enabled_pkgs namespaces.$namespace); do
-    start "expanding packages for namespace $namespace"
-    generate $values $prev $namespace $pkg
-    transform $values $namespace $pkg
+      start "expanding packages for namespace $namespace"
+      generate $values $prev $namespace $pkg
+      transform $values $namespace $pkg
     complete
   done
   complete
@@ -856,12 +856,25 @@ function expand_namespace() {
 function expand() {
   local values=$1
   local prev=$2
-  start "expanding all namespaces"
   local namespace
-  for namespace in $(get_namespaces); do
-    expand_namespace $values $prev $namespace
-  done
-  complete
+  if [[ -z "$INCLUDED_NAMESPACES" ]]; then
+    start "expanding all namespace "
+    for namespace in $(get_namespaces); do
+      if [[ $EXCLUDED_NAMESPACES == *"$namespace"* ]]; then
+        echo "excluded $namespace"
+      else
+        expand_namespace $values $prev $namespace
+      fi
+    done
+    complete
+  else
+    start "expanding $INCLUDED_NAMESPACES"
+    for namespace in $(echo "$INCLUDED_NAMESPACES" | sed "s/,/ /g"); do
+      expand_namespace $values $prev $namespace
+    done
+    complete
+  fi
+  git ls-files --deleted -z | git update-index --assume-unchanged -z --stdin
 }
 
 # make K8s manifests
@@ -1328,7 +1341,7 @@ function await_deletion() {
   start "awaiting cluster $cluster deletion"
   aws cloudformation wait stack-delete-complete --stack-name eksctl-${cluster}-cluster
   expect_success "Aborting wait"
-  complete 
+  complete
 }
 
 HELP='
@@ -1340,7 +1353,7 @@ repo  \$ORG/\$REPO_NAME             - create config repo on GitHub
 secrets                             - generate new secrets for all tidepool environments
 sync                                - cause flux to sync with the config repo
 values                              - create initial values.yaml file
-      
+
 ----- Query Commands (safe)
 envoy                               - show envoy config
 linkerd_check                       - check Linkerd status
@@ -1348,7 +1361,7 @@ peering                             - list peering relationships
 vpc                                 - identify the VPC
 show                                - show existing manifests as YAML stream
 validate                            - validate that all generated manifests files are valid YAML
-      
+
 ----- Cluster Commands
 await_deletion                      - await completion of deletion of the AWS EKS cluster
 cluster                             - create AWS EKS cluster, add system:master USERS
@@ -1361,12 +1374,12 @@ utils                               - update coredns, aws-node, and kube-proxy s
 vpa                                 - install vertical pod autoscaler
 
 ----- Flux and Helm Operator Commands
-dehelm \$namespace \$releaseName \$chartName - remove helmreleases 
+dehelm \$namespace \$releaseName \$chartName - remove helmreleases
 fluxon                              - turn on flux and helmoperator
 fluxoff                             - turn off flux and helmoperator
 images \$namespace \$service        - show images for service running in \$namespace
 workloads \$namespace               - show workloads for \$namespace
-      
+
 ----- Other Commands
 buckets                             - create S3 buckets if needed and copy assets if does not exist
 kmskey                              - create a new Amazon KMS key for the cluster
