@@ -4,8 +4,7 @@ local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
 local deployment(me) = flux.deployment(me) {
-  _containers:: [{
-    name: me.pkg,
+  _containers:: {
     image: 'tidepool/admin-site:latest',
     imagePullPolicy: 'Always',
     env: [
@@ -15,7 +14,7 @@ local deployment(me) = flux.deployment(me) {
     ports: [{
       containerPort: 8080,
     }],
-  }],
+  },
 };
 
 local service(me) = k8s.service(me) {

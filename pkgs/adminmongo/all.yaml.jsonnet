@@ -5,7 +5,6 @@ local lib = import '../../lib/lib.jsonnet';
 local deployment(me) = k8s.deployment(me) {
   _containers:: {
     image: 'mrvautin/adminmongo:latest',
-    imagePullPolicy: 'Always',
     env: [
       k8s.envSecret('DB_USERNAME', 'mongo', 'Username'),
       k8s.envSecret('DB_PASSWORD', 'mongo', 'Password', true),
