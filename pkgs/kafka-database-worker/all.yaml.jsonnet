@@ -10,6 +10,9 @@ local deployment(me) = flux.deployment(me) {
   _containers:: [{
     name: me.pkg,
     image: 'tidepool/kafka-database-worker:latest',
+    env: [
+      k8s.envSecret('TIMESCALEDB_PASSWORD', 'timescaledb-single-passwords', 'postgres'),
+    ],
     imagePullPolicy: 'Always',
     ports: [{
       containerPort: containerPort,
