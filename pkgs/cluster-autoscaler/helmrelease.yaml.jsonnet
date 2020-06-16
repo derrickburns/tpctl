@@ -12,7 +12,7 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '7.1.0' }) {
       awsRegion: me.config.cluster.metadata.region,
       extraArgs: {
         v: 5,
-      },
+      } + lib.getElse(me, 'extraArgs', {}),
       image: {
         tag: lib.getElse(me, 'version', 'v1.14.7'),  // XXX
       },
