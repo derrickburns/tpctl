@@ -16,11 +16,11 @@ local dashboardConfig = {
     ],
   },
   description: 'A quick and simple dashboard for viewing how your horizontal pod autoscaler is doing.',
-  editable: true,
+  editable: false,
   gnetId: 10257,
   graphTooltip: 0,
   id: 51,
-  iteration: 1591972741540,
+  iteration: 1592333791571,
   links: [],
   panels: [
     {
@@ -33,6 +33,12 @@ local dashboardConfig = {
         '#d44a3a',
       ],
       datasource: '$datasource',
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       format: 'none',
       gauge: {
         maxValue: 100,
@@ -58,7 +64,6 @@ local dashboardConfig = {
       maxDataPoints: 100,
       nullPointMode: 'connected',
       nullText: null,
-      options: {},
       postfix: '',
       postfixFontSize: '50%',
       prefix: '',
@@ -76,11 +81,13 @@ local dashboardConfig = {
         lineColor: 'rgb(31, 120, 193)',
         show: true,
       },
-      tableColumn: '',
+      tableColumn: 'kube_hpa_status_desired_replicas{endpoint="http", hpa="tide-whisperer", instance="10.44.38.40:8080", job="kube-state-metrics", namespace="tidepool-prod", pod="prometheus-operator-kube-state-metrics-6ddc5b66bf-pnstp", service="prometheus-operator-kube-state-metrics"}',
       targets: [
         {
           expr: 'kube_hpa_status_desired_replicas{job="kube-state-metrics", namespace="$namespace", hpa="$hpa"}',
           format: 'time_series',
+          instant: true,
+          interval: '',
           intervalFactor: 2,
           legendFormat: '',
           refId: 'A',
@@ -109,6 +116,12 @@ local dashboardConfig = {
         '#d44a3a',
       ],
       datasource: '$datasource',
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       format: 'none',
       gauge: {
         maxValue: 100,
@@ -140,7 +153,6 @@ local dashboardConfig = {
       maxDataPoints: 100,
       nullPointMode: 'connected',
       nullText: null,
-      options: {},
       postfix: '',
       postfixFontSize: '50%',
       prefix: '',
@@ -158,11 +170,13 @@ local dashboardConfig = {
         lineColor: 'rgb(31, 120, 193)',
         show: true,
       },
-      tableColumn: '',
+      tableColumn: 'kube_hpa_status_current_replicas{endpoint="http", hpa="tide-whisperer", instance="10.44.38.40:8080", job="kube-state-metrics", namespace="tidepool-prod", pod="prometheus-operator-kube-state-metrics-6ddc5b66bf-pnstp", service="prometheus-operator-kube-state-metrics"}',
       targets: [
         {
           expr: 'kube_hpa_status_current_replicas{job="kube-state-metrics", namespace="$namespace", hpa="$hpa"}',
           format: 'time_series',
+          instant: true,
+          interval: '',
           intervalFactor: 2,
           legendFormat: '',
           refId: 'A',
@@ -191,6 +205,12 @@ local dashboardConfig = {
         '#d44a3a',
       ],
       datasource: '$datasource',
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       format: 'none',
       gauge: {
         maxValue: 100,
@@ -222,7 +242,6 @@ local dashboardConfig = {
       maxDataPoints: 100,
       nullPointMode: 'connected',
       nullText: null,
-      options: {},
       postfix: '',
       postfixFontSize: '50%',
       prefix: '',
@@ -240,11 +259,13 @@ local dashboardConfig = {
         lineColor: 'rgb(31, 120, 193)',
         show: false,
       },
-      tableColumn: '',
+      tableColumn: 'kube_hpa_spec_min_replicas{endpoint="http", hpa="tide-whisperer", instance="10.44.38.40:8080", job="kube-state-metrics", namespace="tidepool-prod", pod="prometheus-operator-kube-state-metrics-6ddc5b66bf-pnstp", service="prometheus-operator-kube-state-metrics"}',
       targets: [
         {
           expr: 'kube_hpa_spec_min_replicas{job="kube-state-metrics",  namespace="$namespace", hpa="$hpa"}',
           format: 'time_series',
+          instant: true,
+          interval: '',
           intervalFactor: 2,
           legendFormat: '',
           refId: 'A',
@@ -273,6 +294,12 @@ local dashboardConfig = {
         '#d44a3a',
       ],
       datasource: '$datasource',
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       format: 'none',
       gauge: {
         maxValue: 100,
@@ -304,7 +331,6 @@ local dashboardConfig = {
       maxDataPoints: 100,
       nullPointMode: 'connected',
       nullText: null,
-      options: {},
       postfix: '',
       postfixFontSize: '50%',
       prefix: '',
@@ -322,11 +348,13 @@ local dashboardConfig = {
         lineColor: 'rgb(31, 120, 193)',
         show: false,
       },
-      tableColumn: '',
+      tableColumn: 'kube_hpa_spec_max_replicas{endpoint="http", hpa="tide-whisperer", instance="10.44.38.40:8080", job="kube-state-metrics", namespace="tidepool-prod", pod="prometheus-operator-kube-state-metrics-6ddc5b66bf-pnstp", service="prometheus-operator-kube-state-metrics"}',
       targets: [
         {
           expr: 'kube_hpa_spec_max_replicas{job="kube-state-metrics", hpa="$hpa", namespace="$namespace"}',
           format: 'time_series',
+          instant: true,
+          interval: '',
           intervalFactor: 2,
           legendFormat: '',
           refId: 'A',
@@ -348,6 +376,12 @@ local dashboardConfig = {
     {
       columns: [],
       datasource: null,
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       fontSize: '100%',
       gridPos: {
         h: 8,
@@ -356,7 +390,6 @@ local dashboardConfig = {
         y: 3,
       },
       id: 11,
-      options: {},
       pageSize: null,
       showHeader: true,
       sort: {
@@ -467,7 +500,7 @@ local dashboardConfig = {
       timeShift: null,
       title: 'Metric targets',
       transform: 'table',
-      type: 'table',
+      type: 'table-old',
     },
     {
       aliasColors: {},
@@ -475,6 +508,12 @@ local dashboardConfig = {
       dashLength: 10,
       dashes: false,
       datasource: '$datasource',
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       fill: 1,
       fillGradient: 0,
       gridPos: {
@@ -574,6 +613,12 @@ local dashboardConfig = {
       dashLength: 10,
       dashes: false,
       datasource: '$datasource',
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       fill: 0,
       fillGradient: 0,
       gridPos: {
@@ -696,7 +741,7 @@ local dashboardConfig = {
     },
   ],
   refresh: '10s',
-  schemaVersion: 22,
+  schemaVersion: 25,
   style: 'dark',
   tags: [
     'kubernetes',
@@ -705,7 +750,7 @@ local dashboardConfig = {
     list: [
       {
         current: {
-          selected: true,
+          selected: false,
           text: 'Prometheus',
           value: 'Prometheus',
         },
@@ -724,6 +769,7 @@ local dashboardConfig = {
       {
         allValue: null,
         current: {
+          selected: false,
           text: 'tidepool-prod',
           value: 'tidepool-prod',
         },
@@ -739,7 +785,7 @@ local dashboardConfig = {
         refresh: 2,
         regex: '',
         skipUrlSync: false,
-        sort: 0,
+        sort: 1,
         tagValuesQuery: '',
         tags: [],
         tagsQuery: '',
@@ -749,6 +795,7 @@ local dashboardConfig = {
       {
         allValue: null,
         current: {
+          selected: false,
           text: 'tide-whisperer',
           value: 'tide-whisperer',
         },
@@ -764,7 +811,7 @@ local dashboardConfig = {
         refresh: 2,
         regex: '',
         skipUrlSync: false,
-        sort: 0,
+        sort: 1,
         tagValuesQuery: '',
         tags: [],
         tagsQuery: '',
@@ -779,7 +826,6 @@ local dashboardConfig = {
   },
   timepicker: {
     refresh_intervals: [
-      '5s',
       '10s',
       '30s',
       '1m',
@@ -805,7 +851,7 @@ local dashboardConfig = {
   timezone: '',
   title: 'Kubernetes / Horizontal Pod Autoscaler',
   uid: 'alJY6yWZz',
-  version: 2,
+  version: 4,
 };
 
 local configmap(me) = grafana.dashboard(me, 'hpa', dashboardConfig);
