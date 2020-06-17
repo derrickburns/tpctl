@@ -1,6 +1,7 @@
 local common = import '../../lib/common.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
+local prometheus = import '../../lib/prometheus.jsonnet';
 
 local affinity = {
   nodeAffinity: {
@@ -58,4 +59,17 @@ local deployment(me) = k8s.deployment(me) {
   },
 };
 
-function(config, prev, namespace, pkg) (deployment(common.package(config, prev, namespace, pkg)))
+local service(me) = k8s.service(me) {
+  spec+: {
+    ports: [k8s.port(9102, 9102, 'metrics'), k8s.port(9125, 9125, 'tcp'), k8s.port(9125, 9125, 'udp', 'UDP')],
+  },
+};
+
+function(config, prev, namespace, pkg) (
+  local me = common.package(config, prev, namespace, pkg);
+  (if global.isEnabled(me.config, 'prometheus-operator') then [prometheus.servicemonitor(me, 'metrics')] else []) +
+  [
+    service(me),
+    deployment(me),
+  ]
+)

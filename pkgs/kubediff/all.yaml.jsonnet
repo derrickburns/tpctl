@@ -25,6 +25,7 @@ local service(me) = k8s.service(me) {
 };
 
 local deployment(me) = k8s.deployment(me) {
+  _serviceAccount: true,
   _containers:: {
     'git-sync': {
       args: [
@@ -84,7 +85,6 @@ local deployment(me) = k8s.deployment(me) {
   spec+: {
     template+: {
       spec+: {
-        serviceAccountName: me.pkg,
         volumes: [
           {
             emptyDir: {},
