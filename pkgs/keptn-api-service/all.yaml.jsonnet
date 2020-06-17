@@ -10,7 +10,7 @@ local deployment = k8s.deployment(me) {
       },
       {
         name: 'DATASTORE_URI',
-        value: 'mongodb-datastore.keptn-datastore.svc.cluster.local:8080',  // XXX check namespace
+        value: 'keptn-mongo.%s.svc.cluster.local:8080' % me.namespace,  
       }, 
       {
         name: 'CONFIGURATION_URI',
