@@ -146,7 +146,7 @@ local accessLogging = {
       'OPTIONS',
     ],
     allowOriginRegex: [
-      '.*%s$' % config.cluster.metadata.rootDomain,
+      '^(.*(\\.))?' + std.strReplace(config.cluster.metadata.rootDomain, '.', '\\.') + '$',
     ],
     exposeHeaders: [
       'x-tidepool-session-token',
