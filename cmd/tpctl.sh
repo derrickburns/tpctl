@@ -874,7 +874,7 @@ function expand() {
     done
     complete
   fi
-  git ls-files --deleted -z | git update-index --assume-unchanged -z --stdin
+  #git ls-files --deleted -z | git update-index --assume-unchanged -z --stdin
 }
 
 # make K8s manifests
