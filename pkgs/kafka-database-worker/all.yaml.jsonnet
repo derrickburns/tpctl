@@ -7,17 +7,15 @@ local linkerd = import '../../lib/linkerd.jsonnet';
 local containerPort = 8080;
 
 local deployment(me) = flux.deployment(me) {
-  _containers:: [{
-    name: me.pkg,
+  _containers:: {
     image: 'tidepool/kafka-database-worker:latest',
     env: [
       k8s.envSecret('TIMESCALEDB_PASSWORD', 'timescaledb-single-passwords', 'postgres'),
     ],
-    imagePullPolicy: 'Always',
     ports: [{
       containerPort: containerPort,
     }],
-  }],
+  },
   spec+: {
     template+: linkerd.metadata(me, true),
   },

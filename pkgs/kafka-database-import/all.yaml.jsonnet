@@ -7,8 +7,7 @@ local linkerd = import '../../lib/linkerd.jsonnet';
 local containerPort = 8080;
 
 local deployment(me) = flux.deployment(me) {
-  _containers:: [{
-    name: me.pkg,
+  _containers:: {
     image: 'tidepool/kafka-database-import:latest',
     env: [
       k8s.envSecret('TIDEPOOL_STORE_SCHEME', 'mongo', 'Scheme'),
@@ -18,11 +17,10 @@ local deployment(me) = flux.deployment(me) {
       k8s.envSecret('TIDEPOOL_STORE_OPT_PARAMS', 'mongo', 'OptParams'),
       k8s.envSecret('TIDEPOOL_STORE_TLS', 'mongo', 'Tls'),
     ],
-    imagePullPolicy: 'Always',
     ports: [{
       containerPort: containerPort,
     }],
-  }],
+  },
   spec+: {
     template+: linkerd.metadata(me, true),
   },
