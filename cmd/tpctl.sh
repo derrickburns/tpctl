@@ -856,25 +856,12 @@ function expand_namespace() {
 function expand() {
   local values=$1
   local prev=$2
+  start "expanding all namespaces"
   local namespace
-  if [[ -z "$INCLUDED_NAMESPACES" ]]; then
-    start "expanding all namespace "
-    for namespace in $(get_namespaces); do
-      if [[ $EXCLUDED_NAMESPACES == *"$namespace"* ]]; then
-        echo "excluded $namespace"
-      else
-        expand_namespace $values $prev $namespace
-      fi
-    done
-    complete
-  else
-    start "expanding $INCLUDED_NAMESPACES"
-    for namespace in $(echo "$INCLUDED_NAMESPACES" | sed "s/,/ /g"); do
-      expand_namespace $values $prev $namespace
-    done
-    complete
-  fi
-  #git ls-files --deleted -z | git update-index --assume-unchanged -z --stdin
+  for namespace in $(get_namespaces); do
+    expand_namespace $values $prev $namespace
+  done
+  complete
 }
 
 # make K8s manifests
