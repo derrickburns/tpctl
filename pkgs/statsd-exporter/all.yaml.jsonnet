@@ -2,6 +2,7 @@ local common = import '../../lib/common.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 local prometheus = import '../../lib/prometheus.jsonnet';
+local global = import '../../lib/global.jsonnet';
 
 local affinity = {
   nodeAffinity: {

@@ -3,7 +3,7 @@ local global = import '../../lib/global.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 
 local deployment(me) = k8s.deployment(me) {
-  _serviceAccount: true,
+  _serviceAccount:: true,
   _containers:: {
     command: [
       'zookeeper-operator',

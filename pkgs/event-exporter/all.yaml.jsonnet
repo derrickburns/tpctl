@@ -39,7 +39,7 @@ local configmap(me) = k8s.configmap(me) {
 };
 
 local deployment(me) = k8s.deployment(me) {
-  _serviceAccount: true,
+  _serviceAccount:: true,
   _containers:: {
     env: [
       k8s.envSecret('SLACK_WEBHOOK_URL', lib.getElse(me, 'secret', me.pkg), 'slack-webhook-url'),

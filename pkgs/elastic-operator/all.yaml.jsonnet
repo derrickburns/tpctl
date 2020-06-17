@@ -3,7 +3,7 @@ local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
 local statefulset(me) = k8s.statefulset(me) {
-  _serviceAccount: true,
+  _serviceAccount:: true,
   _containers:: {
     args: [
       'manager',

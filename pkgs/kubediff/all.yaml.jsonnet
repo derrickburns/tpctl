@@ -25,7 +25,7 @@ local service(me) = k8s.service(me) {
 };
 
 local deployment(me) = k8s.deployment(me) {
-  _serviceAccount: true,
+  _serviceAccount:: true,
   _containers:: {
     'git-sync': {
       args: [
