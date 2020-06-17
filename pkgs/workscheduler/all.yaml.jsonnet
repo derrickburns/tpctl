@@ -9,10 +9,10 @@ local prometheusPort = 8080;
 
 local deployment(me) = flux.deployment(me) {
   _containers:: {
-    image: 'tidepool/workscheduler:latest',
+    image: 'tidepool/workscheduler:master-latest',
     env: [
-      k8s.envVar('WORK_SCHEDULER_PORT', grpcPort),
-      k8s.envVar('PROMETHEUS_SERVER_PORT', prometheusPort),
+      k8s.envVar('WORK_SCHEDULER_PORT', std.toString(grpcPort)),
+      k8s.envVar('PROMETHEUS_SERVER_PORT', std.toString(prometheusPort)),
       k8s.envVar('KAFKA_BROKERS', lib.get(me, 'kafka-brokers')),
       k8s.envVar('KAFKA_TOPIC_PREFIX', lib.get(me, 'kafka-topic-prefix')),
       k8s.envVar('KAFKA_TOPIC', lib.get(me, 'kafka-topic')),
@@ -30,8 +30,8 @@ local deployment(me) = flux.deployment(me) {
 local service(me) = k8s.service(me) {
   spec+: {
     ports: [
-        k8s.port(grpcPort, grpcPort),
-        k8s.port(prometheusPort, prometheusPort),
+        k8s.port(grpcPort, grpcPort, 'grpc'),
+        k8s.port(prometheusPort, prometheusPort, 'http'),
     ],
   },
 };

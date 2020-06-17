@@ -8,11 +8,11 @@ local port = 8080;
 
 local deployment(me) = flux.deployment(me) {
   _containers:: {
-    image: 'tidepool/mailer:latest',
+    image: 'tidepool/mailer:master-latest',
     env: [
       k8s.envVar('TIDEPOOL_WORK_SCHEDULER_ADDRESS', 'workscheduler:5051'),
       k8s.envVar('TIDEPOOL_MAILER_BACKEND', lib.getElse(me, 'mailer-backend', 'ses')),
-      k8s.envVar('TIDEPOOL_SERVICE_PORT', port),
+      k8s.envVar('TIDEPOOL_SERVICE_PORT', std.toString(port)),
     ],
     imagePullPolicy: 'Always',
     ports: [{
