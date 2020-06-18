@@ -18,7 +18,6 @@ local dashboardConfig = {
   editable: true,
   gnetId: null,
   graphTooltip: 0,
-  id: 154,
   links: [],
   panels: [
     {
@@ -39,6 +38,12 @@ local dashboardConfig = {
       dashLength: 10,
       dashes: false,
       datasource: null,
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       fill: 1,
       fillGradient: 0,
       gridPos: {
@@ -77,7 +82,8 @@ local dashboardConfig = {
       steppedLine: false,
       targets: [
         {
-          expr: 'sum(rate(tidepool_shoreline_failed_status_count[5m])) by (status_reason, status_code)',
+          expr: 'sum(increase(tidepool_shoreline_failed_status_count[1m])) by (status_reason, status_code)',
+          interval: '',
           legendFormat: '{{status_reason}} - {{status_code}}',
           refId: 'A',
         },
@@ -147,6 +153,12 @@ local dashboardConfig = {
         '#d44a3a',
       ],
       datasource: null,
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       format: 'none',
       gauge: {
         maxValue: 100,
@@ -178,7 +190,6 @@ local dashboardConfig = {
       maxDataPoints: 100,
       nullPointMode: 'connected',
       nullText: null,
-      options: {},
       pluginVersion: '6.6.2',
       postfix: '',
       postfixFontSize: '50%',
@@ -199,7 +210,7 @@ local dashboardConfig = {
         ymax: null,
         ymin: null,
       },
-      tableColumn: '',
+      tableColumn: 'shoreline',
       targets: [
         {
           expr: 'sum(tidepool_shoreline_marketo_config_valid) by (service)',
@@ -233,6 +244,12 @@ local dashboardConfig = {
       dashLength: 10,
       dashes: false,
       datasource: null,
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       fill: 1,
       fillGradient: 0,
       gridPos: {
@@ -315,7 +332,7 @@ local dashboardConfig = {
       },
     },
   ],
-  schemaVersion: 22,
+  schemaVersion: 25,
   style: 'dark',
   tags: [
     'tidepool',
@@ -325,7 +342,7 @@ local dashboardConfig = {
     list: [],
   },
   time: {
-    from: 'now-6h',
+    from: 'now-7d',
     to: 'now',
   },
   timepicker: {
@@ -345,7 +362,7 @@ local dashboardConfig = {
   timezone: '',
   title: 'Shoreline',
   uid: '5sv7jfiGk',
-  version: 4,
+  version: 1,
 };
 
 local configmap(me) = grafana.dashboard(me, 'tidepool-shoreline', dashboardConfig);
