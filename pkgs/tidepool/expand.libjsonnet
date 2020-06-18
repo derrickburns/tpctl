@@ -128,7 +128,7 @@ local accessLogging = {
     },
   },
 
-  cors(config):: {
+  cors(dnsNames):: {
     allowCredentials: true,
     allowHeaders: [
       'authorization',
@@ -145,9 +145,7 @@ local accessLogging = {
       'DELETE',
       'OPTIONS',
     ],
-    allowOriginRegex: [
-      '^(.*(\\.))?' + std.strReplace(config.cluster.metadata.rootDomain, '.', '\\.') + '$',
-    ],
+    allowOriginRegex: std.map( function(x) std.strReplace(x, '.', '\\.'), dnsNames ),
     exposeHeaders: [
       'x-tidepool-session-token',
       'x-tidepool-trace-request',
@@ -183,7 +181,7 @@ local accessLogging = {
             enabled: true,
           },
           virtualHostOptions: {
-            cors: $.cors(config),
+            cors: $.cors(dnsNames),
             stats: {
               virtualClusters: lib.getElse(me, 'virtualClusters', []),
             },
