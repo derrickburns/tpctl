@@ -145,7 +145,7 @@ local accessLogging = {
       'DELETE',
       'OPTIONS',
     ],
-    allowOriginRegex: std.map( function(x) std.strReplace(x, '.', '\\.'), dnsNames ),
+    allowOrigin: dnsNames,
     exposeHeaders: [
       'x-tidepool-session-token',
       'x-tidepool-trace-request',
