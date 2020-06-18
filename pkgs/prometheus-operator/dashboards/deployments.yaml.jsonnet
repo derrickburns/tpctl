@@ -19,7 +19,7 @@ local dashboardConfig = {
   editable: true,
   gnetId: 9679,
   graphTooltip: 0,
-  iteration: 1592485943152,
+  iteration: 1592490790559,
   links: [],
   panels: [
     {
@@ -1525,7 +1525,7 @@ local dashboardConfig = {
       steppedLine: false,
       targets: [
         {
-          expr: 'kube_pod_container_status_restarts_total{namespace=~"^$Namespace$",pod=~"^$Deployment-[a-z0-9]+-[a-z0-9]+", container=~"^$Deployment"}',
+          expr: 'increase(kube_pod_container_status_restarts_total{namespace=~"^$Namespace$",pod=~"^$Deployment-[a-z0-9]+-[a-z0-9]+", container=~"^$Deployment"}[10m])',
           interval: '',
           legendFormat: '{{ pod }}',
           refId: 'A',
@@ -1702,7 +1702,7 @@ local dashboardConfig = {
       {
         allValue: '.*',
         current: {
-          selected: true,
+          selected: false,
           text: 'tidepool-prod',
           value: 'tidepool-prod',
         },
@@ -1784,7 +1784,7 @@ local dashboardConfig = {
   timezone: 'browser',
   title: 'Kubernetes / Deployment / All',
   uid: 'kube-deployment',
-  version: 1,
+  version: 2,
 };
 
 local configmap(me) = grafana.dashboard(me, 'kubernetes-deployments', dashboardConfig);
