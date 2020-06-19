@@ -161,28 +161,6 @@ local i = {
     },
   },
 
-  gateway(gw):: k8s.k('gateway.solo.io/v1', 'Gateway') + k8s.metadata(gw.name, gw.namespace) {
-    metadata+: {
-      annotations: {
-        origin: 'default',
-      },
-    },
-    spec+: {
-      httpGateway+: {
-        virtualServiceSelector: gw.selector,
-        virtualServiceNamespaces: ['*'],
-        options:
-          (if lib.getElse(gw, 'options.healthCheck', false) then i.healthCheckOption else {})
-          + (if lib.getElse(gw, 'options.tracing', false) then i.httpConnectionManagerOption else {}),
-      },
-      options: lib.getElse(gw, 'accessLogging', {}),
-      bindAddress: '::',
-      bindPort: i.bindPort(gw.selector.protocol),
-      proxyNames: gw.proxies,
-      useProxyProto: lib.getElse(gw, 'options.proxyProtocol', false),
-      ssl: lib.getElse(gw, 'options.ssl', false),
-    },
-  },
 
   certificateSecretName(base, namespace):: namespace + '-' + base + '-certificate',
 
@@ -335,7 +313,30 @@ local i = {
     else []
   ),
 
-  gateways(me, namespace='gloo-system'):: [i.gateway(gw { namespace: namespace }) for gw in lib.values(lib.getElse(me, 'gateways', {}))],
+  gateway(gw):: k8s.k('gateway.solo.io/v1', 'Gateway') + k8s.metadata(gw.name, gw.namespace) {
+    metadata+: {
+      annotations: {
+        origin: 'default',
+      },
+    },
+    spec+: {
+      httpGateway+: {
+        virtualServiceSelector: gw.selector,
+        virtualServiceNamespaces: ['*'],
+        options:
+          (if lib.getElse(gw, 'options.healthCheck', false) then i.healthCheckOption else {})
+          + (if lib.getElse(gw, 'options.tracing', false) then i.httpConnectionManagerOption else {}),
+      },
+      options: lib.getElse(gw, 'accessLogging', {}),
+      bindAddress: '::',
+      bindPort: i.bindPort(gw.selector.protocol),
+      proxyNames: [ gw.proxy ],
+      useProxyProto: lib.getElse(gw, 'options.proxyProtocol', false),
+      ssl: lib.getElse(gw, 'options.ssl', false),
+    },
+  },
+
+  gateways(me, namespace='gloo-system'):: [$.gateway(gw { namespace: namespace }) for gw in lib.values(lib.getElse(me, 'gateways', {}))],
 
   // dependent on gloo version
   // selects external auth and rate limiting

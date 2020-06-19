@@ -94,9 +94,7 @@ local accessLoggingOption = {
         proxyProtocol: true,
         tracing: true,
       },
-      proxies: [
-        'pomerium-gateway-proxy',
-      ],
+      proxy: 'pomerium-gateway-proxy',
       selector: {
         protocol: 'http',
         type: 'pomerium',
@@ -112,9 +110,7 @@ local accessLoggingOption = {
         ssl: true,
         tracing: true,
       },
-      proxies: [
-        'pomerium-gateway-proxy',
-      ],
+      proxy: 'pomerium-gateway-proxy',
       selector: {
         protocol: 'https',
         type: 'pomerium',
