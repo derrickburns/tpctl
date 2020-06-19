@@ -26,25 +26,20 @@ local helmrelease(me) = k8s.helmrelease(me, { name: name, version: lib.getElse(m
       },
       resources: {
         requests: {
-          cpu: '0.1',
-          memory: '400M',
+          cpu: '0.3',
+          memory: '1Gi',
         },
         limits: {
-          cpu: '0.2',
-          memory: '600M',
+          cpu: '0.6',
+          memory: '2Gi',
         },
       },
       volumeClaimTemplate: {
-        metadata: {
-          name: name,
-          namespace: me.namespace,
-        },
-        spec: {
-          storageClassName: 'monitoring-expanding',
-          resources: {
-            requests: {
-              storage: lib.getElse(me, 'storage', '5Gi'),
-            },
+        accessModes: ['ReadWriteOnce'],
+        storageClassName: 'monitoring-expanding',
+        resources: {
+          requests: {
+            storage: lib.getElse(me, 'storage', '5Gi'),
           },
         },
       },
