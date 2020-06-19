@@ -109,7 +109,7 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '8.14.0' }) {
             },
           } else {},
           retentionSize: '140GiB',
-          retention: '20d',
+          retention: '90d',
           storageSpec: {
             volumeClaimTemplate: {
               metadata: {
