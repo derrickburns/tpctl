@@ -55,7 +55,7 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '8.14.0' }) {
         ],
         resources: {
           limits: {
-            memory: '2G',
+            memory: '500Mi',
           },
         },
         affinity: affinity,
@@ -89,7 +89,7 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '8.14.0' }) {
           ],
           resources: {
             limits: {
-              memory: '20G',
+              memory: '12G',
             },
           },
           affinity: affinity,
