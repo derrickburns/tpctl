@@ -12,7 +12,7 @@ local jaeger(me) = k8s.k('jaegertracing.io/v1', 'Jaeger') + k8s.metadata('jaeger
       type: 'elasticsearch',
       options: {
         es: {
-          'server-urls': 'http://elasticsearch:9200',
+          'server-urls': 'http://elasticsearch-master:9200',
         },
       },
     },
