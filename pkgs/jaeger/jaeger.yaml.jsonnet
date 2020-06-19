@@ -1,21 +1,25 @@
+local common = import '../../lib/common.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
-local common = import '../../lib/common.jsonnet';
 
-local jaeger(me) = k8s.k( 'jaegertracing.io/v1', 'Jaeger') + k8s.metadata('jaeger', me.namespace) {
+local jaeger(me) = k8s.k('jaegertracing.io/v1', 'Jaeger') + k8s.metadata('jaeger', me.namespace) {
   spec+: {
     strategy: 'production',
     ingress: {
       enabled: false,
     },
     storage: {
-      type: "memory",
+      type: 'elasticsearch',
       options: {
-        memory: {
-          'max-traces': 100000,
+        es: {
+          'server-urls': 'http://elasticsearch:9200',
         },
       },
     },
+    affinity: {
+      nodeAffinity: k8s.nodeAffinity(),
+    },
+    tolerations: [k8s.toleration()],
   },
 };
 

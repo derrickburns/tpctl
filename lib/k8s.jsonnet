@@ -81,7 +81,7 @@ local configmapNamesFromPod(pod) = lib.pruneList(
     assert std.objectHas(o, 'kind') : std.manifestJson(o);
     assert std.objectHas(o, 'metadata') : std.manifestJson(o);
     assert std.objectHas(o.metadata, 'name') : std.manifestJson(o);
-    "%s %s %s %s" % [o.apiVersion, o.kind, o.metadata.name, lib.getElse( o, 'metadata.namespace', '---')]
+    '%s %s %s %s' % [o.apiVersion, o.kind, o.metadata.name, lib.getElse(o, 'metadata.namespace', '---')]
   ),
 
   isResource(o):: std.isObject(o) && std.objectHas(o, 'apiVersion') && std.objectHas(o, 'kind'),
@@ -95,7 +95,7 @@ local configmapNamesFromPod(pod) = lib.pruneList(
     else if std.isArray(o) then std.flattenArrays(std.map($.flatten, o))
     else [],
 
-  asMap(o):: 
+  asMap(o)::
     if $.isResource(o) then { [$.key(o)]+: o }
     else { [$.key(x)]+: x for x in o },
 
@@ -184,14 +184,14 @@ local configmapNamesFromPod(pod) = lib.pruneList(
         },
         spec+:
           (if lib.isTrue(this, '_serviceAccount')
-          then { serviceAccountName: me.pkg }
-          else {}) + {
-          restartPolicy: 'Always',
-          containers:
-            if std.objectHasAll(this, 'containerPatch')
-            then this.containerPatch(me.prev, this, $.containers(me, this))
-            else $.containers(me, this)
-        },
+           then { serviceAccountName: me.pkg }
+           else {}) + {
+            restartPolicy: 'Always',
+            containers:
+              if std.objectHasAll(this, 'containerPatch')
+              then this.containerPatch(me.prev, this, $.containers(me, this))
+              else $.containers(me, this),
+          },
       },
     },
   },
@@ -221,7 +221,7 @@ local configmapNamesFromPod(pod) = lib.pruneList(
           containers:
             if std.objectHasAll(this, 'containerPatch')
             then this.containerPatch(me.prev, this, $.containers(me, this))
-            else $.containers(me, this)
+            else $.containers(me, this),
         },
       },
     },
@@ -249,18 +249,18 @@ local configmapNamesFromPod(pod) = lib.pruneList(
           labels+: {
             app: me.pkg,
           },
-        } ,
-        spec+: 
-          (if lib.isTrue(this, '_serviceAccount')
-          then { serviceAccountName: me.pkg }
-          else {}) + {
-          securityContext+: $.securityContext,
-          restartPolicy: 'Always',
-          containers:
-            if std.objectHasAll(this, 'containerPatch') 
-	    then this.containerPatch(me.prev, this, $.containers(me, this))
-            else $.containers(me, this)
         },
+        spec+:
+          (if lib.isTrue(this, '_serviceAccount')
+           then { serviceAccountName: me.pkg }
+           else {}) + {
+            securityContext+: $.securityContext,
+            restartPolicy: 'Always',
+            containers:
+              if std.objectHasAll(this, 'containerPatch')
+              then this.containerPatch(me.prev, this, $.containers(me, this))
+              else $.containers(me, this),
+          },
       },
     },
   },
@@ -361,7 +361,7 @@ local configmapNamesFromPod(pod) = lib.pruneList(
   },
 
   // add image pull policy based on image tag
-  withImagePullPolicy(container):: 
+  withImagePullPolicy(container)::
     if std.endsWith(lib.getElse(container, 'image', ''), ':latest')
     then container { imagePullPolicy: 'Always' }
     else container { imagePullPolicy: 'IfNotPresent' },
@@ -370,13 +370,35 @@ local configmapNamesFromPod(pod) = lib.pruneList(
   // Add names to containers if provided as map
   // If a single container is provided, provide it the default name
   containersWithName(me, this)::
-    if ! std.objectHasAll(this, '_containers') then []
+    if !std.objectHasAll(this, '_containers') then []
     else if std.isArray(this._containers) then this._containers
     else if std.objectHas(this._containers, 'image') && std.isString(this._containers.image)
-    then [ this._containers { name: lib.getElse(this._containers, 'name', me.pkg) } ]
+    then [this._containers { name: lib.getElse(this._containers, 'name', me.pkg) }]
     else lib.asArrayWithField(lib.getElse(this, '_containers', {}), 'name'),
 
   // add names and image pull policy to containers
-  containers(me, this):: 
-    std.map( function(c) $.withImagePullPolicy(c), $.containersWithName(me, this)),
+  containers(me, this)::
+    std.map(function(c) $.withImagePullPolicy(c), $.containersWithName(me, this)),
+
+
+  toleration(key='role', operator='Equal', value='monitoring', effect='NoSchedule'):: {
+    key: key,
+    operator: operator,
+    value: value,
+    effect: effect,
+  },
+
+  nodeAffinity(key='role', operator='In', values=['monitoring']):: {
+    requiredDuringSchedulingIgnoredDuringExecution: {
+      nodeSelectorTerms: [{
+        matchExpressions: [
+          {
+            key: key,
+            operator: operator,
+            values: values,
+          },
+        ],
+      }],
+    },
+  },
 }
