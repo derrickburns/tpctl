@@ -380,6 +380,9 @@ local i = {
     namespace+: {
       create: false,
     },
+    accessLogger: {
+      enabled: lib.isEnabledAt(me, 'accessLogger'),
+    },
     discovery+: i.discoveryValues(me),
     gateway+: i.gatewayValues(me),
     gatewayProxies+: i.gatewayProxyValues(me),
