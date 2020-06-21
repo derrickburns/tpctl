@@ -19,12 +19,13 @@ local dashboardConfig = {
   editable: true,
   gnetId: 9679,
   graphTooltip: 0,
-  iteration: 1592565338762,
+  id: 26,
+  iteration: 1592740562243,
   links: [],
   panels: [
     {
       collapsed: false,
-      datasource: null,
+      datasource: '$datasource',
       gridPos: {
         h: 1,
         w: 24,
@@ -45,7 +46,7 @@ local dashboardConfig = {
         '#f9934e',
         '#e0f9d7',
       ],
-      datasource: 'Prometheus',
+      datasource: '$datasource',
       decimals: null,
       fieldConfig: {
         defaults: {
@@ -135,7 +136,7 @@ local dashboardConfig = {
         '#f9934e',
         '#e24d42',
       ],
-      datasource: 'Prometheus',
+      datasource: '$datasource',
       fieldConfig: {
         defaults: {
           custom: {},
@@ -218,7 +219,7 @@ local dashboardConfig = {
       bars: false,
       dashLength: 10,
       dashes: false,
-      datasource: 'Prometheus',
+      datasource: '$datasource',
       decimals: 3,
       editable: true,
       'error': false,
@@ -333,7 +334,7 @@ local dashboardConfig = {
         '#f9934e',
         '#e0f9d7',
       ],
-      datasource: 'Prometheus',
+      datasource: '$datasource',
       decimals: null,
       fieldConfig: {
         defaults: {
@@ -421,7 +422,7 @@ local dashboardConfig = {
         '#f9934e',
         '#e24d42',
       ],
-      datasource: 'Prometheus',
+      datasource: '$datasource',
       decimals: null,
       fieldConfig: {
         defaults: {
@@ -508,7 +509,7 @@ local dashboardConfig = {
         '#f9934e',
         '#e24d42',
       ],
-      datasource: 'Prometheus',
+      datasource: '$datasource',
       decimals: 3,
       fieldConfig: {
         defaults: {
@@ -595,7 +596,7 @@ local dashboardConfig = {
         '#f9934e',
         '#e24d42',
       ],
-      datasource: 'Prometheus',
+      datasource: '$datasource',
       decimals: 3,
       fieldConfig: {
         defaults: {
@@ -682,7 +683,7 @@ local dashboardConfig = {
         '#f9934e',
         '#e24d42',
       ],
-      datasource: 'Prometheus',
+      datasource: '$datasource',
       decimals: 3,
       fieldConfig: {
         defaults: {
@@ -765,7 +766,7 @@ local dashboardConfig = {
       bars: false,
       dashLength: 10,
       dashes: false,
-      datasource: 'Prometheus',
+      datasource: '$datasource',
       decimals: 0,
       fieldConfig: {
         defaults: {
@@ -884,7 +885,7 @@ local dashboardConfig = {
         '#f9934e',
         '#e24d42',
       ],
-      datasource: 'Prometheus',
+      datasource: '$datasource',
       fieldConfig: {
         defaults: {
           custom: {},
@@ -968,7 +969,7 @@ local dashboardConfig = {
       bars: false,
       dashLength: 10,
       dashes: false,
-      datasource: 'Prometheus',
+      datasource: '$datasource',
       decimals: 2,
       editable: true,
       'error': false,
@@ -1052,7 +1053,6 @@ local dashboardConfig = {
       },
       yaxes: [
         {
-          '$$hashKey': 'object:1851',
           format: 'bytes',
           label: null,
           logBase: 1,
@@ -1061,7 +1061,6 @@ local dashboardConfig = {
           show: true,
         },
         {
-          '$$hashKey': 'object:1852',
           format: 'short',
           label: null,
           logBase: 1,
@@ -1084,7 +1083,7 @@ local dashboardConfig = {
         '#f9934e',
         '#e24d42',
       ],
-      datasource: 'Prometheus',
+      datasource: '$datasource',
       decimals: 2,
       fieldConfig: {
         defaults: {
@@ -1174,7 +1173,7 @@ local dashboardConfig = {
         '#f9934e',
         '#e24d42',
       ],
-      datasource: 'Prometheus',
+      datasource: '$datasource',
       decimals: 2,
       fieldConfig: {
         defaults: {
@@ -1261,7 +1260,7 @@ local dashboardConfig = {
         '#f9934e',
         '#e24d42',
       ],
-      datasource: 'Prometheus',
+      datasource: '$datasource',
       decimals: 2,
       fieldConfig: {
         defaults: {
@@ -1344,7 +1343,7 @@ local dashboardConfig = {
       bars: false,
       dashLength: 10,
       dashes: false,
-      datasource: 'Prometheus',
+      datasource: '$datasource',
       decimals: 2,
       editable: true,
       'error': false,
@@ -1480,7 +1479,7 @@ local dashboardConfig = {
       bars: false,
       dashLength: 10,
       dashes: false,
-      datasource: null,
+      datasource: '$datasource',
       decimals: 0,
       fieldConfig: {
         defaults: {
@@ -1551,7 +1550,6 @@ local dashboardConfig = {
       },
       yaxes: [
         {
-          '$$hashKey': 'object:1429',
           decimals: 0,
           format: 'none',
           label: 'restarts',
@@ -1561,7 +1559,6 @@ local dashboardConfig = {
           show: true,
         },
         {
-          '$$hashKey': 'object:1430',
           format: 'short',
           label: null,
           logBase: 1,
@@ -1589,10 +1586,10 @@ local dashboardConfig = {
         allValue: '.*',
         current: {
           selected: false,
-          text: 'tidepool-prod',
-          value: 'tidepool-prod',
+          text: 'administration',
+          value: 'administration',
         },
-        datasource: 'Prometheus',
+        datasource: '$datasource',
         definition: '',
         hide: 0,
         includeAll: false,
@@ -1615,10 +1612,10 @@ local dashboardConfig = {
         allValue: '.*',
         current: {
           selected: false,
-          text: 'export',
-          value: 'export',
+          text: 'All',
+          value: '$__all',
         },
-        datasource: 'Prometheus',
+        datasource: '$datasource',
         definition: '',
         hide: 0,
         includeAll: true,
@@ -1636,6 +1633,24 @@ local dashboardConfig = {
         tagsQuery: '',
         type: 'query',
         useTags: false,
+      },
+      {
+        current: {
+          selected: false,
+          text: 'prometheus',
+          value: 'prometheus',
+        },
+        hide: 2,
+        includeAll: false,
+        label: null,
+        multi: false,
+        name: 'datasource',
+        options: [],
+        query: 'prometheus',
+        refresh: 1,
+        regex: '',
+        skipUrlSync: false,
+        type: 'datasource',
       },
     ],
   },

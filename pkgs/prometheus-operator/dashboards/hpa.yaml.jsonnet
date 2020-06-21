@@ -16,11 +16,10 @@ local dashboardConfig = {
     ],
   },
   description: 'A quick and simple dashboard for viewing how your horizontal pod autoscaler is doing.',
-  editable: false,
+  editable: true,
   gnetId: 10257,
   graphTooltip: 0,
-  id: 51,
-  iteration: 1592333791571,
+  iteration: 1592740603325,
   links: [],
   panels: [
     {
@@ -375,7 +374,7 @@ local dashboardConfig = {
     },
     {
       columns: [],
-      datasource: null,
+      datasource: '$datasource',
       fieldConfig: {
         defaults: {
           custom: {},
@@ -751,10 +750,10 @@ local dashboardConfig = {
       {
         current: {
           selected: false,
-          text: 'Prometheus',
-          value: 'Prometheus',
+          text: 'prometheus',
+          value: 'prometheus',
         },
-        hide: 0,
+        hide: 2,
         includeAll: false,
         label: null,
         multi: false,
@@ -769,9 +768,10 @@ local dashboardConfig = {
       {
         allValue: null,
         current: {
+          isNone: true,
           selected: false,
-          text: 'tidepool-prod',
-          value: 'tidepool-prod',
+          text: 'None',
+          value: '',
         },
         datasource: '$datasource',
         definition: 'label_values(kube_hpa_metadata_generation{job="kube-state-metrics"}, namespace)',
@@ -795,9 +795,10 @@ local dashboardConfig = {
       {
         allValue: null,
         current: {
+          isNone: true,
           selected: false,
-          text: 'tide-whisperer',
-          value: 'tide-whisperer',
+          text: 'None',
+          value: '',
         },
         datasource: '$datasource',
         definition: 'label_values(kube_hpa_labels{job="kube-state-metrics", namespace="$namespace"}, hpa)',
@@ -851,7 +852,7 @@ local dashboardConfig = {
   timezone: '',
   title: 'Kubernetes / Horizontal Pod Autoscaler',
   uid: 'alJY6yWZz',
-  version: 4,
+  version: 2,
 };
 
 local configmap(me) = grafana.dashboard(me, 'hpa', dashboardConfig);

@@ -14,7 +14,7 @@ local dashboardConfig = {
         type: 'dashboard',
       },
       {
-        datasource: 'Prometheus',
+        datasource: '$datasource',
         enable: false,
         expr: 'ALERTS_FOR_STATE{service=~"$service", alertname=~"$alertname"} * 1000',
         hide: false,
@@ -24,7 +24,9 @@ local dashboardConfig = {
         showIn: 0,
         step: '2s',
         tagKeys: 'alertname',
-        tags: [],
+        tags: [
+
+        ],
         textFormat: '',
         titleFormat: '{{service}}',
         type: 'tags',
@@ -72,7 +74,7 @@ local dashboardConfig = {
   panels: [
     {
       collapsed: false,
-      datasource: null,
+      datasource: '$datasource',
       gridPos: {
         h: 1,
         w: 24,
@@ -80,7 +82,9 @@ local dashboardConfig = {
         y: 0,
       },
       id: 443,
-      panels: [],
+      panels: [
+
+      ],
       title: 'Severity',
       type: 'row',
     },
@@ -93,12 +97,16 @@ local dashboardConfig = {
         'rgba(237, 129, 40, 0.89)',
         '#d44a3a',
       ],
-      datasource: 'Prometheus',
+      datasource: '$datasource',
       fieldConfig: {
         defaults: {
-          custom: {},
+          custom: {
+
+          },
         },
-        overrides: [],
+        overrides: [
+
+        ],
       },
       format: 'none',
       gauge: {
@@ -117,7 +125,9 @@ local dashboardConfig = {
       height: '75px',
       id: 4,
       interval: null,
-      links: [],
+      links: [
+
+      ],
       mappingType: 1,
       mappingTypes: [
         {
@@ -183,12 +193,16 @@ local dashboardConfig = {
         'rgba(237, 129, 40, 0.89)',
         '#d44a3a',
       ],
-      datasource: 'Prometheus',
+      datasource: '$datasource',
       fieldConfig: {
         defaults: {
-          custom: {},
+          custom: {
+
+          },
         },
-        overrides: [],
+        overrides: [
+
+        ],
       },
       format: 'none',
       gauge: {
@@ -207,7 +221,9 @@ local dashboardConfig = {
       height: '75px',
       id: 2,
       interval: null,
-      links: [],
+      links: [
+
+      ],
       mappingType: 1,
       mappingTypes: [
         {
@@ -292,12 +308,16 @@ local dashboardConfig = {
         'rgba(237, 129, 40, 0.89)',
         '#d44a3a',
       ],
-      datasource: 'Prometheus',
+      datasource: '$datasource',
       fieldConfig: {
         defaults: {
-          custom: {},
+          custom: {
+
+          },
         },
-        overrides: [],
+        overrides: [
+
+        ],
       },
       format: 'none',
       gauge: {
@@ -316,7 +336,9 @@ local dashboardConfig = {
       height: '75px',
       id: 5,
       interval: null,
-      links: [],
+      links: [
+
+      ],
       mappingType: 1,
       mappingTypes: [
         {
@@ -382,12 +404,16 @@ local dashboardConfig = {
         'rgba(237, 129, 40, 0.89)',
         '#d44a3a',
       ],
-      datasource: 'Prometheus',
+      datasource: '$datasource',
       fieldConfig: {
         defaults: {
-          custom: {},
+          custom: {
+
+          },
         },
-        overrides: [],
+        overrides: [
+
+        ],
       },
       format: 'none',
       gauge: {
@@ -406,7 +432,9 @@ local dashboardConfig = {
       height: '75px',
       id: 9,
       interval: null,
-      links: [],
+      links: [
+
+      ],
       mappingType: 1,
       mappingTypes: [
         {
@@ -472,12 +500,16 @@ local dashboardConfig = {
         'rgba(237, 129, 40, 0.89)',
         '#d44a3a',
       ],
-      datasource: 'Prometheus',
+      datasource: '$datasource',
       fieldConfig: {
         defaults: {
-          custom: {},
+          custom: {
+
+          },
         },
-        overrides: [],
+        overrides: [
+
+        ],
       },
       format: 'none',
       gauge: {
@@ -496,7 +528,9 @@ local dashboardConfig = {
       height: '75px',
       id: 441,
       interval: null,
-      links: [],
+      links: [
+
+      ],
       mappingType: 1,
       mappingTypes: [
         {
@@ -555,7 +589,7 @@ local dashboardConfig = {
     },
     {
       collapsed: false,
-      datasource: null,
+      datasource: '$datasource',
       gridPos: {
         h: 1,
         w: 24,
@@ -563,19 +597,27 @@ local dashboardConfig = {
         y: 5,
       },
       id: 445,
-      panels: [],
+      panels: [
+
+      ],
       title: 'Alerts',
       type: 'row',
     },
     {
-      columns: [],
-      datasource: 'Prometheus',
+      columns: [
+
+      ],
+      datasource: '$datasource',
       description: 'Shows how many times was particular alert started in a defined time range. Alert can be started either directly as `firing` or as a `pending`. Pending alerts wait for a defined time before it flips to a `firing` alert. This is specified with the `FOR` clause in a Prometheus `rules` file.',
       fieldConfig: {
         defaults: {
-          custom: {},
+          custom: {
+
+          },
         },
-        overrides: [],
+        overrides: [
+
+        ],
       },
       fontSize: '100%',
       gridPos: {
@@ -613,7 +655,9 @@ local dashboardConfig = {
           decimals: 2,
           mappingType: 1,
           pattern: 'instance',
-          thresholds: [],
+          thresholds: [
+
+          ],
           type: 'hidden',
           unit: 'short',
         },
@@ -630,7 +674,9 @@ local dashboardConfig = {
           decimals: 2,
           mappingType: 1,
           pattern: 'Value',
-          thresholds: [],
+          thresholds: [
+
+          ],
           type: 'number',
           unit: 'short',
         },
@@ -647,7 +693,9 @@ local dashboardConfig = {
           decimals: 2,
           mappingType: 1,
           pattern: 'pod',
-          thresholds: [],
+          thresholds: [
+
+          ],
           type: 'hidden',
           unit: 'short',
         },
@@ -664,7 +712,9 @@ local dashboardConfig = {
           decimals: 2,
           mappingType: 1,
           pattern: 'namespace',
-          thresholds: [],
+          thresholds: [
+
+          ],
           type: 'hidden',
           unit: 'short',
         },
@@ -681,7 +731,9 @@ local dashboardConfig = {
           decimals: 2,
           mappingType: 1,
           pattern: 'service',
-          thresholds: [],
+          thresholds: [
+
+          ],
           type: 'hidden',
           unit: 'short',
         },
@@ -698,7 +750,9 @@ local dashboardConfig = {
           decimals: 2,
           mappingType: 1,
           pattern: 'endpoint',
-          thresholds: [],
+          thresholds: [
+
+          ],
           type: 'hidden',
           unit: 'short',
         },
@@ -715,7 +769,9 @@ local dashboardConfig = {
           decimals: 2,
           mappingType: 1,
           pattern: '__name__',
-          thresholds: [],
+          thresholds: [
+
+          ],
           type: 'hidden',
           unit: 'short',
         },
@@ -732,7 +788,9 @@ local dashboardConfig = {
           decimals: 2,
           mappingType: 1,
           pattern: 'job',
-          thresholds: [],
+          thresholds: [
+
+          ],
           type: 'hidden',
           unit: 'short',
         },
@@ -747,7 +805,9 @@ local dashboardConfig = {
           ],
           decimals: 2,
           pattern: '/.*/',
-          thresholds: [],
+          thresholds: [
+
+          ],
           type: 'string',
           unit: 'short',
         },
@@ -770,17 +830,23 @@ local dashboardConfig = {
       type: 'table-old',
     },
     {
-      aliasColors: {},
+      aliasColors: {
+
+      },
       bars: false,
       dashLength: 10,
       dashes: false,
-      datasource: 'Prometheus',
+      datasource: '$datasource',
       description: '',
       fieldConfig: {
         defaults: {
-          custom: {},
+          custom: {
+
+          },
         },
-        overrides: [],
+        overrides: [
+
+        ],
       },
       fill: 0,
       fillGradient: 10,
@@ -808,7 +874,9 @@ local dashboardConfig = {
       linewidth: 1,
       nullPointMode: 'null as zero',
       options: {
-        dataLinks: [],
+        dataLinks: [
+
+        ],
       },
       percentage: false,
       pointradius: 0.5,
@@ -831,9 +899,13 @@ local dashboardConfig = {
           refId: 'C',
         },
       ],
-      thresholds: [],
+      thresholds: [
+
+      ],
       timeFrom: null,
-      timeRegions: [],
+      timeRegions: [
+
+      ],
       timeShift: null,
       title: 'Alerts History',
       tooltip: {
@@ -847,7 +919,9 @@ local dashboardConfig = {
         mode: 'time',
         name: null,
         show: true,
-        values: [],
+        values: [
+
+        ],
       },
       yaxes: [
         {
@@ -894,7 +968,9 @@ local dashboardConfig = {
         label: 'Prometheus datasource',
         multi: false,
         name: 'datasource',
-        options: [],
+        options: [
+
+        ],
         query: 'prometheus',
         refresh: 1,
         regex: '',
@@ -905,27 +981,33 @@ local dashboardConfig = {
         allValue: null,
         current: {
           selected: true,
-          tags: [],
+          tags: [
+
+          ],
           text: 'All',
           value: [
             '$__all',
           ],
         },
-        datasource: 'Prometheus',
+        datasource: '$datasource',
         definition: 'label_values(ALERTS_FOR_STATE,alertname)',
         hide: 0,
         includeAll: true,
         label: 'Alert:',
         multi: true,
         name: 'alertname',
-        options: [],
+        options: [
+
+        ],
         query: 'label_values(ALERTS_FOR_STATE,alertname)',
         refresh: 2,
         regex: '',
         skipUrlSync: false,
         sort: 1,
         tagValuesQuery: '',
-        tags: [],
+        tags: [
+
+        ],
         tagsQuery: '',
         type: 'query',
         useTags: false,
@@ -939,21 +1021,25 @@ local dashboardConfig = {
             '$__all',
           ],
         },
-        datasource: 'Prometheus',
+        datasource: '$datasource',
         definition: 'label_values(ALERTS, alertstate)',
         hide: 0,
         includeAll: true,
         label: 'State:',
         multi: true,
         name: 'alertstate',
-        options: [],
+        options: [
+
+        ],
         query: 'label_values(ALERTS, alertstate)',
         refresh: 2,
         regex: '',
         skipUrlSync: false,
         sort: 1,
         tagValuesQuery: '',
-        tags: [],
+        tags: [
+
+        ],
         tagsQuery: '',
         type: 'query',
         useTags: false,

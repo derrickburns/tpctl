@@ -19,7 +19,6 @@ local dashboardConfig = {
   editable: true,
   gnetId: null,
   graphTooltip: 0,
-  id: 100,
   links: [
     {
       icon: 'external link',
@@ -54,8 +53,14 @@ local dashboardConfig = {
         'rgb(234, 245, 234)',
         'rgb(235, 244, 235)',
       ],
-      datasource: 'Prometheus',
+      datasource: '$datasource',
       decimals: 0,
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       format: 'none',
       gauge: {
         maxValue: 100,
@@ -87,7 +92,6 @@ local dashboardConfig = {
       maxDataPoints: 100,
       nullPointMode: 'connected',
       nullText: null,
-      options: {},
       postfix: '',
       postfixFontSize: '50%',
       prefix: '',
@@ -105,13 +109,15 @@ local dashboardConfig = {
         lineColor: 'rgb(31, 120, 193)',
         show: false,
       },
-      tableColumn: '',
+      tableColumn: 'up{endpoint="service", instance="10.48.4.24:3000", job="prometheus-operator-grafana", namespace="monitoring", pod="prometheus-operator-grafana-6c5c4559dd-spmkn", service="prometheus-operator-grafana"}',
       targets: [
         {
           expr: 'up{job="prometheus-operator-grafana"}',
           format: 'time_series',
           instant: true,
+          interval: '',
           intervalFactor: 2,
+          legendFormat: '',
           refId: 'A',
           step: 60,
         },
@@ -138,7 +144,13 @@ local dashboardConfig = {
         'rgba(237, 129, 40, 0.89)',
         'rgba(50, 172, 45, 0.97)',
       ],
-      datasource: 'Prometheus',
+      datasource: '$datasource',
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       format: 'none',
       gauge: {
         maxValue: 100,
@@ -170,7 +182,6 @@ local dashboardConfig = {
       maxDataPoints: 100,
       nullPointMode: 'connected',
       nullText: null,
-      options: {},
       postfix: '',
       postfixFontSize: '50%',
       prefix: '',
@@ -221,7 +232,13 @@ local dashboardConfig = {
         'rgba(237, 129, 40, 0.89)',
         'rgba(50, 172, 45, 0.97)',
       ],
-      datasource: 'Prometheus',
+      datasource: '$datasource',
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       format: 'none',
       gauge: {
         maxValue: 100,
@@ -253,7 +270,6 @@ local dashboardConfig = {
       maxDataPoints: 100,
       nullPointMode: 'connected',
       nullText: null,
-      options: {},
       postfix: '',
       postfixFontSize: '50%',
       prefix: '',
@@ -271,7 +287,7 @@ local dashboardConfig = {
         lineColor: 'rgb(31, 120, 193)',
         show: false,
       },
-      tableColumn: '',
+      tableColumn: 'grafana_stat_total_users{endpoint="service", instance="10.48.4.24:3000", job="prometheus-operator-grafana", namespace="monitoring", pod="prometheus-operator-grafana-6c5c4559dd-spmkn", service="prometheus-operator-grafana"}',
       targets: [
         {
           expr: 'grafana_stat_total_users',
@@ -304,7 +320,13 @@ local dashboardConfig = {
         'rgba(237, 129, 40, 0.89)',
         'rgba(50, 172, 45, 0.97)',
       ],
-      datasource: 'Prometheus',
+      datasource: '$datasource',
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       format: 'none',
       gauge: {
         maxValue: 100,
@@ -336,7 +358,6 @@ local dashboardConfig = {
       maxDataPoints: 100,
       nullPointMode: 'connected',
       nullText: null,
-      options: {},
       postfix: '',
       postfixFontSize: '50%',
       prefix: '',
@@ -354,7 +375,7 @@ local dashboardConfig = {
         lineColor: 'rgb(31, 120, 193)',
         show: false,
       },
-      tableColumn: '',
+      tableColumn: 'grafana_stat_total_playlists{endpoint="service", instance="10.48.4.24:3000", job="prometheus-operator-grafana", namespace="monitoring", pod="prometheus-operator-grafana-6c5c4559dd-spmkn", service="prometheus-operator-grafana"}',
       targets: [
         {
           expr: 'grafana_stat_total_playlists',
@@ -381,7 +402,13 @@ local dashboardConfig = {
     {
       cacheTimeout: null,
       columns: [],
-      datasource: 'Prometheus',
+      datasource: '$datasource',
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       fontSize: '100%',
       gridPos: {
         h: 5,
@@ -391,7 +418,6 @@ local dashboardConfig = {
       },
       id: 17,
       links: [],
-      options: {},
       pageSize: null,
       pluginVersion: '6.6.2',
       scroll: false,
@@ -430,6 +456,7 @@ local dashboardConfig = {
           expr: 'topk(1, grafana_build_info)',
           format: 'time_series',
           instant: true,
+          interval: '',
           intervalFactor: 2,
           legendFormat: '{{version}}',
           refId: 'A',
@@ -440,7 +467,7 @@ local dashboardConfig = {
       timeShift: null,
       title: 'Grafana version',
       transform: 'timeseries_to_rows',
-      type: 'table',
+      type: 'table-old',
     },
     {
       aliasColors: {
@@ -450,7 +477,13 @@ local dashboardConfig = {
       bars: false,
       dashLength: 10,
       dashes: false,
-      datasource: 'Prometheus',
+      datasource: '$datasource',
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       fill: 1,
       fillGradient: 0,
       gridPos: {
@@ -548,7 +581,13 @@ local dashboardConfig = {
       bars: false,
       dashLength: 10,
       dashes: false,
-      datasource: 'Prometheus',
+      datasource: '$datasource',
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       fill: 1,
       fillGradient: 0,
       gridPos: {
@@ -655,7 +694,13 @@ local dashboardConfig = {
     },
     {
       columns: [],
-      datasource: 'Prometheus',
+      datasource: '$datasource',
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       fontSize: '100%',
       gridPos: {
         h: 10,
@@ -666,7 +711,6 @@ local dashboardConfig = {
       height: '',
       id: 12,
       links: [],
-      options: {},
       pageSize: null,
       scroll: true,
       showHeader: true,
@@ -712,7 +756,7 @@ local dashboardConfig = {
       ],
       title: 'Most used handlers',
       transform: 'timeseries_to_rows',
-      type: 'table',
+      type: 'table-old',
     },
     {
       aliasColors: {
@@ -722,7 +766,13 @@ local dashboardConfig = {
       bars: false,
       dashLength: 10,
       dashes: false,
-      datasource: 'Prometheus',
+      datasource: '$datasource',
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       fill: 1,
       fillGradient: 0,
       gridPos: {
@@ -818,7 +868,13 @@ local dashboardConfig = {
       bars: false,
       dashLength: 10,
       dashes: false,
-      datasource: 'Prometheus',
+      datasource: '$datasource',
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       fill: 1,
       fillGradient: 0,
       gridPos: {
@@ -914,8 +970,14 @@ local dashboardConfig = {
       bars: false,
       dashLength: 10,
       dashes: false,
-      datasource: 'Prometheus',
+      datasource: '$datasource',
       description: 'Aggregated over all Grafana nodes.',
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       fill: 1,
       fillGradient: 0,
       gridPos: {
@@ -1035,14 +1097,33 @@ local dashboardConfig = {
     },
   ],
   revision: '1.0',
-  schemaVersion: 22,
+  schemaVersion: 25,
   style: 'dark',
   tags: [
     'grafana',
     'prometheus',
   ],
   templating: {
-    list: [],
+    list: [
+      {
+        current: {
+          selected: false,
+          text: 'prometheus',
+          value: 'prometheus',
+        },
+        hide: 2,
+        includeAll: false,
+        label: null,
+        multi: false,
+        name: 'datasource',
+        options: [],
+        query: 'prometheus',
+        refresh: 1,
+        regex: '',
+        skipUrlSync: false,
+        type: 'datasource',
+      },
+    ],
   },
   time: {
     from: 'now-6h',
@@ -1050,7 +1131,6 @@ local dashboardConfig = {
   },
   timepicker: {
     refresh_intervals: [
-      '5s',
       '10s',
       '30s',
       '1m',
@@ -1076,7 +1156,7 @@ local dashboardConfig = {
   timezone: '',
   title: 'Grafana metrics',
   uid: 'grafana-metrics',
-  version: 2,
+  version: 53,
 };
 
 local configmap(me) = grafana.dashboard(me, 'grafana', dashboardConfig);

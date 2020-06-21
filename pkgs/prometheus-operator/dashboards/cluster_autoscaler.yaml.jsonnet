@@ -19,7 +19,6 @@ local dashboardConfig = {
   editable: true,
   gnetId: 3831,
   graphTooltip: 0,
-  id: 95,
   links: [],
   panels: [
     {
@@ -31,7 +30,13 @@ local dashboardConfig = {
         'rgba(237, 129, 40, 0.89)',
         'rgba(50, 172, 45, 0.97)',
       ],
-      datasource: 'Prometheus',
+      datasource: '$datasource',
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       format: 'none',
       gauge: {
         maxValue: 100,
@@ -64,7 +69,6 @@ local dashboardConfig = {
       maxDataPoints: 100,
       nullPointMode: 'connected',
       nullText: null,
-      options: {},
       postfix: '',
       postfixFontSize: '50%',
       prefix: '',
@@ -114,9 +118,15 @@ local dashboardConfig = {
         'rgba(237, 129, 40, 0.89)',
         'rgba(245, 54, 54, 0.9)',
       ],
-      datasource: 'Prometheus',
+      datasource: '$datasource',
       decimals: null,
       description: 'Shows the nodes which are ready as a percent of the total nodes',
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       format: 'percent',
       gauge: {
         maxValue: 100,
@@ -149,7 +159,6 @@ local dashboardConfig = {
       maxDataPoints: 100,
       nullPointMode: 'connected',
       nullText: null,
-      options: {},
       postfix: '',
       postfixFontSize: '50%',
       prefix: '',
@@ -199,7 +208,13 @@ local dashboardConfig = {
         'rgba(237, 129, 40, 0.89)',
         'rgba(50, 172, 45, 0.97)',
       ],
-      datasource: 'Prometheus',
+      datasource: '$datasource',
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       format: 'none',
       gauge: {
         maxValue: 100,
@@ -232,7 +247,6 @@ local dashboardConfig = {
       maxDataPoints: 100,
       nullPointMode: 'connected',
       nullText: null,
-      options: {},
       postfix: '',
       postfixFontSize: '50%',
       prefix: '',
@@ -288,8 +302,14 @@ local dashboardConfig = {
         'rgba(237, 129, 40, 0.89)',
         'rgba(245, 54, 54, 0.9)',
       ],
-      datasource: 'Prometheus',
+      datasource: '$datasource',
       description: 'Tells you if there are unscheduled pods',
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       format: 'none',
       gauge: {
         maxValue: 100,
@@ -322,7 +342,6 @@ local dashboardConfig = {
       maxDataPoints: 100,
       nullPointMode: 'connected',
       nullText: null,
-      options: {},
       postfix: '',
       postfixFontSize: '50%',
       prefix: '',
@@ -367,7 +386,13 @@ local dashboardConfig = {
         'rgba(237, 129, 40, 0.89)',
         'rgba(50, 172, 45, 0.97)',
       ],
-      datasource: 'Prometheus',
+      datasource: '$datasource',
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       format: 's',
       gauge: {
         maxValue: 100,
@@ -400,7 +425,6 @@ local dashboardConfig = {
       maxDataPoints: 100,
       nullPointMode: 'connected',
       nullText: null,
-      options: {},
       postfix: '',
       postfixFontSize: '50%',
       prefix: '',
@@ -451,7 +475,13 @@ local dashboardConfig = {
         'rgba(237, 129, 40, 0.89)',
         'rgba(50, 172, 45, 0.97)',
       ],
-      datasource: 'Prometheus',
+      datasource: '$datasource',
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       format: 's',
       gauge: {
         maxValue: 100,
@@ -484,7 +514,6 @@ local dashboardConfig = {
       maxDataPoints: 100,
       nullPointMode: 'connected',
       nullText: null,
-      options: {},
       postfix: '',
       postfixFontSize: '50%',
       prefix: '',
@@ -532,10 +561,16 @@ local dashboardConfig = {
       bars: false,
       dashLength: 10,
       dashes: false,
-      datasource: 'Prometheus',
+      datasource: '$datasource',
       description: 'Shows the evicted and unscheduled pods',
       editable: true,
       'error': false,
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       fill: 1,
       fillGradient: 0,
       grid: {},
@@ -640,10 +675,16 @@ local dashboardConfig = {
       bars: false,
       dashLength: 10,
       dashes: false,
-      datasource: 'Prometheus',
+      datasource: '$datasource',
       description: 'Shows the state of the nodes as scaling happens',
       editable: true,
       'error': false,
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       fill: 1,
       fillGradient: 0,
       grid: {},
@@ -756,9 +797,15 @@ local dashboardConfig = {
       bars: false,
       dashLength: 10,
       dashes: false,
-      datasource: 'Prometheus',
+      datasource: '$datasource',
       editable: true,
       'error': false,
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       fill: 1,
       fillGradient: 0,
       grid: {},
@@ -874,8 +921,14 @@ local dashboardConfig = {
         'rgba(237, 129, 40, 0.89)',
         'rgba(50, 172, 45, 0.97)',
       ],
-      datasource: 'Prometheus',
+      datasource: '$datasource',
       description: 'Is the cluster scaling up, down or ticking along okay?',
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       format: 'none',
       gauge: {
         maxValue: 100,
@@ -908,7 +961,6 @@ local dashboardConfig = {
       maxDataPoints: 100,
       nullPointMode: 'connected',
       nullText: null,
-      options: {},
       postfix: '',
       postfixFontSize: '50%',
       prefix: '',
@@ -962,13 +1014,32 @@ local dashboardConfig = {
     },
   ],
   refresh: false,
-  schemaVersion: 22,
+  schemaVersion: 25,
   style: 'dark',
   tags: [
     'prometheus',
   ],
   templating: {
-    list: [],
+    list: [
+      {
+        current: {
+          selected: false,
+          text: 'prometheus',
+          value: 'prometheus',
+        },
+        hide: 2,
+        includeAll: false,
+        label: null,
+        multi: false,
+        name: 'datasource',
+        options: [],
+        query: 'prometheus',
+        refresh: 1,
+        regex: '',
+        skipUrlSync: false,
+        type: 'datasource',
+      },
+    ],
   },
   time: {
     from: 'now-6h',
@@ -976,7 +1047,6 @@ local dashboardConfig = {
   },
   timepicker: {
     refresh_intervals: [
-      '5s',
       '10s',
       '30s',
       '1m',

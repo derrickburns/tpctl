@@ -18,6 +18,7 @@ local dashboardConfig = {
   editable: true,
   gnetId: null,
   graphTooltip: 0,
+  id: 29,
   links: [],
   panels: [
     {
@@ -29,8 +30,14 @@ local dashboardConfig = {
         'rgba(237, 129, 40, 0.89)',
         '#299c46',
       ],
-      datasource: null,
+      datasource: '$datasource',
       decimals: null,
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       format: 'none',
       gauge: {
         maxValue: 100,
@@ -62,7 +69,6 @@ local dashboardConfig = {
       maxDataPoints: 100,
       nullPointMode: 'connected',
       nullText: null,
-      options: {},
       postfix: '',
       postfixFontSize: '50%',
       prefix: '',
@@ -106,7 +112,13 @@ local dashboardConfig = {
     },
     {
       columns: [],
-      datasource: null,
+      datasource: '$datasource',
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       fontSize: '100%',
       gridPos: {
         h: 9,
@@ -115,7 +127,6 @@ local dashboardConfig = {
         y: 0,
       },
       id: 4,
-      options: {},
       pageSize: null,
       showHeader: true,
       sort: {
@@ -305,6 +316,7 @@ local dashboardConfig = {
           expr: 'flux_helm_operator_release_condition_info{condition="Released"}',
           format: 'table',
           instant: true,
+          interval: '',
           legendFormat: '',
           refId: 'A',
         },
@@ -313,7 +325,7 @@ local dashboardConfig = {
       timeShift: null,
       title: 'Released Charts',
       transform: 'table',
-      type: 'table',
+      type: 'table-old',
     },
     {
       cacheTimeout: null,
@@ -324,7 +336,13 @@ local dashboardConfig = {
         'rgba(237, 129, 40, 0.89)',
         '#d44a3a',
       ],
-      datasource: null,
+      datasource: '$datasource',
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       format: 'none',
       gauge: {
         maxValue: 100,
@@ -356,7 +374,6 @@ local dashboardConfig = {
       maxDataPoints: 100,
       nullPointMode: 'connected',
       nullText: null,
-      options: {},
       pluginVersion: '6.6.2',
       postfix: '',
       postfixFontSize: '50%',
@@ -402,7 +419,13 @@ local dashboardConfig = {
     },
     {
       columns: [],
-      datasource: null,
+      datasource: '$datasource',
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       fontSize: '100%',
       gridPos: {
         h: 9,
@@ -411,7 +434,6 @@ local dashboardConfig = {
         y: 9,
       },
       id: 5,
-      options: {},
       pageSize: null,
       showHeader: true,
       sort: {
@@ -609,11 +631,17 @@ local dashboardConfig = {
       timeShift: null,
       title: 'Charts fetched for release',
       transform: 'table',
-      type: 'table',
+      type: 'table-old',
     },
     {
       columns: [],
-      datasource: null,
+      datasource: '$datasource',
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       fontSize: '100%',
       gridPos: {
         h: 9,
@@ -622,7 +650,6 @@ local dashboardConfig = {
         y: 18,
       },
       id: 8,
-      options: {},
       pageSize: null,
       showHeader: true,
       sort: {
@@ -820,14 +847,33 @@ local dashboardConfig = {
       timeShift: null,
       title: 'Charts Rolled Back',
       transform: 'table',
-      type: 'table',
+      type: 'table-old',
     },
   ],
-  schemaVersion: 22,
+  schemaVersion: 25,
   style: 'dark',
   tags: [],
   templating: {
-    list: [],
+    list: [
+      {
+        current: {
+          selected: false,
+          text: 'prometheus',
+          value: 'prometheus',
+        },
+        hide: 2,
+        includeAll: false,
+        label: null,
+        multi: false,
+        name: 'datasource',
+        options: [],
+        query: 'prometheus',
+        refresh: 1,
+        regex: '',
+        skipUrlSync: false,
+        type: 'datasource',
+      },
+    ],
   },
   time: {
     from: 'now-6h',
@@ -835,7 +881,6 @@ local dashboardConfig = {
   },
   timepicker: {
     refresh_intervals: [
-      '5s',
       '10s',
       '30s',
       '1m',
@@ -850,7 +895,7 @@ local dashboardConfig = {
   timezone: '',
   title: 'Helm Operator',
   uid: 'c8qWijkGz',
-  version: 1,
+  version: 49,
 };
 
 local configmap(me) = grafana.dashboard(me, 'helm-operator', dashboardConfig);

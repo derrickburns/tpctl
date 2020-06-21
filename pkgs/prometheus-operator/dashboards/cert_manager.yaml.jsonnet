@@ -19,13 +19,13 @@ local dashboardConfig = {
   editable: true,
   gnetId: 11001,
   graphTooltip: 0,
-  id: 98,
-  iteration: 1591116184814,
+  id: 23,
+  iteration: 1592740784999,
   links: [],
   panels: [
     {
       collapsed: false,
-      datasource: null,
+      datasource: '$datasource',
       gridPos: {
         h: 1,
         w: 24,
@@ -39,7 +39,13 @@ local dashboardConfig = {
     },
     {
       columns: [],
-      datasource: 'Prometheus',
+      datasource: '$datasource',
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       fontSize: '100%',
       gridPos: {
         h: 8,
@@ -48,7 +54,6 @@ local dashboardConfig = {
         y: 1,
       },
       id: 15,
-      options: {},
       pageSize: null,
       pluginVersion: '6.3.4',
       scroll: true,
@@ -104,8 +109,9 @@ local dashboardConfig = {
       ],
       targets: [
         {
-          expr: 'sort_desc( sum(certmanager_certificate_expiration_timestamp_seconds{exported_namespace=~"$Namespace"} - time()) BY (name,exported_namespace) )',
+          expr: 'sort_desc( sum(certmanager_certificate_expiration_timestamp_seconds{exported_namespace=~"$namespace"} - time()) BY (name,exported_namespace) )',
           instant: true,
+          interval: '',
           legendFormat: ' {{exported_namespace}} / {{name}}',
           refId: 'A',
         },
@@ -114,7 +120,7 @@ local dashboardConfig = {
       timeShift: null,
       title: 'Time Left',
       transform: 'timeseries_to_rows',
-      type: 'table',
+      type: 'table-old',
     },
     {
       aliasColors: {},
@@ -122,7 +128,13 @@ local dashboardConfig = {
       cacheTimeout: null,
       dashLength: 10,
       dashes: false,
-      datasource: 'Prometheus',
+      datasource: '$datasource',
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       fill: 0,
       fillGradient: 0,
       gridPos: {
@@ -215,7 +227,13 @@ local dashboardConfig = {
       bars: false,
       dashLength: 10,
       dashes: false,
-      datasource: 'Prometheus',
+      datasource: '$datasource',
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       fill: 0,
       fillGradient: 0,
       gridPos: {
@@ -253,8 +271,9 @@ local dashboardConfig = {
       steppedLine: false,
       targets: [
         {
-          expr: 'sum(certmanager_certificate_expiration_timestamp_seconds{exported_namespace=~"$Namespace"} - time()) BY (name,exported_namespace)',
+          expr: 'sum(certmanager_certificate_expiration_timestamp_seconds{exported_namespace=~"$namespace"} - time()) BY (name,exported_namespace)',
           instant: false,
+          interval: '',
           intervalFactor: 1,
           legendFormat: ' {{exported_namespace}} / {{name}}',
           refId: 'A',
@@ -304,7 +323,7 @@ local dashboardConfig = {
     },
     {
       collapsed: false,
-      datasource: null,
+      datasource: '$datasource',
       gridPos: {
         h: 1,
         w: 24,
@@ -321,7 +340,13 @@ local dashboardConfig = {
       bars: false,
       dashLength: 10,
       dashes: false,
-      datasource: 'Prometheus',
+      datasource: '$datasource',
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       fill: 1,
       fillGradient: 0,
       gridPos: {
@@ -412,7 +437,13 @@ local dashboardConfig = {
         'rgba(237, 129, 40, 0.89)',
         '#d44a3a',
       ],
-      datasource: 'Prometheus',
+      datasource: '$datasource',
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       format: 'none',
       gauge: {
         maxValue: 100,
@@ -444,7 +475,6 @@ local dashboardConfig = {
       maxDataPoints: 100,
       nullPointMode: 'connected',
       nullText: null,
-      options: {},
       postfix: '',
       postfixFontSize: '50%',
       prefix: '',
@@ -492,7 +522,13 @@ local dashboardConfig = {
       bars: false,
       dashLength: 10,
       dashes: false,
-      datasource: 'Prometheus',
+      datasource: '$datasource',
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       fill: 1,
       fillGradient: 0,
       gridPos: {
@@ -579,7 +615,13 @@ local dashboardConfig = {
       bars: false,
       dashLength: 10,
       dashes: false,
-      datasource: 'Prometheus',
+      datasource: '$datasource',
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       fill: 1,
       fillGradient: 0,
       gridPos: {
@@ -666,7 +708,13 @@ local dashboardConfig = {
       bars: false,
       dashLength: 10,
       dashes: false,
-      datasource: 'Prometheus',
+      datasource: '$datasource',
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       fill: 1,
       fillGradient: 0,
       gridPos: {
@@ -753,7 +801,13 @@ local dashboardConfig = {
       bars: false,
       dashLength: 10,
       dashes: false,
-      datasource: 'Prometheus',
+      datasource: '$datasource',
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       fill: 1,
       fillGradient: 0,
       gridPos: {
@@ -840,7 +894,13 @@ local dashboardConfig = {
       bars: false,
       dashLength: 10,
       dashes: false,
-      datasource: 'Prometheus',
+      datasource: '$datasource',
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       fill: 1,
       fillGradient: 0,
       gridPos: {
@@ -927,7 +987,13 @@ local dashboardConfig = {
       bars: false,
       dashLength: 10,
       dashes: false,
-      datasource: 'Prometheus',
+      datasource: '$datasource',
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       fill: 1,
       fillGradient: 0,
       gridPos: {
@@ -1014,7 +1080,13 @@ local dashboardConfig = {
       bars: false,
       dashLength: 10,
       dashes: false,
-      datasource: 'Prometheus',
+      datasource: '$datasource',
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       fill: 1,
       fillGradient: 0,
       gridPos: {
@@ -1101,7 +1173,13 @@ local dashboardConfig = {
       bars: false,
       dashLength: 10,
       dashes: false,
-      datasource: 'Prometheus',
+      datasource: '$datasource',
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       fill: 1,
       fillGradient: 0,
       gridPos: {
@@ -1185,7 +1263,7 @@ local dashboardConfig = {
     },
   ],
   refresh: false,
-  schemaVersion: 22,
+  schemaVersion: 25,
   style: 'dark',
   tags: [],
   templating: {
@@ -1197,13 +1275,13 @@ local dashboardConfig = {
           text: 'All',
           value: '$__all',
         },
-        datasource: 'Prometheus',
+        datasource: '$datasource',
         definition: 'label_values(exported_namespace)',
         hide: 0,
         includeAll: true,
         label: null,
         multi: false,
-        name: 'Namespace',
+        name: 'namespace',
         options: [],
         query: 'label_values(exported_namespace)',
         refresh: 1,
@@ -1223,15 +1301,15 @@ local dashboardConfig = {
           text: 'All',
           value: '$__all',
         },
-        datasource: 'Prometheus',
-        definition: 'label_values(certmanager_certificate_expiration_timestamp_seconds{exported_namespace=~"$Namespace"},name) ',
+        datasource: '$datasource',
+        definition: 'label_values(certmanager_certificate_expiration_timestamp_seconds{exported_namespace=~"$namespace"},name) ',
         hide: 0,
         includeAll: true,
-        label: null,
+        label: 'Certificate',
         multi: false,
-        name: 'Certificate',
+        name: 'certificate',
         options: [],
-        query: 'label_values(certmanager_certificate_expiration_timestamp_seconds{exported_namespace=~"$Namespace"},name) ',
+        query: 'label_values(certmanager_certificate_expiration_timestamp_seconds{exported_namespace=~"$namespace"},name) ',
         refresh: 2,
         regex: '',
         skipUrlSync: false,
@@ -1242,6 +1320,25 @@ local dashboardConfig = {
         type: 'query',
         useTags: false,
       },
+      {
+        current: {
+          selected: false,
+          text: 'prometheus',
+          value: 'prometheus',
+        },
+        hide: 2,
+        includeAll: false,
+        label: 'Datasource',
+        multi: false,
+        name: 'datasource',
+        options: [],
+        query: 'prometheus',
+        queryValue: '',
+        refresh: 1,
+        regex: '',
+        skipUrlSync: false,
+        type: 'datasource',
+      },
     ],
   },
   time: {
@@ -1250,7 +1347,6 @@ local dashboardConfig = {
   },
   timepicker: {
     refresh_intervals: [
-      '5s',
       '10s',
       '30s',
       '1m',
@@ -1276,7 +1372,7 @@ local dashboardConfig = {
   timezone: 'browser',
   title: 'Cert Manager',
   uid: 'u6M5igpWk',
-  version: 3,
+  version: 4,
 };
 
 local configmap(me) = grafana.dashboard(me, 'cert-manager', dashboardConfig);

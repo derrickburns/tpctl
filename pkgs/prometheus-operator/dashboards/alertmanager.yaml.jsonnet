@@ -31,8 +31,8 @@ local dashboardConfig = {
   editable: true,
   gnetId: 9578,
   graphTooltip: 1,
-  id: 201,
-  iteration: 1592054474697,
+  id: 22,
+  iteration: 1592740729772,
   links: [
     {
       icon: 'doc',
@@ -83,7 +83,7 @@ local dashboardConfig = {
   panels: [
     {
       collapsed: false,
-      datasource: null,
+      datasource: '$datasource',
       gridPos: {
         h: 1,
         w: 24,
@@ -714,7 +714,7 @@ local dashboardConfig = {
     },
     {
       collapsed: false,
-      datasource: null,
+      datasource: '$datasource',
       gridPos: {
         h: 1,
         w: 24,
@@ -777,13 +777,6 @@ local dashboardConfig = {
       renderer: 'flot',
       repeat: 'pod',
       repeatDirection: 'h',
-      scopedVars: {
-        pod: {
-          selected: false,
-          text: 'alertmanager-prometheus-operator-alertmanager-0',
-          value: 'alertmanager-prometheus-operator-alertmanager-0',
-        },
-      },
       seriesOverrides: [
         {
           alias: '/Failed.*/',
@@ -904,13 +897,6 @@ local dashboardConfig = {
       renderer: 'flot',
       repeat: 'pod',
       repeatDirection: 'h',
-      scopedVars: {
-        pod: {
-          selected: false,
-          text: 'alertmanager-prometheus-operator-alertmanager-0',
-          value: 'alertmanager-prometheus-operator-alertmanager-0',
-        },
-      },
       seriesOverrides: [
         {
           alias: '/0.99.*/',
@@ -984,7 +970,7 @@ local dashboardConfig = {
     },
     {
       collapsed: false,
-      datasource: null,
+      datasource: '$datasource',
       gridPos: {
         h: 1,
         w: 24,
@@ -1041,13 +1027,6 @@ local dashboardConfig = {
       renderer: 'flot',
       repeat: 'pod',
       repeatDirection: 'h',
-      scopedVars: {
-        pod: {
-          selected: false,
-          text: 'alertmanager-prometheus-operator-alertmanager-0',
-          value: 'alertmanager-prometheus-operator-alertmanager-0',
-        },
-      },
       seriesOverrides: [
         {
           alias: 'active',
@@ -1156,13 +1135,6 @@ local dashboardConfig = {
       renderer: 'flot',
       repeat: 'pod',
       repeatDirection: 'h',
-      scopedVars: {
-        pod: {
-          selected: false,
-          text: 'alertmanager-prometheus-operator-alertmanager-0',
-          value: 'alertmanager-prometheus-operator-alertmanager-0',
-        },
-      },
       seriesOverrides: [
         {
           alias: 'resolved',
@@ -1230,7 +1202,7 @@ local dashboardConfig = {
     },
     {
       collapsed: false,
-      datasource: null,
+      datasource: '$datasource',
       gridPos: {
         h: 1,
         w: 24,
@@ -1286,13 +1258,6 @@ local dashboardConfig = {
       renderer: 'flot',
       repeat: 'pod',
       repeatDirection: 'h',
-      scopedVars: {
-        pod: {
-          selected: false,
-          text: 'alertmanager-prometheus-operator-alertmanager-0',
-          value: 'alertmanager-prometheus-operator-alertmanager-0',
-        },
-      },
       seriesOverrides: [
         {
           alias: 'Nf log query errors',
@@ -1398,13 +1363,6 @@ local dashboardConfig = {
       renderer: 'flot',
       repeat: 'pod',
       repeatDirection: 'h',
-      scopedVars: {
-        pod: {
-          selected: false,
-          text: 'alertmanager-prometheus-operator-alertmanager-0',
-          value: 'alertmanager-prometheus-operator-alertmanager-0',
-        },
-      },
       seriesOverrides: [
         {
           alias: 'Silecnces query fails',
@@ -1487,10 +1445,10 @@ local dashboardConfig = {
       {
         current: {
           selected: false,
-          text: 'default',
-          value: 'default',
+          text: 'prometheus',
+          value: 'prometheus',
         },
-        hide: 0,
+        hide: 2,
         includeAll: false,
         label: 'Prometheus datasource',
         multi: false,
@@ -1563,7 +1521,7 @@ local dashboardConfig = {
   timezone: '',
   title: 'Alertmanager',
   uid: 'eea-9_sik',
-  version: 5,
+  version: 7,
 };
 
 local configmap(me) = grafana.dashboard(me, 'alertmanager', dashboardConfig);
