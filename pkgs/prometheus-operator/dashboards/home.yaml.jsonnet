@@ -18,9 +18,7 @@ local dashboardConfig = {
   editable: false,
   gnetId: null,
   graphTooltip: 0,
-  links: [
-
-  ],
+  links: [],
   panels: [
     {
       collapsed: false,
@@ -32,9 +30,7 @@ local dashboardConfig = {
         y: 0,
       },
       id: 25,
-      panels: [
-
-      ],
+      panels: [],
       title: 'Tidepool',
       type: 'row',
     },
@@ -42,13 +38,9 @@ local dashboardConfig = {
       datasource: '$datasource',
       fieldConfig: {
         defaults: {
-          custom: {
-
-          },
+          custom: {},
         },
-        overrides: [
-
-        ],
+        overrides: [],
       },
       folderId: null,
       gridPos: {
@@ -76,13 +68,9 @@ local dashboardConfig = {
       datasource: '$datasource',
       fieldConfig: {
         defaults: {
-          custom: {
-
-          },
+          custom: {},
         },
-        overrides: [
-
-        ],
+        overrides: [],
       },
       folderId: null,
       gridPos: {
@@ -98,9 +86,7 @@ local dashboardConfig = {
       recent: false,
       search: true,
       starred: false,
-      tags: [
-
-      ],
+      tags: [],
       timeFrom: null,
       timeShift: null,
       title: 'Alerts',
@@ -116,9 +102,7 @@ local dashboardConfig = {
         y: 8,
       },
       id: 27,
-      panels: [
-
-      ],
+      panels: [],
       title: 'Other Services',
       type: 'row',
     },
@@ -127,13 +111,9 @@ local dashboardConfig = {
       datasource: '$datasource',
       fieldConfig: {
         defaults: {
-          custom: {
-
-          },
+          custom: {},
         },
-        overrides: [
-
-        ],
+        overrides: [],
       },
       gridPos: {
         h: 2,
@@ -153,13 +133,9 @@ local dashboardConfig = {
       datasource: '$datasource',
       fieldConfig: {
         defaults: {
-          custom: {
-
-          },
+          custom: {},
         },
-        overrides: [
-
-        ],
+        overrides: [],
       },
       folderId: null,
       gridPos: {
@@ -175,9 +151,7 @@ local dashboardConfig = {
       recent: false,
       search: true,
       starred: false,
-      tags: [
-
-      ],
+      tags: [],
       timeFrom: null,
       timeShift: null,
       title: 'Cluster',
@@ -187,13 +161,9 @@ local dashboardConfig = {
       datasource: '$datasource',
       fieldConfig: {
         defaults: {
-          custom: {
-
-          },
+          custom: {},
         },
-        overrides: [
-
-        ],
+        overrides: [],
       },
       folderId: null,
       gridPos: {
@@ -209,9 +179,7 @@ local dashboardConfig = {
       recent: false,
       search: true,
       starred: false,
-      tags: [
-
-      ],
+      tags: [],
       timeFrom: null,
       timeShift: null,
       title: 'Node',
@@ -221,15 +189,10 @@ local dashboardConfig = {
       datasource: '$datasource',
       fieldConfig: {
         defaults: {
-          custom: {
-
-          },
+          custom: {},
         },
-        overrides: [
-
-        ],
+        overrides: [],
       },
-      folderId: null,
       gridPos: {
         h: 9,
         w: 8,
@@ -239,29 +202,25 @@ local dashboardConfig = {
       headings: false,
       id: 17,
       limit: 10,
-      query: 'Pods',
+      query: 'Pod',
       recent: false,
       search: true,
       starred: false,
       tags: [
-
+        'kubernetes-mixin',
       ],
       timeFrom: null,
       timeShift: null,
-      title: 'Pods',
+      title: 'Pod',
       type: 'dashlist',
     },
     {
       datasource: '$datasource',
       fieldConfig: {
         defaults: {
-          custom: {
-
-          },
+          custom: {},
         },
-        overrides: [
-
-        ],
+        overrides: [],
       },
       folderId: null,
       gridPos: {
@@ -277,9 +236,7 @@ local dashboardConfig = {
       recent: false,
       search: true,
       starred: false,
-      tags: [
-
-      ],
+      tags: [],
       timeFrom: null,
       timeShift: null,
       title: 'Autoscaler',
@@ -289,13 +246,9 @@ local dashboardConfig = {
       datasource: '$datasource',
       fieldConfig: {
         defaults: {
-          custom: {
-
-          },
+          custom: {},
         },
-        overrides: [
-
-        ],
+        overrides: [],
       },
       folderId: null,
       gridPos: {
@@ -311,9 +264,7 @@ local dashboardConfig = {
       recent: false,
       search: true,
       starred: false,
-      tags: [
-
-      ],
+      tags: [],
       timeFrom: null,
       timeShift: null,
       title: 'Deployments',
@@ -323,14 +274,11 @@ local dashboardConfig = {
       datasource: '$datasource',
       fieldConfig: {
         defaults: {
-          custom: {
-
-          },
+          custom: {},
         },
-        overrides: [
-
-        ],
+        overrides: [],
       },
+      folderId: null,
       gridPos: {
         h: 4,
         w: 8,
@@ -344,9 +292,7 @@ local dashboardConfig = {
       recent: false,
       search: true,
       starred: false,
-      tags: [
-
-      ],
+      tags: [],
       timeFrom: null,
       timeShift: null,
       title: 'StatefulSets',
@@ -356,14 +302,11 @@ local dashboardConfig = {
       datasource: '$datasource',
       fieldConfig: {
         defaults: {
-          custom: {
-
-          },
+          custom: {},
         },
-        overrides: [
-
-        ],
+        overrides: [],
       },
+      folderId: null,
       gridPos: {
         h: 4,
         w: 8,
@@ -377,9 +320,7 @@ local dashboardConfig = {
       recent: false,
       search: true,
       starred: false,
-      tags: [
-
-      ],
+      tags: [],
       timeFrom: null,
       timeShift: null,
       title: 'Persistent Volumes',
@@ -390,13 +331,9 @@ local dashboardConfig = {
       datasource: '$datasource',
       fieldConfig: {
         defaults: {
-          custom: {
-
-          },
+          custom: {},
         },
-        overrides: [
-
-        ],
+        overrides: [],
       },
       gridPos: {
         h: 2,
@@ -417,13 +354,9 @@ local dashboardConfig = {
       datasource: '$datasource',
       fieldConfig: {
         defaults: {
-          custom: {
-
-          },
+          custom: {},
         },
-        overrides: [
-
-        ],
+        overrides: [],
       },
       gridPos: {
         h: 2,
@@ -444,13 +377,9 @@ local dashboardConfig = {
       datasource: '$datasource',
       fieldConfig: {
         defaults: {
-          custom: {
-
-          },
+          custom: {},
         },
-        overrides: [
-
-        ],
+        overrides: [],
       },
       gridPos: {
         h: 2,
@@ -470,13 +399,9 @@ local dashboardConfig = {
       datasource: '$datasource',
       fieldConfig: {
         defaults: {
-          custom: {
-
-          },
+          custom: {},
         },
-        overrides: [
-
-        ],
+        overrides: [],
       },
       folderId: null,
       gridPos: {
@@ -492,9 +417,7 @@ local dashboardConfig = {
       recent: false,
       search: true,
       starred: false,
-      tags: [
-
-      ],
+      tags: [],
       timeFrom: null,
       timeShift: null,
       title: 'Envoy',
@@ -504,13 +427,9 @@ local dashboardConfig = {
       datasource: '$datasource',
       fieldConfig: {
         defaults: {
-          custom: {
-
-          },
+          custom: {},
         },
-        overrides: [
-
-        ],
+        overrides: [],
       },
       folderId: null,
       gridPos: {
@@ -526,9 +445,7 @@ local dashboardConfig = {
       recent: false,
       search: true,
       starred: false,
-      tags: [
-
-      ],
+      tags: [],
       timeFrom: null,
       timeShift: null,
       title: 'Gloo',
@@ -538,13 +455,9 @@ local dashboardConfig = {
       datasource: '$datasource',
       fieldConfig: {
         defaults: {
-          custom: {
-
-          },
+          custom: {},
         },
-        overrides: [
-
-        ],
+        overrides: [],
       },
       folderId: null,
       gridPos: {
@@ -560,9 +473,7 @@ local dashboardConfig = {
       recent: false,
       search: true,
       starred: false,
-      tags: [
-
-      ],
+      tags: [],
       timeFrom: null,
       timeShift: null,
       title: 'Linkerd',
@@ -573,13 +484,9 @@ local dashboardConfig = {
       datasource: '$datasource',
       fieldConfig: {
         defaults: {
-          custom: {
-
-          },
+          custom: {},
         },
-        overrides: [
-
-        ],
+        overrides: [],
       },
       gridPos: {
         h: 2,
@@ -599,13 +506,9 @@ local dashboardConfig = {
       datasource: '$datasource',
       fieldConfig: {
         defaults: {
-          custom: {
-
-          },
+          custom: {},
         },
-        overrides: [
-
-        ],
+        overrides: [],
       },
       folderId: null,
       gridPos: {
@@ -621,9 +524,7 @@ local dashboardConfig = {
       recent: false,
       search: true,
       starred: false,
-      tags: [
-
-      ],
+      tags: [],
       timeFrom: null,
       timeShift: null,
       title: 'Flux',
@@ -633,13 +534,9 @@ local dashboardConfig = {
       datasource: '$datasource',
       fieldConfig: {
         defaults: {
-          custom: {
-
-          },
+          custom: {},
         },
-        overrides: [
-
-        ],
+        overrides: [],
       },
       folderId: null,
       gridPos: {
@@ -655,9 +552,7 @@ local dashboardConfig = {
       recent: false,
       search: true,
       starred: false,
-      tags: [
-
-      ],
+      tags: [],
       timeFrom: null,
       timeShift: null,
       title: 'Helm Operator',
@@ -667,13 +562,9 @@ local dashboardConfig = {
       datasource: '$datasource',
       fieldConfig: {
         defaults: {
-          custom: {
-
-          },
+          custom: {},
         },
-        overrides: [
-
-        ],
+        overrides: [],
       },
       folderId: null,
       gridPos: {
@@ -702,13 +593,9 @@ local dashboardConfig = {
       datasource: '$datasource',
       fieldConfig: {
         defaults: {
-          custom: {
-
-          },
+          custom: {},
         },
-        overrides: [
-
-        ],
+        overrides: [],
       },
       gridPos: {
         h: 2,
@@ -728,13 +615,9 @@ local dashboardConfig = {
       datasource: '$datasource',
       fieldConfig: {
         defaults: {
-          custom: {
-
-          },
+          custom: {},
         },
-        overrides: [
-
-        ],
+        overrides: [],
       },
       folderId: null,
       gridPos: {
@@ -750,9 +633,7 @@ local dashboardConfig = {
       recent: false,
       search: true,
       starred: false,
-      tags: [
-
-      ],
+      tags: [],
       timeFrom: null,
       timeShift: null,
       title: 'External DNS',
@@ -762,13 +643,9 @@ local dashboardConfig = {
       datasource: '$datasource',
       fieldConfig: {
         defaults: {
-          custom: {
-
-          },
+          custom: {},
         },
-        overrides: [
-
-        ],
+        overrides: [],
       },
       folderId: null,
       gridPos: {
@@ -784,9 +661,7 @@ local dashboardConfig = {
       recent: false,
       search: true,
       starred: false,
-      tags: [
-
-      ],
+      tags: [],
       timeFrom: null,
       timeShift: null,
       title: 'Cert Manager',
@@ -797,13 +672,9 @@ local dashboardConfig = {
       datasource: '$datasource',
       fieldConfig: {
         defaults: {
-          custom: {
-
-          },
+          custom: {},
         },
-        overrides: [
-
-        ],
+        overrides: [],
       },
       gridPos: {
         h: 2,
@@ -823,13 +694,9 @@ local dashboardConfig = {
       datasource: '$datasource',
       fieldConfig: {
         defaults: {
-          custom: {
-
-          },
+          custom: {},
         },
-        overrides: [
-
-        ],
+        overrides: [],
       },
       folderId: null,
       gridPos: {
@@ -845,9 +712,7 @@ local dashboardConfig = {
       recent: false,
       search: true,
       starred: false,
-      tags: [
-
-      ],
+      tags: [],
       timeFrom: null,
       timeShift: null,
       title: 'Grafana',
@@ -857,13 +722,9 @@ local dashboardConfig = {
       datasource: '$datasource',
       fieldConfig: {
         defaults: {
-          custom: {
-
-          },
+          custom: {},
         },
-        overrides: [
-
-        ],
+        overrides: [],
       },
       folderId: null,
       gridPos: {
@@ -879,9 +740,7 @@ local dashboardConfig = {
       recent: false,
       search: true,
       starred: false,
-      tags: [
-
-      ],
+      tags: [],
       timeFrom: null,
       timeShift: null,
       title: 'Prometheus',
@@ -891,13 +750,9 @@ local dashboardConfig = {
       datasource: '$datasource',
       fieldConfig: {
         defaults: {
-          custom: {
-
-          },
+          custom: {},
         },
-        overrides: [
-
-        ],
+        overrides: [],
       },
       folderId: null,
       gridPos: {
@@ -913,9 +768,7 @@ local dashboardConfig = {
       recent: false,
       search: true,
       starred: false,
-      tags: [
-
-      ],
+      tags: [],
       timeFrom: null,
       timeShift: null,
       title: 'Alertmanager',
@@ -924,13 +777,9 @@ local dashboardConfig = {
   ],
   schemaVersion: 25,
   style: 'dark',
-  tags: [
-
-  ],
+  tags: [],
   templating: {
-    list: [
-
-    ],
+    list: [],
   },
   time: {
     from: 'now-6h',
@@ -952,7 +801,7 @@ local dashboardConfig = {
   timezone: '',
   title: 'Home',
   uid: 'HRN3fEzGk',
-  version: 4,
+  version: 1,
 };
 
 local configmap(me) = grafana.dashboard(me, 'home', dashboardConfig);
