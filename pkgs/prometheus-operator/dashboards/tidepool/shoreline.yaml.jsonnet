@@ -58,12 +58,13 @@ local dashboardConfig = {
       legend: {
         alignAsTable: true,
         avg: true,
-        current: false,
+        current: true,
+        hideZero: true,
         max: false,
         min: false,
         rightSide: true,
         show: true,
-        total: false,
+        total: true,
         values: true,
       },
       lines: true,
@@ -337,6 +338,7 @@ local dashboardConfig = {
       },
     },
   ],
+  refresh: false,
   schemaVersion: 25,
   style: 'dark',
   tags: [
@@ -366,7 +368,7 @@ local dashboardConfig = {
     ],
   },
   time: {
-    from: 'now-24h',
+    from: 'now-6h',
     to: 'now',
   },
   timepicker: {
