@@ -4,39 +4,16 @@ local global = import '../../lib/global.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
-local affinity = {
-  nodeAffinity: {
-    requiredDuringSchedulingIgnoredDuringExecution: {
-      nodeSelectorTerms: [{
-        matchExpressions: [
-          {
-            key: 'role',
-            operator: 'In',
-            values: ['monitoring'],
-          },
-        ],
-      }],
-    },
-  },
-};
-
-local tolerations = [
-  {
-    key: 'role',
-    operator: 'Equal',
-    value: 'monitoring',
-    effect: 'NoSchedule',
-  },
-];
-
 local persistentVolumeClaim(me) = k8s.pvc(me, '200Mi', 'monitoring-expanding');
 
 local generateAccounts(me) = k8s.k('batch/v1', 'Job') + k8s.metadata('generate-accounts', me.namespace) {
   spec+: {
     template: {
       spec: {
-        affinity: affinity,
-        tolerations: tolerations,
+        affinity: {
+          nodeAffinity: k8s.nodeAffinity(),
+        },
+        tolerations: [k8s.toleration()],
         restartPolicy: 'Never',
         containers+: [
           {
@@ -44,9 +21,6 @@ local generateAccounts(me) = k8s.k('batch/v1', 'Job') + k8s.metadata('generate-a
             command: [
               '/bin/bash',
               '-c',
-              'echo',
-              'tidepool',
-              '|',
               '/app/accountTool.py',
               'python3',
               'accountTool.py',
@@ -86,8 +60,10 @@ local cronJob(me, job) = k8s.k('batch/v1beta1', 'CronJob') + k8s.metadata('loadt
     schedule: job.schedule,
     template: {
       spec: {
-        affinity: affinity,
-        tolerations: tolerations,
+        affinity: {
+          nodeAffinity: k8s.nodeAffinity(),
+        },
+        tolerations: [k8s.toleration()],
         restartPolicy: 'Never',
         containers+: [
           {
