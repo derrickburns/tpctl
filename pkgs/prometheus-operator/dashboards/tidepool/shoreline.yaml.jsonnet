@@ -15,7 +15,7 @@ local dashboardConfig = {
       },
     ],
   },
-  editable: true,
+  editable: false,
   gnetId: null,
   graphTooltip: 0,
   links: [],
@@ -37,7 +37,7 @@ local dashboardConfig = {
       bars: false,
       dashLength: 10,
       dashes: false,
-      datasource: null,
+      datasource: '$datasource',
       fieldConfig: {
         defaults: {
           custom: {},
@@ -57,14 +57,14 @@ local dashboardConfig = {
       interval: '',
       legend: {
         alignAsTable: true,
-        avg: false,
+        avg: true,
         current: false,
         max: false,
         min: false,
         rightSide: true,
         show: true,
         total: false,
-        values: false,
+        values: true,
       },
       lines: true,
       linewidth: 1,
@@ -82,7 +82,7 @@ local dashboardConfig = {
       steppedLine: false,
       targets: [
         {
-          expr: 'sum(increase(tidepool_shoreline_failed_status_count[1m])) by (status_reason, status_code)',
+          expr: 'sum(increase(tidepool_shoreline_failed_status_count[5m])) by (status_reason, status_code)',
           interval: '',
           legendFormat: '{{status_reason}} - {{status_code}}',
           refId: 'A',
@@ -92,7 +92,7 @@ local dashboardConfig = {
       timeFrom: null,
       timeRegions: [],
       timeShift: null,
-      title: 'Failed Statuses',
+      title: 'Failed Statuses [5m]',
       tooltip: {
         shared: true,
         sort: 0,
@@ -108,6 +108,7 @@ local dashboardConfig = {
       },
       yaxes: [
         {
+          '$$hashKey': 'object:63',
           format: 'short',
           label: null,
           logBase: 1,
@@ -116,6 +117,7 @@ local dashboardConfig = {
           show: true,
         },
         {
+          '$$hashKey': 'object:64',
           format: 'short',
           label: null,
           logBase: 1,
@@ -152,7 +154,7 @@ local dashboardConfig = {
         '#d44a3a',
         '#d44a3a',
       ],
-      datasource: null,
+      datasource: '$datasource',
       fieldConfig: {
         defaults: {
           custom: {},
@@ -243,7 +245,7 @@ local dashboardConfig = {
       bars: false,
       dashLength: 10,
       dashes: false,
-      datasource: null,
+      datasource: '$datasource',
       fieldConfig: {
         defaults: {
           custom: {},
@@ -285,7 +287,8 @@ local dashboardConfig = {
       steppedLine: false,
       targets: [
         {
-          expr: 'sum(rate(tidepool_shoreline_failed_marketo_upload_total[5m])) by (service)',
+          expr: 'sum(increase(tidepool_shoreline_failed_marketo_upload_total[5m])) by (service)',
+          interval: '',
           legendFormat: '{{ service }}',
           refId: 'A',
         },
@@ -294,7 +297,7 @@ local dashboardConfig = {
       timeFrom: null,
       timeRegions: [],
       timeShift: null,
-      title: 'Failed Uploads to Marketo',
+      title: 'Failed Uploads to Marketo [5m]',
       tooltip: {
         shared: true,
         sort: 0,
@@ -310,6 +313,7 @@ local dashboardConfig = {
       },
       yaxes: [
         {
+          '$$hashKey': 'object:157',
           format: 'short',
           label: null,
           logBase: 1,
@@ -318,6 +322,7 @@ local dashboardConfig = {
           show: true,
         },
         {
+          '$$hashKey': 'object:158',
           format: 'short',
           label: null,
           logBase: 1,
@@ -339,15 +344,33 @@ local dashboardConfig = {
     'shoreline',
   ],
   templating: {
-    list: [],
+    list: [
+      {
+        current: {
+          selected: false,
+          text: 'Prometheus',
+          value: 'Prometheus',
+        },
+        hide: 2,
+        includeAll: false,
+        label: null,
+        multi: false,
+        name: 'datasource',
+        options: [],
+        query: 'prometheus',
+        refresh: 1,
+        regex: '',
+        skipUrlSync: false,
+        type: 'datasource',
+      },
+    ],
   },
   time: {
-    from: 'now-7d',
+    from: 'now-24h',
     to: 'now',
   },
   timepicker: {
     refresh_intervals: [
-      '5s',
       '10s',
       '30s',
       '1m',
