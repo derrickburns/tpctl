@@ -199,6 +199,9 @@ local helmrelease(me) = k8s.helmrelease(me, {
     },
     initContainers: [buddies.sysctl],
     securityContext: k8s.securityContext,
+    serviceMonitor: {
+      enabled:  global.isEnabled(me.config, 'prometheus-operator'),
+    },
     podSecurityContext: {
       allowPrivilegeEscalation: false,
       capabilities: {
