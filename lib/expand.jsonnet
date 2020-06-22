@@ -16,14 +16,17 @@ local virtualServiceDescription(config, me, namespace, pkg) = {
 
 // add virtual service description for packages that need one
 local addVirtualServiceIfNeeded(config, me, namespace, pkg) = me + (
-  if (!std.objectHas(me, 'virtualServices')) && lib.getElse(me, 'export', false)
-  then virtualServiceDescription(config, me, namespace, pkg)
+  if std.isBoolean(lib.get(me, 'export'))
+  then
+    if (!std.objectHas(me, 'virtualServices')) && lib.getElse(me, 'export', false)
+    then virtualServiceDescription(config, me, namespace, pkg)
+    else {}
   else {}
 );
 
-local labelVirtualServices(config, me, namespace, pkg) = me +  {
+local labelVirtualServices(config, me, namespace, pkg) = me {
   local update(vsname, vs) = { name: vsname, namespace: namespace } + vs,
-  virtualServices+: std.mapWithKey(update, lib.getElse(me, 'virtualServices', {}))
+  virtualServices+: std.mapWithKey(update, lib.getElse(me, 'virtualServices', {})),
 };
 
 local dispatch = {
