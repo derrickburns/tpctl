@@ -1,6 +1,6 @@
 #!/usr/local/bin/python3
 #
-# k8s_sort 
+# k8s_sort
 #
 # Input: YAML stream of Kubernetes manifests (i.e. each object has metadata with apiVersion, kind, name)
 # Output: sorted YAML stream of same Kubernetes manifests
@@ -8,9 +8,9 @@
 # Pre-condition:
 # 1) Input is sorted by apiVersion/kind
 #
-# Post-condition: 
+# Post-condition:
 #
-# 1) Output is sorted by apiVersion/kind 
+# 1) Output is sorted by apiVersion/kind
 # 2) Within apiVersion/kind, output is sorted by (namespace, name)
 
 from ruamel.yaml import YAML
@@ -62,6 +62,7 @@ known = [
 	{ "apiVersion": "cert-manager.io/", "kind": "Certificate"},
 	{ "apiVersion": "monitoring.coreos.com/", "kind": "PodMonitor"},
 	{ "apiVersion": "monitoring.coreos.com/", "kind": "ServiceMonitor"},
+	{ "apiVersion": "monitoring.coreos.com/", "kind": "PrometheusRule"},
 	{ "apiVersion": "jaegertracing.io/", "kind": "Jaeger"},
 	{ "apiVersion": "helm.fluxcd.io/", "kind": "HelmRelease"},
         ]

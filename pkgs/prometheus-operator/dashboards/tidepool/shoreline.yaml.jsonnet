@@ -18,6 +18,7 @@ local dashboardConfig = {
   editable: false,
   gnetId: null,
   graphTooltip: 0,
+  iteration: 1592867207055,
   links: [],
   panels: [
     {
@@ -38,6 +39,7 @@ local dashboardConfig = {
       dashLength: 10,
       dashes: false,
       datasource: '$datasource',
+      decimals: 0,
       fieldConfig: {
         defaults: {
           custom: {},
@@ -387,7 +389,7 @@ local dashboardConfig = {
   timezone: '',
   title: 'Shoreline',
   uid: '5sv7jfiGk',
-  version: 1,
+  version: 2,
 };
 
 local configmap(me) = grafana.dashboard(me, 'tidepool-shoreline', dashboardConfig);

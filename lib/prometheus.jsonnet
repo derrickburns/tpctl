@@ -53,6 +53,19 @@ local lib = import 'lib.jsonnet';
     },
   },
 
+  prometheusRule(me, name, groups, prometheus='prometheus-operator-prometheus'):: k8s.k('monitoring.coreos.com/v1', 'PrometheusRule') + k8s.metadata(me.pkg, me.namespace) {
+    metadata: {
+      labels: {
+        prometheus: prometheus,
+        role: 'alert-rules',
+      },
+      name: '%s.rules' % name,
+    },
+    spec: {
+      groups: groups,
+    },
+  },
+
   Podmonitor(me, port, selector, path='/metrics')::
     if global.isEnabled(me.config, 'prometheus-operator')
     then $.podmonitor(me, port, selector, path='/metrics')
