@@ -5,6 +5,7 @@ local gloo = import '../../lib/gloo.jsonnet';
 
 local accessLogging = {
   accessLoggingService: {
+    accessLog: [
       {
         fileSink: {
           jsonFormat: {
