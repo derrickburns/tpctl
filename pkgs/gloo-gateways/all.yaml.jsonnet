@@ -7,6 +7,12 @@ local accessLogging = {
   accessLoggingService: {
     accessLog: [
       {
+        grpcService: {
+            logName: 'accessLog',
+            staticClusterName: 'access_log_cluster',
+        },
+      },
+      {
         fileSink: {
           jsonFormat: {
             authority: '%REQ(:authority)%',
