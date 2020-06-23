@@ -75,6 +75,7 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '8.14.0' }) {
           'cluster-autoscaler.kubernetes.io/safe-to-evict': 'false',
         },
         prometheusSpec: {
+          ruleSelectorNilUsesHelmValues: false,
           serviceMonitorSelectorNilUsesHelmValues: false,
           podMonitorSelectorNilUsesHelmValues: false,
           enableAdminAPI: true,
