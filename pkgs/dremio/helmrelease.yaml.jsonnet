@@ -14,7 +14,7 @@ local helmrelease(me) = k8s.helmrelease(me, { version: lib.getElse(me, 'version'
       imageTag: '4.5',
       serviceType: "ClusterIP",
       storageClass: "gp2-expanding",
-    },
+    } + lib.getElse(me, 'chartValues', {}),
   },
 };
 
