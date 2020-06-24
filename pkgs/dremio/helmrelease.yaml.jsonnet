@@ -2,7 +2,7 @@ local common = import '../../lib/common.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
-local helmrelease(me) = k8s.helmrelease(me, { version: lib.getElse(me, 'version', '0.4.0'), repository: 'https://raw.githubusercontent.com/tidepool-org/tidepool-helm/master/' }) {
+local helmrelease(me) = k8s.helmrelease(me, { version: lib.getElse(me, 'version', '0.5.0'), repository: 'https://raw.githubusercontent.com/tidepool-org/tidepool-helm/master/' }) {
   spec+: {
     values+: {
       distStorage: {
