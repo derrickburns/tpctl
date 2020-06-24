@@ -159,6 +159,7 @@ local svcs = [
   'blip',
   'blob',
   'data',
+  'devices',
   'export',
   'gatekeeper',
   'highwater',
@@ -275,6 +276,14 @@ local helmrelease(me) = k8s.helmrelease(me, {
           replicas: 3,
         },
       }, lib.getElse(me, 'data', {})]),
+
+      devices: lib.mergeList([common, {
+        extraContainers: extraContainers,
+        deployment+: {
+          image: lib.getElse(prev, 'spec.values.devices.deployment.image', 'tidepool/devices:master-latest'),
+          replicas: 0,
+        },
+      }, lib.getElse(me, 'devices', {})]),
 
       dexcom: lib.getElse(me, 'dexcom', {}),
 
