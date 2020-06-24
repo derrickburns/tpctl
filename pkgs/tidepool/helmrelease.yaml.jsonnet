@@ -487,6 +487,9 @@ local helmrelease(me) = k8s.helmrelease(me, {
       }, lib.getElse(me, 'task', {})]),
 
       tidepool: {
+        tests: lib.getElse(me, 'tests', {
+          enabled: false,
+        }),
         namespace: {
           create: false,
         },
