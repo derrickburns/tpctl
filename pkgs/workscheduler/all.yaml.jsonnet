@@ -25,9 +25,6 @@ local deployment(me) = flux.deployment(me) {
       { containerPort: prometheusPort }
     ],
   },
-  spec+: {
-    template+: linkerd.metadata(me, true),
-  },
 };
 
 local service(me) = k8s.service(me) {
