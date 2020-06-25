@@ -11,6 +11,9 @@ local helmrelease(me) = k8s.helmrelease(me, { version: lib.getElse(me, 'version'
   	  bucketName: 'tidepool-dremio-%s' % me.config.cluster.metadata.name,
         },
       },
+      zookeeper: {
+        name: 'zookeeper-client.%s.svc.cluster.local' % me.namespace,
+      },
       imageTag: '4.5',
       serviceType: "ClusterIP",
       storageClass: "gp2-expanding",
