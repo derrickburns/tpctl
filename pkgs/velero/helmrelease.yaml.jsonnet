@@ -29,7 +29,7 @@ local helmrelease(me) = k8s.helmrelease(me, {
           },
         },
         image: {
-          repository: 'velero/velero', // XXX missing image tag
+          repository: 'velero/velero:v1.4.0', 
           pullPolicy: 'IfNotPresent',
         },
       },
