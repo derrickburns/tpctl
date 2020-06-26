@@ -5,7 +5,7 @@ local lib = import '../../lib/lib.jsonnet';
 
 local deployment(me) = flux.deployment(me) {
   _containers:: {
-    image: lib.getElse(me, 'image', 'pazaan/vc-agent:latest'),
+    image: lib.getElse(me, 'image', 'tidepool/vc-agent:latest'),
     local domain = lib.getElse(me, 'cluster.metadata.domain', 'tidepool.org'),
     env: [
       k8s.envSecret('VC_API_TOKEN', 'vividcortex', 'APIToken'),
