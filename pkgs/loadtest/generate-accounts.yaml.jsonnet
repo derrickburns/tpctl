@@ -4,8 +4,9 @@ local global = import '../../lib/global.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
-local generateAccounts(me) = k8s.k('batch/v1', 'Job') + k8s.metadata('generate-accounts', me.namespace) {
+local generateAccounts(me, account) = k8s.k('batch/v1', 'Job') + k8s.metadata('generate-accounts-%s' % account.env, me.namespace) {
   spec+: {
+    backoffLimit: 0,
     template: {
       spec: {
         affinity: {
@@ -15,12 +16,16 @@ local generateAccounts(me) = k8s.k('batch/v1', 'Job') + k8s.metadata('generate-a
         restartPolicy: 'Never',
         containers+: [
           {
-            image: 'amazon/aws-cli:2.0.24 ',
+            name: 's3-upload',
+            image: 'amazon/aws-cli:2.0.24',
             command: [
+              'aws',
               's3',
               'cp',
-              '/opt/account-tool/Account-Credentials.csv',
-              's3://tidepool-account-tool/%s-credentials.csv' me.env,
+            ],
+            args: [
+              '/opt/accounts/Account-Credentials.csv',
+              's3://tidepool-account-tool/%s-credentials.csv' % account.env,
             ],
             volumeMounts: [
               {
@@ -32,11 +37,14 @@ local generateAccounts(me) = k8s.k('batch/v1', 'Job') + k8s.metadata('generate-a
         ],
         initContainers+: [
           {
+            name: 'generate-accounts',
             image: 'tidepool/account-tool:v0.1.0',
             command: [
               '/bin/bash',
               '-c',
-              '"cd /opt/accounts && /app/accountTool.py create --env %s --master %s-MASTER@tidepool.org"' % me.env % me.masterAccount,
+            ],
+            args: [
+              'cd /opt/accounts && /app/accountTool.py create --env %s --master %s-MASTER@tidepool.org' % [account.env, account.masterAccount],
             ],
             volumeMounts: [
               {
@@ -46,7 +54,10 @@ local generateAccounts(me) = k8s.k('batch/v1', 'Job') + k8s.metadata('generate-a
             ],
           },
         ],
-        serviceAccountName: account-tool
+        serviceAccountName: 'account-tool',
+        imagePullSecrets: [
+          { name: 'docker-hub' },
+        ],
         volumes: [
           {
             name: me.pkg,

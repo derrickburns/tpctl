@@ -54,5 +54,6 @@ local cronJob(me, job) = k8s.k('batch/v1beta1', 'CronJob') + k8s.metadata('loadt
 
 function(config, prev, namespace, pkg) (
   local me = common.package(config, prev, namespace, pkg);
-  [cronJob(me, test) for test in me.tests]
+  // [cronJob(me, test) for test in me.tests]
+  []
 )
