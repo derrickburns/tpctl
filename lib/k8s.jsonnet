@@ -152,11 +152,11 @@ local configmapNamesFromPod(pod) = lib.pruneList(
       },
     ],
   },
-  clusterrolebinding(me, name=me.pkg):: $.k('rbac.authorization.k8s.io/v1', 'ClusterRoleBinding') + $.metadata(name) {
+  clusterrolebinding(me, namespace='', name=me.pkg, roleName=me.pkg):: $.k('rbac.authorization.k8s.io/v1', 'ClusterRoleBinding') + $.metadata(name, namespace) {
     roleRef: {
       apiGroup: 'rbac.authorization.k8s.io',
       kind: 'ClusterRole',
-      name: me.pkg,
+      name: roleName,
     },
     subjects: [
       {
