@@ -16,6 +16,7 @@ local helmrelease(me) = k8s.helmrelease(me, { name: me.pkg, version: lib.getElse
       serviceAccount: {
         name: me.pkg,
       },
+      protocolHttp: true,
     },
   },
 };
