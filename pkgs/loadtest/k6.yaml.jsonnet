@@ -37,7 +37,7 @@ local cronJob(me, test) = k8s.k('batch/v1beta1', 'CronJob') + k8s.metadata('k6-%
                   'env=%s' % test.env,
                   '--out',
                   'statsd',
-                  '--tags',
+                  '--tag',
                   'env=%s' % test.env,
                 ] + test.args,
                 volumeMounts: [
