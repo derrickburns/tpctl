@@ -4,7 +4,7 @@ local global = import '../../lib/global.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
-local cronJob(me, test) = k8s.k('batch/v1beta1', 'CronJob') + k8s.metadata('loadtest', me.namespace) {
+local cronJob(me, test) = k8s.k('batch/v1beta1', 'CronJob') + k8s.metadata('k6-%s-%s' % [test.name, test.env], me.namespace) {
   spec+: {
     schedule: test.schedule,
     jobTemplate: {
@@ -20,10 +20,11 @@ local cronJob(me, test) = k8s.k('batch/v1beta1', 'CronJob') + k8s.metadata('load
             restartPolicy: 'Never',
             containers+: [
               {
-                name: 'loadtest',
+                name: 'k6-%s-%s' % [test.name, test.env],
                 image: 'tidepool/loadtest:latest',
                 env: if global.isEnabled(me.config, 'statsd-exporter') then [
                   k8s.envVar('K6_STATSD_ADDR', 'statsd-exporter.monitoring:9125'),
+                  k8s.envVar('K6_STATSD_NAMESPACE', 'k6_%s' % test.env),
                 ] else [],
                 command: [
                   'k6',
@@ -36,10 +37,12 @@ local cronJob(me, test) = k8s.k('batch/v1beta1', 'CronJob') + k8s.metadata('load
                   'env=%s' % test.env,
                   '--out',
                   'statsd',
+                  '--tags',
+                  'env=%s' % test.env,
                 ] + test.args,
                 volumeMounts: [
                   {
-                    mountPath: '/opt/k6',
+                    mountPath: '/opt/accounts',
                     name: me.pkg,
                   },
                 ],
@@ -47,7 +50,7 @@ local cronJob(me, test) = k8s.k('batch/v1beta1', 'CronJob') + k8s.metadata('load
             ],
             initContainers+: [
               {
-                name: 's3-upload',
+                name: 's3-fetch-%s' % test.env,
                 image: 'amazon/aws-cli:2.0.24',
                 command: [
                   'aws',
