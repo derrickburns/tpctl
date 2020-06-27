@@ -36,7 +36,7 @@ local cronJob(me, test) = k8s.k('batch/v1beta1', 'CronJob') + k8s.metadata('k6-%
                   '-e',
                   'env=%s' % test.env,
                   '--out',
-                  'statsd',
+                  'influxdb=http://influxdb.monitoring:8086/k6',
                   '--tag',
                   'env=%s' % test.env,
                 ] + test.args,
