@@ -21,7 +21,7 @@ local cronJob(me, test) = k8s.k('batch/v1beta1', 'CronJob') + k8s.metadata('k6-%
             containers+: [
               {
                 name: 'k6-%s-%s' % [test.name, test.env],
-                image: 'tidepool/loadtest:latest',
+                image: 'tidepool/loadtest:v0.1.0',
                 env: if global.isEnabled(me.config, 'statsd-exporter') then [
                   k8s.envVar('K6_STATSD_ADDR', 'statsd-exporter.monitoring:9125'),
                   k8s.envVar('K6_STATSD_NAMESPACE', 'k6_%s' % test.env),
