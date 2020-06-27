@@ -16,9 +16,11 @@ local dashboardConfig = {
       },
     ],
   },
+  description: 'Shared Cluster',
   editable: false,
   gnetId: null,
   graphTooltip: 0,
+  id: 334,
   links: [],
   panels: [
     {
@@ -43,7 +45,6 @@ local dashboardConfig = {
         },
         overrides: [],
       },
-      folderId: null,
       gridPos: {
         h: 4,
         w: 8,
@@ -51,18 +52,16 @@ local dashboardConfig = {
         y: 1,
       },
       headings: false,
-      id: 29,
+      id: 38,
       limit: 10,
-      query: '',
+      query: 'Loadtest / K6',
       recent: false,
       search: true,
       starred: false,
-      tags: [
-        'shoreline',
-      ],
+      tags: [],
       timeFrom: null,
       timeShift: null,
-      title: 'Shoreline',
+      title: 'QA',
       type: 'dashlist',
     },
     {
@@ -194,6 +193,7 @@ local dashboardConfig = {
         },
         overrides: [],
       },
+      folderId: null,
       gridPos: {
         h: 9,
         w: 8,
@@ -810,6 +810,8 @@ local configmap(me) = grafana.dashboard(me, 'home', dashboardConfig);
 function(config, prev, namespace, pkg) (
   local me = common.package(config, prev, namespace, pkg);
   if global.isEnabled(me.config, 'loadtest')
-  then []
-  else [configmap(me)]
+  then [
+    configmap(me),
+  ]
+  else {}
 )
