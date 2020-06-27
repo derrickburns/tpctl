@@ -20,7 +20,6 @@ local dashboardConfig = {
   editable: false,
   gnetId: null,
   graphTooltip: 0,
-  id: 334,
   links: [],
   panels: [
     {
@@ -45,6 +44,7 @@ local dashboardConfig = {
         },
         overrides: [],
       },
+      folderId: null,
       gridPos: {
         h: 4,
         w: 8,
@@ -62,6 +62,33 @@ local dashboardConfig = {
       timeFrom: null,
       timeShift: null,
       title: 'QA',
+      type: 'dashlist',
+    },
+    {
+      datasource: '$datasource',
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
+      gridPos: {
+        h: 4,
+        w: 8,
+        x: 8,
+        y: 1,
+      },
+      headings: false,
+      id: 39,
+      limit: 10,
+      query: 'Kubernetes / Jobs',
+      recent: false,
+      search: true,
+      starred: false,
+      tags: [],
+      timeFrom: null,
+      timeShift: null,
+      title: 'Cronjobs / Jobs',
       type: 'dashlist',
     },
     {
@@ -325,6 +352,34 @@ local dashboardConfig = {
       timeFrom: null,
       timeShift: null,
       title: 'Persistent Volumes',
+      type: 'dashlist',
+    },
+    {
+      datasource: '$datasource',
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
+      folderId: null,
+      gridPos: {
+        h: 4,
+        w: 8,
+        x: 8,
+        y: 24,
+      },
+      headings: false,
+      id: 40,
+      limit: 10,
+      query: 'Kubernetes / Jobs',
+      recent: false,
+      search: true,
+      starred: false,
+      tags: [],
+      timeFrom: null,
+      timeShift: null,
+      title: 'Cronjobs / Jobs',
       type: 'dashlist',
     },
     {
@@ -802,14 +857,14 @@ local dashboardConfig = {
   timezone: '',
   title: 'Home',
   uid: 'HRN3fEzGk',
-  version: 1,
+  version: 2,
 };
 
 local configmap(me) = grafana.dashboard(me, 'home', dashboardConfig);
 
 function(config, prev, namespace, pkg) (
   local me = common.package(config, prev, namespace, pkg);
-  if global.isEnabled(me.config, 'loadtest')
+  if me.config.cluster.metadata.name == 'shared'
   then [
     configmap(me),
   ]

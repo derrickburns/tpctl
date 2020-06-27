@@ -2446,7 +2446,7 @@ local configmap(me) = grafana.dashboard(me, 'k6', dashboardConfig);
 
 function(config, prev, namespace, pkg) (
   local me = common.package(config, prev, namespace, pkg);
-  if global.isEnabled(me.config, 'loadtest')
+  if me.config.cluster.metadata.name == 'shared'
   then [
     configmap(me),
   ]

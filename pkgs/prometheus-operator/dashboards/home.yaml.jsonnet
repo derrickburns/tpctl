@@ -194,6 +194,7 @@ local dashboardConfig = {
         },
         overrides: [],
       },
+      folderId: null,
       gridPos: {
         h: 9,
         w: 8,
@@ -325,6 +326,33 @@ local dashboardConfig = {
       timeFrom: null,
       timeShift: null,
       title: 'Persistent Volumes',
+      type: 'dashlist',
+    },
+    {
+      datasource: '$datasource',
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
+      gridPos: {
+        h: 4,
+        w: 8,
+        x: 8,
+        y: 24,
+      },
+      headings: false,
+      id: 37,
+      limit: 10,
+      query: 'Kubernetes / Jobs',
+      recent: false,
+      search: true,
+      starred: false,
+      tags: [],
+      timeFrom: null,
+      timeShift: null,
+      title: 'Cronjobs / Jobs',
       type: 'dashlist',
     },
     {
@@ -802,14 +830,14 @@ local dashboardConfig = {
   timezone: '',
   title: 'Home',
   uid: 'HRN3fEzGk',
-  version: 1,
+  version: 3,
 };
 
 local configmap(me) = grafana.dashboard(me, 'home', dashboardConfig);
 
 function(config, prev, namespace, pkg) (
   local me = common.package(config, prev, namespace, pkg);
-  if global.isEnabled(me.config, 'loadtest')
-  then []
-  else [configmap(me)]
+  if me.config.cluster.metadata.name != 'shared'
+  then [configmap(me)]
+  else []
 )

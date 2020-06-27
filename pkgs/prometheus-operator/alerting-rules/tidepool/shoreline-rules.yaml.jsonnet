@@ -22,4 +22,11 @@ local groupConfig = [
 
 local prometheusRule(me) = prometheus.prometheusRule(me, 'tidepool-shoreline', groupConfig);
 
-function(config, prev, namespace, pkg) prometheusRule(common.package(config, prev, namespace, pkg))
+function(config, prev, namespace, pkg) (
+  local me = common.package(config, prev, namespace, pkg);
+  if me.config.cluster.metadata.name != 'shared'
+  then [
+    prometheusRule(me),
+  ]
+  else {}
+)
