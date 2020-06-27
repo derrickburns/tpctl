@@ -19,8 +19,7 @@ local dashboardConfig = {
   editable: false,
   gnetId: 10884,
   graphTooltip: 0,
-  id: 366,
-  iteration: 1593274389307,
+  iteration: 1593283439369,
   links: [],
   panels: [
     {
@@ -282,7 +281,7 @@ local dashboardConfig = {
       pluginVersion: '7.0.3',
       targets: [
         {
-          expr: 'sum(kube_job_status_failed{namespace=~"$namespace", job_name=~".*$cronjob.*"})',
+          expr: 'sum(kube_job_status_failed{namespace=~"$namespace", job_name=~".*($cronjob).*"})',
           format: 'time_series',
           instant: true,
           interval: '',
@@ -450,7 +449,7 @@ local dashboardConfig = {
       steppedLine: false,
       targets: [
         {
-          expr: 'kube_job_status_failed{namespace=~"$namespace", job_name=~".*$cronjob.*"}',
+          expr: 'kube_job_status_failed{namespace=~"$namespace", job_name=~".*($cronjob).*"}',
           format: 'time_series',
           interval: '',
           intervalFactor: 1,
@@ -690,8 +689,8 @@ local dashboardConfig = {
       {
         current: {
           selected: false,
-          text: 'Prometheus',
-          value: 'Prometheus',
+          text: 'prometheus',
+          value: 'prometheus',
         },
         hide: 2,
         includeAll: false,
@@ -708,7 +707,7 @@ local dashboardConfig = {
       {
         allValue: null,
         current: {
-          selected: false,
+          selected: true,
           text: 'qa',
           value: 'qa',
         },
@@ -734,16 +733,19 @@ local dashboardConfig = {
       {
         allValue: null,
         current: {
-          selected: false,
-          text: 'k6-default-dev1',
-          value: 'k6-default-dev1',
+          selected: true,
+          tags: [],
+          text: 'All',
+          value: [
+            '$__all',
+          ],
         },
         datasource: '$datasource',
         definition: 'label_values(kube_cronjob_info{namespace=~"$namespace"}, cronjob)',
         hide: 0,
-        includeAll: false,
+        includeAll: true,
         label: 'Cron Job',
-        multi: false,
+        multi: true,
         name: 'cronjob',
         options: [],
         query: 'label_values(kube_cronjob_info{namespace=~"$namespace"}, cronjob)',
@@ -790,7 +792,7 @@ local dashboardConfig = {
   timezone: '',
   title: 'Kubernetes / Jobs / Cron Jobs',
   uid: 'cb0HhItWz',
-  version: 10,
+  version: 4,
 };
 
 local configmap(me) = grafana.dashboard(me, 'kubernetes-jobs', dashboardConfig);
