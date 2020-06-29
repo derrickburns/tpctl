@@ -16,10 +16,10 @@ local dashboardConfig = {
     ],
   },
   description: 'Consolidated Dashboard for Monitoring All Batch job pods and Cronjob in Kubernetes',
-  editable: false,
+  editable: true,
   gnetId: 10884,
   graphTooltip: 0,
-  iteration: 1593283439369,
+  iteration: 1593451761510,
   links: [],
   panels: [
     {
@@ -155,38 +155,36 @@ local dashboardConfig = {
       type: 'stat',
     },
     {
-      datasource: '$datasource',
+      cacheTimeout: null,
+      datasource: 'Prometheus',
+      description: 'Number of Succeeded Jobs',
       fieldConfig: {
         defaults: {
-          custom: {
-            align: null,
-          },
-          decimals: 0,
+          custom: {},
           mappings: [
             {
-              from: '',
               id: 0,
-              operator: '',
-              text: '0',
-              to: '',
+              op: '=',
+              text: 'N/A',
               type: 1,
-              value: '',
+              value: 'null',
             },
           ],
+          nullValueMode: 'connected',
           thresholds: {
             mode: 'absolute',
             steps: [
               {
-                color: 'red',
+                color: 'green',
                 value: null,
               },
               {
-                color: 'green',
-                value: 1,
+                color: 'red',
+                value: 80,
               },
             ],
           },
-          unit: 'short',
+          unit: 'none',
         },
         overrides: [],
       },
@@ -196,12 +194,20 @@ local dashboardConfig = {
         x: 12,
         y: 0,
       },
-      id: 16,
+      id: 19,
+      interval: null,
+      links: [],
+      maxDataPoints: 100,
       options: {
         colorMode: 'value',
-        graphMode: 'none',
+        fieldOptions: {
+          calcs: [
+            'lastNotNull',
+          ],
+        },
+        graphMode: 'area',
         justifyMode: 'auto',
-        orientation: 'auto',
+        orientation: 'horizontal',
         reduceOptions: {
           calcs: [
             'lastNotNull',
@@ -213,35 +219,34 @@ local dashboardConfig = {
       pluginVersion: '7.0.3',
       targets: [
         {
-          expr: 'sum(increase(kube_cronjob_status_active{namespace=~"$namespace", cronjob=~"$cronjob"}[1h]))',
+          expr: 'sum(kube_job_status_succeeded{namespace=~"$namespace", job_name=~".*($cronjob).*"})',
           format: 'time_series',
-          instant: false,
           interval: '',
           intervalFactor: 1,
           legendFormat: '',
           refId: 'A',
         },
       ],
-      timeFrom: null,
-      timeShift: null,
-      title: 'Jobs that ran the last hour',
+      title: 'Jobs Succeeded',
       type: 'stat',
     },
     {
-      datasource: '$datasource',
+      cacheTimeout: null,
+      datasource: 'Prometheus',
+      description: 'Number of failed Jobs',
       fieldConfig: {
         defaults: {
           custom: {},
           mappings: [
             {
-              from: '',
               id: 0,
-              operator: '',
-              text: '',
-              to: '',
+              op: '=',
+              text: 'N/A',
               type: 1,
+              value: 'null',
             },
           ],
+          nullValueMode: 'connected',
           thresholds: {
             mode: 'absolute',
             steps: [
@@ -255,6 +260,7 @@ local dashboardConfig = {
               },
             ],
           },
+          unit: 'none',
         },
         overrides: [],
       },
@@ -264,12 +270,20 @@ local dashboardConfig = {
         x: 18,
         y: 0,
       },
-      id: 14,
+      id: 20,
+      interval: null,
+      links: [],
+      maxDataPoints: 100,
       options: {
         colorMode: 'value',
-        graphMode: 'none',
+        fieldOptions: {
+          calcs: [
+            'lastNotNull',
+          ],
+        },
+        graphMode: 'area',
         justifyMode: 'auto',
-        orientation: 'auto',
+        orientation: 'horizontal',
         reduceOptions: {
           calcs: [
             'lastNotNull',
@@ -283,15 +297,13 @@ local dashboardConfig = {
         {
           expr: 'sum(kube_job_status_failed{namespace=~"$namespace", job_name=~".*($cronjob).*"})',
           format: 'time_series',
-          instant: true,
           interval: '',
+          intervalFactor: 1,
           legendFormat: '',
           refId: 'A',
         },
       ],
-      timeFrom: null,
-      timeShift: null,
-      title: 'Failed Jobs',
+      title: 'Jobs failed',
       type: 'stat',
     },
     {
@@ -316,28 +328,30 @@ local dashboardConfig = {
         y: 4,
       },
       hiddenSeries: false,
-      id: 12,
+      id: 21,
       legend: {
         alignAsTable: true,
         avg: false,
-        current: true,
+        current: false,
+        hideEmpty: true,
+        hideZero: true,
         max: false,
         min: false,
         rightSide: true,
         show: true,
         sideWidth: null,
         total: false,
-        values: true,
+        values: false,
       },
       lines: true,
       linewidth: 1,
       links: [],
-      nullPointMode: 'null',
+      nullPointMode: 'null as zero',
       options: {
         dataLinks: [],
       },
       percentage: false,
-      pointradius: 2,
+      pointradius: 0.5,
       points: false,
       renderer: 'flot',
       seriesOverrides: [],
@@ -346,19 +360,25 @@ local dashboardConfig = {
       steppedLine: false,
       targets: [
         {
-          expr: 'kube_cronjob_status_active{namespace=~"$namespace", cronjob=~"$cronjob"}',
+          expr: 'kube_job_status_succeeded{namespace=~"$namespace", job_name=~".*($cronjob).*"}',
           format: 'time_series',
           interval: '',
           intervalFactor: 1,
-          legendFormat: '{{  cronjob }}',
+          legendFormat: '{{ job_name }}',
           refId: 'B',
+        },
+        {
+          expr: 'sum(kube_job_status_succeeded{namespace=~"$namespace", job_name=~".*($cronjob).*"})',
+          interval: '',
+          legendFormat: 'Total succesful jobs',
+          refId: 'A',
         },
       ],
       thresholds: [],
       timeFrom: null,
       timeRegions: [],
       timeShift: null,
-      title: 'Cron Job Activity',
+      title: 'Sucessful Jobs',
       tooltip: {
         shared: true,
         sort: 0,
@@ -374,6 +394,7 @@ local dashboardConfig = {
       },
       yaxes: [
         {
+          '$$hashKey': 'object:648',
           format: 'short',
           label: null,
           logBase: 1,
@@ -382,6 +403,7 @@ local dashboardConfig = {
           show: true,
         },
         {
+          '$$hashKey': 'object:649',
           format: 'short',
           label: null,
           logBase: 1,
@@ -456,6 +478,12 @@ local dashboardConfig = {
           legendFormat: '{{ job_name }}',
           refId: 'B',
         },
+        {
+          expr: 'sum(kube_job_status_failed{namespace=~"$namespace", job_name=~".*($cronjob).*"})',
+          interval: '',
+          legendFormat: 'Total failed jobs',
+          refId: 'A',
+        },
       ],
       thresholds: [],
       timeFrom: null,
@@ -477,6 +505,7 @@ local dashboardConfig = {
       },
       yaxes: [
         {
+          '$$hashKey': 'object:648',
           format: 'short',
           label: null,
           logBase: 1,
@@ -485,6 +514,7 @@ local dashboardConfig = {
           show: true,
         },
         {
+          '$$hashKey': 'object:649',
           format: 'short',
           label: null,
           logBase: 1,
@@ -533,7 +563,7 @@ local dashboardConfig = {
         overrides: [],
       },
       gridPos: {
-        h: 11,
+        h: 9,
         w: 12,
         x: 0,
         y: 13,
@@ -624,7 +654,7 @@ local dashboardConfig = {
         overrides: [],
       },
       gridPos: {
-        h: 11,
+        h: 9,
         w: 12,
         x: 12,
         y: 13,
@@ -679,6 +709,107 @@ local dashboardConfig = {
       ],
       type: 'table',
     },
+    {
+      aliasColors: {},
+      bars: false,
+      cacheTimeout: null,
+      dashLength: 10,
+      dashes: false,
+      datasource: '$datasource',
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
+      fill: 1,
+      fillGradient: 0,
+      gridPos: {
+        h: 8,
+        w: 24,
+        x: 0,
+        y: 22,
+      },
+      hiddenSeries: false,
+      id: 12,
+      legend: {
+        alignAsTable: true,
+        avg: false,
+        current: true,
+        max: false,
+        min: false,
+        rightSide: true,
+        show: true,
+        sideWidth: null,
+        total: false,
+        values: true,
+      },
+      lines: true,
+      linewidth: 1,
+      links: [],
+      nullPointMode: 'null',
+      options: {
+        dataLinks: [],
+      },
+      percentage: false,
+      pointradius: 2,
+      points: false,
+      renderer: 'flot',
+      seriesOverrides: [],
+      spaceLength: 10,
+      stack: false,
+      steppedLine: false,
+      targets: [
+        {
+          expr: 'kube_cronjob_status_active{namespace=~"$namespace", cronjob=~"$cronjob"}',
+          format: 'time_series',
+          interval: '',
+          intervalFactor: 1,
+          legendFormat: '{{  cronjob }}',
+          refId: 'B',
+        },
+      ],
+      thresholds: [],
+      timeFrom: null,
+      timeRegions: [],
+      timeShift: null,
+      title: 'Cron Job Activity',
+      tooltip: {
+        shared: true,
+        sort: 0,
+        value_type: 'individual',
+      },
+      type: 'graph',
+      xaxis: {
+        buckets: null,
+        mode: 'time',
+        name: null,
+        show: true,
+        values: [],
+      },
+      yaxes: [
+        {
+          format: 'short',
+          label: null,
+          logBase: 1,
+          max: null,
+          min: null,
+          show: true,
+        },
+        {
+          format: 'short',
+          label: null,
+          logBase: 1,
+          max: null,
+          min: null,
+          show: true,
+        },
+      ],
+      yaxis: {
+        align: false,
+        alignLevel: null,
+      },
+    },
   ],
   refresh: false,
   schemaVersion: 25,
@@ -689,8 +820,8 @@ local dashboardConfig = {
       {
         current: {
           selected: false,
-          text: 'prometheus',
-          value: 'prometheus',
+          text: 'Prometheus',
+          value: 'Prometheus',
         },
         hide: 2,
         includeAll: false,
@@ -707,7 +838,7 @@ local dashboardConfig = {
       {
         allValue: null,
         current: {
-          selected: true,
+          selected: false,
           text: 'qa',
           value: 'qa',
         },
@@ -735,9 +866,9 @@ local dashboardConfig = {
         current: {
           selected: true,
           tags: [],
-          text: 'All',
+          text: 'api-tests-default-qa1',
           value: [
-            '$__all',
+            'api-tests-default-qa1',
           ],
         },
         datasource: '$datasource',
@@ -762,7 +893,7 @@ local dashboardConfig = {
     ],
   },
   time: {
-    from: 'now-24h',
+    from: 'now-6h',
     to: 'now',
   },
   timepicker: {
@@ -792,7 +923,7 @@ local dashboardConfig = {
   timezone: '',
   title: 'Kubernetes / Jobs / Cron Jobs',
   uid: 'cb0HhItWz',
-  version: 4,
+  version: 12,
 };
 
 local configmap(me) = grafana.dashboard(me, 'kubernetes-jobs', dashboardConfig);
