@@ -5,6 +5,7 @@ local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
 local cronJob(me, test) = k8s.k('batch/v1beta1', 'CronJob') + k8s.metadata('api-tests-%s-%s' % [test.name, std.asciiLower(test.env)], me.namespace) {
+  local cmd = 'npx newman run %s -e tests/%s.postman_environment.json --env-var "loginEmail=$%s_USER_EMAIL" --env-var "loginPw=$%s_USER_PASSWORD" --env-var "marketoClientId=$MARKETO_CLIENT_ID" --env-var "marketoClientSecret=$MARKETO_CLIENT_SECRET" --env-var "clinicEmail=$%s_CLINIC_EMAIL" --env-var "clinicPw=$%s_CLINIC_PASSWORD"' % [test.command, test.env, test.env, test.env, test.env, test.env],
   spec+: {
     schedule: test.schedule,
     jobTemplate: {
@@ -24,26 +25,11 @@ local cronJob(me, test) = k8s.k('batch/v1beta1', 'CronJob') + k8s.metadata('api-
                 image: 'tidepool/api-tests:v0.1.0',
                 env: [],
                 command: [
-                  'npx',
-                  'newman',
-                  'run',
-                  test.command,
+                  '/bin/sh',
+                  '-c',
                 ],
                 args: [
-                  '-e',
-                  'tests/%s.postman_environment.json' % test.env,
-                  '--env-var',
-                  '"loginEmail=$%s_USER_EMAIL"' % test.env,
-                  '--env-var',
-                  '"loginPw=$%s_USER_PASSWORD"' % test.env,
-                  '--env-var',
-                  '"marketoClientId=$MARKETO_CLIENT_ID"',
-                  '--env-var',
-                  '"marketoClientSecret=$MARKETO_CLIENT_SECRET"',
-                  '--env-var',
-                  '"clinicEmail=$%s_CLINIC_EMAIL"' % test.env,
-                  '--env-var',
-                  '"clinicPw=$%s_CLINIC_PASSWORD"' % test.env,
+                  cmd,
                 ],
                 envFrom: [
                   {
