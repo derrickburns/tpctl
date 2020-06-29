@@ -17,11 +17,11 @@ local dashboardConfig = {
     ],
   },
   description: 'K6 Testing Dashboard',
-  editable: true,
+  editable: false,
   gnetId: 11614,
   graphTooltip: 0,
   id: 363,
-  iteration: 1593267426467,
+  iteration: 1593441300352,
   links: [],
   panels: [
     {
@@ -370,8 +370,8 @@ local dashboardConfig = {
       pageSize: null,
       showHeader: true,
       sort: {
-        col: 0,
-        desc: true,
+        col: 3,
+        desc: false,
       },
       styles: [
         {
@@ -386,14 +386,15 @@ local dashboardConfig = {
           align: 'left',
           colorMode: 'cell',
           colors: [
-            'rgba(50, 172, 45, 0.97)',
-            'rgba(237, 129, 40, 0.89)',
             'rgba(245, 54, 54, 0.9)',
+            'rgba(237, 129, 40, 0.89)',
+            'rgba(50, 172, 45, 0.97)',
           ],
           decimals: 2,
           pattern: 'mean',
           thresholds: [
-            '99',
+            '0.9',
+            '1',
           ],
           type: 'number',
           unit: 'percentunit',
@@ -2420,7 +2421,7 @@ local dashboardConfig = {
     ],
   },
   time: {
-    from: 'now-6h',
+    from: 'now-24h',
     to: 'now',
   },
   timepicker: {
@@ -2437,9 +2438,9 @@ local dashboardConfig = {
     ],
   },
   timezone: '',
-  title: 'Loadtest / K6',
+  title: 'QA / Tests / Loadtest / K6',
   uid: 'Bz167sD',
-  version: 5,
+  version: 6,
 };
 
 local configmap(me) = grafana.dashboard(me, 'k6', dashboardConfig);
