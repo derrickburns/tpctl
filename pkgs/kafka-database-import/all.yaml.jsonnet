@@ -3,6 +3,7 @@ local flux = import '../../lib/flux.jsonnet';
 local gloo = import '../../lib/gloo.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 local linkerd = import '../../lib/linkerd.jsonnet';
+local lib = import '../../lib/lib.jsonnet';
 
 local containerPort = 8080;
 
