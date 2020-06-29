@@ -15,7 +15,7 @@ local deployment(me) = k8s.deployment(me) {
     image: 'docker.io/weaveworks/scope:1.13.0',
     ports: [
       {
-        containerPort: 4040,
+        containerPort: "4040",
         protocol: 'TCP',
       },
     ],
