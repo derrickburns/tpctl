@@ -4,7 +4,7 @@ local global = import '../../lib/global.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
-local cronJob(me, test) = k8s.k('batch/v1beta1', 'CronJob') + k8s.metadata('api-tests-%s-%s' % [test.name, test.env], me.namespace) {
+local cronJob(me, test) = k8s.k('batch/v1beta1', 'CronJob') + k8s.metadata('api-tests-%s-%s' % [test.name, std.asciiLower(test.env)], me.namespace) {
   spec+: {
     schedule: test.schedule,
     jobTemplate: {
@@ -20,7 +20,7 @@ local cronJob(me, test) = k8s.k('batch/v1beta1', 'CronJob') + k8s.metadata('api-
             restartPolicy: 'Never',
             containers+: [
               {
-                name: 'api-tests-%s-%s' % [test.name, test.env],
+                name: 'api-tests-%s-%s' % [test.name, std.asciiLower(test.env)],
                 image: 'tidepool/api-tests:v0.1.0',
                 env: [],
                 command: [
@@ -39,7 +39,7 @@ local cronJob(me, test) = k8s.k('batch/v1beta1', 'CronJob') + k8s.metadata('api-
                   '--env-var',
                   '"marketoClientId=$MARKETO_CLIENT_ID"',
                   '--env-var',
-                  'marketoClientSecret=$MARKETO_CLIENT_SECRET',
+                  '"marketoClientSecret=$MARKETO_CLIENT_SECRET"',
                   '--env-var',
                   '"clinicEmail=$%s_CLINIC_EMAIL"' % test.env,
                   '--env-var',
