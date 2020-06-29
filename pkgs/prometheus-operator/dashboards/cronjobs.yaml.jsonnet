@@ -19,7 +19,7 @@ local dashboardConfig = {
   editable: true,
   gnetId: 10884,
   graphTooltip: 0,
-  iteration: 1593451761510,
+  iteration: 1593454091628,
   links: [],
   panels: [
     {
@@ -761,7 +761,7 @@ local dashboardConfig = {
       steppedLine: false,
       targets: [
         {
-          expr: 'kube_cronjob_status_active{namespace=~"$namespace", cronjob=~"$cronjob"}',
+          expr: 'kube_cronjob_status_last_schedule_time{namespace=~"$namespace", cronjob=~"$cronjob"} * 1000',
           format: 'time_series',
           interval: '',
           intervalFactor: 1,
@@ -789,7 +789,8 @@ local dashboardConfig = {
       },
       yaxes: [
         {
-          format: 'short',
+          '$$hashKey': 'object:61',
+          format: 'dateTimeFromNow',
           label: null,
           logBase: 1,
           max: null,
@@ -797,12 +798,13 @@ local dashboardConfig = {
           show: true,
         },
         {
-          format: 'short',
+          '$$hashKey': 'object:62',
+          format: 'dateTimeFromNow',
           label: null,
           logBase: 1,
           max: null,
           min: null,
-          show: true,
+          show: false,
         },
       ],
       yaxis: {
@@ -838,7 +840,7 @@ local dashboardConfig = {
       {
         allValue: null,
         current: {
-          selected: false,
+          selected: true,
           text: 'qa',
           value: 'qa',
         },
@@ -864,12 +866,9 @@ local dashboardConfig = {
       {
         allValue: null,
         current: {
-          selected: true,
-          tags: [],
-          text: 'api-tests-default-qa1',
-          value: [
-            'api-tests-default-qa1',
-          ],
+          selected: false,
+          text: 'All',
+          value: '$__all',
         },
         datasource: '$datasource',
         definition: 'label_values(kube_cronjob_info{namespace=~"$namespace"}, cronjob)',
@@ -893,7 +892,7 @@ local dashboardConfig = {
     ],
   },
   time: {
-    from: 'now-6h',
+    from: 'now-3h',
     to: 'now',
   },
   timepicker: {
@@ -923,7 +922,7 @@ local dashboardConfig = {
   timezone: '',
   title: 'Kubernetes / Jobs / Cron Jobs',
   uid: 'cb0HhItWz',
-  version: 12,
+  version: 13,
 };
 
 local configmap(me) = grafana.dashboard(me, 'kubernetes-jobs', dashboardConfig);
