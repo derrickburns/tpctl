@@ -22,14 +22,14 @@ local deployment(me) = k8s.deployment(me) {
   },
 };
 
-local service(me) =  k8s.service(me) {
+local service(me) = k8s.service(me) {
   spec+: {
     ports: [
       {
         name: 'app',
         port: 80,
         protocol: 'TCP',
-        targetPort: '4040',
+        targetPort: 4040,
       },
     ],
   },
