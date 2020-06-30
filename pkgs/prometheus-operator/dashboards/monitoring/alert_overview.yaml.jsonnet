@@ -24,9 +24,7 @@ local dashboardConfig = {
         showIn: 0,
         step: '2s',
         tagKeys: 'alertname',
-        tags: [
-
-        ],
+        tags: [],
         textFormat: '',
         titleFormat: '{{service}}',
         type: 'tags',
@@ -51,8 +49,7 @@ local dashboardConfig = {
   editable: false,
   gnetId: 11098,
   graphTooltip: 1,
-  id: 205,
-  iteration: 1592482567730,
+  iteration: 1593529269583,
   links: [
     {
       icon: 'external link',
@@ -82,9 +79,7 @@ local dashboardConfig = {
         y: 0,
       },
       id: 443,
-      panels: [
-
-      ],
+      panels: [],
       title: 'Severity',
       type: 'row',
     },
@@ -100,13 +95,9 @@ local dashboardConfig = {
       datasource: '$datasource',
       fieldConfig: {
         defaults: {
-          custom: {
-
-          },
+          custom: {},
         },
-        overrides: [
-
-        ],
+        overrides: [],
       },
       format: 'none',
       gauge: {
@@ -125,9 +116,7 @@ local dashboardConfig = {
       height: '75px',
       id: 4,
       interval: null,
-      links: [
-
-      ],
+      links: [],
       mappingType: 1,
       mappingTypes: [
         {
@@ -196,13 +185,9 @@ local dashboardConfig = {
       datasource: '$datasource',
       fieldConfig: {
         defaults: {
-          custom: {
-
-          },
+          custom: {},
         },
-        overrides: [
-
-        ],
+        overrides: [],
       },
       format: 'none',
       gauge: {
@@ -221,9 +206,7 @@ local dashboardConfig = {
       height: '75px',
       id: 2,
       interval: null,
-      links: [
-
-      ],
+      links: [],
       mappingType: 1,
       mappingTypes: [
         {
@@ -311,13 +294,9 @@ local dashboardConfig = {
       datasource: '$datasource',
       fieldConfig: {
         defaults: {
-          custom: {
-
-          },
+          custom: {},
         },
-        overrides: [
-
-        ],
+        overrides: [],
       },
       format: 'none',
       gauge: {
@@ -336,9 +315,7 @@ local dashboardConfig = {
       height: '75px',
       id: 5,
       interval: null,
-      links: [
-
-      ],
+      links: [],
       mappingType: 1,
       mappingTypes: [
         {
@@ -407,13 +384,9 @@ local dashboardConfig = {
       datasource: '$datasource',
       fieldConfig: {
         defaults: {
-          custom: {
-
-          },
+          custom: {},
         },
-        overrides: [
-
-        ],
+        overrides: [],
       },
       format: 'none',
       gauge: {
@@ -432,9 +405,7 @@ local dashboardConfig = {
       height: '75px',
       id: 9,
       interval: null,
-      links: [
-
-      ],
+      links: [],
       mappingType: 1,
       mappingTypes: [
         {
@@ -503,13 +474,9 @@ local dashboardConfig = {
       datasource: '$datasource',
       fieldConfig: {
         defaults: {
-          custom: {
-
-          },
+          custom: {},
         },
-        overrides: [
-
-        ],
+        overrides: [],
       },
       format: 'none',
       gauge: {
@@ -528,9 +495,7 @@ local dashboardConfig = {
       height: '75px',
       id: 441,
       interval: null,
-      links: [
-
-      ],
+      links: [],
       mappingType: 1,
       mappingTypes: [
         {
@@ -597,27 +562,19 @@ local dashboardConfig = {
         y: 5,
       },
       id: 445,
-      panels: [
-
-      ],
+      panels: [],
       title: 'Alerts',
       type: 'row',
     },
     {
-      columns: [
-
-      ],
+      columns: [],
       datasource: '$datasource',
       description: 'Shows how many times was particular alert started in a defined time range. Alert can be started either directly as `firing` or as a `pending`. Pending alerts wait for a defined time before it flips to a `firing` alert. This is specified with the `FOR` clause in a Prometheus `rules` file.',
       fieldConfig: {
         defaults: {
-          custom: {
-
-          },
+          custom: {},
         },
-        overrides: [
-
-        ],
+        overrides: [],
       },
       fontSize: '100%',
       gridPos: {
@@ -655,9 +612,7 @@ local dashboardConfig = {
           decimals: 2,
           mappingType: 1,
           pattern: 'instance',
-          thresholds: [
-
-          ],
+          thresholds: [],
           type: 'hidden',
           unit: 'short',
         },
@@ -674,9 +629,7 @@ local dashboardConfig = {
           decimals: 2,
           mappingType: 1,
           pattern: 'Value',
-          thresholds: [
-
-          ],
+          thresholds: [],
           type: 'number',
           unit: 'short',
         },
@@ -693,9 +646,7 @@ local dashboardConfig = {
           decimals: 2,
           mappingType: 1,
           pattern: 'pod',
-          thresholds: [
-
-          ],
+          thresholds: [],
           type: 'hidden',
           unit: 'short',
         },
@@ -712,9 +663,7 @@ local dashboardConfig = {
           decimals: 2,
           mappingType: 1,
           pattern: 'namespace',
-          thresholds: [
-
-          ],
+          thresholds: [],
           type: 'hidden',
           unit: 'short',
         },
@@ -731,9 +680,7 @@ local dashboardConfig = {
           decimals: 2,
           mappingType: 1,
           pattern: 'service',
-          thresholds: [
-
-          ],
+          thresholds: [],
           type: 'hidden',
           unit: 'short',
         },
@@ -750,9 +697,7 @@ local dashboardConfig = {
           decimals: 2,
           mappingType: 1,
           pattern: 'endpoint',
-          thresholds: [
-
-          ],
+          thresholds: [],
           type: 'hidden',
           unit: 'short',
         },
@@ -769,9 +714,7 @@ local dashboardConfig = {
           decimals: 2,
           mappingType: 1,
           pattern: '__name__',
-          thresholds: [
-
-          ],
+          thresholds: [],
           type: 'hidden',
           unit: 'short',
         },
@@ -788,9 +731,7 @@ local dashboardConfig = {
           decimals: 2,
           mappingType: 1,
           pattern: 'job',
-          thresholds: [
-
-          ],
+          thresholds: [],
           type: 'hidden',
           unit: 'short',
         },
@@ -805,9 +746,7 @@ local dashboardConfig = {
           ],
           decimals: 2,
           pattern: '/.*/',
-          thresholds: [
-
-          ],
+          thresholds: [],
           type: 'string',
           unit: 'short',
         },
@@ -830,9 +769,7 @@ local dashboardConfig = {
       type: 'table-old',
     },
     {
-      aliasColors: {
-
-      },
+      aliasColors: {},
       bars: false,
       dashLength: 10,
       dashes: false,
@@ -840,13 +777,9 @@ local dashboardConfig = {
       description: '',
       fieldConfig: {
         defaults: {
-          custom: {
-
-          },
+          custom: {},
         },
-        overrides: [
-
-        ],
+        overrides: [],
       },
       fill: 0,
       fillGradient: 10,
@@ -874,9 +807,7 @@ local dashboardConfig = {
       linewidth: 1,
       nullPointMode: 'null as zero',
       options: {
-        dataLinks: [
-
-        ],
+        dataLinks: [],
       },
       percentage: false,
       pointradius: 0.5,
@@ -892,20 +823,16 @@ local dashboardConfig = {
       steppedLine: false,
       targets: [
         {
-          expr: 'ALERTS{alertname=~"$alertname", alertstate=~"$alertstate"}',
+          expr: 'sum without (instance, job, service, endpoint) (ALERTS{alertname=~"$alertname", alertstate=~"$alertstate"})',
           instant: false,
           interval: '',
-          legendFormat: '{{ alertname }} | {{ alertstate }} | {{ container }} | {{ namespace }} | {{ name }} | {{ severity }}',
+          legendFormat: '',
           refId: 'C',
         },
       ],
-      thresholds: [
-
-      ],
+      thresholds: [],
       timeFrom: null,
-      timeRegions: [
-
-      ],
+      timeRegions: [],
       timeShift: null,
       title: 'Alerts History',
       tooltip: {
@@ -913,18 +840,18 @@ local dashboardConfig = {
         sort: 0,
         value_type: 'cumulative',
       },
+      transformations: [],
       type: 'graph',
       xaxis: {
         buckets: null,
         mode: 'time',
         name: null,
         show: true,
-        values: [
-
-        ],
+        values: [],
       },
       yaxes: [
         {
+          '$$hashKey': 'object:1849',
           decimals: null,
           format: 'short',
           label: '',
@@ -934,6 +861,7 @@ local dashboardConfig = {
           show: true,
         },
         {
+          '$$hashKey': 'object:1850',
           format: 'short',
           label: null,
           logBase: 1,
@@ -968,9 +896,7 @@ local dashboardConfig = {
         label: 'Prometheus datasource',
         multi: false,
         name: 'datasource',
-        options: [
-
-        ],
+        options: [],
         query: 'prometheus',
         refresh: 1,
         regex: '',
@@ -981,9 +907,6 @@ local dashboardConfig = {
         allValue: null,
         current: {
           selected: true,
-          tags: [
-
-          ],
           text: 'All',
           value: [
             '$__all',
@@ -996,18 +919,14 @@ local dashboardConfig = {
         label: 'Alert:',
         multi: true,
         name: 'alertname',
-        options: [
-
-        ],
+        options: [],
         query: 'label_values(ALERTS_FOR_STATE,alertname)',
         refresh: 2,
         regex: '',
         skipUrlSync: false,
         sort: 1,
         tagValuesQuery: '',
-        tags: [
-
-        ],
+        tags: [],
         tagsQuery: '',
         type: 'query',
         useTags: false,
@@ -1028,18 +947,14 @@ local dashboardConfig = {
         label: 'State:',
         multi: true,
         name: 'alertstate',
-        options: [
-
-        ],
+        options: [],
         query: 'label_values(ALERTS, alertstate)',
         refresh: 2,
         regex: '',
         skipUrlSync: false,
         sort: 1,
         tagValuesQuery: '',
-        tags: [
-
-        ],
+        tags: [],
         tagsQuery: '',
         type: 'query',
         useTags: false,
@@ -1077,7 +992,7 @@ local dashboardConfig = {
   timezone: '',
   title: 'Alertmanager / Alerts / Overview',
   uid: 'lcaKO4WGk',
-  version: 4,
+  version: 1,
 };
 
 local configmap(me) = grafana.dashboard(me, 'alerts-overview', dashboardConfig);
