@@ -38,7 +38,7 @@ local kafkaconnect(me) = k8s.k( 'kafka.strimzi.io/v1beta1', 'KafkaConnect') + k8
   },
 };
 
-local kafkaconnector(me) = k8s.k( 'kafka.strimzi.io/v1alpha1','KafkaConnector') + me.metadata( me.pkg, me.namespace) {
+local kafkaconnector(me) = k8s.k( 'kafka.strimzi.io/v1alpha1','KafkaConnector') + k8s.metadata( me.pkg, me.namespace) {
   metadata+: {
     labels+: {
       'strimzi.io/cluster': me.pkg,
