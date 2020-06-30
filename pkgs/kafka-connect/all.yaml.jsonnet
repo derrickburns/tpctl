@@ -48,12 +48,12 @@ local kafkaconnector(me) = k8s.k( 'kafka.strimzi.io/v1alpha1','KafkaConnector') 
     class: 'io.debezium.connector.mongodb.MongoDbConnector',
     // see https://debezium.io/documentation/reference/connectors/mongodb.html#mongodb-connector-properties
     config: {
-      "mongodb.name": "test",
-      "mongodb.hosts": "${file:/opt/kafka/external-configuration/connector-config/debezium-mongo-credentials.properties:hosts}",
-      "mongodb.user": "${file:/opt/kafka/external-configuration/connector-config/debezium-mongo-credentials.properties:user}",
-      "mongodb.password": "${file:/opt/kafka/external-configuration/connector-config/debezium-mongo-credentials.properties:password}",
-      "mongodb.ssl.enabled": "${file:/opt/kafka/external-configuration/connector-config/debezium-mongo-credentials.properties:ssl}",
-      "collection.whitelist": "deviceData[.]*", 
+      "mongodb.name": "device-data-connector",
+      "mongodb.hosts": "${file:/opt/kafka/external-configuration/connector-config/debezium-mongo-credentials.properties:Addresses}",
+      "mongodb.user": "${file:/opt/kafka/external-configuration/connector-config/debezium-mongo-credentials.properties:Username}",
+      "mongodb.password": "${file:/opt/kafka/external-configuration/connector-config/debezium-mongo-credentials.properties:Password}",
+      "mongodb.ssl.enabled": "${file:/opt/kafka/external-configuration/connector-config/debezium-mongo-credentials.properties:Tls}",
+      "collection.whitelist": "data.deviceData", 
     },
     tasksMax: 1,
   },
