@@ -103,8 +103,9 @@ local accessLogging = {
           hsts: {
             enabled: true,
           },
-          virtualHostOptions: {
+          virtualHostOptions: (if lib.isEnabledAt(me, 'cors') then {
             cors: $.cors(dnsNames),
+          } else {}) + {
             stats: {
               virtualClusters: lib.getElse(me, 'virtualClusters', []),
             },
