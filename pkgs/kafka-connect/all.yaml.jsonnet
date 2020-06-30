@@ -16,7 +16,7 @@ local kafkaconnect(me) = k8s.k( 'kafka.strimzi.io/v1beta1', 'KafkaConnect') + k8
       trustedCertificates: [
         {
           certificate: 'ca',
-          secretName: kafka-cluster-ca-cert
+          secretName: 'kafka-cluster-ca-cert'
         },
       ],
     },
