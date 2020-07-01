@@ -22,7 +22,7 @@ local cronJob(me, test) = k8s.k('batch/v1beta1', 'CronJob') + k8s.metadata('api-
             containers+: [
               {
                 name: 'api-tests-%s-%s' % [test.name, std.asciiLower(test.env)],
-                image: 'tidepool/api-tests:v0.1.0',
+                image: 'tidepool/api-tests:v0.2.0',
                 env: [],
                 command: [
                   '/bin/sh',
