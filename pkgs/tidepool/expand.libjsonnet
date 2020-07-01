@@ -51,7 +51,7 @@ local accessLogging = {
 
   expand(config, me, namespace, pkg):: me + $.withVirtualServices(config, me, namespace, pkg),
 
-  cors(dnsNames):: {
+  cors(dnsNames):: (if dnsNames != [] then { allowOrigin: dnsNames } else { allowOriginRegex: [ '.*' ] }) + {
     allowCredentials: true,
     allowHeaders: [
       'authorization',
@@ -68,7 +68,6 @@ local accessLogging = {
       'DELETE',
       'OPTIONS',
     ],
-    allowOrigin: dnsNames,
     exposeHeaders: [
       'x-tidepool-session-token',
       'x-tidepool-trace-request',
@@ -103,9 +102,8 @@ local accessLogging = {
           hsts: {
             enabled: true,
           },
-          virtualHostOptions: (if lib.isEnabledAt(me, 'cors') then {
-            cors: $.cors(dnsNames),
-          } else {}) + {
+          virtualHostOptions: {
+            cors: $.cors(if lib.isEnabledAt(me, 'cors') then dnsNames else []),
             stats: {
               virtualClusters: lib.getElse(me, 'virtualClusters', []),
             },
