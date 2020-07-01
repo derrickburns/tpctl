@@ -46,9 +46,9 @@ local kafkaconnector(me) = k8s.k( 'kafka.strimzi.io/v1alpha1','KafkaConnector') 
     },
   },
   spec+: {
-    class: 'io.debezium.connector.mongodb.MongoDbConnector',
     // see https://debezium.io/documentation/reference/connectors/mongodb.html#mongodb-connector-properties
     config: {
+      "connector.class": 'io.debezium.connector.mongodb.MongoDbConnector',
       "mongodb.name": "device-data-connector",
       "mongodb.hosts": "${file:/opt/kafka/external-configuration/connector-config/debezium-mongo-credentials.properties:Addresses}",
       "mongodb.user": "${file:/opt/kafka/external-configuration/connector-config/debezium-mongo-credentials.properties:Username}",
