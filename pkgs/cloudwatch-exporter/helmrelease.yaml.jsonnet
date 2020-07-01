@@ -20,11 +20,13 @@ local helmrelease(me) = k8s.helmrelease(me, { name: 'prometheus-cloudwatch-expor
             aws_namespace: 'AWS/SES',
             aws_metric_name: 'Reputation.ComplaintRate',
             aws_statistics: ['Sum'],
+            set_timestamp: false,
           },
           {
             aws_namespace: 'AWS/SES',
             aws_metric_name: 'Reputation.BounceRate',
             aws_statistics: ['Sum'],
+            set_timestamp: false,
           },
         ],
       },),
