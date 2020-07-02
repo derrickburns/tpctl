@@ -21,10 +21,11 @@ local dashboardConfig = {
     ],
   },
   description: 'Visualize AWS SES metrics',
-  editable: false,
+  editable: true,
   gnetId: 1519,
   graphTooltip: 0,
-  iteration: 1593719530938,
+  id: 371,
+  iteration: 1593729354751,
   links: [],
   panels: [
     {
@@ -113,7 +114,7 @@ local dashboardConfig = {
             filter: '',
           },
           dimensions: {},
-          expr: 'aws_ses_reputation_complaint_rate_sum * 100',
+          expr: 'sum(aws_ses_reputation_complaint_rate_sum) by(exported_job) * 100',
           functions: [],
           group: {
             filter: '',
@@ -276,7 +277,7 @@ local dashboardConfig = {
             filter: '',
           },
           dimensions: {},
-          expr: 'aws_ses_reputation_bounce_rate_sum * 100',
+          expr: 'sum(aws_ses_reputation_bounce_rate_sum) by (exported_job) * 100',
           functions: [],
           group: {
             filter: '',
@@ -417,7 +418,7 @@ local dashboardConfig = {
   timezone: 'browser',
   title: 'AWS / SES',
   uid: 'WojOgXTmkf2f',
-  version: 9,
+  version: 10,
 };
 
 local configmap(me) = grafana.dashboard(me, 'aws-ses', dashboardConfig);
