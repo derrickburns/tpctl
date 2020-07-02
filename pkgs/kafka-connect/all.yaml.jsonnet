@@ -8,7 +8,7 @@ local kafkaconnect(me) = k8s.k( 'kafka.strimzi.io/v1beta1', 'KafkaConnect') + k8
       'strimzi.io/use-connector-resources': 'true',
     },
   },
-  spec+: {
+  spec+: lib.merge( {
     bootstrapServers: 'kafka-kafka-bootstrap.%s.svc.cluster.local:9093' % me.namespace,
     image: 'tidepool/connect-debezium:0.1.0',
     imagePullPolicy: 'Always',
@@ -36,22 +36,16 @@ local kafkaconnect(me) = k8s.k( 'kafka.strimzi.io/v1beta1', 'KafkaConnect') + k8
         }
       }],
     },
-  },
+  }, lib.getElse( me, 'spec', {})),
 };
 
-local kafkaconnector(me) = k8s.k( 'kafka.strimzi.io/v1alpha1','KafkaConnector') + k8s.metadata( me.pkg, me.namespace) {
-  metadata+: {
-    labels+: {
-      'strimzi.io/cluster': me.pkg,
-    },
-  },
+local kafkaconnector(me, name, config) = k8s.k( 'kafka.strimzi.io/v1alpha1','KafkaConnector') + k8s.metadata( name, me.namespace) {
   "class": "MongoDbConnector",
-  spec+: {
+  spec+: lib.merge( {
     // see https://debezium.io/documentation/reference/connectors/mongodb.html#mongodb-connector-properties
     config: {
       "connector.type": "source",
-      //"mongodb.name": "atlas-ne0az9-shard-0",
-      "mongodb.name": "deviceData",
+      "mongodb.name": name,
       "mongodb.hosts": "${file:/opt/kafka/external-configuration/connector-config/debezium-mongo-credentials.properties:Addresses}",
       "mongodb.user": "${file:/opt/kafka/external-configuration/connector-config/debezium-mongo-credentials.properties:Username}",
       "mongodb.password": "${file:/opt/kafka/external-configuration/connector-config/debezium-mongo-credentials.properties:Password}",
@@ -60,13 +54,13 @@ local kafkaconnector(me) = k8s.k( 'kafka.strimzi.io/v1alpha1','KafkaConnector') 
       "database.whitelist": "data", 
     },
     tasksMax: 1,
-  },
+  }, config) 
 };
 
 function(config, prev, namespace, pkg) (
   local me = common.package(config, prev, namespace, pkg);
   [
     kafkaconnect(me),
-    kafkaconnector(me),
+    std.mapWithKey( function(n, v) kafkaconnector(me, n, v), lib.getElse(me, 'connectors', {})) 
   ]
 )
