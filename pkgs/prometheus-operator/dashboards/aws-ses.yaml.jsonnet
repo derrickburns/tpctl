@@ -8,13 +8,15 @@ local dashboardConfig = {
         builtIn: 1,
         datasource: 'Prometheus',
         enable: false,
-        expr: 'ALERTS',
+        expr: 'ALERTS{alertname="SesBounceRateHigh"}',
         hide: true,
         iconColor: '#F2495C',
         limit: 100,
-        name: 'Annotations & Alerts',
+        name: 'Faiure rate above 5%',
         showIn: 0,
+        step: '3600s',
         type: 'dashboard',
+        useValueForTime: false,
       },
     ],
   },
@@ -23,7 +25,7 @@ local dashboardConfig = {
   gnetId: 1519,
   graphTooltip: 0,
   id: 371,
-  iteration: 1593631688522,
+  iteration: 1593687877012,
   links: [],
   panels: [
     {
@@ -112,7 +114,7 @@ local dashboardConfig = {
             filter: '',
           },
           dimensions: {},
-          expr: 'aws_ses_reputation_complaint_rate_sum',
+          expr: 'aws_ses_reputation_complaint_rate_sum * 100',
           functions: [],
           group: {
             filter: '',
@@ -139,7 +141,16 @@ local dashboardConfig = {
           ],
         },
       ],
-      thresholds: [],
+      thresholds: [
+        {
+          colorMode: 'critical',
+          fill: true,
+          line: true,
+          op: 'gt',
+          value: 5,
+          yaxis: 'left',
+        },
+      ],
       timeFrom: null,
       timeRegions: [],
       timeShift: null,
@@ -161,7 +172,7 @@ local dashboardConfig = {
       yaxes: [
         {
           decimals: 2,
-          format: 'percentunit',
+          format: 'percent',
           label: null,
           logBase: 1,
           max: null,
@@ -266,7 +277,7 @@ local dashboardConfig = {
             filter: '',
           },
           dimensions: {},
-          expr: 'aws_ses_reputation_bounce_rate_sum',
+          expr: 'aws_ses_reputation_bounce_rate_sum * 100',
           functions: [],
           group: {
             filter: '',
@@ -294,7 +305,16 @@ local dashboardConfig = {
           ],
         },
       ],
-      thresholds: [],
+      thresholds: [
+        {
+          colorMode: 'critical',
+          fill: true,
+          line: true,
+          op: 'gt',
+          value: 5,
+          yaxis: 'left',
+        },
+      ],
       timeFrom: null,
       timeRegions: [],
       timeShift: null,
@@ -316,7 +336,7 @@ local dashboardConfig = {
       yaxes: [
         {
           decimals: 2,
-          format: 'percentunit',
+          format: 'percent',
           label: null,
           logBase: 1,
           max: null,
@@ -342,7 +362,6 @@ local dashboardConfig = {
   schemaVersion: 25,
   style: 'dark',
   tags: [
-    'monitoringartist',
     'cloudwatch',
   ],
   templating: {
@@ -399,7 +418,7 @@ local dashboardConfig = {
   timezone: 'browser',
   title: 'AWS SES',
   uid: 'WojOgXTmkf2f',
-  version: 7,
+  version: 8,
 };
 
 local configmap(me) = grafana.dashboard(me, 'aws-ses', dashboardConfig);
