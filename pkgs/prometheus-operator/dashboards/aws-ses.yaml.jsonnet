@@ -24,8 +24,7 @@ local dashboardConfig = {
   editable: false,
   gnetId: 1519,
   graphTooltip: 0,
-  id: 371,
-  iteration: 1593687877012,
+  iteration: 1593719530938,
   links: [],
   panels: [
     {
@@ -416,9 +415,9 @@ local dashboardConfig = {
     ],
   },
   timezone: 'browser',
-  title: 'AWS SES',
+  title: 'AWS / SES',
   uid: 'WojOgXTmkf2f',
-  version: 8,
+  version: 9,
 };
 
 local configmap(me) = grafana.dashboard(me, 'aws-ses', dashboardConfig);
