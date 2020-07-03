@@ -40,7 +40,7 @@ local kafkaconnect(me) = k8s.k( 'kafka.strimzi.io/v1beta1', 'KafkaConnect') + k8
   }, lib.getElse( me, 'spec', {})),
 };
 
-local kafkaconnector(me, name, config) = k8s.k( 'kafka.strimzi.io/v1alpha1','KafkaConnector') + k8s.metadata( name, me.namespace) {
+local kafkaconnector(me, name, config) = k8s.k( 'kafka.strimzi.io/v1alpha1','KafkaConnector') + k8s.metadata( lib.kebabCase(name), me.namespace) {
   "class": "MongoDbConnector",
   spec+: lib.merge( {
     // see https://debezium.io/documentation/reference/connectors/mongodb.html#mongodb-connector-properties
