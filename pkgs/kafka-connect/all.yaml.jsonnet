@@ -46,8 +46,8 @@ local kafkaconnector(me, name, config) = k8s.k( 'kafka.strimzi.io/v1alpha1','Kaf
       'strimzi.io/cluster': me.pkg,
     },
   },
-  "class": "MongoDbConnector",
   spec+: lib.merge( {
+    "class": "MongoDbConnector",
     // see https://debezium.io/documentation/reference/connectors/mongodb.html#mongodb-connector-properties
     config: {
       "connector.type": "source",
