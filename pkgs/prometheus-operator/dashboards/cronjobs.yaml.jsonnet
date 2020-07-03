@@ -892,7 +892,7 @@ local dashboardConfig = {
     ],
   },
   time: {
-    from: 'now-3h',
+    from: 'now-12h',
     to: 'now',
   },
   timepicker: {
