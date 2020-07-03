@@ -51,7 +51,7 @@ local kafkaconnector(me, name, config) = k8s.k( 'kafka.strimzi.io/v1alpha1','Kaf
     // see https://debezium.io/documentation/reference/connectors/mongodb.html#mongodb-connector-properties
     config: {
       "connector.type": "source",
-      "mongodb.name": lib.kebabCase(name),
+      "mongodb.name": std.asciiLower(name),
       "mongodb.hosts": "${file:/opt/kafka/external-configuration/connector-config/debezium-mongo-credentials.properties:Addresses}",
       "mongodb.user": "${file:/opt/kafka/external-configuration/connector-config/debezium-mongo-credentials.properties:Username}",
       "mongodb.password": "${file:/opt/kafka/external-configuration/connector-config/debezium-mongo-credentials.properties:Password}",
