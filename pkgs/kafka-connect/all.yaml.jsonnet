@@ -51,8 +51,8 @@ local kafkaconnector(me, name, config) = k8s.k( 'kafka.strimzi.io/v1alpha1','Kaf
       "mongodb.user": "${file:/opt/kafka/external-configuration/connector-config/debezium-mongo-credentials.properties:Username}",
       "mongodb.password": "${file:/opt/kafka/external-configuration/connector-config/debezium-mongo-credentials.properties:Password}",
       "mongodb.ssl.enabled": "${file:/opt/kafka/external-configuration/connector-config/debezium-mongo-credentials.properties:Tls}",
-      "collection.whitelist": "data.deviceData", 
-      "database.whitelist": "data", 
+      //"collection.whitelist": "data.deviceData", 
+      //"database.whitelist": "data", 
     },
     tasksMax: 1,
   }, config) 
