@@ -26,6 +26,8 @@ local kafkaconnect(me) = k8s.k( 'kafka.strimzi.io/v1beta1', 'KafkaConnect') + k8
       'config.storage.replication.factor': 1,
       'offset.storage.replication.factor': 1,
       'status.storage.replication.factor': 1,
+      'key.converter.schemas.enable': 'false',
+      'value.converter.schemas.enable': 'false',
       'config.providers': 'file',
       'config.providers.file.class': 'org.apache.kafka.common.config.provider.FileConfigProvider',
     },
