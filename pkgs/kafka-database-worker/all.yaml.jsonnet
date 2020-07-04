@@ -12,7 +12,7 @@ local deployment(me) = flux.deployment(me) {
     image: 'tidepool/kafka-database-worker:latest',
     env: [
       k8s.envVar('KAFKA_BROKERS', lib.getElse(me, 'kafka-brokers', 'kafka-kafka-bootstrap.kafka.svc.cluster.local:9092')),
-      k8s.envVar('KAFKA_TOPIC', me.namespace + '-' + lib.getElse(me, 'kafka-topic', 'data')),
+      k8s.envVar('KAFKA_TOPIC', me.namespace + '.' + lib.getElse(me, 'kafka-topic', 'data.data.deviceData')),
       k8s.envVar('TIMESCALEDB_HOST', lib.getElse(me, 'postgres-host', 'timescaledb-single.timescaledb.svc.cluster.local')),
       k8s.envVar('TIMESCALEDB_USER', lib.getElse(me, 'postgres-user', 'postgres')),
       k8s.envVar('TIMESCALEDB_DBNAME', lib.getElse(me, 'postgres-dbname', me.namespace)),
