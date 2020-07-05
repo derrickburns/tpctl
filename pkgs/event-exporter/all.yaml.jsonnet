@@ -15,7 +15,7 @@ local configmap(me) = k8s.configmap(me) {
         match: [
           {
             kind: "HelmRelease",
-            namespace: lib.getElse(me, 'watchNamespace', me.pkg),
+            namespace: lib.getElse(me, 'watchNamespace', me.namespace),
             receiver: "slack"
           },
         ],
