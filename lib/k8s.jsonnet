@@ -286,6 +286,22 @@ local configmapNamesFromPod(pod) = lib.pruneList(
     },
   },
 
+  externalname(me):: $.service(me, type='ExternalName') {
+    metadata+: {
+      namespace: if lib.isTrue(me, 'global') then 'global' else me.namespace,
+    },
+    spec+: {
+      externalName: me.target.name,
+      ports: [
+        {
+          port: lib.getElse(me, 'expose.port', me.target.port),
+          protocol: 'TCP',
+          targetPort: me.target.port,
+        },
+      ],
+    },
+  },
+
   storageclass(me):: $.k('storage.k8s.io/v1', 'StorageClass') + $.metadata(me.pkg, me.namespace) {
   },
 

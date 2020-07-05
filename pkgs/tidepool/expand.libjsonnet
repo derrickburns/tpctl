@@ -40,9 +40,9 @@ local accessLogging = {
 {
   shadowNames(names):: std.map(function(x) '%s-shadow' % x, names),
 
-  isShadow(me):: lib.isTrue(me, 'shadow.enabled') && lib.nonNull(me, 'shadow.sender'),
+  isShadow(me):: lib.isEnabledAt(me, 'shadow') && lib.nonNull(me, 'shadow.sender'),
 
-  hasShadow(me):: lib.isTrue(me, 'shadow.enabled') && lib.nonNull(me, 'shadow.receiver'),
+  hasShadow(me):: lib.isEnabledAt(me, 'shadow') && lib.nonNull(me, 'shadow.receiver'),
 
   internalGatewayUpstream: {
     name: 'internal-gateway-proxy',

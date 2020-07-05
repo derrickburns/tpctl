@@ -3,14 +3,15 @@ local global = import '../../lib/global.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
-local helmrelease(me) = k8s.helmrelease(me, { version: lib.getElse(me, 'version', '2.3.1') }) {
+local helmrelease(me) = k8s.helmrelease(me, { version: lib.getElse(me, 'version', '2.5.0') }) {
   spec+: {
     values+: {
-      affinity: {
-        nodeAffinity: k8s.nodeAffinity(),
+      serviceMonitor: {
+        enabled: true,
       },
-      tolerations: [k8s.toleration()],
-      zkHosts: std.join(',', std.map( function(x) '%s:2181' % x, me.zkHosts)),
+      existingSecret: {
+        name: 'mongo' // XXX confirm
+      }
     },
   },
 };

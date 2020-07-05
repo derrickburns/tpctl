@@ -232,7 +232,7 @@ local helmrelease(me) = k8s.helmrelease(me, {
     },
     releaseName: 'tidepool-%s' % me.namespace,
     values+: {
-      //local extraContainers = if lib.isTrue(me, 'shadow.enabled') && (lib.getElse(me, "shadow.sender", "") != "") then proxyContainers else [],
+      //local extraContainers = if lib.isEnabledAt(me, 'shadow') && (lib.getElse(me, "shadow.sender", "") != "") then proxyContainers else [],
       local extraContainers = [],
 
       auth: lib.mergeList([common, {
@@ -445,7 +445,7 @@ local helmrelease(me) = k8s.helmrelease(me, {
       }, lib.getElse(me, 'migrations', {})]),
 
       mongodb: {
-        enabled: lib.isTrue(me, 'mongodb.enable'),
+        enabled: lib.isEnabledAt(me, 'mongodb'),
       },
 
       notification: lib.mergeList([common, {
@@ -474,7 +474,7 @@ local helmrelease(me) = k8s.helmrelease(me, {
         extraContainers: extraContainers,
         priorityClassName: 'high-priority',
         deployment+: {
-          isShadow: lib.isTrue(me, 'shadow.enabled') && (lib.getElse(me, 'shadow.sender', '') != ''),
+          isShadow: lib.isEnabledAt(me, 'shadow') && (lib.getElse(me, 'shadow.sender', '') != ''),
           image: lib.getElse(prev, 'spec.values.shoreline.deployment.image', 'tidepool/shoreline:master-latest'),
         },
       }, lib.getElse(me, 'shoreline', {})]),

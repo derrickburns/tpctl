@@ -8,9 +8,9 @@ local lib = import '../../lib/lib.jsonnet';
     lib.getElse(config.namespaces, name + '.tidepool', null)
   ),
 
-  isShadow(env):: lib.isTrue(env, 'shadow.enabled') && (lib.getElse(env, 'shadow.sender', null) != null),
+  isShadow(env):: lib.isEnabledAt(env, 'shadow') && (lib.getElse(env, 'shadow.sender', null) != null),
 
-  hasShadow(env):: lib.isTrue(env, 'shadow.enabled') && (lib.getElse(env, 'shadow.receiver', null) != null),
+  hasShadow(env):: lib.isEnabledAt(env, 'shadow') && (lib.getElse(env, 'shadow.receiver', null) != null),
 
   genDnsNames(config, name):: (
     local me = $.tpFor(config, name);
