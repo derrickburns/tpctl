@@ -15,10 +15,10 @@ local dashboardConfig = {
       },
     ],
   },
-  editable: true,
+  editable: false,
   gnetId: null,
   graphTooltip: 0,
-  id: 29,
+  iteration: 1593976326414,
   links: [],
   panels: [
     {
@@ -88,10 +88,13 @@ local dashboardConfig = {
         ymax: null,
         ymin: null,
       },
-      tableColumn: '',
+      tableColumn: 'flux_helm_operator_release_count{endpoint="http", instance="10.48.2.216:3030", job="helm-operator", namespace="ci-cd", pod="helm-operator-76b575f8c8-dvs2n", service="helm-operator"}',
       targets: [
         {
           expr: 'flux_helm_operator_release_count',
+          instant: true,
+          interval: '',
+          legendFormat: '',
           refId: 'A',
         },
       ],
@@ -394,7 +397,7 @@ local dashboardConfig = {
         ymax: null,
         ymin: null,
       },
-      tableColumn: '',
+      tableColumn: 'flux_helm_operator_release_queue_length_count{endpoint="http", instance="10.48.2.216:3030", job="helm-operator", namespace="ci-cd", pod="helm-operator-76b575f8c8-dvs2n", service="helm-operator"}',
       targets: [
         {
           expr: 'flux_helm_operator_release_queue_length_count',
@@ -876,7 +879,7 @@ local dashboardConfig = {
     ],
   },
   time: {
-    from: 'now-6h',
+    from: 'now-12h',
     to: 'now',
   },
   timepicker: {
@@ -895,7 +898,7 @@ local dashboardConfig = {
   timezone: '',
   title: 'Helm Operator',
   uid: 'c8qWijkGz',
-  version: 49,
+  version: 10293,
 };
 
 local configmap(me) = grafana.dashboard(me, 'helm-operator', dashboardConfig);
