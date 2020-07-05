@@ -11,7 +11,8 @@ export USE_LOCAL_FILESYSTEM=false
 export SKIP_REVIEW=false
 export GITHUB_ORG=${GITHUB_ORG:-tidepool-org}
 X=$( dirname "${BASH_SOURCE[0]}" )
-export DIR=$( cd "$X" >/dev/null 2>&1 && pwd )
+export DIR
+DIR=$( cd "$X" >/dev/null 2>&1 && pwd )
 REPOS='
 cluster-dev
 cluster-qa2
@@ -26,8 +27,6 @@ LOG_LEVEL=3
 
 python3 -m pip install ruamel.yaml >/dev/null 2>&1
 
-declare -a timestack
-
 function useFzf() {
   command -v fzf >/dev/null 2>&1
 }
@@ -37,8 +36,9 @@ function envoy() {
 }
 
 function actual_k8s_version() {
-  local cluster=$(get_cluster)
-  eksctl get cluster $cluster -o json | jq '.[0].Version'
+  local cluster
+  cluster=$(get_cluster)
+  eksctl get cluster "$cluster" -o json | jq '.[0].Version'
 }
 
 function update_utils() {
@@ -57,17 +57,18 @@ function update_utils() {
 
 function create_kmskey() {
   start "kms key"
-  local cluster=$(get_cluster)
-  key=$(aws kms create-key --tags TagKey=cluster,TagValue=$cluster --description "Key for cluster $cluster")
-  arn=$(echo $key | yq r - -j | jq '.KeyMetadata.Arn' | sed -e 's/"//g')
+  local cluster
+  cluster=$(get_cluster)
+  key=$(aws kms create-key --tags TagKey=cluster,TagValue="$cluster" --description "Key for cluster $cluster")
+  arn=$(echo "$key" | yq r - -j | jq '.KeyMetadata.Arn' | sed -e 's/"//g')
   alias="alias/kubernetes-$cluster"
   #aws kms delete-alias --alias-name $alias
-  aws kms create-alias --alias-name $alias --target-key-id $arn
+  aws kms create-alias --alias-name "$alias" --target-key-id "$arn"
   local region=$(get_region)
   local account=$(get_aws_account)
   local pgp=$(get_pgp)
 
-  yq w -i values.yaml general.sops.keys.arn $arn
+  yq w -i values.yaml general.sops.keys.arn "$arn"
   expect_success "Could not write arn to values.yaml file"
 
   cat >.sops.yaml <<EOF
@@ -81,7 +82,7 @@ EOF
 
 function vpa() {
   (
-    cd $TMP_DIR
+    cd "$TMP_DIR"
     git clone https://github.com/kubernetes/autoscaler.git
     cd autoscaler/vertical-pod-autoscaler
     git pull
@@ -104,7 +105,7 @@ function delete_peering_connections() {
   start "deleting peering connections"
   local ids=$(find_peering_connections | jq '.VpcPeeringConnections | .[].VpcPeeringConnectionId' | sed -e 's/"//g')
   confirm "Delete peering connections: $ids?"
-  for id in ids; do
+  for id in $ids; do
     info "deleting peering connection $id"
     aws ec2 delete-vpc-peering-connection --vpc-peering-connection-id $id
   done
@@ -140,11 +141,11 @@ function cluster_in_repo() {
 function install_glooctl() {
   start "checking glooctl"
   local glooctl_version=$(require_value "pkgs.gloo.version")
-  if ! command -v glooctl >/dev/null 2>&1 || [ $(glooctl version -o json | grep Client | yq r - 'Client.version') != ${glooctl_version} ]; then
+  if ! command -v glooctl >/dev/null 2>&1 || [ $(glooctl version -o json | grep Client | yq r - 'Client.version') != "${glooctl_version}" ]; then
     start "installing glooctl"
     OS=$(ostype)
     local name="https://github.com/solo-io/gloo/releases/download/v${glooctl_version}/glooctl-${OS}-amd64"
-    curl -sL -o /usr/local/bin/glooctl $name
+    curl -sL -o /usr/local/bin/glooctl "$name"
     expect_success "Failed to download $name"
     chmod 755 /usr/local/bin/glooctl
   fi
@@ -192,7 +193,6 @@ function establish_ssh() {
 function define_colors() {
   RED=$(tput setaf 1)
   GREEN=$(tput setaf 2)
-  MAGENTA=$(tput setaf 5)
   RESET=$(tput sgr0)
 }
 
@@ -239,7 +239,7 @@ function start() {
 
 # show info message
 function complete() {
-  LEVEL=$(($LEVEL - 1))
+  LEVEL=$((LEVEL - 1))
   starttime=timearray[$LEVEL]
   endtime=$(date +%s)
   report "end  " "in $((endtime - starttime))s"
@@ -423,6 +423,19 @@ function get_aws_account() {
 # retrieve full path of tidepool environments
 function get_environments_path() {
   yq r values.yaml -p p namespaces.*.tidepool
+}
+
+# retrieve package type
+function get_package_type() {
+  local namespace=$1
+  local pkgName=$2
+  local pkgType=$(yq r values.yaml namespaces.${namespace}.${pkgName}.type | sed -e "s/- //" -e 's/"//g')
+  if [ -n "$pkgType" ]
+  then
+    echo $pkgType
+  else
+    echo $pkgName
+  fi
 }
 
 # retrieve names of all namespaces to create
@@ -653,18 +666,19 @@ function template_service_accounts() {
   local path=$2
   local prefix=$3
   local namespace=$4
+  local pkgName=$5
   start "creating AWS polices for $namespace"
   for fullpath in $(find $path -type f -print); do
     local filename=${fullpath#$prefix}
-    local pkg=$(dirname $filename)
-    local dir=$MANIFEST_DIR/$namespace/$pkg
+    local pkgType=$(dirname $filename)
+    local dir=$MANIFEST_DIR/$namespace/$pkgType
     local file=$(basename $filename)
     mkdir -p $dir
     if [ "${filename: -14}" == "policy.jsonnet" ]; then
       local newbasename=${file%.jsonnet}
       local out=$dir/${newbasename}
       echo "---"
-      kubecfg show --tla-code prev="{}" --tla-code-file config=$values --tla-str namespace=$namespace $fullpath --tla-str pkg="$pkg" | k8s_sort >$out
+      kubecfg show --tla-code prev="{}" --tla-code-file config=$values --tla-str namespace=$namespace $fullpath --tla-str pkg="$pkgName" | k8s_sort >$out
       expect_success "Templating failure $dir/$filename"
       add_file ${out}
       cat $out
@@ -680,9 +694,10 @@ function make_policy_manifests() {
   start "making policy manifests"
   for ns in $(get_namespaces); do
     local pkg
-    for pkg in $(enabled_pkgs namespaces.$ns); do
+    for pkgName in $(enabled_pkgs namespaces.$ns); do
       echo "---"
-      template_service_accounts "$values" ${TEMPLATE_DIR}pkgs/$pkg ${TEMPLATE_DIR}pkgs/ $ns
+      local pkgType=$(get_package_type $ns $pkgName)
+      template_service_accounts "$values" ${TEMPLATE_DIR}pkgs/$pkgType ${TEMPLATE_DIR}pkgs/ $ns $pkgName
     done
   done
   complete
@@ -764,11 +779,11 @@ function expand_jsonnet() {
   local values=$1
   local prev=$2
   local namespace=$3
-  local pkg=$4
+  local pkgName=$4
   local template=$5
   local short=${template#${TEMPLATE_DIR}}
   info "template" "$short"
-  kubecfg show --tla-str-file prev=$prev --tla-code-file config=$values --tla-str namespace=$namespace --tla-str pkg=$pkg $template | k8s_sort
+  kubecfg show --tla-str-file prev=$prev --tla-code-file config=$values --tla-str namespace=$namespace --tla-str pkg=$pkgName $template | k8s_sort
 }
 
 # generate all files in a pkg directory
@@ -776,15 +791,22 @@ function generate() {
   local values=$1
   local prev=$2
   local namespace=$3
-  local pkg=$4
+  local pkgName=$4
+  local pkgType=$(get_package_type $3 $4)
 
-  start "package $pkg"
-  local dir=$(output_dir $namespace $pkg)
-  local base=${TEMPLATE_DIR}pkgs/$pkg
+  if [ "$pkgType" != "$pkgName" ]
+  then
+    start "package $pkgName of type $pkgType"
+  else
+    start "package $pkgName"
+  fi
+  local dir=$(output_dir $namespace $pkgName)
+  local base=${TEMPLATE_DIR}pkgs/$pkgType
   for f in $(find $base -type f -print); do
     local src=${f#$base/}
     start "file $src"
     if [ "${src: -5}" == ".yaml" ]; then
+      mkdir -p $(dirname $dir/$src)
       cp $f $dir/$src
     elif [ "${src: -13}" == ".yaml.jsonnet" ]; then
       expand_jsonnet $values $prev $namespace $pkg $f | output $namespace $pkg $src
@@ -1255,7 +1277,7 @@ function dehelm() {
   fluxoff
   info "deleting helm secrets for $namespace/$releaseName"
   kubectl delete secrets -n $namespace -l name=$releaseName,owner=helm
-  info "deleting helmrelease release for $namespacea/$pkgName"
+  info "deleting helmrelease release for $namespace/$pkgName"
   kubectl delete helmrelease -n $namespace -l app=$pkgName
   complete
   info "proceed with expanding helm template client-side"
@@ -1414,7 +1436,7 @@ main() {
         shift
         break
         ;;
-      -* | --*=) # unsupported flags
+      -*) # unsupported flags
         echo "Error: Unsupported flag $1" >&2
         exit 1
         ;;

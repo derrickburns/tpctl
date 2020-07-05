@@ -308,7 +308,7 @@ local i = {
   ),
 
   certificatesForPackage(me):: (
-    if global.isEnabled(me.config, 'certmanager') || global.isEnabled(me.config, 'certmanager15')
+    if global.isEnabled(me.config, 'cert-manager') 
     then std.map(i.certificate(me), lib.values(lib.getElse(me, 'virtualServices', {})))
     else []
   ),

@@ -22,12 +22,12 @@ local exp = import 'expand.jsonnet';
     _isEnabled(x):: self._global.isEnabled(self._config, x),
   },
 
-  package(config, prev, namespace, pkg):: (
+  package(config, prev, namespace, pkgName):: (
     local expanded = exp.expand(config);
-    local me = lib.getElse(expanded, 'namespaces.' + namespace + '.' + pkg, {});
+    local me = lib.getElse(expanded, 'namespaces.' + namespace + '.' + pkgName, {});
     me {
       namespace:: lib.kebabCase(namespace),
-      pkg:: lib.kebabCase(lib.getElse(me, 'pkg', pkg)),
+      pkg:: lib.kebabCase(pkgName),
       config: expanded,
       prev:: lib.removeNulls(kubecfg.parseYaml(prev)),
     }
