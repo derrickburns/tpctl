@@ -5,7 +5,7 @@ local k8s = import '../../lib/k8s.jsonnet';
 local externalname(me) = k8s.service(me, type='ExternalName') {
   metadata+: {
     name: me.pkg,
-    namespace: lib.getElse( me, 'expose.namespace', 'global'),
+    namespace: if lib.isTrue(me, 'global') then 'global' else me.namespace,
   },
   spec+: {
     externalName: me.target.name,
