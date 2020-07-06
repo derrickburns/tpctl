@@ -1,7 +1,6 @@
 local common = import '../../lib/common.jsonnet';
 local global = import '../../lib/global.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
-
 local k8s = import '../../lib/k8s.jsonnet';
 
 local affinity = {
@@ -33,7 +32,7 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '8.14.0' }) {
   spec+: {
     values+: {
       grafana: {
-        enabled: lib.getElse(me, 'grafana.enabled', false,),
+        enabled: lib.isEnabledAt(me, 'grafana'),
         persistence: {
           enabled: true,
           storageClassName: 'monitoring-expanding',
@@ -62,7 +61,7 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '8.14.0' }) {
         tolerations: tolerations,
       },
       alertmanager: {
-        enabled: lib.getElse(me, 'alertmanager.enabled', false,),
+        enabled: lib.isEnabledAt(me, 'alertmanager'),
         alertmanagerSpec: {
           affinity: affinity,
           tolerations: tolerations,
@@ -70,7 +69,7 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '8.14.0' }) {
         },
       },
       prometheus: {
-        enabled: lib.getElse(me, 'prometheus.enabled', false,),
+        enabled: lib.isEnabledAt(me, 'prometheus'),
         annotations: {
           'cluster-autoscaler.kubernetes.io/safe-to-evict': 'false',
         },
