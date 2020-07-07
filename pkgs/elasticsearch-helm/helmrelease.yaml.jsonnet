@@ -43,11 +43,11 @@ local helmrelease(me) = k8s.helmrelease(me, { name: name, version: lib.getElse(m
           },
         },
       },
-      secretMounts: {
+      secretMounts: [{
         name: 'elastic-certificates',
         secretName: 'elasticsearch-tls',
         path: '/usr/share/elasticsearch/config/certs',
-      },
+      }],
       protocol: 'https',
       esConfig: {
         'elasticsearch.yml': std.manifestYamlDoc({
