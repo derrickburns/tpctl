@@ -1,7 +1,7 @@
 local common = import '../../lib/common.jsonnet';
 local global = import '../../lib/global.jsonnet';
-local lib = import '../../lib/lib.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
+local lib = import '../../lib/lib.jsonnet';
 
 local affinity = {
   nodeAffinity: {
@@ -143,6 +143,14 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '8.14.0' }) {
       },
       kubeScheduler: {
         enabled: false,
+      },
+      'kube-state-metrics': {
+        collectors: {
+          // Need K8s 1.16+
+          mutatingwebhookconfigurations: false,
+          validatingwebhookconfigurations: false,
+          verticalpodautoscalers: true,
+        },
       },
       prometheusOperator: {
         affinity: affinity,
