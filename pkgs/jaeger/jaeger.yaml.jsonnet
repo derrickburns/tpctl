@@ -12,10 +12,21 @@ local jaeger(me) = k8s.k('jaegertracing.io/v1', 'Jaeger') + k8s.metadata('jaeger
       type: 'elasticsearch',
       options: {
         es: {
-          'server-urls': 'http://elasticsearch-master:9200',
+          'server-urls': 'https://elasticsearch-master:9200',
         },
       },
     },
+    volumeMounts: [{
+      name: 'certificates',
+      mountPath: '/es/certificates/',
+      readOnly: true,
+    }],
+    volumes: [{
+      name: 'certificates',
+      secret: {
+        secretName: 'elasticsearch-tls',
+      },
+    }],
     affinity: {
       nodeAffinity: k8s.nodeAffinity(),
     },
