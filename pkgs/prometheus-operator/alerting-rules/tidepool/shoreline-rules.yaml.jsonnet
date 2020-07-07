@@ -10,7 +10,7 @@ local groupConfig = [
         annotations: {
           message: 'Marketo config is invalid for pod {{ $labels.job }} in namespace {{ $labels.namespace }}',
         },
-        expr: 'tidepool_shoreline_marketo_config_valid == 0',
+        expr: 'sum(tidepool_shoreline_marketo_config_valid) by (namespace)  == 0',
         'for': '1m',
         labels: {
           severity: 'critical',
