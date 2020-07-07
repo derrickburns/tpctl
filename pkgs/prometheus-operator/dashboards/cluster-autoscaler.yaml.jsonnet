@@ -19,31 +19,42 @@ local dashboardConfig = {
   editable: true,
   gnetId: 3831,
   graphTooltip: 0,
+  iteration: 1594115900647,
   links: [],
   panels: [
     {
       cacheTimeout: null,
-      colorBackground: false,
-      colorValue: false,
-      colors: [
-        'rgba(245, 54, 54, 0.9)',
-        'rgba(237, 129, 40, 0.89)',
-        'rgba(50, 172, 45, 0.97)',
-      ],
       datasource: '$datasource',
       fieldConfig: {
         defaults: {
           custom: {},
+          mappings: [
+            {
+              '$$hashKey': 'object:1183',
+              id: 0,
+              op: '=',
+              text: 'N/A',
+              type: 1,
+              value: 'null',
+            },
+          ],
+          nullValueMode: 'connected',
+          thresholds: {
+            mode: 'absolute',
+            steps: [
+              {
+                color: 'green',
+                value: null,
+              },
+              {
+                color: 'red',
+                value: 80,
+              },
+            ],
+          },
+          unit: 'none',
         },
         overrides: [],
-      },
-      format: 'none',
-      gauge: {
-        maxValue: 100,
-        minValue: 0,
-        show: false,
-        thresholdLabels: false,
-        thresholdMarkers: true,
       },
       gridPos: {
         h: 4,
@@ -51,42 +62,29 @@ local dashboardConfig = {
         x: 0,
         y: 0,
       },
-      height: '150',
       id: 4,
       interval: null,
       links: [],
-      mappingType: 1,
-      mappingTypes: [
-        {
-          name: 'value to text',
-          value: 1,
-        },
-        {
-          name: 'range to text',
-          value: 2,
-        },
-      ],
       maxDataPoints: 100,
-      nullPointMode: 'connected',
-      nullText: null,
-      postfix: '',
-      postfixFontSize: '50%',
-      prefix: '',
-      prefixFontSize: '50%',
-      rangeMaps: [
-        {
-          from: 'null',
-          text: 'N/A',
-          to: 'null',
+      options: {
+        colorMode: 'value',
+        fieldOptions: {
+          calcs: [
+            'lastNotNull',
+          ],
         },
-      ],
-      sparkline: {
-        fillColor: 'rgba(31, 118, 189, 0.18)',
-        full: false,
-        lineColor: 'rgb(31, 120, 193)',
-        show: false,
+        graphMode: 'none',
+        justifyMode: 'auto',
+        orientation: 'horizontal',
+        reduceOptions: {
+          calcs: [
+            'mean',
+          ],
+          fields: '',
+          values: false,
+        },
       },
-      tableColumn: '',
+      pluginVersion: '7.0.3',
       targets: [
         {
           expr: 'sum(cluster_autoscaler_nodes_count)\n',
@@ -96,44 +94,49 @@ local dashboardConfig = {
           step: 600,
         },
       ],
-      thresholds: '',
       title: 'Total nodes',
-      type: 'singlestat',
-      valueFontSize: '100%',
-      valueMaps: [
-        {
-          op: '=',
-          text: 'N/A',
-          value: 'null',
-        },
-      ],
-      valueName: 'current',
+      type: 'stat',
     },
     {
       cacheTimeout: null,
-      colorBackground: false,
-      colorValue: true,
-      colors: [
-        'rgba(50, 172, 45, 0.97)',
-        'rgba(237, 129, 40, 0.89)',
-        'rgba(245, 54, 54, 0.9)',
-      ],
       datasource: '$datasource',
-      decimals: null,
       description: 'Shows the nodes which are ready as a percent of the total nodes',
       fieldConfig: {
         defaults: {
           custom: {},
+          mappings: [
+            {
+              '$$hashKey': 'object:1232',
+              id: 0,
+              op: '=',
+              text: 'N/A',
+              type: 1,
+              value: 'null',
+            },
+          ],
+          max: 100,
+          min: 0,
+          nullValueMode: 'connected',
+          thresholds: {
+            mode: 'absolute',
+            steps: [
+              {
+                color: 'rgba(50, 172, 45, 0.97)',
+                value: null,
+              },
+              {
+                color: 'rgba(237, 129, 40, 0.89)',
+                value: 100,
+              },
+              {
+                color: 'rgba(245, 54, 54, 0.9)',
+                value: 95,
+              },
+            ],
+          },
+          unit: 'percent',
         },
         overrides: [],
-      },
-      format: 'percent',
-      gauge: {
-        maxValue: 100,
-        minValue: 0,
-        show: true,
-        thresholdLabels: false,
-        thresholdMarkers: false,
       },
       gridPos: {
         h: 4,
@@ -141,42 +144,28 @@ local dashboardConfig = {
         x: 4,
         y: 0,
       },
-      height: '150',
       id: 6,
       interval: null,
       links: [],
-      mappingType: 1,
-      mappingTypes: [
-        {
-          name: 'value to text',
-          value: 1,
-        },
-        {
-          name: 'range to text',
-          value: 2,
-        },
-      ],
       maxDataPoints: 100,
-      nullPointMode: 'connected',
-      nullText: null,
-      postfix: '',
-      postfixFontSize: '50%',
-      prefix: '',
-      prefixFontSize: '50%',
-      rangeMaps: [
-        {
-          from: 'null',
-          text: 'N/A',
-          to: 'null',
+      options: {
+        fieldOptions: {
+          calcs: [
+            'lastNotNull',
+          ],
         },
-      ],
-      sparkline: {
-        fillColor: 'rgba(31, 118, 189, 0.18)',
-        full: false,
-        lineColor: 'rgb(31, 120, 193)',
-        show: false,
+        orientation: 'horizontal',
+        reduceOptions: {
+          calcs: [
+            'mean',
+          ],
+          fields: '',
+          values: false,
+        },
+        showThresholdLabels: false,
+        showThresholdMarkers: false,
       },
-      tableColumn: '',
+      pluginVersion: '7.0.3',
       targets: [
         {
           expr: 'sum(cluster_autoscaler_nodes_count{state="ready"})/sum(cluster_autoscaler_nodes_count)*100',
@@ -186,42 +175,54 @@ local dashboardConfig = {
           step: 600,
         },
       ],
-      thresholds: '100,95,80',
       title: 'Nodes available',
-      type: 'singlestat',
-      valueFontSize: '80%',
-      valueMaps: [
-        {
-          op: '=',
-          text: 'N/A',
-          value: 'null',
-        },
-      ],
-      valueName: 'current',
+      type: 'gauge',
     },
     {
       cacheTimeout: null,
-      colorBackground: true,
-      colorValue: false,
-      colors: [
-        'rgba(245, 54, 54, 0.9)',
-        'rgba(237, 129, 40, 0.89)',
-        'rgba(50, 172, 45, 0.97)',
-      ],
       datasource: '$datasource',
       fieldConfig: {
         defaults: {
           custom: {},
+          mappings: [
+            {
+              '$$hashKey': 'object:1273',
+              id: 0,
+              op: '=',
+              text: 'Yes',
+              type: 1,
+              value: '1',
+            },
+            {
+              '$$hashKey': 'object:1274',
+              id: 1,
+              op: '=',
+              text: 'No',
+              type: 1,
+              value: '0',
+            },
+          ],
+          nullValueMode: 'connected',
+          thresholds: {
+            mode: 'absolute',
+            steps: [
+              {
+                color: 'rgba(245, 54, 54, 0.9)',
+                value: null,
+              },
+              {
+                color: 'rgba(237, 129, 40, 0.89)',
+                value: 0,
+              },
+              {
+                color: 'rgba(50, 172, 45, 0.97)',
+                value: 1,
+              },
+            ],
+          },
+          unit: 'none',
         },
         overrides: [],
-      },
-      format: 'none',
-      gauge: {
-        maxValue: 100,
-        minValue: 0,
-        show: false,
-        thresholdLabels: false,
-        thresholdMarkers: true,
       },
       gridPos: {
         h: 4,
@@ -229,42 +230,29 @@ local dashboardConfig = {
         x: 8,
         y: 0,
       },
-      height: '150',
       id: 9,
       interval: null,
       links: [],
-      mappingType: 1,
-      mappingTypes: [
-        {
-          name: 'value to text',
-          value: 1,
-        },
-        {
-          name: 'range to text',
-          value: 2,
-        },
-      ],
       maxDataPoints: 100,
-      nullPointMode: 'connected',
-      nullText: null,
-      postfix: '',
-      postfixFontSize: '50%',
-      prefix: '',
-      prefixFontSize: '50%',
-      rangeMaps: [
-        {
-          from: 'null',
-          text: 'N/A',
-          to: 'null',
+      options: {
+        colorMode: 'background',
+        fieldOptions: {
+          calcs: [
+            'lastNotNull',
+          ],
         },
-      ],
-      sparkline: {
-        fillColor: 'rgba(31, 118, 189, 0.18)',
-        full: false,
-        lineColor: 'rgb(31, 120, 193)',
-        show: false,
+        graphMode: 'none',
+        justifyMode: 'auto',
+        orientation: 'horizontal',
+        reduceOptions: {
+          calcs: [
+            'mean',
+          ],
+          fields: '',
+          values: false,
+        },
       },
-      tableColumn: '',
+      pluginVersion: '7.0.3',
       targets: [
         {
           expr: 'sum(cluster_autoscaler_cluster_safe_to_autoscale)',
@@ -275,48 +263,37 @@ local dashboardConfig = {
           step: 600,
         },
       ],
-      thresholds: '0,1',
       title: 'Is cluster safe to scale?',
-      type: 'singlestat',
-      valueFontSize: '100%',
-      valueMaps: [
-        {
-          op: '=',
-          text: 'Yes',
-          value: '1',
-        },
-        {
-          op: '=',
-          text: 'No',
-          value: '0',
-        },
-      ],
-      valueName: 'current',
+      type: 'stat',
     },
     {
       cacheTimeout: null,
-      colorBackground: true,
-      colorValue: false,
-      colors: [
-        'rgba(50, 172, 45, 0.97)',
-        'rgba(237, 129, 40, 0.89)',
-        'rgba(245, 54, 54, 0.9)',
-      ],
       datasource: '$datasource',
       description: 'Tells you if there are unscheduled pods',
       fieldConfig: {
         defaults: {
           custom: {},
+          mappings: [],
+          nullValueMode: 'connected',
+          thresholds: {
+            mode: 'absolute',
+            steps: [
+              {
+                color: 'rgba(50, 172, 45, 0.97)',
+                value: null,
+              },
+              {
+                color: 'rgba(237, 129, 40, 0.89)',
+                value: 1,
+              },
+              {
+                color: 'rgba(245, 54, 54, 0.9)',
+              },
+            ],
+          },
+          unit: 'none',
         },
         overrides: [],
-      },
-      format: 'none',
-      gauge: {
-        maxValue: 100,
-        minValue: 0,
-        show: false,
-        thresholdLabels: false,
-        thresholdMarkers: true,
       },
       gridPos: {
         h: 4,
@@ -324,42 +301,29 @@ local dashboardConfig = {
         x: 12,
         y: 0,
       },
-      height: '150',
       id: 12,
       interval: null,
       links: [],
-      mappingType: 1,
-      mappingTypes: [
-        {
-          name: 'value to text',
-          value: 1,
-        },
-        {
-          name: 'range to text',
-          value: 2,
-        },
-      ],
       maxDataPoints: 100,
-      nullPointMode: 'connected',
-      nullText: null,
-      postfix: '',
-      postfixFontSize: '50%',
-      prefix: '',
-      prefixFontSize: '50%',
-      rangeMaps: [
-        {
-          from: '1',
-          text: 'Yes',
-          to: '',
+      options: {
+        colorMode: 'background',
+        fieldOptions: {
+          calcs: [
+            'lastNotNull',
+          ],
         },
-      ],
-      sparkline: {
-        fillColor: 'rgba(31, 118, 189, 0.18)',
-        full: false,
-        lineColor: 'rgb(31, 120, 193)',
-        show: false,
+        graphMode: 'none',
+        justifyMode: 'auto',
+        orientation: 'horizontal',
+        reduceOptions: {
+          calcs: [
+            'mean',
+          ],
+          fields: '',
+          values: false,
+        },
       },
-      tableColumn: '',
+      pluginVersion: '7.0.3',
       targets: [
         {
           expr: 'sum(cluster_autoscaler_unschedulable_pods_count)',
@@ -370,36 +334,42 @@ local dashboardConfig = {
           step: 300,
         },
       ],
-      thresholds: '1',
       title: 'Number of unscheduled pods',
-      type: 'singlestat',
-      valueFontSize: '100%',
-      valueMaps: [],
-      valueName: 'current',
+      type: 'stat',
     },
     {
       cacheTimeout: null,
-      colorBackground: false,
-      colorValue: false,
-      colors: [
-        'rgba(245, 54, 54, 0.9)',
-        'rgba(237, 129, 40, 0.89)',
-        'rgba(50, 172, 45, 0.97)',
-      ],
       datasource: '$datasource',
       fieldConfig: {
         defaults: {
           custom: {},
+          mappings: [
+            {
+              '$$hashKey': 'object:1356',
+              id: 0,
+              op: '=',
+              text: 'N/A',
+              type: 1,
+              value: 'null',
+            },
+          ],
+          nullValueMode: 'connected',
+          thresholds: {
+            mode: 'absolute',
+            steps: [
+              {
+                color: 'green',
+                value: null,
+              },
+              {
+                color: 'red',
+                value: 80,
+              },
+            ],
+          },
+          unit: 's',
         },
         overrides: [],
-      },
-      format: 's',
-      gauge: {
-        maxValue: 100,
-        minValue: 0,
-        show: false,
-        thresholdLabels: false,
-        thresholdMarkers: true,
       },
       gridPos: {
         h: 4,
@@ -407,42 +377,29 @@ local dashboardConfig = {
         x: 16,
         y: 0,
       },
-      height: '150',
       id: 7,
       interval: null,
       links: [],
-      mappingType: 1,
-      mappingTypes: [
-        {
-          name: 'value to text',
-          value: 1,
-        },
-        {
-          name: 'range to text',
-          value: 2,
-        },
-      ],
       maxDataPoints: 100,
-      nullPointMode: 'connected',
-      nullText: null,
-      postfix: '',
-      postfixFontSize: '50%',
-      prefix: '',
-      prefixFontSize: '50%',
-      rangeMaps: [
-        {
-          from: 'null',
-          text: 'N/A',
-          to: 'null',
+      options: {
+        colorMode: 'value',
+        fieldOptions: {
+          calcs: [
+            'lastNotNull',
+          ],
         },
-      ],
-      sparkline: {
-        fillColor: 'rgba(31, 118, 189, 0.18)',
-        full: false,
-        lineColor: 'rgb(31, 120, 193)',
-        show: false,
+        graphMode: 'none',
+        justifyMode: 'auto',
+        orientation: 'horizontal',
+        reduceOptions: {
+          calcs: [
+            'mean',
+          ],
+          fields: '',
+          values: false,
+        },
       },
-      tableColumn: '',
+      pluginVersion: '7.0.3',
       targets: [
         {
           expr: 'sum(time()-cluster_autoscaler_last_activity{activity="scaleDown"})',
@@ -453,42 +410,42 @@ local dashboardConfig = {
           step: 600,
         },
       ],
-      thresholds: '',
       title: 'Last scaleDown activity',
-      type: 'singlestat',
-      valueFontSize: '100%',
-      valueMaps: [
-        {
-          op: '=',
-          text: 'N/A',
-          value: 'null',
-        },
-      ],
-      valueName: 'current',
+      type: 'stat',
     },
     {
       cacheTimeout: null,
-      colorBackground: false,
-      colorValue: false,
-      colors: [
-        'rgba(245, 54, 54, 0.9)',
-        'rgba(237, 129, 40, 0.89)',
-        'rgba(50, 172, 45, 0.97)',
-      ],
       datasource: '$datasource',
       fieldConfig: {
         defaults: {
           custom: {},
+          mappings: [
+            {
+              '$$hashKey': 'object:1397',
+              id: 0,
+              op: '=',
+              text: 'N/A',
+              type: 1,
+              value: 'null',
+            },
+          ],
+          nullValueMode: 'connected',
+          thresholds: {
+            mode: 'absolute',
+            steps: [
+              {
+                color: 'green',
+                value: null,
+              },
+              {
+                color: 'red',
+                value: 80,
+              },
+            ],
+          },
+          unit: 's',
         },
         overrides: [],
-      },
-      format: 's',
-      gauge: {
-        maxValue: 100,
-        minValue: 0,
-        show: false,
-        thresholdLabels: false,
-        thresholdMarkers: true,
       },
       gridPos: {
         h: 4,
@@ -496,42 +453,29 @@ local dashboardConfig = {
         x: 20,
         y: 0,
       },
-      height: '150',
       id: 8,
       interval: null,
       links: [],
-      mappingType: 1,
-      mappingTypes: [
-        {
-          name: 'value to text',
-          value: 1,
-        },
-        {
-          name: 'range to text',
-          value: 2,
-        },
-      ],
       maxDataPoints: 100,
-      nullPointMode: 'connected',
-      nullText: null,
-      postfix: '',
-      postfixFontSize: '50%',
-      prefix: '',
-      prefixFontSize: '50%',
-      rangeMaps: [
-        {
-          from: 'null',
-          text: 'N/A',
-          to: 'null',
+      options: {
+        colorMode: 'value',
+        fieldOptions: {
+          calcs: [
+            'lastNotNull',
+          ],
         },
-      ],
-      sparkline: {
-        fillColor: 'rgba(31, 118, 189, 0.18)',
-        full: false,
-        lineColor: 'rgb(31, 120, 193)',
-        show: false,
+        graphMode: 'none',
+        justifyMode: 'auto',
+        orientation: 'horizontal',
+        reduceOptions: {
+          calcs: [
+            'mean',
+          ],
+          fields: '',
+          values: false,
+        },
       },
-      tableColumn: '',
+      pluginVersion: '7.0.3',
       targets: [
         {
           expr: 'sum(time()-cluster_autoscaler_last_activity{activity="autoscaling"})',
@@ -542,18 +486,8 @@ local dashboardConfig = {
           step: 600,
         },
       ],
-      thresholds: '',
       title: 'Last autoscale activity',
-      type: 'singlestat',
-      valueFontSize: '100%',
-      valueMaps: [
-        {
-          op: '=',
-          text: 'N/A',
-          value: 'null',
-        },
-      ],
-      valueName: 'current',
+      type: 'stat',
     },
     {
       alerting: {},
@@ -914,28 +848,54 @@ local dashboardConfig = {
     },
     {
       cacheTimeout: null,
-      colorBackground: false,
-      colorValue: false,
-      colors: [
-        'rgba(245, 54, 54, 0.9)',
-        'rgba(237, 129, 40, 0.89)',
-        'rgba(50, 172, 45, 0.97)',
-      ],
       datasource: '$datasource',
       description: 'Is the cluster scaling up, down or ticking along okay?',
       fieldConfig: {
         defaults: {
           custom: {},
+          mappings: [
+            {
+              '$$hashKey': 'object:1438',
+              from: '-1000',
+              id: 0,
+              text: 'Down',
+              to: '-1',
+              type: 2,
+            },
+            {
+              '$$hashKey': 'object:1439',
+              from: '1',
+              id: 1,
+              text: 'Up',
+              to: '1000',
+              type: 2,
+            },
+            {
+              '$$hashKey': 'object:1440',
+              from: '0',
+              id: 2,
+              text: 'Nowhere',
+              to: '0',
+              type: 2,
+            },
+          ],
+          nullValueMode: 'connected',
+          thresholds: {
+            mode: 'absolute',
+            steps: [
+              {
+                color: 'green',
+                value: null,
+              },
+              {
+                color: 'red',
+                value: 80,
+              },
+            ],
+          },
+          unit: 'none',
         },
         overrides: [],
-      },
-      format: 'none',
-      gauge: {
-        maxValue: 100,
-        minValue: 0,
-        show: false,
-        thresholdLabels: false,
-        thresholdMarkers: true,
       },
       gridPos: {
         h: 4,
@@ -943,52 +903,29 @@ local dashboardConfig = {
         x: 16,
         y: 11,
       },
-      height: '150',
       id: 13,
       interval: null,
       links: [],
-      mappingType: 2,
-      mappingTypes: [
-        {
-          name: 'value to text',
-          value: 1,
-        },
-        {
-          name: 'range to text',
-          value: 2,
-        },
-      ],
       maxDataPoints: 100,
-      nullPointMode: 'connected',
-      nullText: null,
-      postfix: '',
-      postfixFontSize: '50%',
-      prefix: '',
-      prefixFontSize: '50%',
-      rangeMaps: [
-        {
-          from: '-1000',
-          text: 'Down',
-          to: '-1',
+      options: {
+        colorMode: 'value',
+        fieldOptions: {
+          calcs: [
+            'lastNotNull',
+          ],
         },
-        {
-          from: '1',
-          text: 'Up',
-          to: '1000',
+        graphMode: 'none',
+        justifyMode: 'auto',
+        orientation: 'horizontal',
+        reduceOptions: {
+          calcs: [
+            'mean',
+          ],
+          fields: '',
+          values: false,
         },
-        {
-          from: '0',
-          text: 'Nowhere',
-          to: '0',
-        },
-      ],
-      sparkline: {
-        fillColor: 'rgba(31, 118, 189, 0.18)',
-        full: false,
-        lineColor: 'rgb(31, 120, 193)',
-        show: false,
       },
-      tableColumn: '',
+      pluginVersion: '7.0.3',
       targets: [
         {
           expr: 'sum(cluster_autoscaler_scaled_up_nodes_total)-sum(cluster_autoscaler_scaled_down_nodes_total)',
@@ -999,18 +936,8 @@ local dashboardConfig = {
           step: 600,
         },
       ],
-      thresholds: '',
       title: 'Cluster direction?',
-      type: 'singlestat',
-      valueFontSize: '100%',
-      valueMaps: [
-        {
-          op: '=',
-          text: 'N/A',
-          value: 'null',
-        },
-      ],
-      valueName: 'current',
+      type: 'stat',
     },
   ],
   refresh: false,
@@ -1024,8 +951,8 @@ local dashboardConfig = {
       {
         current: {
           selected: false,
-          text: 'prometheus',
-          value: 'prometheus',
+          text: 'Prometheus',
+          value: 'Prometheus',
         },
         hide: 2,
         includeAll: false,
@@ -1070,9 +997,9 @@ local dashboardConfig = {
     ],
   },
   timezone: 'browser',
-  title: 'Autoscaler',
+  title: 'Kubernetes / Autoscaler / Cluster Autoscaler',
   uid: 'Yb9THjkMk',
-  version: 3,
+  version: 2,
 };
 
 local configmap(me) = grafana.dashboard(me, 'cluster-autoscaler', dashboardConfig);
