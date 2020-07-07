@@ -18,7 +18,7 @@ local dashboardConfig = {
   editable: false,
   gnetId: null,
   graphTooltip: 0,
-  iteration: 1594113385652,
+  iteration: 1594145734847,
   links: [],
   panels: [
     {
@@ -156,10 +156,12 @@ local dashboardConfig = {
           custom: {},
           mappings: [
             {
+              from: '1',
               id: 0,
               op: '=',
               text: 'Yes',
-              type: 1,
+              to: '5000',
+              type: 2,
               value: '1',
             },
             {
@@ -362,9 +364,9 @@ local dashboardConfig = {
       {
         allValue: null,
         current: {
-          selected: false,
-          text: 'qa1',
-          value: 'qa1',
+          selected: true,
+          text: 'tidepool-prod',
+          value: 'tidepool-prod',
         },
         datasource: '$datasource',
         definition: 'label_values(tidepool_shoreline_failed_status_count, namespace)',
@@ -407,7 +409,7 @@ local dashboardConfig = {
   timezone: '',
   title: 'Shoreline',
   uid: '5sv7jfiGk',
-  version: 2,
+  version: 4,
 };
 
 local configmap(me) = grafana.dashboard(me, 'tidepool-shoreline', dashboardConfig);
