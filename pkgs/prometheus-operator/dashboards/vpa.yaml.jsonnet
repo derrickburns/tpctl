@@ -19,7 +19,7 @@ local dashboardConfig = {
   gnetId: null,
   graphTooltip: 0,
   id: 759,
-  iteration: 1594162285736,
+  iteration: 1594162285760,
   links: [],
   panels: [
     {
@@ -112,15 +112,15 @@ local dashboardConfig = {
       steppedLine: false,
       targets: [
         {
-          expr: 'kube_verticalpodautoscaler_status_recommendation_containerrecommendations_target{namespace=~"$namespace",resource="cpu", verticalpodautoscaler=~"$vpa", container=~"$container"}',
+          expr: 'sum(kube_verticalpodautoscaler_status_recommendation_containerrecommendations_target{namespace=~"$namespace",resource="cpu", verticalpodautoscaler=~"$vpa", container=~"$container"}) by (container, namespace, verticalpodautoscaler)',
           format: 'time_series',
           instant: false,
           interval: '',
-          legendFormat: 'target - {{ container }} ',
+          legendFormat: 'target - {{ container }}',
           refId: 'A',
         },
         {
-          expr: 'kube_verticalpodautoscaler_status_recommendation_containerrecommendations_lowerbound{namespace=~"$namespace",resource="cpu", verticalpodautoscaler=~"$vpa", container=~"$container"}',
+          expr: 'sum(kube_verticalpodautoscaler_status_recommendation_containerrecommendations_lowerbound{namespace=~"$namespace",resource="cpu", verticalpodautoscaler=~"$vpa", container=~"$container"}) by (container, namespace, verticalpodautoscaler)',
           format: 'time_series',
           instant: false,
           interval: '',
@@ -128,7 +128,7 @@ local dashboardConfig = {
           refId: 'B',
         },
         {
-          expr: 'kube_verticalpodautoscaler_status_recommendation_containerrecommendations_upperbound{namespace=~"$namespace",resource="cpu", verticalpodautoscaler=~"$vpa", container=~"$container"}',
+          expr: 'sum(kube_verticalpodautoscaler_status_recommendation_containerrecommendations_upperbound{namespace=~"$namespace",resource="cpu", verticalpodautoscaler=~"$vpa", container=~"$container"}) by (container, namespace, verticalpodautoscaler)',
           format: 'time_series',
           instant: false,
           interval: '',
@@ -268,7 +268,7 @@ local dashboardConfig = {
       steppedLine: false,
       targets: [
         {
-          expr: 'kube_verticalpodautoscaler_status_recommendation_containerrecommendations_target{namespace=~"$namespace",resource="memory", verticalpodautoscaler=~"$vpa", container=~"$container"}',
+          expr: 'sum(kube_verticalpodautoscaler_status_recommendation_containerrecommendations_target{namespace=~"$namespace",resource="memory", verticalpodautoscaler=~"$vpa", container=~"$container"}) by (container, namespace, verticalpodautoscaler)',
           format: 'time_series',
           instant: false,
           interval: '',
@@ -276,7 +276,7 @@ local dashboardConfig = {
           refId: 'A',
         },
         {
-          expr: 'kube_verticalpodautoscaler_status_recommendation_containerrecommendations_lowerbound{namespace=~"$namespace",resource="memory", verticalpodautoscaler=~"$vpa", container=~"$container"}',
+          expr: 'sum(kube_verticalpodautoscaler_status_recommendation_containerrecommendations_lowerbound{namespace=~"$namespace",resource="memory", verticalpodautoscaler=~"$vpa", container=~"$container"}) by (container, namespace, verticalpodautoscaler)',
           format: 'time_series',
           instant: false,
           interval: '',
@@ -284,7 +284,7 @@ local dashboardConfig = {
           refId: 'B',
         },
         {
-          expr: 'kube_verticalpodautoscaler_status_recommendation_containerrecommendations_upperbound{namespace=~"$namespace",resource="memory", verticalpodautoscaler=~"$vpa", container=~"$container"}',
+          expr: 'sum(kube_verticalpodautoscaler_status_recommendation_containerrecommendations_upperbound{namespace=~"$namespace",resource="memory", verticalpodautoscaler=~"$vpa", container=~"$container"}) by (container, namespace, verticalpodautoscaler)',
           format: 'time_series',
           instant: false,
           interval: '',
@@ -471,6 +471,7 @@ local dashboardConfig = {
       type: 'table',
     },
   ],
+  refresh: false,
   schemaVersion: 25,
   style: 'dark',
   tags: [
@@ -500,7 +501,7 @@ local dashboardConfig = {
       {
         allValue: null,
         current: {
-          selected: false,
+          selected: true,
           text: 'monitoring',
           value: 'monitoring',
         },
@@ -527,9 +528,10 @@ local dashboardConfig = {
         allValue: null,
         current: {
           selected: true,
-          text: 'All',
+          tags: [],
+          text: 'prometheus-operator-grafana',
           value: [
-            '$__all',
+            'prometheus-operator-grafana',
           ],
         },
         datasource: '$datasource',
@@ -555,6 +557,7 @@ local dashboardConfig = {
         allValue: null,
         current: {
           selected: true,
+          tags: [],
           text: 'All',
           value: [
             '$__all',
@@ -582,7 +585,7 @@ local dashboardConfig = {
     ],
   },
   time: {
-    from: 'now-1h',
+    from: 'now-12h',
     to: 'now',
   },
   timepicker: {
