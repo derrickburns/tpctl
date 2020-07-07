@@ -52,13 +52,11 @@ local helmrelease(me) = k8s.helmrelease(me, { name: name, version: lib.getElse(m
       esConfig: {
         'elasticsearch.yml': std.manifestYamlDoc({
           'xpack.security.enabled': true,
-          'xpack.security.transport.ssl.enabled': true,
-          'xpack.security.transport.ssl.verification_mode': 'certificate',
-          'xpack.security.transport.ssl.keystore.path': '/usr/share/elasticsearch/config/certs/elastic-certificates.p12',
-          'xpack.security.transport.ssl.truststore.path': '/usr/share/elasticsearch/config/certs/elastic-certificates.p12',
           'xpack.security.http.ssl.enabled': true,
-          'xpack.security.http.ssl.truststore.path': '/usr/share/elasticsearch/config/certs/elastic-certificates.p12',
-          'xpack.security.http.ssl.keystore.path': '/usr/share/elasticsearch/config/certs/elastic-certificates.p12',
+          'xpack.security.transport.ssl.enabled': true,
+          'xpack.security.http.ssl.key': '/usr/share/elasticsearch/config/certs/tls.key',
+          'xpack.security.http.ssl.certificate': '/usr/share/elasticsearch/config/certs/tls.crt',
+          'xpack.security.http.ssl.certificate_authorities': '/usr/share/elasticsearch/config/certs/ca.crt',
         }),
       },
       tolerations: [k8s.toleration()],
