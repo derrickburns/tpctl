@@ -3,8 +3,8 @@ local global = import '../../lib/global.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
-local influxdb(me) = k8s.configmap(me, name='influxdb-datasource') + k8s.metadata(
-  'influxdb-datasource', me.namespace
+local datasources(me) = k8s.configmap(me, name='grafana-extra-datasources') + k8s.metadata(
+  'prometheus-operator-grafana-datasources-default', me.namespace
 ) {
   metadata+: {
     labels: {
@@ -14,22 +14,30 @@ local influxdb(me) = k8s.configmap(me, name='influxdb-datasource') + k8s.metadat
   data+: {
     'datasource.yaml': std.manifestYamlDoc({
       apiVersion: 1,
-      datasources: [{
-        name: 'InfluxDB',
-        type: 'influxdb',
-        access: 'proxy',
-        database: 'k6',
-        url: 'http://influxdb.monitoring:8086',
-      }],
+      datasources: [
+        if global.isEnabled(me.config, 'jaeger') then {
+          name: 'Jaeger',
+          type: 'jaeger',
+          url: 'http://jaeger-query.tracing:16686',
+          access: 'server',
+          'basic-auth': false,
+        } else {},
+        if global.isEnabled(me.config, 'influxdb') then {
+          name: 'InfluxDB',
+          type: 'influxdb',
+          access: 'server',
+          database: 'k6',
+          url: 'http://influxdb.monitoring:8086',
+          'basic-auth': false,
+        } else {},
+      ],
     },),
   },
 };
 
 function(config, prev, namespace, pkg) (
   local me = common.package(config, prev, namespace, pkg);
-  if global.isEnabled(me.config, 'influxdb')
-  then [
-    influxdb(me),
+  [
+    datasources(me),
   ]
-  else {}
 )
