@@ -10,13 +10,13 @@ local jaeger(me) = k8s.k('jaegertracing.io/v1', 'Jaeger') + k8s.metadata('jaeger
     },
     storage: {
       type: 'elasticsearch',
+      secretName: 'elastic-credentials',
       options: {
         es: {
-          'server-urls': 'https://elasticsearch-master:9200',
+          'server-urls': 'http://elasticsearch-master:9200',
           tls: {
             'skip-host-verify': true,
           },
-          secretName: 'elastic-credentials',
         },
       },
     },
