@@ -8,7 +8,7 @@ local deployment(me) = k8s.deployment(me) {
   spec+: {
     template+: {
       spec+: {
-        serviceAccountName: 'vpa-recommender',
+        serviceAccountName: me.pkg,
         containers: [
           {
             name: me.pkg,
