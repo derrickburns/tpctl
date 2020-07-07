@@ -27,10 +27,10 @@ local deployment(me) = k8s.deployment(me) {
                 cpu: '200m',
                 memory: '1000Mi',
               },
-            },
-            requests: {
-              cpu: '50m',
-              memory: '500Mi',
+              requests: {
+                cpu: '50m',
+                memory: '500Mi',
+              },
             },
           },
         ],
