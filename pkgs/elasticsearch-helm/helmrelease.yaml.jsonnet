@@ -20,10 +20,26 @@ local helmrelease(me) = k8s.helmrelease(me, { name: name, version: lib.getElse(m
     values+: {
       imageTag: '7.8.0',
       replicas: 1,
-      extraEnv: {
-        ELASTIC_USERNAME: 'admin',
-        ELASTIC_PASSWORD: 'tidepool',
-      },
+      extraEnv: [
+        {
+          name: 'ELASTIC_PASSWORD',
+          valueFrom: {
+            secretKeyRef: {
+              name: 'elastic-credentials',
+              key: 'ES_PASSWORD',
+            },
+          },
+        },
+        {
+          name: 'ELASTIC_USERNAME',
+          valueFrom: {
+            secretKeyRef: {
+              name: 'elastic-credentials',
+              key: 'ES_USERNAME',
+            },
+          },
+        },
+      ],
       resources: {
         requests: {
           cpu: '0.3',
@@ -42,25 +58,6 @@ local helmrelease(me) = k8s.helmrelease(me, { name: name, version: lib.getElse(m
             storage: lib.getElse(me, 'storage', '5Gi'),
           },
         },
-      },
-      secretMounts: [{
-        name: 'elastic-certificates',
-        secretName: 'elasticsearch-tls',
-        path: '/usr/share/elasticsearch/config/certs',
-      }],
-      protocol: 'https',
-      esConfig: {
-        'elasticsearch.yml': std.manifestYamlDoc({
-          'xpack.security.enabled': true,
-          'xpack.security.http.ssl.enabled': true,
-          'xpack.security.transport.ssl.enabled': true,
-          'xpack.security.http.ssl.key': '/usr/share/elasticsearch/config/certs/tls.key',
-          'xpack.security.http.ssl.certificate': '/usr/share/elasticsearch/config/certs/tls.crt',
-          'xpack.security.http.ssl.certificate_authorities': '/usr/share/elasticsearch/config/certs/ca.crt',
-          'xpack.security.transport.ssl.key': '/usr/share/elasticsearch/config/certs/tls.key',
-          'xpack.security.transport.ssl.certificate': '/usr/share/elasticsearch/config/certs/tls.crt',
-          'xpack.security.transport.ssl.certificate_authorities': '/usr/share/elasticsearch/config/certs/ca.crt',
-        }),
       },
       tolerations: [k8s.toleration()],
       nodeAffinity: k8s.nodeAffinity(),
