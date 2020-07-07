@@ -5,7 +5,7 @@ local lib = import '../../lib/lib.jsonnet';
 
 local helmrelease(me) = (
   local config = me.config;
-  k8s.helmrelease(me, { name: 'gloo-ee', version: '1.3.5', repository: 'http://storage.googleapis.com/gloo-ee-helm' }) {
+  k8s.helmrelease(me, { version: '1.3.5', repository: 'http://storage.googleapis.com/gloo-ee-helm' }) {
     spec+: {
       values: gloo.globalValues(me) + {
         gloo: gloo.glooValues(me),
@@ -32,7 +32,7 @@ local helmrelease(me) = (
           },
         },
         devPortal: {
-          enabled: true,
+          enabled: false,
         },
         grafana: {
           defaultInstallationEnabled: lib.isEnabledAt(me, 'grafana'),
