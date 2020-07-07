@@ -18,7 +18,7 @@ local dashboardConfig = {
   editable: false,
   gnetId: null,
   graphTooltip: 0,
-  iteration: 1594113385650,
+  iteration: 1594113385652,
   links: [],
   panels: [
     {
@@ -362,9 +362,9 @@ local dashboardConfig = {
       {
         allValue: null,
         current: {
-          selected: true,
-          text: 'qa2',
-          value: 'qa2',
+          selected: false,
+          text: 'qa1',
+          value: 'qa1',
         },
         datasource: '$datasource',
         definition: 'label_values(tidepool_shoreline_failed_status_count, namespace)',
@@ -373,20 +373,9 @@ local dashboardConfig = {
         label: 'Environment',
         multi: false,
         name: 'env',
-        options: [
-          {
-            selected: false,
-            text: 'qa1',
-            value: 'qa1',
-          },
-          {
-            selected: true,
-            text: 'qa2',
-            value: 'qa2',
-          },
-        ],
+        options: [],
         query: 'label_values(tidepool_shoreline_failed_status_count, namespace)',
-        refresh: 0,
+        refresh: 1,
         regex: '',
         skipUrlSync: false,
         sort: 0,
