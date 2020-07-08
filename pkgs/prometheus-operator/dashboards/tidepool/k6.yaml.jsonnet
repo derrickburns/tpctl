@@ -20,13 +20,12 @@ local dashboardConfig = {
   editable: false,
   gnetId: 11614,
   graphTooltip: 0,
-  id: 363,
-  iteration: 1593441300352,
+  iteration: 1594226717959,
   links: [],
   panels: [
     {
       collapsed: false,
-      datasource: 'InfluxDB',
+      datasource: '$datasource',
       gridPos: {
         h: 1,
         w: 24,
@@ -193,6 +192,7 @@ local dashboardConfig = {
       },
       yaxes: [
         {
+          '$$hashKey': 'object:305',
           format: 'short',
           label: null,
           logBase: 1,
@@ -201,6 +201,7 @@ local dashboardConfig = {
           show: true,
         },
         {
+          '$$hashKey': 'object:306',
           format: 'short',
           label: null,
           logBase: 1,
@@ -329,6 +330,7 @@ local dashboardConfig = {
       },
       yaxes: [
         {
+          '$$hashKey': 'object:2527',
           format: 'short',
           label: null,
           logBase: 1,
@@ -337,6 +339,7 @@ local dashboardConfig = {
           show: true,
         },
         {
+          '$$hashKey': 'object:2528',
           format: 'short',
           label: null,
           logBase: 1,
@@ -351,15 +354,35 @@ local dashboardConfig = {
       },
     },
     {
-      columns: [],
       datasource: '$datasource',
       fieldConfig: {
         defaults: {
-          custom: {},
+          custom: {
+            align: null,
+            displayMode: 'color-background',
+          },
+          mappings: [],
+          thresholds: {
+            mode: 'absolute',
+            steps: [
+              {
+                color: 'red',
+                value: null,
+              },
+              {
+                color: '#EAB839',
+                value: 0.9,
+              },
+              {
+                color: 'green',
+                value: 0.9999,
+              },
+            ],
+          },
+          unit: 'percentunit',
         },
         overrides: [],
       },
-      fontSize: '100%',
       gridPos: {
         h: 8,
         w: 12,
@@ -367,73 +390,16 @@ local dashboardConfig = {
         y: 1,
       },
       id: 48,
-      pageSize: null,
-      showHeader: true,
-      sort: {
-        col: 3,
-        desc: false,
+      options: {
+        showHeader: true,
+        sortBy: [
+          {
+            desc: false,
+            displayName: 'Pass (%)',
+          },
+        ],
       },
-      styles: [
-        {
-          alias: 'Time',
-          align: 'auto',
-          dateFormat: 'YYYY-MM-DD HH:mm:ss',
-          pattern: 'Time',
-          type: 'hidden',
-        },
-        {
-          alias: 'Pass (%)',
-          align: 'left',
-          colorMode: 'cell',
-          colors: [
-            'rgba(245, 54, 54, 0.9)',
-            'rgba(237, 129, 40, 0.89)',
-            'rgba(50, 172, 45, 0.97)',
-          ],
-          decimals: 2,
-          pattern: 'mean',
-          thresholds: [
-            '0.9',
-            '1',
-          ],
-          type: 'number',
-          unit: 'percentunit',
-        },
-        {
-          alias: 'Check',
-          align: 'auto',
-          colorMode: null,
-          colors: [
-            'rgba(245, 54, 54, 0.9)',
-            'rgba(237, 129, 40, 0.89)',
-            'rgba(50, 172, 45, 0.97)',
-          ],
-          dateFormat: 'YYYY-MM-DD HH:mm:ss',
-          decimals: 2,
-          mappingType: 1,
-          pattern: 'check',
-          thresholds: [],
-          type: 'string',
-          unit: 'short',
-        },
-        {
-          alias: 'Action',
-          align: 'auto',
-          colorMode: null,
-          colors: [
-            'rgba(245, 54, 54, 0.9)',
-            'rgba(237, 129, 40, 0.89)',
-            'rgba(50, 172, 45, 0.97)',
-          ],
-          dateFormat: 'YYYY-MM-DD HH:mm:ss',
-          decimals: 2,
-          mappingType: 1,
-          pattern: 'group',
-          thresholds: [],
-          type: 'string',
-          unit: 'short',
-        },
-      ],
+      pluginVersion: '7.0.3',
       targets: [
         {
           groupBy: [
@@ -487,8 +453,23 @@ local dashboardConfig = {
       timeFrom: null,
       timeShift: null,
       title: 'Checks',
-      transform: 'table',
-      type: 'table-old',
+      transformations: [
+        {
+          id: 'organize',
+          options: {
+            excludeByName: {
+              Time: true,
+            },
+            indexByName: {},
+            renameByName: {
+              check: 'Check',
+              group: 'Action',
+              mean: 'Pass (%)',
+            },
+          },
+        },
+      ],
+      type: 'table',
     },
     {
       aliasColors: {},
@@ -613,6 +594,7 @@ local dashboardConfig = {
       },
       yaxes: [
         {
+          '$$hashKey': 'object:2062',
           format: 'short',
           label: null,
           logBase: 1,
@@ -621,6 +603,7 @@ local dashboardConfig = {
           show: true,
         },
         {
+          '$$hashKey': 'object:2063',
           format: 'short',
           label: null,
           logBase: 1,
@@ -757,6 +740,7 @@ local dashboardConfig = {
       },
       yaxes: [
         {
+          '$$hashKey': 'object:1950',
           format: 'ms',
           label: null,
           logBase: 1,
@@ -765,6 +749,7 @@ local dashboardConfig = {
           show: true,
         },
         {
+          '$$hashKey': 'object:1951',
           format: 'short',
           label: null,
           logBase: 1,
@@ -783,7 +768,7 @@ local dashboardConfig = {
       bars: true,
       dashLength: 10,
       dashes: false,
-      datasource: 'InfluxDB',
+      datasource: '$datasource',
       fieldConfig: {
         defaults: {
           custom: {},
@@ -827,6 +812,7 @@ local dashboardConfig = {
       renderer: 'flot',
       seriesOverrides: [
         {
+          '$$hashKey': 'object:2189',
           alias: 'Num Errors',
           color: '#BF1B00',
         },
@@ -912,6 +898,7 @@ local dashboardConfig = {
       },
       yaxes: [
         {
+          '$$hashKey': 'object:2196',
           format: 'none',
           label: null,
           logBase: 1,
@@ -920,6 +907,7 @@ local dashboardConfig = {
           show: true,
         },
         {
+          '$$hashKey': 'object:2197',
           format: 'short',
           label: null,
           logBase: 1,
@@ -935,7 +923,7 @@ local dashboardConfig = {
     },
     {
       collapsed: false,
-      datasource: 'InfluxDB',
+      datasource: '$datasource',
       gridPos: {
         h: 1,
         w: 24,
@@ -949,29 +937,37 @@ local dashboardConfig = {
     },
     {
       cacheTimeout: null,
-      colorBackground: false,
-      colorPrefix: false,
-      colorValue: false,
-      colors: [
-        '#37872D',
-        'rgba(237, 129, 40, 0.89)',
-        '#d44a3a',
-      ],
       datasource: '$datasource',
-      decimals: 2,
       fieldConfig: {
         defaults: {
           custom: {},
+          decimals: 2,
+          mappings: [
+            {
+              id: 0,
+              op: '=',
+              text: 'N/A',
+              type: 1,
+              value: 'null',
+            },
+          ],
+          nullValueMode: 'connected',
+          thresholds: {
+            mode: 'absolute',
+            steps: [
+              {
+                color: 'green',
+                value: null,
+              },
+              {
+                color: 'red',
+                value: 80,
+              },
+            ],
+          },
+          unit: 'ms',
         },
         overrides: [],
-      },
-      format: 'ms',
-      gauge: {
-        maxValue: 100,
-        minValue: 0,
-        show: false,
-        thresholdLabels: false,
-        thresholdMarkers: true,
       },
       gridPos: {
         h: 3,
@@ -982,40 +978,26 @@ local dashboardConfig = {
       id: 8,
       interval: null,
       links: [],
-      mappingType: 1,
-      mappingTypes: [
-        {
-          name: 'value to text',
-          value: 1,
-        },
-        {
-          name: 'range to text',
-          value: 2,
-        },
-      ],
       maxDataPoints: 100,
-      nullPointMode: 'connected',
-      nullText: null,
-      postfix: '',
-      postfixFontSize: '50%',
-      prefix: '',
-      prefixFontSize: '50%',
-      rangeMaps: [
-        {
-          from: 'null',
-          text: 'N/A',
-          to: 'null',
+      options: {
+        colorMode: 'value',
+        fieldOptions: {
+          calcs: [
+            'mean',
+          ],
         },
-      ],
-      sparkline: {
-        fillColor: 'rgba(31, 118, 189, 0.18)',
-        full: false,
-        lineColor: 'rgb(31, 120, 193)',
-        show: false,
-        ymax: null,
-        ymin: null,
+        graphMode: 'none',
+        justifyMode: 'auto',
+        orientation: 'horizontal',
+        reduceOptions: {
+          calcs: [
+            'mean',
+          ],
+          fields: '',
+          values: false,
+        },
       },
-      tableColumn: '',
+      pluginVersion: '7.0.3',
       targets: [
         {
           groupBy: [
@@ -1068,45 +1050,44 @@ local dashboardConfig = {
           ],
         },
       ],
-      thresholds: '',
       timeFrom: null,
       timeShift: null,
       title: '$measurement (mean)',
-      type: 'singlestat',
-      valueFontSize: '80%',
-      valueMaps: [
-        {
-          op: '=',
-          text: 'N/A',
-          value: 'null',
-        },
-      ],
-      valueName: 'avg',
+      type: 'stat',
     },
     {
       cacheTimeout: null,
-      colorBackground: false,
-      colorValue: false,
-      colors: [
-        '#299c46',
-        'rgba(237, 129, 40, 0.89)',
-        '#d44a3a',
-      ],
-      datasource: 'InfluxDB',
-      decimals: 2,
+      datasource: '$datasource',
       fieldConfig: {
         defaults: {
           custom: {},
+          decimals: 2,
+          mappings: [
+            {
+              id: 0,
+              op: '=',
+              text: 'N/A',
+              type: 1,
+              value: 'null',
+            },
+          ],
+          nullValueMode: 'connected',
+          thresholds: {
+            mode: 'absolute',
+            steps: [
+              {
+                color: 'green',
+                value: null,
+              },
+              {
+                color: 'red',
+                value: 80,
+              },
+            ],
+          },
+          unit: 'ms',
         },
         overrides: [],
-      },
-      format: 'ms',
-      gauge: {
-        maxValue: 100,
-        minValue: 0,
-        show: false,
-        thresholdLabels: false,
-        thresholdMarkers: true,
       },
       gridPos: {
         h: 3,
@@ -1117,40 +1098,26 @@ local dashboardConfig = {
       id: 12,
       interval: null,
       links: [],
-      mappingType: 1,
-      mappingTypes: [
-        {
-          name: 'value to text',
-          value: 1,
-        },
-        {
-          name: 'range to text',
-          value: 2,
-        },
-      ],
       maxDataPoints: 100,
-      nullPointMode: 'connected',
-      nullText: null,
-      postfix: '',
-      postfixFontSize: '50%',
-      prefix: '',
-      prefixFontSize: '50%',
-      rangeMaps: [
-        {
-          from: 'null',
-          text: 'N/A',
-          to: 'null',
+      options: {
+        colorMode: 'value',
+        fieldOptions: {
+          calcs: [
+            'mean',
+          ],
         },
-      ],
-      sparkline: {
-        fillColor: 'rgba(31, 118, 189, 0.18)',
-        full: false,
-        lineColor: 'rgb(31, 120, 193)',
-        show: false,
-        ymax: null,
-        ymin: null,
+        graphMode: 'none',
+        justifyMode: 'auto',
+        orientation: 'horizontal',
+        reduceOptions: {
+          calcs: [
+            'mean',
+          ],
+          fields: '',
+          values: false,
+        },
       },
-      tableColumn: '',
+      pluginVersion: '7.0.3',
       targets: [
         {
           groupBy: [
@@ -1201,45 +1168,44 @@ local dashboardConfig = {
           ],
         },
       ],
-      thresholds: '',
       timeFrom: null,
       timeShift: null,
       title: '$measurement (median)',
-      type: 'singlestat',
-      valueFontSize: '80%',
-      valueMaps: [
-        {
-          op: '=',
-          text: 'N/A',
-          value: 'null',
-        },
-      ],
-      valueName: 'avg',
+      type: 'stat',
     },
     {
       cacheTimeout: null,
-      colorBackground: false,
-      colorValue: false,
-      colors: [
-        '#299c46',
-        'rgba(237, 129, 40, 0.89)',
-        '#d44a3a',
-      ],
-      datasource: 'InfluxDB',
-      decimals: 2,
+      datasource: '$datasource',
       fieldConfig: {
         defaults: {
           custom: {},
+          decimals: 2,
+          mappings: [
+            {
+              id: 0,
+              op: '=',
+              text: 'N/A',
+              type: 1,
+              value: 'null',
+            },
+          ],
+          nullValueMode: 'connected',
+          thresholds: {
+            mode: 'absolute',
+            steps: [
+              {
+                color: 'green',
+                value: null,
+              },
+              {
+                color: 'red',
+                value: 80,
+              },
+            ],
+          },
+          unit: 'ms',
         },
         overrides: [],
-      },
-      format: 'ms',
-      gauge: {
-        maxValue: 100,
-        minValue: 0,
-        show: false,
-        thresholdLabels: false,
-        thresholdMarkers: true,
       },
       gridPos: {
         h: 3,
@@ -1250,40 +1216,26 @@ local dashboardConfig = {
       id: 10,
       interval: null,
       links: [],
-      mappingType: 1,
-      mappingTypes: [
-        {
-          name: 'value to text',
-          value: 1,
-        },
-        {
-          name: 'range to text',
-          value: 2,
-        },
-      ],
       maxDataPoints: 100,
-      nullPointMode: 'connected',
-      nullText: null,
-      postfix: '',
-      postfixFontSize: '50%',
-      prefix: '',
-      prefixFontSize: '50%',
-      rangeMaps: [
-        {
-          from: 'null',
-          text: 'N/A',
-          to: 'null',
+      options: {
+        colorMode: 'value',
+        fieldOptions: {
+          calcs: [
+            'mean',
+          ],
         },
-      ],
-      sparkline: {
-        fillColor: 'rgba(31, 118, 189, 0.18)',
-        full: false,
-        lineColor: 'rgb(31, 120, 193)',
-        show: false,
-        ymax: null,
-        ymin: null,
+        graphMode: 'none',
+        justifyMode: 'auto',
+        orientation: 'horizontal',
+        reduceOptions: {
+          calcs: [
+            'mean',
+          ],
+          fields: '',
+          values: false,
+        },
       },
-      tableColumn: '',
+      pluginVersion: '7.0.3',
       targets: [
         {
           groupBy: [
@@ -1328,45 +1280,44 @@ local dashboardConfig = {
           ],
         },
       ],
-      thresholds: '',
       timeFrom: null,
       timeShift: null,
       title: '$measurement (min)',
-      type: 'singlestat',
-      valueFontSize: '80%',
-      valueMaps: [
-        {
-          op: '=',
-          text: 'N/A',
-          value: 'null',
-        },
-      ],
-      valueName: 'avg',
+      type: 'stat',
     },
     {
       cacheTimeout: null,
-      colorBackground: false,
-      colorValue: false,
-      colors: [
-        '#299c46',
-        'rgba(237, 129, 40, 0.89)',
-        '#d44a3a',
-      ],
-      datasource: 'InfluxDB',
-      decimals: 2,
+      datasource: '$datasource',
       fieldConfig: {
         defaults: {
           custom: {},
+          decimals: 2,
+          mappings: [
+            {
+              id: 0,
+              op: '=',
+              text: 'N/A',
+              type: 1,
+              value: 'null',
+            },
+          ],
+          nullValueMode: 'connected',
+          thresholds: {
+            mode: 'absolute',
+            steps: [
+              {
+                color: 'green',
+                value: null,
+              },
+              {
+                color: 'red',
+                value: 80,
+              },
+            ],
+          },
+          unit: 'ms',
         },
         overrides: [],
-      },
-      format: 'ms',
-      gauge: {
-        maxValue: 100,
-        minValue: 0,
-        show: false,
-        thresholdLabels: false,
-        thresholdMarkers: true,
       },
       gridPos: {
         h: 3,
@@ -1377,40 +1328,26 @@ local dashboardConfig = {
       id: 16,
       interval: null,
       links: [],
-      mappingType: 1,
-      mappingTypes: [
-        {
-          name: 'value to text',
-          value: 1,
-        },
-        {
-          name: 'range to text',
-          value: 2,
-        },
-      ],
       maxDataPoints: 100,
-      nullPointMode: 'connected',
-      nullText: null,
-      postfix: '',
-      postfixFontSize: '50%',
-      prefix: '',
-      prefixFontSize: '50%',
-      rangeMaps: [
-        {
-          from: 'null',
-          text: 'N/A',
-          to: 'null',
+      options: {
+        colorMode: 'value',
+        fieldOptions: {
+          calcs: [
+            'max',
+          ],
         },
-      ],
-      sparkline: {
-        fillColor: 'rgba(31, 118, 189, 0.18)',
-        full: false,
-        lineColor: 'rgb(31, 120, 193)',
-        show: false,
-        ymax: null,
-        ymin: null,
+        graphMode: 'none',
+        justifyMode: 'auto',
+        orientation: 'horizontal',
+        reduceOptions: {
+          calcs: [
+            'mean',
+          ],
+          fields: '',
+          values: false,
+        },
       },
-      tableColumn: '',
+      pluginVersion: '7.0.3',
       targets: [
         {
           groupBy: [
@@ -1461,45 +1398,44 @@ local dashboardConfig = {
           ],
         },
       ],
-      thresholds: '',
       timeFrom: null,
       timeShift: null,
       title: '$measurement (max)',
-      type: 'singlestat',
-      valueFontSize: '80%',
-      valueMaps: [
-        {
-          op: '=',
-          text: 'N/A',
-          value: 'null',
-        },
-      ],
-      valueName: 'max',
+      type: 'stat',
     },
     {
       cacheTimeout: null,
-      colorBackground: false,
-      colorValue: false,
-      colors: [
-        '#299c46',
-        'rgba(237, 129, 40, 0.89)',
-        '#d44a3a',
-      ],
-      datasource: 'InfluxDB',
-      decimals: 2,
+      datasource: '$datasource',
       fieldConfig: {
         defaults: {
           custom: {},
+          decimals: 2,
+          mappings: [
+            {
+              id: 0,
+              op: '=',
+              text: 'N/A',
+              type: 1,
+              value: 'null',
+            },
+          ],
+          nullValueMode: 'connected',
+          thresholds: {
+            mode: 'absolute',
+            steps: [
+              {
+                color: 'green',
+                value: null,
+              },
+              {
+                color: 'red',
+                value: 80,
+              },
+            ],
+          },
+          unit: 'ms',
         },
         overrides: [],
-      },
-      format: 'ms',
-      gauge: {
-        maxValue: 100,
-        minValue: 0,
-        show: false,
-        thresholdLabels: false,
-        thresholdMarkers: true,
       },
       gridPos: {
         h: 3,
@@ -1510,40 +1446,26 @@ local dashboardConfig = {
       id: 18,
       interval: null,
       links: [],
-      mappingType: 1,
-      mappingTypes: [
-        {
-          name: 'value to text',
-          value: 1,
-        },
-        {
-          name: 'range to text',
-          value: 2,
-        },
-      ],
       maxDataPoints: 100,
-      nullPointMode: 'connected',
-      nullText: null,
-      postfix: '',
-      postfixFontSize: '50%',
-      prefix: '',
-      prefixFontSize: '50%',
-      rangeMaps: [
-        {
-          from: 'null',
-          text: 'N/A',
-          to: 'null',
+      options: {
+        colorMode: 'value',
+        fieldOptions: {
+          calcs: [
+            'mean',
+          ],
         },
-      ],
-      sparkline: {
-        fillColor: 'rgba(31, 118, 189, 0.18)',
-        full: false,
-        lineColor: 'rgb(31, 120, 193)',
-        show: false,
-        ymax: null,
-        ymin: null,
+        graphMode: 'none',
+        justifyMode: 'auto',
+        orientation: 'horizontal',
+        reduceOptions: {
+          calcs: [
+            'mean',
+          ],
+          fields: '',
+          values: false,
+        },
       },
-      tableColumn: '',
+      pluginVersion: '7.0.3',
       targets: [
         {
           groupBy: [
@@ -1596,45 +1518,44 @@ local dashboardConfig = {
           ],
         },
       ],
-      thresholds: '',
       timeFrom: null,
       timeShift: null,
       title: '$measurement (p90)',
-      type: 'singlestat',
-      valueFontSize: '80%',
-      valueMaps: [
-        {
-          op: '=',
-          text: 'N/A',
-          value: 'null',
-        },
-      ],
-      valueName: 'avg',
+      type: 'stat',
     },
     {
       cacheTimeout: null,
-      colorBackground: false,
-      colorValue: false,
-      colors: [
-        '#299c46',
-        'rgba(237, 129, 40, 0.89)',
-        '#d44a3a',
-      ],
-      datasource: 'InfluxDB',
-      decimals: 2,
+      datasource: '$datasource',
       fieldConfig: {
         defaults: {
           custom: {},
+          decimals: 2,
+          mappings: [
+            {
+              id: 0,
+              op: '=',
+              text: 'N/A',
+              type: 1,
+              value: 'null',
+            },
+          ],
+          nullValueMode: 'connected',
+          thresholds: {
+            mode: 'absolute',
+            steps: [
+              {
+                color: 'green',
+                value: null,
+              },
+              {
+                color: 'red',
+                value: 80,
+              },
+            ],
+          },
+          unit: 'ms',
         },
         overrides: [],
-      },
-      format: 'ms',
-      gauge: {
-        maxValue: 100,
-        minValue: 0,
-        show: false,
-        thresholdLabels: false,
-        thresholdMarkers: true,
       },
       gridPos: {
         h: 3,
@@ -1645,40 +1566,26 @@ local dashboardConfig = {
       id: 20,
       interval: null,
       links: [],
-      mappingType: 1,
-      mappingTypes: [
-        {
-          name: 'value to text',
-          value: 1,
-        },
-        {
-          name: 'range to text',
-          value: 2,
-        },
-      ],
       maxDataPoints: 100,
-      nullPointMode: 'connected',
-      nullText: null,
-      postfix: '',
-      postfixFontSize: '50%',
-      prefix: '',
-      prefixFontSize: '50%',
-      rangeMaps: [
-        {
-          from: 'null',
-          text: 'N/A',
-          to: 'null',
+      options: {
+        colorMode: 'value',
+        fieldOptions: {
+          calcs: [
+            'mean',
+          ],
         },
-      ],
-      sparkline: {
-        fillColor: 'rgba(31, 118, 189, 0.18)',
-        full: false,
-        lineColor: 'rgb(31, 120, 193)',
-        show: false,
-        ymax: null,
-        ymin: null,
+        graphMode: 'none',
+        justifyMode: 'auto',
+        orientation: 'horizontal',
+        reduceOptions: {
+          calcs: [
+            'mean',
+          ],
+          fields: '',
+          values: false,
+        },
       },
-      tableColumn: '',
+      pluginVersion: '7.0.3',
       targets: [
         {
           groupBy: [
@@ -1731,27 +1638,17 @@ local dashboardConfig = {
           ],
         },
       ],
-      thresholds: '',
       timeFrom: null,
       timeShift: null,
       title: '$measurement (p95)',
-      type: 'singlestat',
-      valueFontSize: '80%',
-      valueMaps: [
-        {
-          op: '=',
-          text: 'N/A',
-          value: 'null',
-        },
-      ],
-      valueName: 'avg',
+      type: 'stat',
     },
     {
       aliasColors: {},
       bars: false,
       dashLength: 10,
       dashes: false,
-      datasource: 'InfluxDB',
+      datasource: '$datasource',
       fieldConfig: {
         defaults: {
           custom: {},
@@ -2022,6 +1919,7 @@ local dashboardConfig = {
       },
       yaxes: [
         {
+          '$$hashKey': 'object:608',
           format: 'ms',
           label: 'Time (s)',
           logBase: 2,
@@ -2030,6 +1928,7 @@ local dashboardConfig = {
           show: true,
         },
         {
+          '$$hashKey': 'object:609',
           format: 'short',
           label: null,
           logBase: 1,
@@ -2056,7 +1955,7 @@ local dashboardConfig = {
         mode: 'spectrum',
       },
       dataFormat: 'timeseries',
-      datasource: 'InfluxDB',
+      datasource: '$datasource',
       fieldConfig: {
         defaults: {
           custom: {},
@@ -2145,7 +2044,7 @@ local dashboardConfig = {
       bars: true,
       dashLength: 10,
       dashes: false,
-      datasource: 'InfluxDB',
+      datasource: '$datasource',
       description: '',
       fieldConfig: {
         defaults: {
@@ -2264,6 +2163,7 @@ local dashboardConfig = {
       },
       yaxes: [
         {
+          '$$hashKey': 'object:1082',
           format: 'ms',
           label: null,
           logBase: 2,
@@ -2272,6 +2172,7 @@ local dashboardConfig = {
           show: true,
         },
         {
+          '$$hashKey': 'object:1083',
           format: 'ms',
           label: null,
           logBase: 1,
@@ -2289,7 +2190,10 @@ local dashboardConfig = {
   refresh: false,
   schemaVersion: 25,
   style: 'dark',
-  tags: [],
+  tags: [
+    'tests',
+    'qa',
+  ],
   templating: {
     list: [
       {
@@ -2355,7 +2259,7 @@ local dashboardConfig = {
             '$__all',
           ],
         },
-        datasource: 'InfluxDB',
+        datasource: '$datasource',
         definition: 'SHOW TAG VALUES WITH KEY = "group"',
         hide: 0,
         includeAll: true,
@@ -2377,11 +2281,11 @@ local dashboardConfig = {
       {
         allValue: null,
         current: {
-          selected: false,
+          selected: true,
           text: 'dev1',
           value: 'dev1',
         },
-        datasource: 'InfluxDB',
+        datasource: '$datasource',
         definition: 'SHOW TAG VALUES WITH KEY = "env"',
         hide: 0,
         includeAll: false,
@@ -2440,7 +2344,7 @@ local dashboardConfig = {
   timezone: '',
   title: 'QA / Tests / Loadtest / K6',
   uid: 'Bz167sD',
-  version: 6,
+  version: 1,
 };
 
 local configmap(me) = grafana.dashboard(me, 'k6', dashboardConfig);
