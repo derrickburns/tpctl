@@ -16,10 +16,9 @@ local dashboardConfig = {
     ],
   },
   description: 'Summary of Envoy Proxies',
-  editable: false,
+  editable: true,
   gnetId: null,
   graphTooltip: 0,
-  id: 48,
   links: [],
   panels: [
     {
@@ -37,9 +36,62 @@ local dashboardConfig = {
       type: 'row',
     },
     {
-      columns: [],
-      datasource: 'Prometheus',
-      fontSize: '100%',
+      datasource: '$datasource',
+      fieldConfig: {
+        defaults: {
+          custom: {
+            align: null,
+          },
+          mappings: [],
+          thresholds: {
+            mode: 'absolute',
+            steps: [
+              {
+                color: 'green',
+                value: null,
+              },
+              {
+                color: 'red',
+                value: 80,
+              },
+            ],
+          },
+        },
+        overrides: [
+          {
+            matcher: {
+              id: 'byName',
+              options: 'Endpoint Health Percentage',
+            },
+            properties: [
+              {
+                id: 'unit',
+                value: 'percentunit',
+              },
+              {
+                id: 'thresholds',
+                value: {
+                  mode: 'absolute',
+                  steps: [
+                    {
+                      color: 'red',
+                      value: null,
+                    },
+                    {
+                      color: 'green',
+                      value: 0.999,
+                    },
+                  ],
+                },
+              },
+              {
+                id: 'custom.displayMode',
+                value: 'color-background',
+              },
+            ],
+          },
+        ],
+      },
       gridPos: {
         h: 7,
         w: 24,
@@ -48,126 +100,11 @@ local dashboardConfig = {
       },
       id: 2,
       interval: '',
-      options: {},
-      pageSize: null,
-      scroll: true,
-      showHeader: true,
-      sort: {
-        col: 2,
-        desc: true,
+      options: {
+        frameIndex: 0,
+        showHeader: true,
       },
-      styles: [
-        {
-          alias: '',
-          align: 'auto',
-          colorMode: null,
-          colors: [
-            'rgba(245, 54, 54, 0.9)',
-            'rgba(237, 129, 40, 0.89)',
-            'rgba(50, 172, 45, 0.97)',
-          ],
-          dateFormat: 'YYYY-MM-DD HH:mm:ss',
-          decimals: 2,
-          mappingType: 1,
-          pattern: 'Time',
-          thresholds: [],
-          type: 'hidden',
-          unit: 'short',
-        },
-        {
-          alias: 'Gateway Proxy',
-          align: 'auto',
-          colorMode: null,
-          colors: [
-            'rgba(245, 54, 54, 0.9)',
-            'rgba(237, 129, 40, 0.89)',
-            'rgba(50, 172, 45, 0.97)',
-          ],
-          dateFormat: 'YYYY-MM-DD HH:mm:ss',
-          decimals: 2,
-          link: true,
-          linkTooltip: 'Drill down to cluster',
-          linkUrl: '/d/8WkEOMnANKE6PW5hhpVv/envoy-clusters?&var-datasource=$datasource&var-cluster=All&var-service=$__cell_2',
-          mappingType: 1,
-          pattern: 'gateway_proxy_id',
-          thresholds: [],
-          type: 'string',
-          unit: 'short',
-        },
-        {
-          alias: '',
-          align: 'auto',
-          colorMode: null,
-          colors: [
-            'rgba(245, 54, 54, 0.9)',
-            'rgba(237, 129, 40, 0.89)',
-            'rgba(50, 172, 45, 0.97)',
-          ],
-          dateFormat: 'YYYY-MM-DD HH:mm:ss',
-          decimals: 2,
-          link: false,
-          mappingType: 1,
-          pattern: 'namespace',
-          preserveFormat: false,
-          thresholds: [],
-          type: 'string',
-          unit: 'short',
-        },
-        {
-          alias: 'Upstream Total Connections',
-          align: 'auto',
-          colorMode: null,
-          colors: [
-            'rgba(245, 54, 54, 0.9)',
-            'rgba(237, 129, 40, 0.89)',
-            'rgba(50, 172, 45, 0.97)',
-          ],
-          dateFormat: 'YYYY-MM-DD HH:mm:ss',
-          decimals: 0,
-          link: false,
-          linkTooltip: '',
-          linkUrl: '',
-          mappingType: 1,
-          pattern: 'Value #A',
-          thresholds: [],
-          type: 'number',
-          unit: 'short',
-        },
-        {
-          alias: 'Downstream Total Connections',
-          align: 'auto',
-          colorMode: null,
-          colors: [
-            'rgba(245, 54, 54, 0.9)',
-            'rgba(237, 129, 40, 0.89)',
-            'rgba(50, 172, 45, 0.97)',
-          ],
-          dateFormat: 'YYYY-MM-DD HH:mm:ss',
-          decimals: 0,
-          mappingType: 1,
-          pattern: 'Value #B',
-          thresholds: [],
-          type: 'number',
-          unit: 'short',
-        },
-        {
-          alias: 'Endpoint Percentage Health',
-          align: 'auto',
-          colorMode: null,
-          colors: [
-            'rgba(245, 54, 54, 0.9)',
-            'rgba(237, 129, 40, 0.89)',
-            'rgba(50, 172, 45, 0.97)',
-          ],
-          dateFormat: 'YYYY-MM-DD HH:mm:ss',
-          decimals: 0,
-          mappingType: 1,
-          pattern: 'Value #C',
-          thresholds: [],
-          type: 'number',
-          unit: 'percentunit',
-        },
-      ],
+      pluginVersion: '7.0.3',
       targets: [
         {
           expr: 'sum(envoy_cluster_upstream_cx_active) by (gateway_proxy_id)',
@@ -193,13 +130,55 @@ local dashboardConfig = {
       timeFrom: null,
       timeShift: null,
       title: 'Service Total',
-      transform: 'table',
+      transformations: [
+        {
+          id: 'seriesToColumns',
+          options: {
+            byField: 'gateway_proxy_id',
+          },
+        },
+        {
+          id: 'organize',
+          options: {
+            excludeByName: {
+              Time: true,
+            },
+            indexByName: {},
+            renameByName: {
+              'Value #A': 'Upstream Total Connections',
+              'Value #B': 'Downstream Total Connections',
+              'Value #C': 'Endpoint Health Percentage',
+              gateway_proxy_id: 'Gateway',
+            },
+          },
+        },
+      ],
       type: 'table',
     },
     {
-      columns: [],
       datasource: null,
-      fontSize: '100%',
+      fieldConfig: {
+        defaults: {
+          custom: {
+            align: null,
+          },
+          mappings: [],
+          thresholds: {
+            mode: 'absolute',
+            steps: [
+              {
+                color: 'green',
+                value: null,
+              },
+              {
+                color: 'red',
+                value: 80,
+              },
+            ],
+          },
+        },
+        overrides: [],
+      },
       gridPos: {
         h: 6,
         w: 24,
@@ -207,72 +186,10 @@ local dashboardConfig = {
         y: 8,
       },
       id: 26,
-      options: {},
-      pageSize: null,
-      pluginVersion: '6.6.2',
-      showHeader: true,
-      sort: {
-        col: 1,
-        desc: false,
+      options: {
+        showHeader: true,
       },
-      styles: [
-        {
-          alias: 'Time',
-          align: 'auto',
-          dateFormat: 'YYYY-MM-DD HH:mm:ss',
-          pattern: 'Time',
-          type: 'hidden',
-        },
-        {
-          alias: 'Gateway Proxy',
-          align: 'auto',
-          colorMode: null,
-          colors: [
-            'rgba(245, 54, 54, 0.9)',
-            'rgba(237, 129, 40, 0.89)',
-            'rgba(50, 172, 45, 0.97)',
-          ],
-          dateFormat: 'YYYY-MM-DD HH:mm:ss',
-          decimals: 2,
-          mappingType: 1,
-          pattern: 'gateway_proxy_id',
-          thresholds: [],
-          type: 'string',
-          unit: 'short',
-        },
-        {
-          alias: 'Namespace',
-          align: 'auto',
-          colorMode: null,
-          colors: [
-            'rgba(245, 54, 54, 0.9)',
-            'rgba(237, 129, 40, 0.89)',
-            'rgba(50, 172, 45, 0.97)',
-          ],
-          dateFormat: 'YYYY-MM-DD HH:mm:ss',
-          decimals: 2,
-          mappingType: 1,
-          pattern: 'namespace',
-          thresholds: [],
-          type: 'string',
-          unit: 'short',
-        },
-        {
-          alias: '',
-          align: 'right',
-          colorMode: null,
-          colors: [
-            'rgba(245, 54, 54, 0.9)',
-            'rgba(237, 129, 40, 0.89)',
-            'rgba(50, 172, 45, 0.97)',
-          ],
-          decimals: 2,
-          pattern: '/.*/',
-          thresholds: [],
-          type: 'number',
-          unit: 'short',
-        },
-      ],
+      pluginVersion: '7.0.3',
       targets: [
         {
           expr: 'sum(envoy_server_live) by (namespace, gateway_proxy_id)',
@@ -285,7 +202,22 @@ local dashboardConfig = {
       timeFrom: null,
       timeShift: null,
       title: 'Proxies Running',
-      transform: 'table',
+      transformations: [
+        {
+          id: 'organize',
+          options: {
+            excludeByName: {
+              Time: true,
+            },
+            indexByName: {},
+            renameByName: {
+              Value: 'Count',
+              gateway_proxy_id: 'Gateway',
+              namespace: 'Namespace',
+            },
+          },
+        },
+      ],
       type: 'table',
     },
     {
@@ -307,7 +239,13 @@ local dashboardConfig = {
       bars: false,
       dashLength: 10,
       dashes: false,
-      datasource: 'Prometheus',
+      datasource: '$datasource',
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       fill: 1,
       fillGradient: 0,
       gridPos: {
@@ -375,6 +313,7 @@ local dashboardConfig = {
       },
       yaxes: [
         {
+          '$$hashKey': 'object:5987',
           format: 'short',
           label: null,
           logBase: 1,
@@ -383,6 +322,7 @@ local dashboardConfig = {
           show: true,
         },
         {
+          '$$hashKey': 'object:5988',
           format: 'short',
           label: null,
           logBase: 1,
@@ -401,7 +341,13 @@ local dashboardConfig = {
       bars: false,
       dashLength: 10,
       dashes: false,
-      datasource: 'Prometheus',
+      datasource: '$datasource',
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       fill: 1,
       fillGradient: 0,
       gridPos: {
@@ -468,6 +414,7 @@ local dashboardConfig = {
       },
       yaxes: [
         {
+          '$$hashKey': 'object:6070',
           format: 'short',
           label: null,
           logBase: 1,
@@ -476,6 +423,7 @@ local dashboardConfig = {
           show: true,
         },
         {
+          '$$hashKey': 'object:6071',
           format: 'short',
           label: null,
           logBase: 1,
@@ -494,7 +442,13 @@ local dashboardConfig = {
       bars: false,
       dashLength: 10,
       dashes: false,
-      datasource: 'Prometheus',
+      datasource: '$datasource',
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       fill: 1,
       fillGradient: 0,
       gridPos: {
@@ -565,6 +519,7 @@ local dashboardConfig = {
       },
       yaxes: [
         {
+          '$$hashKey': 'object:6153',
           format: 'short',
           label: null,
           logBase: 1,
@@ -573,6 +528,7 @@ local dashboardConfig = {
           show: true,
         },
         {
+          '$$hashKey': 'object:6154',
           format: 'short',
           label: null,
           logBase: 1,
@@ -591,7 +547,13 @@ local dashboardConfig = {
       bars: false,
       dashLength: 10,
       dashes: false,
-      datasource: 'Prometheus',
+      datasource: '$datasource',
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       fill: 1,
       fillGradient: 0,
       gridPos: {
@@ -675,6 +637,7 @@ local dashboardConfig = {
       },
       yaxes: [
         {
+          '$$hashKey': 'object:6236',
           format: 'ms',
           label: null,
           logBase: 1,
@@ -683,6 +646,7 @@ local dashboardConfig = {
           show: true,
         },
         {
+          '$$hashKey': 'object:6237',
           format: 'short',
           label: null,
           logBase: 1,
@@ -715,8 +679,14 @@ local dashboardConfig = {
       bars: false,
       dashLength: 10,
       dashes: false,
-      datasource: 'Prometheus',
+      datasource: '$datasource',
       description: 'Displays the number of Requests per Second being performed against each Upstream.',
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       fill: 1,
       fillGradient: 0,
       gridPos: {
@@ -785,6 +755,7 @@ local dashboardConfig = {
       },
       yaxes: [
         {
+          '$$hashKey': 'object:6404',
           format: 'short',
           label: null,
           logBase: 1,
@@ -793,6 +764,7 @@ local dashboardConfig = {
           show: true,
         },
         {
+          '$$hashKey': 'object:6405',
           format: 'short',
           label: null,
           logBase: 1,
@@ -811,7 +783,13 @@ local dashboardConfig = {
       bars: false,
       dashLength: 10,
       dashes: false,
-      datasource: 'Prometheus',
+      datasource: '$datasource',
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       fill: 1,
       fillGradient: 0,
       gridPos: {
@@ -879,6 +857,7 @@ local dashboardConfig = {
       },
       yaxes: [
         {
+          '$$hashKey': 'object:6321',
           format: 'short',
           label: null,
           logBase: 1,
@@ -887,6 +866,7 @@ local dashboardConfig = {
           show: true,
         },
         {
+          '$$hashKey': 'object:6322',
           format: 'short',
           label: null,
           logBase: 1,
@@ -905,7 +885,13 @@ local dashboardConfig = {
       bars: false,
       dashLength: 10,
       dashes: false,
-      datasource: 'Prometheus',
+      datasource: '$datasource',
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       fill: 1,
       fillGradient: 0,
       gridPos: {
@@ -973,6 +959,7 @@ local dashboardConfig = {
       },
       yaxes: [
         {
+          '$$hashKey': 'object:6487',
           format: 'short',
           label: null,
           logBase: 1,
@@ -981,6 +968,7 @@ local dashboardConfig = {
           show: true,
         },
         {
+          '$$hashKey': 'object:6488',
           format: 'short',
           label: null,
           logBase: 1,
@@ -999,7 +987,13 @@ local dashboardConfig = {
       bars: false,
       dashLength: 10,
       dashes: false,
-      datasource: 'Prometheus',
+      datasource: '$datasource',
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       fill: 1,
       fillGradient: 0,
       gridPos: {
@@ -1083,6 +1077,7 @@ local dashboardConfig = {
       },
       yaxes: [
         {
+          '$$hashKey': 'object:6570',
           format: 'ms',
           label: null,
           logBase: 1,
@@ -1091,6 +1086,7 @@ local dashboardConfig = {
           show: true,
         },
         {
+          '$$hashKey': 'object:6571',
           format: 'short',
           label: null,
           logBase: 1,
@@ -1105,22 +1101,40 @@ local dashboardConfig = {
       },
     },
   ],
-  schemaVersion: 22,
+  schemaVersion: 25,
   style: 'dark',
   tags: [
     'envoy',
     'gloo',
   ],
   templating: {
-    list: [],
+    list: [
+      {
+        current: {
+          selected: false,
+          text: 'Prometheus',
+          value: 'Prometheus',
+        },
+        hide: 2,
+        includeAll: false,
+        label: null,
+        multi: false,
+        name: 'datasource',
+        options: [],
+        query: 'prometheus',
+        refresh: 1,
+        regex: '',
+        skipUrlSync: false,
+        type: 'datasource',
+      },
+    ],
   },
   time: {
-    from: 'now-6h',
+    from: 'now-24h',
     to: 'now',
   },
   timepicker: {
     refresh_intervals: [
-      '5s',
       '10s',
       '30s',
       '1m',
@@ -1135,7 +1149,7 @@ local dashboardConfig = {
   timezone: '',
   title: 'Envoy Summary',
   uid: '89ZHSoiMk',
-  version: 4,
+  version: 1,
 };
 
 local configmap(me) = grafana.dashboard(me, 'envoy-summary', dashboardConfig);
