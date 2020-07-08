@@ -16,20 +16,20 @@ local dashboardConfig = {
     ],
   },
   description: 'Dashboard for Weave Flux',
-  editable: true,
+  editable: false,
   gnetId: 10475,
   graphTooltip: 0,
+  id: 809,
   links: [],
   panels: [
     {
       cacheTimeout: null,
-      datasource: null,
+      datasource: '$datasource',
       fieldConfig: {
         defaults: {
           custom: {},
           mappings: [
             {
-              '$$hashKey': 'object:430',
               id: 0,
               op: '=',
               text: 'N/A',
@@ -104,13 +104,12 @@ local dashboardConfig = {
     },
     {
       cacheTimeout: null,
-      datasource: null,
+      datasource: '$datasource',
       fieldConfig: {
         defaults: {
           custom: {},
           mappings: [
             {
-              '$$hashKey': 'object:472',
               id: 0,
               op: '=',
               text: 'N/A',
@@ -188,7 +187,7 @@ local dashboardConfig = {
       bars: false,
       dashLength: 10,
       dashes: false,
-      datasource: null,
+      datasource: '$datasource',
       fieldConfig: {
         defaults: {
           custom: {},
@@ -287,7 +286,7 @@ local dashboardConfig = {
       bars: false,
       dashLength: 10,
       dashes: false,
-      datasource: null,
+      datasource: '$datasource',
       fieldConfig: {
         defaults: {
           custom: {},
@@ -385,7 +384,7 @@ local dashboardConfig = {
       bars: false,
       dashLength: 10,
       dashes: false,
-      datasource: null,
+      datasource: '$datasource',
       fieldConfig: {
         defaults: {
           custom: {},
@@ -483,7 +482,7 @@ local dashboardConfig = {
       bars: false,
       dashLength: 10,
       dashes: false,
-      datasource: null,
+      datasource: '$datasource',
       fieldConfig: {
         defaults: {
           custom: {},
@@ -581,7 +580,7 @@ local dashboardConfig = {
       bars: false,
       dashLength: 10,
       dashes: false,
-      datasource: null,
+      datasource: '$datasource',
       fieldConfig: {
         defaults: {
           custom: {},
@@ -679,7 +678,7 @@ local dashboardConfig = {
       bars: false,
       dashLength: 10,
       dashes: false,
-      datasource: null,
+      datasource: '$datasource',
       fieldConfig: {
         defaults: {
           custom: {},
@@ -778,7 +777,7 @@ local dashboardConfig = {
       bars: false,
       dashLength: 10,
       dashes: false,
-      datasource: null,
+      datasource: '$datasource',
       fieldConfig: {
         defaults: {
           custom: {},
@@ -876,7 +875,7 @@ local dashboardConfig = {
       bars: false,
       dashLength: 10,
       dashes: false,
-      datasource: null,
+      datasource: '$datasource',
       fieldConfig: {
         defaults: {
           custom: {},
@@ -973,12 +972,33 @@ local dashboardConfig = {
   refresh: false,
   schemaVersion: 25,
   style: 'dark',
-  tags: [],
+  tags: [
+    'ci-cd',
+  ],
   templating: {
-    list: [],
+    list: [
+      {
+        current: {
+          selected: false,
+          text: 'Prometheus',
+          value: 'Prometheus',
+        },
+        hide: 2,
+        includeAll: false,
+        label: null,
+        multi: false,
+        name: 'datasource',
+        options: [],
+        query: 'prometheus',
+        refresh: 1,
+        regex: '',
+        skipUrlSync: false,
+        type: 'datasource',
+      },
+    ],
   },
   time: {
-    from: 'now-2d',
+    from: 'now-6h',
     to: 'now',
   },
   timepicker: {
