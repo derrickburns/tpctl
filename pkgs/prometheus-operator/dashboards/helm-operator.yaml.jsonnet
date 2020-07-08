@@ -18,7 +18,7 @@ local dashboardConfig = {
   editable: false,
   gnetId: null,
   graphTooltip: 0,
-  iteration: 1594202953494,
+  iteration: 1594204320534,
   links: [],
   panels: [
     {
@@ -107,18 +107,19 @@ local dashboardConfig = {
         defaults: {
           custom: {
             align: null,
+            displayMode: 'color-background',
           },
           mappings: [],
           thresholds: {
             mode: 'absolute',
             steps: [
               {
-                color: 'green',
+                color: 'red',
                 value: null,
               },
               {
-                color: 'red',
-                value: 80,
+                color: 'green',
+                value: 1,
               },
             ],
           },
@@ -134,11 +135,17 @@ local dashboardConfig = {
       id: 4,
       options: {
         showHeader: true,
+        sortBy: [
+          {
+            desc: false,
+            displayName: 'Status',
+          },
+        ],
       },
       pluginVersion: '7.0.3',
       targets: [
         {
-          expr: 'flux_helm_operator_release_condition_info{condition="Released"} == 1',
+          expr: 'flux_helm_operator_release_condition_info{condition="Released"}',
           format: 'table',
           instant: true,
           interval: '',
@@ -155,7 +162,7 @@ local dashboardConfig = {
           options: {
             excludeByName: {
               Time: true,
-              Value: true,
+              Value: false,
               __name__: true,
               condition: true,
               endpoint: true,
@@ -167,6 +174,7 @@ local dashboardConfig = {
             },
             indexByName: {},
             renameByName: {
+              Value: 'Status',
               release_name: 'Release name',
               service: 'Service',
               target_namespace: 'Target namespace',
@@ -260,18 +268,19 @@ local dashboardConfig = {
         defaults: {
           custom: {
             align: null,
+            displayMode: 'color-background',
           },
           mappings: [],
           thresholds: {
             mode: 'absolute',
             steps: [
               {
-                color: 'green',
+                color: 'red',
                 value: null,
               },
               {
-                color: 'red',
-                value: 80,
+                color: 'green',
+                value: 1,
               },
             ],
           },
@@ -287,11 +296,17 @@ local dashboardConfig = {
       id: 10,
       options: {
         showHeader: true,
+        sortBy: [
+          {
+            desc: false,
+            displayName: 'Status',
+          },
+        ],
       },
       pluginVersion: '7.0.3',
       targets: [
         {
-          expr: 'flux_helm_operator_release_condition_info{condition="ChartFetched"} == 1',
+          expr: 'flux_helm_operator_release_condition_info{condition="ChartFetched"}',
           format: 'table',
           instant: true,
           interval: '',
@@ -308,7 +323,7 @@ local dashboardConfig = {
           options: {
             excludeByName: {
               Time: true,
-              Value: true,
+              Value: false,
               __name__: true,
               condition: true,
               endpoint: true,
@@ -320,6 +335,7 @@ local dashboardConfig = {
             },
             indexByName: {},
             renameByName: {
+              Value: 'Status',
               release_name: 'Release name',
               service: 'Service',
               target_namespace: 'Target namespace',
@@ -335,18 +351,19 @@ local dashboardConfig = {
         defaults: {
           custom: {
             align: null,
+            displayMode: 'color-background',
           },
           mappings: [],
           thresholds: {
             mode: 'absolute',
             steps: [
               {
-                color: 'green',
+                color: 'red',
                 value: null,
               },
               {
-                color: 'red',
-                value: 80,
+                color: 'green',
+                value: 1,
               },
             ],
           },
@@ -366,7 +383,7 @@ local dashboardConfig = {
       pluginVersion: '7.0.3',
       targets: [
         {
-          expr: 'flux_helm_operator_release_condition_info{condition="RolledBack"} == 1',
+          expr: 'flux_helm_operator_release_condition_info{condition="RolledBack"}',
           format: 'table',
           instant: true,
           interval: '',
@@ -413,8 +430,8 @@ local dashboardConfig = {
       {
         current: {
           selected: false,
-          text: 'Prometheus',
-          value: 'Prometheus',
+          text: 'prometheus',
+          value: 'prometheus',
         },
         hide: 2,
         includeAll: false,
@@ -450,7 +467,7 @@ local dashboardConfig = {
   timezone: '',
   title: 'Helm Operator',
   uid: 'c8qWijkGz',
-  version: 2,
+  version: 3047,
 };
 
 local configmap(me) = grafana.dashboard(me, 'helm-operator', dashboardConfig);

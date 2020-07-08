@@ -28,7 +28,7 @@ local tolerations = [
   },
 ];
 
-local helmrelease(me) = k8s.helmrelease(me, { version: '8.14.0' }) {
+local helmrelease(me) = k8s.helmrelease(me, { version: '8.15.12' }) {
   spec+: {
     values+: {
       grafana: {
