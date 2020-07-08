@@ -12,7 +12,7 @@ local deployment(me) = k8s.deployment(me) {
         containers: [
           {
             name: me.pkg,
-            image: 'k8s.gcr.io/vpa-recommender:%s' % lib.getElse(me, 'version', '0.6.3'),
+            image: 'k8s.gcr.io/vpa-recommender:%s' % lib.getElse(me, 'version', '0.8.0'),
             imagePullPolicy: 'IfNotPresent',
             args: [
               '--storage=prometheus',
