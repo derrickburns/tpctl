@@ -20,7 +20,7 @@ local dashboardConfig = {
   editable: false,
   gnetId: 11614,
   graphTooltip: 0,
-  iteration: 1594226717959,
+  iteration: 1594227723412,
   links: [],
   panels: [
     {
@@ -361,6 +361,7 @@ local dashboardConfig = {
             align: null,
             displayMode: 'color-background',
           },
+          decimals: 2,
           mappings: [],
           thresholds: {
             mode: 'absolute',
@@ -2281,7 +2282,7 @@ local dashboardConfig = {
       {
         allValue: null,
         current: {
-          selected: true,
+          selected: false,
           text: 'dev1',
           value: 'dev1',
         },
@@ -2325,7 +2326,7 @@ local dashboardConfig = {
     ],
   },
   time: {
-    from: 'now-24h',
+    from: 'now-2d',
     to: 'now',
   },
   timepicker: {
@@ -2344,7 +2345,7 @@ local dashboardConfig = {
   timezone: '',
   title: 'QA / Tests / Loadtest / K6',
   uid: 'Bz167sD',
-  version: 1,
+  version: 2,
 };
 
 local configmap(me) = grafana.dashboard(me, 'k6', dashboardConfig);
