@@ -18,7 +18,7 @@ local dashboardConfig = {
   editable: false,
   gnetId: null,
   graphTooltip: 0,
-  iteration: 1591697544339,
+  iteration: 1594202208438,
   links: [],
   panels: [
     {
@@ -37,24 +37,43 @@ local dashboardConfig = {
     },
     {
       cacheTimeout: null,
-      colorBackground: false,
-      colorValue: true,
-      colors: [
-        '#d44a3a',
-        'rgba(237, 129, 40, 0.89)',
-        '#299c46',
-      ],
-      datasource: null,
-      format: 'none',
-      gauge: {
-        maxValue: 100,
-        minValue: 0,
-        show: false,
-        thresholdLabels: false,
-        thresholdMarkers: true,
+      datasource: '$datasource',
+      fieldConfig: {
+        defaults: {
+          custom: {},
+          mappings: [
+            {
+              id: 0,
+              op: '=',
+              text: 'N/A',
+              type: 1,
+              value: 'null',
+            },
+          ],
+          nullValueMode: 'connected',
+          thresholds: {
+            mode: 'absolute',
+            steps: [
+              {
+                color: '#d44a3a',
+                value: null,
+              },
+              {
+                color: 'rgba(237, 129, 40, 0.89)',
+                value: 1,
+              },
+              {
+                color: '#299c46',
+                value: 2,
+              },
+            ],
+          },
+          unit: 'none',
+        },
+        overrides: [],
       },
       gridPos: {
-        h: 8,
+        h: 4,
         w: 6,
         x: 0,
         y: 1,
@@ -62,69 +81,54 @@ local dashboardConfig = {
       id: 28,
       interval: null,
       links: [],
-      mappingType: 1,
-      mappingTypes: [
-        {
-          name: 'value to text',
-          value: 1,
-        },
-        {
-          name: 'range to text',
-          value: 2,
-        },
-      ],
       maxDataPoints: 100,
-      nullPointMode: 'connected',
-      nullText: null,
-      options: {},
-      postfix: '',
-      postfixFontSize: '50%',
-      prefix: '',
-      prefixFontSize: '50%',
-      rangeMaps: [
-        {
-          from: 'null',
-          text: 'N/A',
-          to: 'null',
+      options: {
+        colorMode: 'value',
+        fieldOptions: {
+          calcs: [
+            'lastNotNull',
+          ],
         },
-      ],
-      sparkline: {
-        fillColor: 'rgba(31, 118, 189, 0.18)',
-        full: false,
-        lineColor: 'rgb(31, 120, 193)',
-        show: false,
+        graphMode: 'none',
+        justifyMode: 'auto',
+        orientation: 'horizontal',
+        reduceOptions: {
+          calcs: [
+            'lastNotNull',
+          ],
+          fields: '',
+          values: false,
+        },
       },
-      tableColumn: '',
+      pluginVersion: '7.0.3',
       targets: [
         {
-          expr: 'avg(envoy_cluster_manager_active_clusters{gateway_proxy_id="$proxy"})',
+          expr: 'envoy_cluster_manager_active_clusters{gateway_proxy_id="$proxy"}',
           format: 'table',
           instant: true,
+          interval: '',
           intervalFactor: 1,
+          legendFormat: '',
           refId: 'A',
         },
       ],
-      thresholds: '1,2',
       timeFrom: null,
       timeShift: null,
       title: 'Registered Services',
-      type: 'singlestat',
-      valueFontSize: '100%',
-      valueMaps: [
-        {
-          op: '=',
-          text: 'N/A',
-          value: 'null',
-        },
-      ],
-      valueName: 'avg',
+      type: 'stat',
     },
     {
       aliasColors: {},
       bars: false,
       dashLength: 10,
       dashes: false,
-      datasource: null,
+      datasource: '$datasource',
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       fill: 1,
       fillGradient: 0,
       gridPos: {
@@ -188,6 +192,7 @@ local dashboardConfig = {
       },
       yaxes: [
         {
+          '$$hashKey': 'object:1222',
           format: 'short',
           label: null,
           logBase: 1,
@@ -196,6 +201,7 @@ local dashboardConfig = {
           show: true,
         },
         {
+          '$$hashKey': 'object:1223',
           format: 'short',
           label: null,
           logBase: 1,
@@ -214,7 +220,13 @@ local dashboardConfig = {
       bars: false,
       dashLength: 10,
       dashes: false,
-      datasource: null,
+      datasource: '$datasource',
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       fill: 1,
       fillGradient: 0,
       gridPos: {
@@ -292,6 +304,7 @@ local dashboardConfig = {
       },
       yaxes: [
         {
+          '$$hashKey': 'object:1305',
           format: 'short',
           label: 'RPM',
           logBase: 1,
@@ -300,6 +313,7 @@ local dashboardConfig = {
           show: true,
         },
         {
+          '$$hashKey': 'object:1306',
           format: 'short',
           label: null,
           logBase: 1,
@@ -318,8 +332,14 @@ local dashboardConfig = {
       bars: false,
       dashLength: 10,
       dashes: false,
-      datasource: null,
+      datasource: '$datasource',
       decimals: 0,
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       fill: 1,
       fillGradient: 0,
       gridPos: {
@@ -389,6 +409,7 @@ local dashboardConfig = {
       },
       yaxes: [
         {
+          '$$hashKey': 'object:1404',
           decimals: 0,
           format: 'short',
           label: 'RPM',
@@ -398,6 +419,7 @@ local dashboardConfig = {
           show: true,
         },
         {
+          '$$hashKey': 'object:1405',
           decimals: 0,
           format: 'short',
           label: null,
@@ -431,7 +453,13 @@ local dashboardConfig = {
       bars: false,
       dashLength: 10,
       dashes: false,
-      datasource: null,
+      datasource: '$datasource',
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       fill: 1,
       fillGradient: 0,
       gridPos: {
@@ -518,6 +546,7 @@ local dashboardConfig = {
       },
       yaxes: [
         {
+          '$$hashKey': 'object:1489',
           format: 'short',
           label: 'RPM',
           logBase: 1,
@@ -526,6 +555,7 @@ local dashboardConfig = {
           show: true,
         },
         {
+          '$$hashKey': 'object:1490',
           format: 'short',
           label: null,
           logBase: 1,
@@ -548,7 +578,13 @@ local dashboardConfig = {
       bars: false,
       dashLength: 10,
       dashes: false,
-      datasource: 'Prometheus',
+      datasource: '$datasource',
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       fill: 1,
       fillGradient: 0,
       gridPos: {
@@ -628,6 +664,7 @@ local dashboardConfig = {
       },
       yaxes: [
         {
+          '$$hashKey': 'object:1665',
           format: 'short',
           label: null,
           logBase: 1,
@@ -636,6 +673,7 @@ local dashboardConfig = {
           show: true,
         },
         {
+          '$$hashKey': 'object:1666',
           format: 'short',
           label: null,
           logBase: 1,
@@ -658,7 +696,13 @@ local dashboardConfig = {
       bars: false,
       dashLength: 10,
       dashes: false,
-      datasource: null,
+      datasource: '$datasource',
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       fill: 1,
       fillGradient: 0,
       gridPos: {
@@ -738,6 +782,7 @@ local dashboardConfig = {
       },
       yaxes: [
         {
+          '$$hashKey': 'object:1750',
           format: 'short',
           label: null,
           logBase: 1,
@@ -746,6 +791,7 @@ local dashboardConfig = {
           show: true,
         },
         {
+          '$$hashKey': 'object:1751',
           format: 'short',
           label: null,
           logBase: 1,
@@ -764,7 +810,13 @@ local dashboardConfig = {
       bars: false,
       dashLength: 10,
       dashes: false,
-      datasource: null,
+      datasource: '$datasource',
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       fill: 1,
       fillGradient: 0,
       gridPos: {
@@ -851,6 +903,7 @@ local dashboardConfig = {
       },
       yaxes: [
         {
+          '$$hashKey': 'object:1839',
           format: 'short',
           label: 'RPM',
           logBase: 1,
@@ -859,6 +912,7 @@ local dashboardConfig = {
           show: true,
         },
         {
+          '$$hashKey': 'object:1840',
           format: 'short',
           label: null,
           logBase: 1,
@@ -877,7 +931,13 @@ local dashboardConfig = {
       bars: false,
       dashLength: 10,
       dashes: false,
-      datasource: null,
+      datasource: '$datasource',
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       fill: 1,
       fillGradient: 0,
       gridPos: {
@@ -964,6 +1024,7 @@ local dashboardConfig = {
       },
       yaxes: [
         {
+          '$$hashKey': 'object:1924',
           format: 'short',
           label: 'RPM',
           logBase: 1,
@@ -972,6 +1033,7 @@ local dashboardConfig = {
           show: true,
         },
         {
+          '$$hashKey': 'object:1925',
           format: 'short',
           label: null,
           logBase: 1,
@@ -1010,7 +1072,13 @@ local dashboardConfig = {
       bars: false,
       dashLength: 10,
       dashes: false,
-      datasource: null,
+      datasource: '$datasource',
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       fill: 1,
       fillGradient: 0,
       gridPos: {
@@ -1089,6 +1157,7 @@ local dashboardConfig = {
       },
       yaxes: [
         {
+          '$$hashKey': 'object:2009',
           format: 'ms',
           label: null,
           logBase: 1,
@@ -1097,6 +1166,7 @@ local dashboardConfig = {
           show: true,
         },
         {
+          '$$hashKey': 'object:2010',
           format: 'short',
           label: null,
           logBase: 1,
@@ -1115,7 +1185,13 @@ local dashboardConfig = {
       bars: false,
       dashLength: 10,
       dashes: false,
-      datasource: 'Prometheus',
+      datasource: '$datasource',
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       fill: 1,
       fillGradient: 0,
       gridPos: {
@@ -1189,6 +1265,7 @@ local dashboardConfig = {
       },
       yaxes: [
         {
+          '$$hashKey': 'object:2175',
           format: 'ms',
           label: '',
           logBase: 1,
@@ -1197,6 +1274,7 @@ local dashboardConfig = {
           show: true,
         },
         {
+          '$$hashKey': 'object:2176',
           format: 'short',
           label: null,
           logBase: 1,
@@ -1219,7 +1297,13 @@ local dashboardConfig = {
       bars: false,
       dashLength: 10,
       dashes: false,
-      datasource: null,
+      datasource: '$datasource',
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       fill: 1,
       fillGradient: 0,
       gridPos: {
@@ -1297,6 +1381,7 @@ local dashboardConfig = {
       },
       yaxes: [
         {
+          '$$hashKey': 'object:2092',
           format: 'ms',
           label: null,
           logBase: 1,
@@ -1305,6 +1390,7 @@ local dashboardConfig = {
           show: true,
         },
         {
+          '$$hashKey': 'object:2093',
           format: 'short',
           label: null,
           logBase: 1,
@@ -1319,7 +1405,7 @@ local dashboardConfig = {
       },
     },
   ],
-  schemaVersion: 22,
+  schemaVersion: 25,
   style: 'dark',
   tags: [
     'envoy',
@@ -1330,11 +1416,11 @@ local dashboardConfig = {
       {
         allValue: null,
         current: {
-          selected: true,
+          selected: false,
           text: 'internal-gateway-proxy',
           value: 'internal-gateway-proxy',
         },
-        datasource: 'Prometheus',
+        datasource: '$datasource',
         definition: 'label_values(envoy_http_downstream_rq_total, gateway_proxy_id)',
         hide: 0,
         includeAll: false,
@@ -1356,12 +1442,13 @@ local dashboardConfig = {
       {
         allValue: null,
         current: {
+          selected: true,
           text: 'All',
           value: [
             '$__all',
           ],
         },
-        datasource: 'Prometheus',
+        datasource: '$datasource',
         definition: 'label_values(envoy_http_conn_manager_prefix)',
         hide: 0,
         includeAll: true,
@@ -1380,6 +1467,24 @@ local dashboardConfig = {
         type: 'query',
         useTags: false,
       },
+      {
+        current: {
+          selected: false,
+          text: 'Prometheus',
+          value: 'Prometheus',
+        },
+        hide: 2,
+        includeAll: false,
+        label: null,
+        multi: false,
+        name: 'datasource',
+        options: [],
+        query: 'prometheus',
+        refresh: 1,
+        regex: '',
+        skipUrlSync: false,
+        type: 'datasource',
+      },
     ],
   },
   time: {
@@ -1388,7 +1493,6 @@ local dashboardConfig = {
   },
   timepicker: {
     refresh_intervals: [
-      '5s',
       '10s',
       '30s',
       '1m',
