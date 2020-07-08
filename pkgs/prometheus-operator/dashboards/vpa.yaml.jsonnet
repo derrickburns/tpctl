@@ -18,8 +18,7 @@ local dashboardConfig = {
   editable: false,
   gnetId: null,
   graphTooltip: 0,
-  id: 759,
-  iteration: 1594162285760,
+  iteration: 1594224546119,
   links: [],
   panels: [
     {
@@ -313,6 +312,7 @@ local dashboardConfig = {
       },
       yaxes: [
         {
+          '$$hashKey': 'object:798',
           format: 'bytes',
           label: null,
           logBase: 1,
@@ -321,6 +321,7 @@ local dashboardConfig = {
           show: true,
         },
         {
+          '$$hashKey': 'object:799',
           format: 'short',
           label: null,
           logBase: 1,
@@ -502,8 +503,8 @@ local dashboardConfig = {
         allValue: null,
         current: {
           selected: true,
-          text: 'monitoring',
-          value: 'monitoring',
+          text: 'tidepool-prod',
+          value: 'tidepool-prod',
         },
         datasource: '$datasource',
         definition: 'label_values(kube_verticalpodautoscaler_status_recommendation_containerrecommendations_target, namespace)',
@@ -528,18 +529,15 @@ local dashboardConfig = {
         allValue: null,
         current: {
           selected: true,
-          tags: [],
-          text: 'prometheus-operator-grafana',
-          value: [
-            'prometheus-operator-grafana',
-          ],
+          text: 'export',
+          value: 'export',
         },
         datasource: '$datasource',
         definition: 'label_values(kube_verticalpodautoscaler_status_recommendation_containerrecommendations_target{namespace=~"$namespace"}, verticalpodautoscaler)',
         hide: 0,
-        includeAll: true,
+        includeAll: false,
         label: 'VPA',
-        multi: true,
+        multi: false,
         name: 'vpa',
         options: [],
         query: 'label_values(kube_verticalpodautoscaler_status_recommendation_containerrecommendations_target{namespace=~"$namespace"}, verticalpodautoscaler)',
@@ -558,9 +556,9 @@ local dashboardConfig = {
         current: {
           selected: true,
           tags: [],
-          text: 'All',
+          text: 'export',
           value: [
-            '$__all',
+            'export',
           ],
         },
         datasource: '$datasource',
@@ -585,7 +583,7 @@ local dashboardConfig = {
     ],
   },
   time: {
-    from: 'now-12h',
+    from: 'now-2d',
     to: 'now',
   },
   timepicker: {
@@ -604,7 +602,7 @@ local dashboardConfig = {
   timezone: '',
   title: 'Kubernetes / Autoscaler / Vertical Pod Autoscaler',
   uid: '3u1XTUGMz',
-  version: 5,
+  version: 1,
 };
 
 local configmap(me) = grafana.dashboard(me, 'vpa', dashboardConfig);
