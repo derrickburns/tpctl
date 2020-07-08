@@ -25,10 +25,8 @@ local datasources(me) = k8s.configmap(me, name='grafana-extra-datasources') + k8
         if global.isEnabled(me.config, 'influxdb') then {
           name: 'InfluxDB',
           type: 'influxdb',
-          access: 'server',
           database: 'k6',
           url: 'http://influxdb.monitoring:8086',
-          'basic-auth': false,
         } else {},
       ],
     },),
