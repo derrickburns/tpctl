@@ -18,27 +18,45 @@ local dashboardConfig = {
   editable: true,
   gnetId: null,
   graphTooltip: 0,
-  id: 84,
   links: [],
   panels: [
     {
       cacheTimeout: null,
-      colorBackground: false,
-      colorValue: true,
-      colors: [
-        '#d44a3a',
-        'rgba(237, 129, 40, 0.89)',
-        '#299c46',
-      ],
-      datasource: null,
+      datasource: '$datasource',
       description: '',
-      format: 'none',
-      gauge: {
-        maxValue: 100,
-        minValue: 0,
-        show: false,
-        thresholdLabels: false,
-        thresholdMarkers: true,
+      fieldConfig: {
+        defaults: {
+          custom: {},
+          mappings: [
+            {
+              id: 0,
+              op: '=',
+              text: 'N/A',
+              type: 1,
+              value: 'null',
+            },
+          ],
+          nullValueMode: 'connected',
+          thresholds: {
+            mode: 'absolute',
+            steps: [
+              {
+                color: '#d44a3a',
+                value: null,
+              },
+              {
+                color: 'rgba(237, 129, 40, 0.89)',
+                value: 0,
+              },
+              {
+                color: '#299c46',
+                value: 1,
+              },
+            ],
+          },
+          unit: 'none',
+        },
+        overrides: [],
       },
       gridPos: {
         h: 7,
@@ -49,41 +67,26 @@ local dashboardConfig = {
       id: 3,
       interval: null,
       links: [],
-      mappingType: 1,
-      mappingTypes: [
-        {
-          name: 'value to text',
-          value: 1,
-        },
-        {
-          name: 'range to text',
-          value: 2,
-        },
-      ],
       maxDataPoints: 100,
-      nullPointMode: 'connected',
-      nullText: null,
-      options: {},
-      postfix: '',
-      postfixFontSize: '50%',
-      prefix: '',
-      prefixFontSize: '50%',
-      rangeMaps: [
-        {
-          from: 'null',
-          text: 'N/A',
-          to: 'null',
+      options: {
+        colorMode: 'value',
+        fieldOptions: {
+          calcs: [
+            'first',
+          ],
         },
-      ],
-      sparkline: {
-        fillColor: 'rgba(31, 118, 189, 0.18)',
-        full: false,
-        lineColor: 'rgb(31, 120, 193)',
-        show: false,
-        ymax: null,
-        ymin: null,
+        graphMode: 'none',
+        justifyMode: 'auto',
+        orientation: 'horizontal',
+        reduceOptions: {
+          calcs: [
+            'lastNotNull',
+          ],
+          fields: '',
+          values: false,
+        },
       },
-      tableColumn: 'Value',
+      pluginVersion: '7.0.3',
       targets: [
         {
           expr: 'pomerium_policy_count_total',
@@ -92,25 +95,35 @@ local dashboardConfig = {
           refId: 'A',
         },
       ],
-      thresholds: '0,1',
       timeFrom: null,
       timeShift: null,
       title: 'Pomerium Policies',
-      type: 'singlestat',
-      valueFontSize: '100%',
-      valueMaps: [
-        {
-          op: '=',
-          text: 'N/A',
-          value: 'null',
-        },
-      ],
-      valueName: 'first',
+      type: 'stat',
     },
     {
-      columns: [],
-      datasource: null,
-      fontSize: '100%',
+      datasource: '$datasource',
+      fieldConfig: {
+        defaults: {
+          custom: {
+            align: null,
+          },
+          mappings: [],
+          thresholds: {
+            mode: 'absolute',
+            steps: [
+              {
+                color: 'green',
+                value: null,
+              },
+              {
+                color: 'red',
+                value: 80,
+              },
+            ],
+          },
+        },
+        overrides: [],
+      },
       gridPos: {
         h: 7,
         w: 12,
@@ -118,71 +131,10 @@ local dashboardConfig = {
         y: 0,
       },
       id: 2,
-      options: {},
-      pageSize: null,
-      showHeader: true,
-      sort: {
-        col: 0,
-        desc: true,
+      options: {
+        showHeader: true,
       },
-      styles: [
-        {
-          alias: 'Time',
-          align: 'auto',
-          dateFormat: 'YYYY-MM-DD HH:mm:ss',
-          pattern: 'Time',
-          type: 'date',
-        },
-        {
-          alias: '',
-          align: 'auto',
-          colorMode: null,
-          colors: [
-            'rgba(245, 54, 54, 0.9)',
-            'rgba(237, 129, 40, 0.89)',
-            'rgba(50, 172, 45, 0.97)',
-          ],
-          dateFormat: 'YYYY-MM-DD HH:mm:ss',
-          decimals: 2,
-          mappingType: 1,
-          pattern: 'job',
-          thresholds: [],
-          type: 'string',
-          unit: 'short',
-        },
-        {
-          alias: '',
-          align: 'auto',
-          colorMode: null,
-          colors: [
-            'rgba(245, 54, 54, 0.9)',
-            'rgba(237, 129, 40, 0.89)',
-            'rgba(50, 172, 45, 0.97)',
-          ],
-          dateFormat: 'YYYY-MM-DD HH:mm:ss',
-          decimals: 2,
-          mappingType: 1,
-          pattern: 'version',
-          thresholds: [],
-          type: 'string',
-          unit: 'short',
-        },
-        {
-          alias: '',
-          align: 'right',
-          colorMode: null,
-          colors: [
-            'rgba(245, 54, 54, 0.9)',
-            'rgba(237, 129, 40, 0.89)',
-            'rgba(50, 172, 45, 0.97)',
-          ],
-          decimals: 2,
-          pattern: '/.*/',
-          thresholds: [],
-          type: 'hidden',
-          unit: 'short',
-        },
-      ],
+      pluginVersion: '7.0.3',
       targets: [
         {
           expr: 'pomerium_build_info',
@@ -194,17 +146,75 @@ local dashboardConfig = {
       timeFrom: null,
       timeShift: null,
       title: 'Pomerium Version',
-      transform: 'table',
+      transformations: [
+        {
+          id: 'organize',
+          options: {
+            excludeByName: {
+              Time: true,
+              Value: true,
+              __name__: true,
+              endpoint: true,
+              goversion: true,
+              instance: true,
+              job: true,
+              pod: true,
+              revision: true,
+              service: true,
+            },
+            indexByName: {
+              Time: 0,
+              Value: 12,
+              __name__: 1,
+              endpoint: 2,
+              exported_service: 7,
+              goversion: 3,
+              instance: 4,
+              job: 5,
+              namespace: 6,
+              pod: 8,
+              revision: 9,
+              service: 10,
+              version: 11,
+            },
+            renameByName: {
+              Value: '',
+              exported_service: 'Service',
+              namespace: 'Namespace',
+              version: 'Version',
+            },
+          },
+        },
+      ],
       type: 'table',
     },
   ],
-  schemaVersion: 22,
+  schemaVersion: 25,
   style: 'dark',
   tags: [
     'pomerium',
   ],
   templating: {
-    list: [],
+    list: [
+      {
+        current: {
+          selected: false,
+          text: 'Prometheus',
+          value: 'Prometheus',
+        },
+        hide: 2,
+        includeAll: false,
+        label: null,
+        multi: false,
+        name: 'datasource',
+        options: [],
+        query: 'prometheus',
+        refresh: 1,
+        regex: '',
+        skipUrlSync: false,
+        type: 'datasource',
+      },
+    ],
   },
   time: {
     from: 'now-6h',
@@ -212,7 +222,6 @@ local dashboardConfig = {
   },
   timepicker: {
     refresh_intervals: [
-      '5s',
       '10s',
       '30s',
       '1m',
