@@ -49,7 +49,7 @@ local dashboardConfig = {
   editable: false,
   gnetId: 11098,
   graphTooltip: 1,
-  iteration: 1593529269583,
+  iteration: 1594204018980,
   links: [
     {
       icon: 'external link',
@@ -120,10 +120,12 @@ local dashboardConfig = {
       mappingType: 1,
       mappingTypes: [
         {
+          '$$hashKey': 'object:462',
           name: 'value to text',
           value: 1,
         },
         {
+          '$$hashKey': 'object:463',
           name: 'range to text',
           value: 2,
         },
@@ -166,6 +168,7 @@ local dashboardConfig = {
       valueFontSize: '80%',
       valueMaps: [
         {
+          '$$hashKey': 'object:465',
           op: '=',
           text: '0',
           value: 'null',
@@ -210,10 +213,12 @@ local dashboardConfig = {
       mappingType: 1,
       mappingTypes: [
         {
+          '$$hashKey': 'object:1523',
           name: 'value to text',
           value: 1,
         },
         {
+          '$$hashKey': 'object:1524',
           name: 'range to text',
           value: 2,
         },
@@ -275,6 +280,7 @@ local dashboardConfig = {
       valueFontSize: '100%',
       valueMaps: [
         {
+          '$$hashKey': 'object:1526',
           op: '=',
           text: '0',
           value: 'null',
@@ -319,10 +325,12 @@ local dashboardConfig = {
       mappingType: 1,
       mappingTypes: [
         {
+          '$$hashKey': 'object:1564',
           name: 'value to text',
           value: 1,
         },
         {
+          '$$hashKey': 'object:1565',
           name: 'range to text',
           value: 2,
         },
@@ -365,6 +373,7 @@ local dashboardConfig = {
       valueFontSize: '100%',
       valueMaps: [
         {
+          '$$hashKey': 'object:1567',
           op: '=',
           text: 'N/A',
           value: 'null',
@@ -409,10 +418,12 @@ local dashboardConfig = {
       mappingType: 1,
       mappingTypes: [
         {
+          '$$hashKey': 'object:1605',
           name: 'value to text',
           value: 1,
         },
         {
+          '$$hashKey': 'object:1606',
           name: 'range to text',
           value: 2,
         },
@@ -455,6 +466,7 @@ local dashboardConfig = {
       valueFontSize: '100%',
       valueMaps: [
         {
+          '$$hashKey': 'object:1608',
           op: '=',
           text: '0',
           value: 'null',
@@ -499,10 +511,12 @@ local dashboardConfig = {
       mappingType: 1,
       mappingTypes: [
         {
+          '$$hashKey': 'object:1760',
           name: 'value to text',
           value: 1,
         },
         {
+          '$$hashKey': 'object:1761',
           name: 'range to text',
           value: 2,
         },
@@ -545,6 +559,7 @@ local dashboardConfig = {
       valueFontSize: '100%',
       valueMaps: [
         {
+          '$$hashKey': 'object:1763',
           op: '=',
           text: '0',
           value: 'null',
@@ -567,16 +582,30 @@ local dashboardConfig = {
       type: 'row',
     },
     {
-      columns: [],
       datasource: '$datasource',
       description: 'Shows how many times was particular alert started in a defined time range. Alert can be started either directly as `firing` or as a `pending`. Pending alerts wait for a defined time before it flips to a `firing` alert. This is specified with the `FOR` clause in a Prometheus `rules` file.',
       fieldConfig: {
         defaults: {
-          custom: {},
+          custom: {
+            align: null,
+          },
+          mappings: [],
+          thresholds: {
+            mode: 'absolute',
+            steps: [
+              {
+                color: 'green',
+                value: null,
+              },
+              {
+                color: 'red',
+                value: 80,
+              },
+            ],
+          },
         },
         overrides: [],
       },
-      fontSize: '100%',
       gridPos: {
         h: 13,
         w: 24,
@@ -584,173 +613,10 @@ local dashboardConfig = {
         y: 6,
       },
       id: 414,
-      pageSize: null,
-      showHeader: true,
-      sort: {
-        col: 10,
-        desc: true,
+      options: {
+        showHeader: true,
       },
-      styles: [
-        {
-          alias: 'Time',
-          align: 'auto',
-          dateFormat: 'YYYY-MM-DD HH:mm:ss',
-          link: false,
-          pattern: 'Time',
-          type: 'hidden',
-        },
-        {
-          alias: '',
-          align: 'auto',
-          colorMode: null,
-          colors: [
-            'rgba(245, 54, 54, 0.9)',
-            'rgba(237, 129, 40, 0.89)',
-            'rgba(50, 172, 45, 0.97)',
-          ],
-          dateFormat: 'YYYY-MM-DD HH:mm:ss',
-          decimals: 2,
-          mappingType: 1,
-          pattern: 'instance',
-          thresholds: [],
-          type: 'hidden',
-          unit: 'short',
-        },
-        {
-          alias: '',
-          align: 'auto',
-          colorMode: null,
-          colors: [
-            'rgba(245, 54, 54, 0.9)',
-            'rgba(237, 129, 40, 0.89)',
-            'rgba(50, 172, 45, 0.97)',
-          ],
-          dateFormat: 'YYYY-MM-DD HH:mm:ss',
-          decimals: 2,
-          mappingType: 1,
-          pattern: 'Value',
-          thresholds: [],
-          type: 'number',
-          unit: 'short',
-        },
-        {
-          alias: '',
-          align: 'auto',
-          colorMode: null,
-          colors: [
-            'rgba(245, 54, 54, 0.9)',
-            'rgba(237, 129, 40, 0.89)',
-            'rgba(50, 172, 45, 0.97)',
-          ],
-          dateFormat: 'YYYY-MM-DD HH:mm:ss',
-          decimals: 2,
-          mappingType: 1,
-          pattern: 'pod',
-          thresholds: [],
-          type: 'hidden',
-          unit: 'short',
-        },
-        {
-          alias: '',
-          align: 'auto',
-          colorMode: null,
-          colors: [
-            'rgba(245, 54, 54, 0.9)',
-            'rgba(237, 129, 40, 0.89)',
-            'rgba(50, 172, 45, 0.97)',
-          ],
-          dateFormat: 'YYYY-MM-DD HH:mm:ss',
-          decimals: 2,
-          mappingType: 1,
-          pattern: 'namespace',
-          thresholds: [],
-          type: 'hidden',
-          unit: 'short',
-        },
-        {
-          alias: '',
-          align: 'auto',
-          colorMode: null,
-          colors: [
-            'rgba(245, 54, 54, 0.9)',
-            'rgba(237, 129, 40, 0.89)',
-            'rgba(50, 172, 45, 0.97)',
-          ],
-          dateFormat: 'YYYY-MM-DD HH:mm:ss',
-          decimals: 2,
-          mappingType: 1,
-          pattern: 'service',
-          thresholds: [],
-          type: 'hidden',
-          unit: 'short',
-        },
-        {
-          alias: '',
-          align: 'auto',
-          colorMode: null,
-          colors: [
-            'rgba(245, 54, 54, 0.9)',
-            'rgba(237, 129, 40, 0.89)',
-            'rgba(50, 172, 45, 0.97)',
-          ],
-          dateFormat: 'YYYY-MM-DD HH:mm:ss',
-          decimals: 2,
-          mappingType: 1,
-          pattern: 'endpoint',
-          thresholds: [],
-          type: 'hidden',
-          unit: 'short',
-        },
-        {
-          alias: '',
-          align: 'auto',
-          colorMode: null,
-          colors: [
-            'rgba(245, 54, 54, 0.9)',
-            'rgba(237, 129, 40, 0.89)',
-            'rgba(50, 172, 45, 0.97)',
-          ],
-          dateFormat: 'YYYY-MM-DD HH:mm:ss',
-          decimals: 2,
-          mappingType: 1,
-          pattern: '__name__',
-          thresholds: [],
-          type: 'hidden',
-          unit: 'short',
-        },
-        {
-          alias: '',
-          align: 'auto',
-          colorMode: null,
-          colors: [
-            'rgba(245, 54, 54, 0.9)',
-            'rgba(237, 129, 40, 0.89)',
-            'rgba(50, 172, 45, 0.97)',
-          ],
-          dateFormat: 'YYYY-MM-DD HH:mm:ss',
-          decimals: 2,
-          mappingType: 1,
-          pattern: 'job',
-          thresholds: [],
-          type: 'hidden',
-          unit: 'short',
-        },
-        {
-          alias: '',
-          align: 'auto',
-          colorMode: null,
-          colors: [
-            'rgba(245, 54, 54, 0.9)',
-            'rgba(237, 129, 40, 0.89)',
-            'rgba(50, 172, 45, 0.97)',
-          ],
-          decimals: 2,
-          pattern: '/.*/',
-          thresholds: [],
-          type: 'string',
-          unit: 'short',
-        },
-      ],
+      pluginVersion: '7.0.3',
       targets: [
         {
           expr: 'ALERTS{alertname=~"$alertname", alertstate=~"$alertstate"}',
@@ -765,8 +631,21 @@ local dashboardConfig = {
       timeFrom: null,
       timeShift: null,
       title: 'Total Alert Counts',
-      transform: 'table',
-      type: 'table-old',
+      transformations: [
+        {
+          id: 'organize',
+          options: {
+            excludeByName: {
+              Time: true,
+              __name__: true,
+              endpoint: true,
+            },
+            indexByName: {},
+            renameByName: {},
+          },
+        },
+      ],
+      type: 'table',
     },
     {
       aliasColors: {},
@@ -815,6 +694,7 @@ local dashboardConfig = {
       renderer: 'flot',
       seriesOverrides: [
         {
+          '$$hashKey': 'object:567',
           alias: '',
         },
       ],
@@ -888,12 +768,12 @@ local dashboardConfig = {
       {
         current: {
           selected: false,
-          text: 'default',
-          value: 'default',
+          text: 'prometheus',
+          value: 'prometheus',
         },
         hide: 2,
         includeAll: false,
-        label: 'Prometheus datasource',
+        label: '',
         multi: false,
         name: 'datasource',
         options: [],
@@ -962,7 +842,7 @@ local dashboardConfig = {
     ],
   },
   time: {
-    from: 'now-2d',
+    from: 'now-6h',
     to: 'now',
   },
   timepicker: {
@@ -992,7 +872,7 @@ local dashboardConfig = {
   timezone: '',
   title: 'Alertmanager / Alerts / Overview',
   uid: 'lcaKO4WGk',
-  version: 1,
+  version: 2732,
 };
 
 local configmap(me) = grafana.dashboard(me, 'alerts-overview', dashboardConfig);
