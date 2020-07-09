@@ -13,6 +13,22 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '0.5.5', repository: 'htt
           size: lib.getElse(me, 'wal-storage', '1Gi'),
         },
       },
+      patroni: {
+        bootstrap: {
+          bootstrap: {
+            dcs: {
+              synchronous_mode: true,
+              postgresql: {
+                parameters: {
+                  max_wal_senders: lib.getElse(me, 'max_wal_senders', 1),
+                  wal_keep_segments: lib.getElse(me, 'wal_keep_segments', 8),
+                  synchronous_commit: 'remote_apply',
+                },
+              },
+            },
+          },
+        },
+      },
     },
   },
 };
