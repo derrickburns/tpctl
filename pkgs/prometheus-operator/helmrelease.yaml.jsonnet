@@ -28,7 +28,7 @@ local tolerations = [
   },
 ];
 
-local helmrelease(me) = k8s.helmrelease(me, { version: '8.15.12' }) {
+local helmrelease(me) = k8s.helmrelease(me, { version: '8.16.1' }) {
   spec+: {
     values+: {
       grafana: {
@@ -133,6 +133,8 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '8.15.12' }) {
         rules: {
           etcd: false,
           kubeScheduler: false,
+          // breaking too often
+          kubeApiserverAvailability: false,
         },
       },
       kubeControllerManager: {
