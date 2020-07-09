@@ -16,119 +16,114 @@ local dashboardConfig = {
     ],
   },
   description: 'A quick and simple dashboard for viewing how your horizontal pod autoscaler is doing.',
-  editable: true,
+  editable: false,
   gnetId: 10257,
   graphTooltip: 0,
-  id: 273,
-  iteration: 1594201852739,
+  iteration: 1594288585346,
   links: [],
   panels: [
     {
       cacheTimeout: null,
-      colorBackground: false,
-      colorValue: false,
-      colors: [
-        '#299c46',
-        'rgba(237, 129, 40, 0.89)',
-        '#d44a3a',
-      ],
       datasource: '$datasource',
       fieldConfig: {
         defaults: {
           custom: {},
+          mappings: [
+            {
+              id: 0,
+              op: '=',
+              text: '0',
+              type: 1,
+              value: 'null',
+            },
+          ],
+          nullValueMode: 'connected',
+          thresholds: {
+            mode: 'absolute',
+            steps: [
+              {
+                color: 'green',
+                value: null,
+              },
+              {
+                color: 'red',
+                value: 80,
+              },
+            ],
+          },
+          unit: 'none',
         },
         overrides: [],
-      },
-      format: 'none',
-      gauge: {
-        maxValue: 100,
-        minValue: 0,
-        show: false,
-        thresholdLabels: false,
-        thresholdMarkers: true,
       },
       id: 5,
       interval: null,
       links: [],
-      mappingType: 1,
-      mappingTypes: [
-        {
-          name: 'value to text',
-          value: 1,
-        },
-        {
-          name: 'range to text',
-          value: 2,
-        },
-      ],
       maxDataPoints: 100,
-      nullPointMode: 'connected',
-      nullText: null,
-      postfix: '',
-      postfixFontSize: '50%',
-      prefix: '',
-      prefixFontSize: '50%',
-      rangeMaps: [
-        {
-          from: 'null',
-          text: 'N/A',
-          to: 'null',
+      options: {
+        colorMode: 'value',
+        fieldOptions: {
+          calcs: [
+            'lastNotNull',
+          ],
         },
-      ],
-      sparkline: {
-        fillColor: 'rgba(31, 118, 189, 0.18)',
-        full: false,
-        lineColor: 'rgb(31, 120, 193)',
-        show: true,
+        graphMode: 'none',
+        justifyMode: 'auto',
+        orientation: 'horizontal',
+        reduceOptions: {
+          calcs: [
+            'lastNotNull',
+          ],
+          fields: '',
+          values: false,
+        },
       },
-      tableColumn: 'kube_hpa_status_desired_replicas{endpoint="http", hpa="ingress-nginx-controller", instance="10.48.2.18:8080", job="kube-state-metrics", namespace="gateway", pod="prometheus-operator-kube-state-metrics-7fc98dbc88-vbpj6", service="prometheus-operator-kube-state-metrics"}',
+      pluginVersion: '7.0.3',
       targets: [
         {
           expr: 'kube_hpa_status_desired_replicas{job="kube-state-metrics", namespace="$namespace", hpa="$hpa"}',
           format: 'time_series',
           instant: true,
           interval: '',
-          intervalFactor: 2,
+          intervalFactor: 1,
           legendFormat: '',
           refId: 'A',
         },
       ],
-      thresholds: '',
       title: 'Desired Replicas',
-      type: 'singlestat',
-      valueFontSize: '80%',
-      valueMaps: [
-        {
-          op: '=',
-          text: '0',
-          value: 'null',
-        },
-      ],
-      valueName: 'current',
+      type: 'stat',
     },
     {
       cacheTimeout: null,
-      colorBackground: false,
-      colorValue: false,
-      colors: [
-        '#299c46',
-        'rgba(237, 129, 40, 0.89)',
-        '#d44a3a',
-      ],
       datasource: '$datasource',
       fieldConfig: {
         defaults: {
           custom: {},
+          mappings: [
+            {
+              id: 0,
+              op: '=',
+              text: '0',
+              type: 1,
+              value: 'null',
+            },
+          ],
+          nullValueMode: 'connected',
+          thresholds: {
+            mode: 'absolute',
+            steps: [
+              {
+                color: 'green',
+                value: null,
+              },
+              {
+                color: 'red',
+                value: 80,
+              },
+            ],
+          },
+          unit: 'none',
         },
         overrides: [],
-      },
-      format: 'none',
-      gauge: {
-        maxValue: 100,
-        minValue: 0,
-        show: false,
-        thresholdLabels: false,
-        thresholdMarkers: true,
       },
       gridPos: {
         h: 3,
@@ -139,85 +134,72 @@ local dashboardConfig = {
       id: 6,
       interval: null,
       links: [],
-      mappingType: 1,
-      mappingTypes: [
-        {
-          name: 'value to text',
-          value: 1,
-        },
-        {
-          name: 'range to text',
-          value: 2,
-        },
-      ],
       maxDataPoints: 100,
-      nullPointMode: 'connected',
-      nullText: null,
-      postfix: '',
-      postfixFontSize: '50%',
-      prefix: '',
-      prefixFontSize: '50%',
-      rangeMaps: [
-        {
-          from: 'null',
-          text: 'N/A',
-          to: 'null',
+      options: {
+        colorMode: 'value',
+        fieldOptions: {
+          calcs: [
+            'lastNotNull',
+          ],
         },
-      ],
-      sparkline: {
-        fillColor: 'rgba(31, 118, 189, 0.18)',
-        full: false,
-        lineColor: 'rgb(31, 120, 193)',
-        show: true,
+        graphMode: 'none',
+        justifyMode: 'auto',
+        orientation: 'horizontal',
+        reduceOptions: {
+          calcs: [
+            'lastNotNull',
+          ],
+          fields: '',
+          values: false,
+        },
       },
-      tableColumn: 'kube_hpa_status_current_replicas{endpoint="http", hpa="ingress-nginx-controller", instance="10.48.2.18:8080", job="kube-state-metrics", namespace="gateway", pod="prometheus-operator-kube-state-metrics-7fc98dbc88-vbpj6", service="prometheus-operator-kube-state-metrics"}',
+      pluginVersion: '7.0.3',
       targets: [
         {
           expr: 'kube_hpa_status_current_replicas{job="kube-state-metrics", namespace="$namespace", hpa="$hpa"}',
           format: 'time_series',
           instant: true,
           interval: '',
-          intervalFactor: 2,
+          intervalFactor: 1,
           legendFormat: '',
           refId: 'A',
         },
       ],
-      thresholds: '',
       title: 'Current Replicas',
-      type: 'singlestat',
-      valueFontSize: '80%',
-      valueMaps: [
-        {
-          op: '=',
-          text: '0',
-          value: 'null',
-        },
-      ],
-      valueName: 'current',
+      type: 'stat',
     },
     {
       cacheTimeout: null,
-      colorBackground: false,
-      colorValue: false,
-      colors: [
-        '#299c46',
-        'rgba(237, 129, 40, 0.89)',
-        '#d44a3a',
-      ],
       datasource: '$datasource',
       fieldConfig: {
         defaults: {
           custom: {},
+          mappings: [
+            {
+              id: 0,
+              op: '=',
+              text: '0',
+              type: 1,
+              value: 'null',
+            },
+          ],
+          nullValueMode: 'connected',
+          thresholds: {
+            mode: 'absolute',
+            steps: [
+              {
+                color: 'green',
+                value: null,
+              },
+              {
+                color: 'red',
+                value: 80,
+              },
+            ],
+          },
+          unit: 'none',
         },
         overrides: [],
-      },
-      format: 'none',
-      gauge: {
-        maxValue: 100,
-        minValue: 0,
-        show: false,
-        thresholdLabels: false,
-        thresholdMarkers: true,
       },
       gridPos: {
         h: 3,
@@ -228,85 +210,72 @@ local dashboardConfig = {
       id: 7,
       interval: null,
       links: [],
-      mappingType: 1,
-      mappingTypes: [
-        {
-          name: 'value to text',
-          value: 1,
-        },
-        {
-          name: 'range to text',
-          value: 2,
-        },
-      ],
       maxDataPoints: 100,
-      nullPointMode: 'connected',
-      nullText: null,
-      postfix: '',
-      postfixFontSize: '50%',
-      prefix: '',
-      prefixFontSize: '50%',
-      rangeMaps: [
-        {
-          from: 'null',
-          text: 'N/A',
-          to: 'null',
+      options: {
+        colorMode: 'value',
+        fieldOptions: {
+          calcs: [
+            'lastNotNull',
+          ],
         },
-      ],
-      sparkline: {
-        fillColor: 'rgba(31, 118, 189, 0.18)',
-        full: false,
-        lineColor: 'rgb(31, 120, 193)',
-        show: false,
+        graphMode: 'none',
+        justifyMode: 'auto',
+        orientation: 'horizontal',
+        reduceOptions: {
+          calcs: [
+            'lastNotNull',
+          ],
+          fields: '',
+          values: false,
+        },
       },
-      tableColumn: 'kube_hpa_spec_min_replicas{endpoint="http", hpa="ingress-nginx-controller", instance="10.48.2.18:8080", job="kube-state-metrics", namespace="gateway", pod="prometheus-operator-kube-state-metrics-7fc98dbc88-vbpj6", service="prometheus-operator-kube-state-metrics"}',
+      pluginVersion: '7.0.3',
       targets: [
         {
           expr: 'kube_hpa_spec_min_replicas{job="kube-state-metrics",  namespace="$namespace", hpa="$hpa"}',
           format: 'time_series',
           instant: true,
           interval: '',
-          intervalFactor: 2,
+          intervalFactor: 1,
           legendFormat: '',
           refId: 'A',
         },
       ],
-      thresholds: '',
       title: 'Min Replicas',
-      type: 'singlestat',
-      valueFontSize: '80%',
-      valueMaps: [
-        {
-          op: '=',
-          text: '0',
-          value: 'null',
-        },
-      ],
-      valueName: 'current',
+      type: 'stat',
     },
     {
       cacheTimeout: null,
-      colorBackground: false,
-      colorValue: false,
-      colors: [
-        '#299c46',
-        'rgba(237, 129, 40, 0.89)',
-        '#d44a3a',
-      ],
       datasource: '$datasource',
       fieldConfig: {
         defaults: {
           custom: {},
+          mappings: [
+            {
+              id: 0,
+              op: '=',
+              text: '0',
+              type: 1,
+              value: 'null',
+            },
+          ],
+          nullValueMode: 'connected',
+          thresholds: {
+            mode: 'absolute',
+            steps: [
+              {
+                color: 'green',
+                value: null,
+              },
+              {
+                color: 'red',
+                value: 80,
+              },
+            ],
+          },
+          unit: 'none',
         },
         overrides: [],
-      },
-      format: 'none',
-      gauge: {
-        maxValue: 100,
-        minValue: 0,
-        show: false,
-        thresholdLabels: false,
-        thresholdMarkers: true,
       },
       gridPos: {
         h: 3,
@@ -317,38 +286,26 @@ local dashboardConfig = {
       id: 8,
       interval: null,
       links: [],
-      mappingType: 1,
-      mappingTypes: [
-        {
-          name: 'value to text',
-          value: 1,
-        },
-        {
-          name: 'range to text',
-          value: 2,
-        },
-      ],
       maxDataPoints: 100,
-      nullPointMode: 'connected',
-      nullText: null,
-      postfix: '',
-      postfixFontSize: '50%',
-      prefix: '',
-      prefixFontSize: '50%',
-      rangeMaps: [
-        {
-          from: 'null',
-          text: 'N/A',
-          to: 'null',
+      options: {
+        colorMode: 'value',
+        fieldOptions: {
+          calcs: [
+            'lastNotNull',
+          ],
         },
-      ],
-      sparkline: {
-        fillColor: 'rgba(31, 118, 189, 0.18)',
-        full: false,
-        lineColor: 'rgb(31, 120, 193)',
-        show: false,
+        graphMode: 'none',
+        justifyMode: 'auto',
+        orientation: 'horizontal',
+        reduceOptions: {
+          calcs: [
+            'mean',
+          ],
+          fields: '',
+          values: false,
+        },
       },
-      tableColumn: 'kube_hpa_spec_max_replicas{endpoint="http", hpa="ingress-nginx-controller", instance="10.48.2.18:8080", job="kube-state-metrics", namespace="gateway", pod="prometheus-operator-kube-state-metrics-7fc98dbc88-vbpj6", service="prometheus-operator-kube-state-metrics"}',
+      pluginVersion: '7.0.3',
       targets: [
         {
           expr: 'kube_hpa_spec_max_replicas{job="kube-state-metrics", hpa="$hpa", namespace="$namespace"}',
@@ -360,29 +317,33 @@ local dashboardConfig = {
           refId: 'A',
         },
       ],
-      thresholds: '',
       title: 'Max Replicas',
-      type: 'singlestat',
-      valueFontSize: '80%',
-      valueMaps: [
-        {
-          op: '=',
-          text: '0',
-          value: 'null',
-        },
-      ],
-      valueName: 'current',
+      type: 'stat',
     },
     {
-      columns: [],
       datasource: '$datasource',
       fieldConfig: {
         defaults: {
-          custom: {},
+          custom: {
+            align: null,
+          },
+          mappings: [],
+          thresholds: {
+            mode: 'absolute',
+            steps: [
+              {
+                color: 'green',
+                value: null,
+              },
+              {
+                color: 'red',
+                value: 80,
+              },
+            ],
+          },
         },
         overrides: [],
       },
-      fontSize: '100%',
       gridPos: {
         h: 6,
         w: 24,
@@ -390,104 +351,10 @@ local dashboardConfig = {
         y: 3,
       },
       id: 11,
-      pageSize: null,
-      showHeader: true,
-      sort: {
-        col: 0,
-        desc: true,
+      options: {
+        showHeader: true,
       },
-      styles: [
-        {
-          alias: 'Time',
-          align: 'auto',
-          dateFormat: 'YYYY-MM-DD HH:mm:ss',
-          pattern: 'Time',
-          type: 'date',
-        },
-        {
-          alias: 'HPA',
-          align: 'auto',
-          colorMode: null,
-          colors: [
-            'rgba(245, 54, 54, 0.9)',
-            'rgba(237, 129, 40, 0.89)',
-            'rgba(50, 172, 45, 0.97)',
-          ],
-          dateFormat: 'YYYY-MM-DD HH:mm:ss',
-          decimals: 2,
-          mappingType: 1,
-          pattern: 'hpa',
-          thresholds: [],
-          type: 'number',
-          unit: 'short',
-        },
-        {
-          alias: 'Metric Name',
-          align: 'auto',
-          colorMode: null,
-          colors: [
-            'rgba(245, 54, 54, 0.9)',
-            'rgba(237, 129, 40, 0.89)',
-            'rgba(50, 172, 45, 0.97)',
-          ],
-          dateFormat: 'YYYY-MM-DD HH:mm:ss',
-          decimals: 2,
-          mappingType: 1,
-          pattern: 'metric_name',
-          thresholds: [],
-          type: 'string',
-          unit: 'short',
-        },
-        {
-          alias: 'Metric Type',
-          align: 'auto',
-          colorMode: null,
-          colors: [
-            'rgba(245, 54, 54, 0.9)',
-            'rgba(237, 129, 40, 0.89)',
-            'rgba(50, 172, 45, 0.97)',
-          ],
-          dateFormat: 'YYYY-MM-DD HH:mm:ss',
-          decimals: 2,
-          mappingType: 1,
-          pattern: 'metric_target_type',
-          thresholds: [],
-          type: 'number',
-          unit: 'short',
-        },
-        {
-          alias: '',
-          align: 'auto',
-          colorMode: null,
-          colors: [
-            'rgba(245, 54, 54, 0.9)',
-            'rgba(237, 129, 40, 0.89)',
-            'rgba(50, 172, 45, 0.97)',
-          ],
-          dateFormat: 'YYYY-MM-DD HH:mm:ss',
-          decimals: 2,
-          mappingType: 1,
-          pattern: 'Value',
-          thresholds: [],
-          type: 'number',
-          unit: 'short',
-        },
-        {
-          alias: '',
-          align: 'right',
-          colorMode: null,
-          colors: [
-            'rgba(245, 54, 54, 0.9)',
-            'rgba(237, 129, 40, 0.89)',
-            'rgba(50, 172, 45, 0.97)',
-          ],
-          decimals: 2,
-          pattern: '/.*/',
-          thresholds: [],
-          type: 'hidden',
-          unit: 'short',
-        },
-      ],
+      pluginVersion: '7.0.3',
       targets: [
         {
           expr: 'kube_hpa_spec_target_metric{namespace="$namespace", hpa="$hpa"}',
@@ -499,8 +366,43 @@ local dashboardConfig = {
       timeFrom: null,
       timeShift: null,
       title: 'Metric targets',
-      transform: 'table',
-      type: 'table-old',
+      transformations: [
+        {
+          id: 'organize',
+          options: {
+            excludeByName: {
+              Time: true,
+              __name__: true,
+              endpoint: true,
+              instance: true,
+              job: true,
+              pod: true,
+              service: true,
+            },
+            indexByName: {
+              Time: 0,
+              Value: 11,
+              __name__: 1,
+              endpoint: 3,
+              hpa: 2,
+              instance: 4,
+              job: 5,
+              metric_name: 6,
+              metric_target_type: 7,
+              namespace: 8,
+              pod: 9,
+              service: 10,
+            },
+            renameByName: {
+              hpa: 'HPA',
+              metric_name: 'Metric name',
+              metric_target_type: 'Metric target type',
+              namespace: 'Namespace',
+            },
+          },
+        },
+      ],
+      type: 'table',
     },
     {
       aliasColors: {},
@@ -863,14 +765,15 @@ local dashboardConfig = {
   style: 'dark',
   tags: [
     'kubernetes',
+    'autoscaler',
   ],
   templating: {
     list: [
       {
         current: {
           selected: false,
-          text: 'prometheus',
-          value: 'prometheus',
+          text: 'Prometheus',
+          value: 'Prometheus',
         },
         hide: 2,
         includeAll: false,
@@ -888,8 +791,8 @@ local dashboardConfig = {
         allValue: null,
         current: {
           selected: false,
-          text: 'gateway',
-          value: 'gateway',
+          text: 'tidepool-prod',
+          value: 'tidepool-prod',
         },
         datasource: '$datasource',
         definition: 'label_values(kube_hpa_metadata_generation{job="kube-state-metrics"}, namespace)',
@@ -914,8 +817,8 @@ local dashboardConfig = {
         allValue: null,
         current: {
           selected: false,
-          text: 'ingress-nginx-controller',
-          value: 'ingress-nginx-controller',
+          text: 'tide-whisperer',
+          value: 'tide-whisperer',
         },
         datasource: '$datasource',
         definition: 'label_values(kube_hpa_labels{job="kube-state-metrics", namespace="$namespace"}, hpa)',
@@ -969,7 +872,7 @@ local dashboardConfig = {
   timezone: '',
   title: 'Kubernetes / Autoscaler / Horizontal Pod Autoscaler',
   uid: 'alJY6yWZz',
-  version: 4801,
+  version: 1,
 };
 
 local configmap(me) = grafana.dashboard(me, 'hpa', dashboardConfig);
