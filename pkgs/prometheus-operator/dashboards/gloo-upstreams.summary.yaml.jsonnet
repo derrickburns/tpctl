@@ -15,7 +15,7 @@ local dashboardConfig = {
       },
     ],
   },
-  editable: true,
+  editable: false,
   gnetId: null,
   graphTooltip: 0,
   links: [],
@@ -29,7 +29,7 @@ local dashboardConfig = {
       bars: false,
       dashLength: 10,
       dashes: false,
-      datasource: 'Prometheus',
+      datasource: '$datasource',
       fieldConfig: {
         defaults: {
           custom: {},
@@ -136,7 +136,7 @@ local dashboardConfig = {
       bars: false,
       dashLength: 10,
       dashes: false,
-      datasource: 'Prometheus',
+      datasource: '$datasource',
       fieldConfig: {
         defaults: {
           custom: {},
@@ -242,7 +242,7 @@ local dashboardConfig = {
       bars: false,
       dashLength: 10,
       dashes: false,
-      datasource: 'Prometheus',
+      datasource: '$datasource',
       fieldConfig: {
         defaults: {
           custom: {},
@@ -346,7 +346,7 @@ local dashboardConfig = {
       bars: false,
       dashLength: 10,
       dashes: false,
-      datasource: 'Prometheus',
+      datasource: '$datasource',
       fieldConfig: {
         defaults: {
           custom: {},
@@ -450,7 +450,7 @@ local dashboardConfig = {
       bars: false,
       dashLength: 10,
       dashes: false,
-      datasource: 'Prometheus',
+      datasource: '$datasource',
       fieldConfig: {
         defaults: {
           custom: {},
@@ -554,7 +554,26 @@ local dashboardConfig = {
     'upstream',
   ],
   templating: {
-    list: [],
+    list: [
+      {
+        current: {
+          selected: false,
+          text: 'Prometheus',
+          value: 'Prometheus',
+        },
+        hide: 2,
+        includeAll: false,
+        label: null,
+        multi: false,
+        name: 'datasource',
+        options: [],
+        query: 'prometheus',
+        refresh: 1,
+        regex: '',
+        skipUrlSync: false,
+        type: 'datasource',
+      },
+    ],
   },
   time: {
     from: 'now-6h',
@@ -562,7 +581,6 @@ local dashboardConfig = {
   },
   timepicker: {
     refresh_intervals: [
-      '5s',
       '10s',
       '30s',
       '1m',
@@ -577,7 +595,7 @@ local dashboardConfig = {
   timezone: 'utc',
   title: 'Gloo Upstreams Summary',
   uid: '4EIm6BmGk',
-  version: 5,
+  version: 2,
 };
 
 local configmap(me) = grafana.dashboard(me, 'gloo-upstreams-summary', dashboardConfig);
