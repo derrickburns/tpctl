@@ -179,6 +179,8 @@ local i = {
     configMap: {
       data: null,
     },
+    loopBackAddress: '127.0.0.1',
+    globalDownstreamMaxConnections: 250000,
     podTemplate: {
       disableNetBind: false,
       floatingUserId: false,
