@@ -5,6 +5,6 @@ local kustomize  = import '../../lib/kustomize.jsonnet';
 
 local addnamespace(me) = std.map(kustomize.namespace(me.namespace), me.prev);
 
-local transform(me) = k8s.asMap(addnamespace(me)) 
+local transform(me) = k8s.asMap(addnamespace(me));
 
 function(config, prev, namespace, pkg) transform(common.package(config, prev, namespace, pkg))
