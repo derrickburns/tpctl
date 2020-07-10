@@ -827,7 +827,7 @@ local dashboardConfig = {
       '1d',
     ],
   },
-  timezone: '',
+  timezone: 'utc',
   title: 'Home',
   uid: 'HRN3fEzGk',
   version: 3,

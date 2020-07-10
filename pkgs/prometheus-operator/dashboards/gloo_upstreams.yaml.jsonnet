@@ -506,7 +506,7 @@ local dashboardConfig = {
       '30d',
     ],
   },
-  timezone: '',
+  timezone: 'utc',
   title: 'Gloo Upstreams',
   uid: 'gloo_upstreams',
   version: 3,

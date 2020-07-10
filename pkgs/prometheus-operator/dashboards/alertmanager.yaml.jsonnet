@@ -1518,7 +1518,7 @@ local dashboardConfig = {
       '30d',
     ],
   },
-  timezone: '',
+  timezone: 'utc',
   title: 'Alertmanager',
   uid: 'eea-9_sik',
   version: 7,

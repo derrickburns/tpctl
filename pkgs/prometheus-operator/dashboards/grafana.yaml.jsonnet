@@ -1153,7 +1153,7 @@ local dashboardConfig = {
       '30d',
     ],
   },
-  timezone: '',
+  timezone: 'utc',
   title: 'Grafana metrics',
   uid: 'grafana-metrics',
   version: 53,

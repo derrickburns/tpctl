@@ -418,7 +418,7 @@ local dashboardConfig = {
       '30d',
     ],
   },
-  timezone: '',
+  timezone: 'utc',
   title: 'CloudWatch Exporter',
   uid: 'acw-dmKWz',
   version: 2,

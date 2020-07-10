@@ -1025,7 +1025,7 @@ local dashboardConfig = {
       '30d',
     ],
   },
-  timezone: '',
+  timezone: 'utc',
   title: 'Weave Flux',
   uid: 'vJMuruVWk',
   version: 1,

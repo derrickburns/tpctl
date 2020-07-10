@@ -394,7 +394,7 @@ local dashboardConfig = {
       '1d',
     ],
   },
-  timezone: '',
+  timezone: 'utc',
   title: 'External DNS',
   uid: '41PxSjzMz',
   version: 1,

@@ -468,7 +468,7 @@ local dashboardConfig = {
       '1d',
     ],
   },
-  timezone: '',
+  timezone: 'utc',
   title: 'Kubernetes / Autoscaler / Pod Disruption Budget',
   uid: 'bTvhizMGz',
   version: 1,

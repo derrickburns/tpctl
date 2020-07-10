@@ -599,7 +599,7 @@ local dashboardConfig = {
       '1d',
     ],
   },
-  timezone: '',
+  timezone: 'utc',
   title: 'Kubernetes / Autoscaler / Vertical Pod Autoscaler',
   uid: '3u1XTUGMz',
   version: 1,

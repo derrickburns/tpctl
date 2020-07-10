@@ -2112,7 +2112,7 @@ local dashboardConfig = {
       '30d',
     ],
   },
-  timezone: '',
+  timezone: 'utc',
   title: 'Linkerd Topline',
   uid: 'linkerd-topline',
   version: 1,

@@ -1257,7 +1257,7 @@ local dashboardConfig = {
       '30d',
     ],
   },
-  timezone: '',
+  timezone: 'utc',
   title: 'Linkerd Route',
   uid: 'route',
   version: 1,

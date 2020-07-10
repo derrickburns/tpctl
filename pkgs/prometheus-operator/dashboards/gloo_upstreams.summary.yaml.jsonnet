@@ -574,7 +574,7 @@ local dashboardConfig = {
       '1d',
     ],
   },
-  timezone: '',
+  timezone: 'utc',
   title: 'Gloo Upstreams Summary',
   uid: '4EIm6BmGk',
   version: 5,

@@ -1146,7 +1146,7 @@ local dashboardConfig = {
       '1d',
     ],
   },
-  timezone: '',
+  timezone: 'utc',
   title: 'Envoy Summary',
   uid: '89ZHSoiMk',
   version: 1,

@@ -919,7 +919,7 @@ local dashboardConfig = {
       '30d',
     ],
   },
-  timezone: '',
+  timezone: 'utc',
   title: 'Kubernetes / Jobs / Cron Jobs',
   uid: 'cb0HhItWz',
   version: 13,

@@ -233,7 +233,7 @@ local dashboardConfig = {
       '1d',
     ],
   },
-  timezone: '',
+  timezone: 'utc',
   title: 'Pomerium',
   uid: '00i1GtmGz',
   version: 1,
