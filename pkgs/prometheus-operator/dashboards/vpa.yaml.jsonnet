@@ -18,7 +18,7 @@ local dashboardConfig = {
   editable: false,
   gnetId: null,
   graphTooltip: 0,
-  iteration: 1594224546119,
+  iteration: 1594382357125,
   links: [],
   panels: [
     {
@@ -134,6 +134,18 @@ local dashboardConfig = {
           legendFormat: 'upper bound - {{ container }}',
           refId: 'C',
         },
+        {
+          expr: 'avg(node_namespace_pod_container:container_cpu_usage_seconds_total:sum_rate{namespace=~"$namespace", pod=~"$vpa.*", container=~"$container"}) by (container)',
+          interval: '',
+          legendFormat: 'usage - {{ container }}',
+          refId: 'D',
+        },
+        {
+          expr: 'avg(kube_pod_container_resource_requests_cpu_cores{container=~"$container", namespace="$namespace", pod=~"$vpa.*"}) by (container)',
+          interval: '',
+          legendFormat: 'limits - {{ container }}',
+          refId: 'E',
+        },
       ],
       thresholds: [],
       timeFrom: null,
@@ -156,6 +168,7 @@ local dashboardConfig = {
       },
       yaxes: [
         {
+          '$$hashKey': 'object:1314',
           format: 'short',
           label: null,
           logBase: 1,
@@ -164,6 +177,7 @@ local dashboardConfig = {
           show: true,
         },
         {
+          '$$hashKey': 'object:1315',
           format: 'short',
           label: null,
           logBase: 1,
@@ -289,6 +303,18 @@ local dashboardConfig = {
           interval: '',
           legendFormat: 'upper bound - {{ container }}',
           refId: 'C',
+        },
+        {
+          expr: 'sum(container_memory_working_set_bytes{namespace="$namespace", pod=~"$vpa.*", container=~"$container"}) by (container)',
+          interval: '',
+          legendFormat: 'usage - {{ container }}',
+          refId: 'D',
+        },
+        {
+          expr: 'avg(\n    kube_pod_container_resource_limits_memory_bytes{namespace="$namespace", pod=~"$vpa.*", container=~"$container"}) by (container)',
+          interval: '',
+          legendFormat: 'limits - {{ container }}',
+          refId: 'E',
         },
       ],
       thresholds: [],
@@ -502,7 +528,7 @@ local dashboardConfig = {
       {
         allValue: null,
         current: {
-          selected: true,
+          selected: false,
           text: 'tidepool-prod',
           value: 'tidepool-prod',
         },
@@ -554,19 +580,16 @@ local dashboardConfig = {
       {
         allValue: null,
         current: {
-          selected: true,
-          tags: [],
+          selected: false,
           text: 'export',
-          value: [
-            'export',
-          ],
+          value: 'export',
         },
         datasource: '$datasource',
         definition: 'label_values(kube_verticalpodautoscaler_status_recommendation_containerrecommendations_target{namespace=~"$namespace", verticalpodautoscaler=~"$vpa"}, container)',
         hide: 0,
-        includeAll: true,
+        includeAll: false,
         label: 'Container',
-        multi: true,
+        multi: false,
         name: 'container',
         options: [],
         query: 'label_values(kube_verticalpodautoscaler_status_recommendation_containerrecommendations_target{namespace=~"$namespace", verticalpodautoscaler=~"$vpa"}, container)',
@@ -583,7 +606,7 @@ local dashboardConfig = {
     ],
   },
   time: {
-    from: 'now-2d',
+    from: 'now-24h',
     to: 'now',
   },
   timepicker: {
@@ -599,10 +622,10 @@ local dashboardConfig = {
       '1d',
     ],
   },
-  timezone: '',
+  timezone: 'utc',
   title: 'Kubernetes / Autoscaler / Vertical Pod Autoscaler',
   uid: '3u1XTUGMz',
-  version: 1,
+  version: 3,
 };
 
 local configmap(me) = grafana.dashboard(me, 'vpa', dashboardConfig);

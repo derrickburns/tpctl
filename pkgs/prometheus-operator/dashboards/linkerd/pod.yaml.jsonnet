@@ -2320,7 +2320,7 @@ local dashboardConfig = {
       '30d',
     ],
   },
-  timezone: '',
+  timezone: 'utc',
   title: 'Linkerd Pod',
   uid: 'linkerd-pod',
   version: 4,

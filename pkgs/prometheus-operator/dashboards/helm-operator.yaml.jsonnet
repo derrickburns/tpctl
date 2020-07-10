@@ -464,7 +464,7 @@ local dashboardConfig = {
       '1d',
     ],
   },
-  timezone: '',
+  timezone: 'utc',
   title: 'Helm Operator',
   uid: 'c8qWijkGz',
   version: 3047,

@@ -2309,7 +2309,7 @@ local dashboardConfig = {
       '30d',
     ],
   },
-  timezone: '',
+  timezone: 'utc',
   title: 'Linkerd Deployment',
   uid: 'deployment',
   version: 1,

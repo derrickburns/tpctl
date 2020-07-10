@@ -869,7 +869,7 @@ local dashboardConfig = {
       '30d',
     ],
   },
-  timezone: '',
+  timezone: 'utc',
   title: 'Alertmanager / Alerts / Overview',
   uid: 'lcaKO4WGk',
   version: 2732,

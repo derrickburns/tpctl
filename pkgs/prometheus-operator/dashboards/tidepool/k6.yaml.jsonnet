@@ -2342,7 +2342,7 @@ local dashboardConfig = {
       '1d',
     ],
   },
-  timezone: '',
+  timezone: 'utc',
   title: 'QA / Tests / Loadtest / K6',
   uid: 'Bz167sD',
   version: 2,

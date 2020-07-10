@@ -8167,7 +8167,7 @@ local dashboardConfig = {
       '30d',
     ],
   },
-  timezone: '',
+  timezone: 'utc',
   title: 'Linkerd Health',
   uid: 'linkerd-health',
   version: 1,

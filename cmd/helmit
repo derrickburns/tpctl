@@ -129,6 +129,15 @@ install)
   load_chart $name $repo
   get_values $hr >/tmp/${name}-${namespace}.yaml
   kubectl create namespace $namespace 2>/dev/null
+  op="install --version $version -f /tmp/${name}-${namespace}.yaml"
+  helm $op $release $CHART --namespace ${namespace} 
+  ;;
+upgrade)
+  echo "installing $file" >/dev/stderr
+  show $file >/dev/stderr 
+  load_chart $name $repo
+  get_values $hr >/tmp/${name}-${namespace}.yaml
+  kubectl create namespace $namespace 2>/dev/null
   op="upgrade -i --version $version -f /tmp/${name}-${namespace}.yaml"
   helm $op $release $CHART --namespace ${namespace} 
   ;;

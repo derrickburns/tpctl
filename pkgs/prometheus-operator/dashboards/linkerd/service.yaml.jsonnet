@@ -1307,7 +1307,7 @@ local dashboardConfig = {
       '30d',
     ],
   },
-  timezone: '',
+  timezone: 'utc',
   title: 'Linkerd Service',
   uid: 'linkerd-service',
   version: 1,

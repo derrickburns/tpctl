@@ -869,7 +869,7 @@ local dashboardConfig = {
       '30d',
     ],
   },
-  timezone: '',
+  timezone: 'utc',
   title: 'Kubernetes / Autoscaler / Horizontal Pod Autoscaler',
   uid: 'alJY6yWZz',
   version: 1,

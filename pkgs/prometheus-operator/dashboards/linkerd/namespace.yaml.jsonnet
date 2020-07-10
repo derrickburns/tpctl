@@ -953,7 +953,7 @@ local dashboardConfig = {
       '30d',
     ],
   },
-  timezone: '',
+  timezone: 'utc',
   title: 'Linkerd Namespace',
   uid: 'linkerd-namespace',
   version: 15,

@@ -406,7 +406,7 @@ local dashboardConfig = {
       '1d',
     ],
   },
-  timezone: '',
+  timezone: 'utc',
   title: 'Shoreline',
   uid: '5sv7jfiGk',
   version: 4,
