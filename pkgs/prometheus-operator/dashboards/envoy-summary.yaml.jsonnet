@@ -156,7 +156,7 @@ local dashboardConfig = {
       type: 'table',
     },
     {
-      datasource: null,
+      datasource: $datasource,
       fieldConfig: {
         defaults: {
           custom: {
@@ -222,7 +222,7 @@ local dashboardConfig = {
     },
     {
       collapsed: false,
-      datasource: null,
+      datasource: $datasource,
       gridPos: {
         h: 1,
         w: 24,
@@ -662,7 +662,7 @@ local dashboardConfig = {
     },
     {
       collapsed: false,
-      datasource: null,
+      datasource: $datasource,
       gridPos: {
         h: 1,
         w: 24,
