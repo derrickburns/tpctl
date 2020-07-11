@@ -9,7 +9,7 @@ local deployment(me) = k8s.deployment(me) {
       k8s.envSecret('HASURA_GRAPHQL_DATABASE_URL', $._secretNames[0], 'HASURA_GRAPHQL_DATABASE_URL'),
       k8s.envVar( 'HASURA_GRAPHQL_ENABLE_CONSOLE', 'true'),
     ],
-    image: 'hasura/graphql-engine:v1.2.2',
+    image: 'hasura/graphql-engine:v1.3.0-beta.4',
     ports: [
       {
         containerPort: 8080,
