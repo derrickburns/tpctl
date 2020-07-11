@@ -3,10 +3,10 @@ local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
 local deployment(me) = k8s.deployment(me) {
-  _secretNames:: ['hakura'],
+  _secretNames:: ['hasura'],
   _containers:: {
     env: [
-      k8s.envSecret('HASURA_GRAPHQL_DATABASE_URL', _secretNames[0], 'HASURA_GRAPHQL_DATABASE_URL'),
+      k8s.envSecret('HASURA_GRAPHQL_DATABASE_URL', $._secretNames[0], 'HASURA_GRAPHQL_DATABASE_URL'),
       k8s.envVar( 'HASURA_GRAPHQL_ENABLE_CONSOLE', 'true'),
     ],
     image: 'hasura/graphql-engine:v1.2.2',
