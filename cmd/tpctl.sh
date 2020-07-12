@@ -22,6 +22,7 @@ cluster-production
 '
 CONFIG_DIR=.
 MANIFEST_DIR=generated
+MANIFEST_TEMP_DIR=generated-temp
 VALUES_FILE=values.yaml
 LOG_LEVEL=3
 PARALLEL=false
@@ -584,7 +585,7 @@ function reset_config_dir() {
   if [ $(ls | wc -l) -ne 0 ]; then
     confirm "Are you sure that you want to remove prior contents (except values.yaml)?"
     info "resetting config repo"
-    rm -rf $MANIFEST_DIR
+    rm -rf $MANIFEST_DIR $MANIFEST_TEMP_DIR
   fi
   mv $TMP_DIR/values.yaml .
 }
@@ -600,7 +601,7 @@ function make_shared_config() {
   start "copying old manifests"
   mkdir -p $TMP_DIR/old
   cp -r * $TMP_DIR/old
-  rm -rf $MANIFEST_DIR config.yaml
+  rm -rf $MANIFEST_DIR $MANIFEST_TEMP_DIR config.yaml
   complete
 }
 
@@ -732,6 +733,14 @@ function output_dir() {
   echo $CONFIG_DIR/$MANIFEST_DIR/$namespace/$pkg
 }
 
+function temp_dir() {
+  local namespace=$1
+  local pkg=$2
+  local t="$CONFIG_DIR/$MANIFEST_TEMP_DIR/$namespace/$pkg"
+  mkdir -p $t
+  echo $t
+}
+
 function output() {
   local namespace=$1
   local pkg=$2
@@ -765,7 +774,9 @@ function expand_helm() {
   local release=$(echo "$hr" | jq .spec.releaseName | sed -e 's/"//g')
   local namespace=$(echo "$hr" | jq .metadata.namespace | sed -e 's/"//g')
   local release=${release:=${name}}
-  local tmp=$TMP_DIR/helmvalues.yaml
+
+  local tmp=$(temp_dir $namespace $pkg)/$file
+  mkdir -p $(dirname $tmp)
 
   start "helm release from $src"
   echo "$hr" | jq .spec.values | yq r - >$tmp
@@ -842,23 +853,35 @@ function transform() {
   if [ -f "$transform" ]; then
     start "transforming package $pkg"
     local dir=$(output_dir $namespace $pkg)
-    local generated=$TMP_DIR/generated_data
-    show $dir >$generated
+    local tmp=$(temp_dir $namespace $pkg)/transform
+    mkdir -p $(dirname $tmp)
+    show $dir >$tmp
     rm -rf $dir
-    expand_jsonnet $values $generated $namespace $pkg $transform | output $namespace $pkg $src
+    expand_jsonnet $values $tmp $namespace $pkg $transform | output $namespace $pkg $src
     complete
   fi
 }
 
-# compute all manifests for a package
+# compute all manifests for a namespace
 function expand_pkg() {
+  local values=$1
+  local prev=$2
+  local namespace=$3
+  local pkg=$4
+  start "expanding package $pkg for namespace $namespace"
+  generate $values $prev $namespace $pkg
+  transform $values $namespace $pkg
+  complete
+}
+
+function expand_pkgs() {
+  local values=$1
+  local prev=$2
+  local namespace=$3
+  start "expanding packages for namespace $namespace"
   local pkg
-  start "expanding packages"
   for pkg in $(enabled_pkgs namespaces.$namespace); do
-    start "expanding packages for namespace $namespace"
-    generate $values $prev $namespace $pkg
-    transform $values $namespace $pkg
-    complete
+    expand_pkg $values $prev $namespace $pkg
   done
   complete
 }
@@ -868,7 +891,7 @@ function expand_namespace() {
   local prev=$2
   local namespace=$3
   start "expanding namespace $namespace"
-  expand_pkg $values $prev $namespace
+  expand_pkgs $values $prev $namespace
   show_enabled $namespace
   complete
 }
@@ -915,6 +938,7 @@ function save_changes() {
   fi
 
   start "adding and diffing changes for directory $(pwd)"
+  rm -rf $CONFIG_DIR/$MANIFEST_TEMP_DIR
   git add .
   expect_success "git add failed"
   export GIT_PAGER=/bin/cat
