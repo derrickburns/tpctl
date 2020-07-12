@@ -24,6 +24,7 @@ CONFIG_DIR=.
 MANIFEST_DIR=generated
 VALUES_FILE=values.yaml
 LOG_LEVEL=3
+PARALLEL=false
 
 python3 -m pip install ruamel.yaml >/dev/null 2>&1
 
@@ -851,15 +852,12 @@ function transform() {
 
 # compute all manifests for a package
 function expand_pkg() {
-  local values=$1
-  local prev=$2
-  local namespace=$3
   local pkg
   start "expanding packages"
   for pkg in $(enabled_pkgs namespaces.$namespace); do
-      start "expanding packages for namespace $namespace"
-      generate $values $prev $namespace $pkg
-      transform $values $namespace $pkg
+    start "expanding packages for namespace $namespace"
+    generate $values $prev $namespace $pkg
+    transform $values $namespace $pkg
     complete
   done
   complete
@@ -880,9 +878,17 @@ function expand() {
   local prev=$2
   start "expanding all namespaces"
   local namespace
-  for namespace in $(get_namespaces); do
-    expand_namespace $values $prev $namespace
-  done
+  if [ "$PARALLEL" == "true" ]
+  then
+    for namespace in $(get_namespaces); do
+      expand_namespace $values $prev $namespace &
+    done
+    wait
+  else
+    for namespace in $(get_namespaces); do
+      expand_namespace $values $prev $namespace 
+    done
+  fi
   complete
 }
 
@@ -1428,6 +1434,11 @@ main() {
         LOG_LEVEL=$2
 	shift 2
         ;;
+      -p | --parallel)
+        LOG_LEVEL=2
+	PARALLEL="true"
+	shift 1
+	;;
       -h | --help)
         help
         exit 0
