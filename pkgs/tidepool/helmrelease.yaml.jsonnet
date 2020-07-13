@@ -242,7 +242,7 @@ local helmrelease(me) = k8s.helmrelease(me, {
         },
         resources: {
           requests: {
-            // memory: '150Mi', TODO
+            memory: '50Mi',
             cpu: '62m',
           },
           limits: {
@@ -258,11 +258,11 @@ local helmrelease(me) = k8s.helmrelease(me, {
         },
         resources: {
           requests: {
-            // memory: '150Mi', TODO
+            memory: '182Mi',
             cpu: '30m',
           },
           limits: {
-            memory: '172Mi',
+            memory: '270Mi',
             cpu: '45m',
           },
         },
@@ -275,11 +275,11 @@ local helmrelease(me) = k8s.helmrelease(me, {
         },
         resources: {
           requests: {
-            // memory: '150Mi', TODO
+            memory: '75Mi',
             cpu: '30m',
           },
           limits: {
-            memory: '250Mi',
+            memory: '110Mi',
             cpu: '45m',
           },
         },
@@ -307,11 +307,11 @@ local helmrelease(me) = k8s.helmrelease(me, {
         },
         resources: {
           requests: {
-            // memory: '150Mi', TODO
+            memory: '125Mi',
             cpu: '125m',
           },
           limits: {
-            memory: '125Mi',
+            memory: '182Mi',
             cpu: '172m',
           },
         },
