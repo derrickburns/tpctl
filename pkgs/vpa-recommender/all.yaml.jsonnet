@@ -29,12 +29,12 @@ local deployment(me) = k8s.deployment(me) {
             }],
             resources: {
               limits: {
-                cpu: '200m',
-                memory: '2000Mi',
+                cpu: '300m',
+                memory: '3000Mi',
               },
               requests: {
-                cpu: '50m',
-                memory: '1000Mi',
+                cpu: '200m',
+                memory: '2000Mi',
               },
             },
           },
