@@ -18,7 +18,12 @@ local deployment(me) = k8s.deployment(me) {
               '--storage=prometheus',
               '--prometheus-address=http://prometheus-operator-prometheus.monitoring:9090',
               '--v=4',
+              '--prometheus-cadvisor-job-name=kubelet',
             ],
+            affinity: {
+              nodeAffinity: k8s.nodeAffinity(),
+            },
+            tolerations: [k8s.toleration()],
             ports: [{
               containerPort: 8080,
             }],
