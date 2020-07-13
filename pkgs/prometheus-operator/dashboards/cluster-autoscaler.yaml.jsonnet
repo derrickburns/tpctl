@@ -996,7 +996,7 @@ local dashboardConfig = {
       '30d',
     ],
   },
-  timezone: 'browser',
+  timezone: 'utc',
   title: 'Kubernetes / Autoscaler / Cluster Autoscaler',
   uid: 'Yb9THjkMk',
   version: 2,

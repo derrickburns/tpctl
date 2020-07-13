@@ -415,7 +415,7 @@ local dashboardConfig = {
       '30d',
     ],
   },
-  timezone: 'browser',
+  timezone: 'utc',
   title: 'AWS / SES',
   uid: 'WojOgXTmkf2f',
   version: 10,

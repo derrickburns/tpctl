@@ -1369,7 +1369,7 @@ local dashboardConfig = {
       '30d',
     ],
   },
-  timezone: 'browser',
+  timezone: 'utc',
   title: 'Cert Manager',
   uid: 'u6M5igpWk',
   version: 4,
