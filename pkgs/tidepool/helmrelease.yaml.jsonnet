@@ -201,7 +201,7 @@ local helmrelease(me) = k8s.helmrelease(me, {
     initContainers: [buddies.sysctl],
     securityContext: k8s.securityContext,
     serviceMonitor: {
-      enabled:  global.isEnabled(me.config, 'prometheus-operator'),
+      enabled: global.isEnabled(me.config, 'prometheus-operator'),
     },
     podSecurityContext: {
       allowPrivilegeEscalation: false,
@@ -241,18 +241,29 @@ local helmrelease(me) = k8s.helmrelease(me, {
           image: lib.getElse(prev, 'spec.values.auth.deployment.image', 'tidepool/platform-auth:master-latest'),
         },
         resources: {
-          requests:
-            memory: 125Mi
-            cpu: 24m
-          limits:
-            memory: 125mi
-            cpu: 48m
-          }
+          requests: {
+            cpu: '40m',
+          },
+          limits: {
+            memory: '225Mi',
+            cpu: '60m',
+          },
+        },
       }, lib.getElse(me, 'auth', {})]),
 
       blip: lib.mergeList([common, {
         deployment+: {
           image: lib.getElse(prev, 'spec.values.blip.deployment.image', 'tidepool/blip:master-latest'),
+        },
+        resources: {
+          requests: {
+            memory: 'Mi',
+            cpu: '30m',
+          },
+          limits: {
+            memory: '125Mi',
+            cpu: '48m',
+          },
         },
       }, lib.getElse(me, 'blip', {})]),
 
