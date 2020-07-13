@@ -242,11 +242,12 @@ local helmrelease(me) = k8s.helmrelease(me, {
         },
         resources: {
           requests: {
-            cpu: '40m',
+            // memory: '150Mi', TODO
+            cpu: '62m',
           },
           limits: {
-            memory: '225Mi',
-            cpu: '60m',
+            memory: '125Mi',
+            cpu: '93m',
           },
         },
       }, lib.getElse(me, 'auth', {})]),
@@ -262,7 +263,7 @@ local helmrelease(me) = k8s.helmrelease(me, {
           },
           limits: {
             memory: '125Mi',
-            cpu: '48m',
+            cpu: '45m',
           },
         },
       }, lib.getElse(me, 'blip', {})]),
