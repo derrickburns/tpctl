@@ -18,7 +18,7 @@ local dashboardConfig = {
   editable: false,
   gnetId: null,
   graphTooltip: 0,
-  iteration: 1594640802403,
+  iteration: 1594642667747,
   links: [],
   panels: [
     {
@@ -311,7 +311,7 @@ local dashboardConfig = {
           refId: 'C',
         },
         {
-          expr: 'sum(container_memory_working_set_bytes{namespace="$namespace", pod=~"$vpa.*", container=~"$container"}) by (container)',
+          expr: 'avg(container_memory_working_set_bytes{namespace="$namespace", pod=~"$vpa.*", container=~"$container"}) by (container)',
           interval: '',
           legendFormat: 'usage - {{ container }}',
           refId: 'D',
@@ -567,8 +567,8 @@ local dashboardConfig = {
         allValue: null,
         current: {
           selected: true,
-          text: 'export',
-          value: 'export',
+          text: 'blip',
+          value: 'blip',
         },
         datasource: '$datasource',
         definition: 'label_values(kube_verticalpodautoscaler_status_recommendation_containerrecommendations_target{namespace=~"$namespace"}, verticalpodautoscaler)',
@@ -593,8 +593,8 @@ local dashboardConfig = {
         allValue: null,
         current: {
           selected: false,
-          text: 'export',
-          value: 'export',
+          text: 'blip',
+          value: 'blip',
         },
         datasource: '$datasource',
         definition: 'label_values(kube_verticalpodautoscaler_status_recommendation_containerrecommendations_target{namespace=~"$namespace", verticalpodautoscaler=~"$vpa"}, container)',
@@ -618,7 +618,7 @@ local dashboardConfig = {
     ],
   },
   time: {
-    from: 'now-24h',
+    from: 'now-2d',
     to: 'now',
   },
   timepicker: {
@@ -637,7 +637,7 @@ local dashboardConfig = {
   timezone: 'utc',
   title: 'Kubernetes / Autoscaler / Vertical Pod Autoscaler',
   uid: '3u1XTUGMz',
-  version: 4,
+  version: 5,
 };
 
 local configmap(me) = grafana.dashboard(me, 'vpa', dashboardConfig);
