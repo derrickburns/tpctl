@@ -23,6 +23,7 @@ local deployment(me) = k8s.deployment(me) {
               '--prometheus-address=http://prometheus-operator-prometheus.monitoring:9090',
               '--v=4',
               '--prometheus-cadvisor-job-name=kubelet',
+              '--history-length=4d',
             ],
             ports: [{
               containerPort: 8080,
