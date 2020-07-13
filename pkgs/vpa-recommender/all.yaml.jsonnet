@@ -29,21 +29,21 @@ local deployment(me) = k8s.deployment(me) {
               containerPort: 8080,
             }],
             resources: {
-              limits: {
+              requests: {
                 cpu: '50m',
                 memory: '500Mi',
               },
-              requests: {
+              limits: {
                 cpu: '200m',
                 memory: '1000Mi',
               },
-              // limits: {
-              // cpu: '400m',
-              // memory: '3000Mi',
-              // },
               // requests: {
               // cpu: '300m',
               // memory: '2000Mi',
+              // },
+              // limits: {
+              // cpu: '400m',
+              // memory: '3000Mi',
               // },
             },
           },
