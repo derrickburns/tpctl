@@ -18,7 +18,7 @@ local dashboardConfig = {
   editable: false,
   gnetId: null,
   graphTooltip: 0,
-  iteration: 1594382357125,
+  iteration: 1594640802403,
   links: [],
   panels: [
     {
@@ -143,8 +143,14 @@ local dashboardConfig = {
         {
           expr: 'avg(kube_pod_container_resource_requests_cpu_cores{container=~"$container", namespace="$namespace", pod=~"$vpa.*"}) by (container)',
           interval: '',
-          legendFormat: 'limits - {{ container }}',
+          legendFormat: 'requests - {{ container }}',
           refId: 'E',
+        },
+        {
+          expr: 'avg(kube_pod_container_resource_limits_cpu_cores{container=~"$container", namespace="$namespace", pod=~"$vpa.*"}) by (container)',
+          interval: '',
+          legendFormat: 'limits - {{ container }}',
+          refId: 'F',
         },
       ],
       thresholds: [],
@@ -311,10 +317,16 @@ local dashboardConfig = {
           refId: 'D',
         },
         {
-          expr: 'avg(\n    kube_pod_container_resource_limits_memory_bytes{namespace="$namespace", pod=~"$vpa.*", container=~"$container"}) by (container)',
+          expr: 'avg(\n    kube_pod_container_resource_requests_memory_bytes{namespace="$namespace", pod=~"$vpa.*", container=~"$container"}) by (container)',
+          interval: '',
+          legendFormat: 'requests - {{ container }}',
+          refId: 'E',
+        },
+        {
+          expr: 'avg(kube_pod_container_resource_limits_memory_bytes{namespace="$namespace", pod=~"$vpa.*", container=~"$container"}) by (container)',
           interval: '',
           legendFormat: 'limits - {{ container }}',
-          refId: 'E',
+          refId: 'F',
         },
       ],
       thresholds: [],
@@ -422,7 +434,7 @@ local dashboardConfig = {
         ],
       },
       gridPos: {
-        h: 10,
+        h: 5,
         w: 24,
         x: 0,
         y: 10,
@@ -450,7 +462,7 @@ local dashboardConfig = {
       ],
       timeFrom: null,
       timeShift: null,
-      title: 'Update modes',
+      title: 'Update mode',
       transformations: [
         {
           id: 'organize',
@@ -625,7 +637,7 @@ local dashboardConfig = {
   timezone: 'utc',
   title: 'Kubernetes / Autoscaler / Vertical Pod Autoscaler',
   uid: '3u1XTUGMz',
-  version: 3,
+  version: 4,
 };
 
 local configmap(me) = grafana.dashboard(me, 'vpa', dashboardConfig);
