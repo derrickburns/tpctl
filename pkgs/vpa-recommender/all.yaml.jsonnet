@@ -17,6 +17,7 @@ local deployment(me) = k8s.deployment(me) {
             args: [
               '--storage=prometheus',
               '--prometheus-address=http://prometheus-operator-prometheus.monitoring:9090',
+              '--v=4',
             ],
             ports: [{
               containerPort: 8080,
