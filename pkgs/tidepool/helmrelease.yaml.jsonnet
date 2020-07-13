@@ -258,11 +258,11 @@ local helmrelease(me) = k8s.helmrelease(me, {
         },
         resources: {
           requests: {
-            memory: 'Mi',
+            // memory: '150Mi', TODO
             cpu: '30m',
           },
           limits: {
-            memory: '125Mi',
+            memory: '172Mi',
             cpu: '45m',
           },
         },
@@ -272,6 +272,16 @@ local helmrelease(me) = k8s.helmrelease(me, {
         extraContainers: extraContainers,
         serviceAccount: {
           name: 'blob',
+        },
+        resources: {
+          requests: {
+            // memory: '150Mi', TODO
+            cpu: '30m',
+          },
+          limits: {
+            memory: '250Mi',
+            cpu: '45m',
+          },
         },
         securityContext: {
           fsGroup: 65534,  // To be able to read Kubernetes and AWS token files
@@ -294,6 +304,16 @@ local helmrelease(me) = k8s.helmrelease(me, {
         deployment+: {
           image: lib.getElse(prev, 'spec.values.data.deployment.image', 'tidepool/platform-data:master-latest'),
           replicas: 3,
+        },
+        resources: {
+          requests: {
+            // memory: '150Mi', TODO
+            cpu: '125m',
+          },
+          limits: {
+            memory: '125Mi',
+            cpu: '172m',
+          },
         },
       }, lib.getElse(me, 'data', {})]),
 
