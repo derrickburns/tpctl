@@ -9,6 +9,10 @@ local deployment(me) = k8s.deployment(me) {
     template+: {
       spec+: {
         serviceAccountName: me.pkg,
+        affinity: {
+          nodeAffinity: k8s.nodeAffinity(),
+        },
+        tolerations: [k8s.toleration()],
         containers: [
           {
             name: me.pkg,
@@ -20,21 +24,17 @@ local deployment(me) = k8s.deployment(me) {
               '--v=4',
               '--prometheus-cadvisor-job-name=kubelet',
             ],
-            affinity: {
-              nodeAffinity: k8s.nodeAffinity(),
-            },
-            tolerations: [k8s.toleration()],
             ports: [{
               containerPort: 8080,
             }],
             resources: {
               limits: {
                 cpu: '200m',
-                memory: '1000Mi',
+                memory: '2000Mi',
               },
               requests: {
                 cpu: '50m',
-                memory: '500Mi',
+                memory: '1000Mi',
               },
             },
           },
