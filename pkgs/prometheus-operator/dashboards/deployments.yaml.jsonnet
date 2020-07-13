@@ -16,11 +16,10 @@ local dashboardConfig = {
     ],
   },
   description: 'Dashboard for Kubernetes deployment with Prometheus.',
-  editable: true,
+  editable: false,
   gnetId: 9679,
   graphTooltip: 0,
-  id: 26,
-  iteration: 1592740562243,
+  iteration: 1594648511543,
   links: [],
   panels: [
     {
@@ -39,28 +38,40 @@ local dashboardConfig = {
     },
     {
       cacheTimeout: null,
-      colorBackground: false,
-      colorValue: true,
-      colors: [
-        '#e24d42',
-        '#f9934e',
-        '#e0f9d7',
-      ],
       datasource: '$datasource',
-      decimals: null,
       fieldConfig: {
         defaults: {
           custom: {},
+          mappings: [
+            {
+              id: 0,
+              op: '=',
+              text: 'N/A',
+              type: 1,
+              value: 'null',
+            },
+          ],
+          nullValueMode: 'connected',
+          thresholds: {
+            mode: 'absolute',
+            steps: [
+              {
+                color: '#e24d42',
+                value: null,
+              },
+              {
+                color: '#f9934e',
+                value: 1,
+              },
+              {
+                color: '#e0f9d7',
+                value: 2,
+              },
+            ],
+          },
+          unit: 'none',
         },
         overrides: [],
-      },
-      format: 'none',
-      gauge: {
-        maxValue: 100,
-        minValue: 0,
-        show: false,
-        thresholdLabels: false,
-        thresholdMarkers: true,
       },
       gridPos: {
         h: 5,
@@ -71,85 +82,78 @@ local dashboardConfig = {
       id: 46,
       interval: null,
       links: [],
-      mappingType: 1,
-      mappingTypes: [
-        {
-          name: 'value to text',
-          value: 1,
-        },
-        {
-          name: 'range to text',
-          value: 2,
-        },
-      ],
       maxDataPoints: 100,
-      nullPointMode: 'connected',
-      nullText: null,
-      postfix: '',
-      postfixFontSize: '30%',
-      prefix: '',
-      prefixFontSize: '30%',
-      rangeMaps: [
-        {
-          from: 'null',
-          text: 'N/A',
-          to: 'null',
+      options: {
+        colorMode: 'value',
+        fieldOptions: {
+          calcs: [
+            'lastNotNull',
+          ],
         },
-      ],
-      sparkline: {
-        fillColor: 'rgba(31, 118, 189, 0.18)',
-        full: true,
-        lineColor: 'rgb(31, 120, 193)',
-        show: true,
+        graphMode: 'area',
+        justifyMode: 'auto',
+        orientation: 'horizontal',
+        reduceOptions: {
+          calcs: [
+            'lastNotNull',
+          ],
+          fields: '',
+          values: false,
+        },
       },
-      tableColumn: '',
+      pluginVersion: '7.0.3',
       targets: [
         {
-          expr: 'sum( kube_deployment_status_replicas_available{namespace=~"^$Namespace$",deployment=~"^$Deployment"} )',
+          expr: 'sum(kube_deployment_status_replicas_available{namespace=~"$namespace",deployment=~"$deployment"} )',
           format: 'time_series',
           instant: false,
+          interval: '',
           intervalFactor: 1,
+          legendFormat: '',
           refId: 'A',
         },
       ],
-      thresholds: '1,2',
       title: 'Pods',
-      type: 'singlestat',
-      valueFontSize: '200%',
-      valueMaps: [
-        {
-          op: '=',
-          text: 'N/A',
-          value: 'null',
-        },
-      ],
-      valueName: 'current',
+      type: 'stat',
     },
     {
       cacheTimeout: null,
-      colorBackground: false,
-      colorPostfix: false,
-      colorPrefix: false,
-      colorValue: true,
-      colors: [
-        '#629e51',
-        '#f9934e',
-        '#e24d42',
-      ],
       datasource: '$datasource',
       fieldConfig: {
         defaults: {
           custom: {},
+          mappings: [
+            {
+              id: 0,
+              op: '=',
+              text: 'N/A',
+              type: 1,
+              value: 'null',
+            },
+          ],
+          max: 100,
+          min: 0,
+          nullValueMode: 'connected',
+          thresholds: {
+            mode: 'absolute',
+            steps: [
+              {
+                color: '#629e51',
+                value: null,
+              },
+              {
+                color: '#f9934e',
+                value: 65,
+              },
+              {
+                color: '#e24d42',
+                value: 90,
+              },
+            ],
+          },
+          unit: 'percent',
         },
         overrides: [],
-      },
-      format: 'percent',
-      gauge: {
-        maxValue: 100,
-        minValue: 0,
-        show: true,
-        thresholdLabels: false,
-        thresholdMarkers: true,
       },
       gridPos: {
         h: 5,
@@ -160,59 +164,37 @@ local dashboardConfig = {
       id: 31,
       interval: null,
       links: [],
-      mappingType: 1,
-      mappingTypes: [
-        {
-          name: 'value to text',
-          value: 1,
-        },
-        {
-          name: 'range to text',
-          value: 2,
-        },
-      ],
       maxDataPoints: 100,
-      nullPointMode: 'connected',
-      nullText: null,
-      postfix: '',
-      postfixFontSize: '50%',
-      prefix: '',
-      prefixFontSize: '50%',
-      rangeMaps: [
-        {
-          from: 'null',
-          text: 'N/A',
-          to: 'null',
+      options: {
+        fieldOptions: {
+          calcs: [
+            'lastNotNull',
+          ],
         },
-      ],
-      sparkline: {
-        fillColor: 'rgba(31, 118, 189, 0.18)',
-        full: false,
-        lineColor: 'rgb(31, 120, 193)',
-        show: false,
+        orientation: 'horizontal',
+        reduceOptions: {
+          calcs: [
+            'lastNotNull',
+          ],
+          fields: '',
+          values: false,
+        },
+        showThresholdLabels: false,
+        showThresholdMarkers: true,
       },
-      tableColumn: '',
+      pluginVersion: '7.0.3',
       targets: [
         {
-          expr: 'sum (rate (container_cpu_usage_seconds_total{image!="",name=~"^k8s_.*",namespace=~"^$Namespace$",pod_name=~"^$Deployment-[a-z0-9]+-[a-z0-9]+"}[2m])) / sum (kube_pod_container_resource_requests_cpu_cores{namespace=~"^$Namespace$",pod=~"^$Deployment-[a-z0-9]+-[a-z0-9]+"}) * 100',
+          expr: 'sum(node_namespace_pod_container:container_cpu_usage_seconds_total:sum_rate{namespace=~"$namespace",pod=~"$deployment-[a-z0-9]+-[a-z0-9]+"}) / sum (kube_pod_container_resource_requests_cpu_cores{namespace=~"$namespace",pod=~"$deployment-[a-z0-9]+-[a-z0-9]+"}) * 100',
           format: 'time_series',
           interval: '',
           intervalFactor: 1,
+          legendFormat: '',
           refId: 'A',
         },
       ],
-      thresholds: '65, 90',
       title: 'CPU Usage',
-      type: 'singlestat',
-      valueFontSize: '80%',
-      valueMaps: [
-        {
-          op: '=',
-          text: 'N/A',
-          value: 'null',
-        },
-      ],
-      valueName: 'current',
+      type: 'gauge',
     },
     {
       aliasColors: {},
@@ -273,7 +255,7 @@ local dashboardConfig = {
       steppedLine: false,
       targets: [
         {
-          expr: 'sum (rate (container_cpu_usage_seconds_total{image!="",name=~"^k8s_.*",namespace=~"^$Namespace$",pod_name=~"^$Deployment-[a-z0-9]+-[a-z0-9]+"}[2m])) by (pod_name)',
+          expr: 'sum(node_namespace_pod_container:container_cpu_usage_seconds_total:sum_rate{namespace=~"$namespace",pod=~"$deployment-[a-z0-9]+-[a-z0-9]+"}) by (pod)',
           format: 'time_series',
           interval: '',
           intervalFactor: 1,
@@ -287,7 +269,7 @@ local dashboardConfig = {
       timeFrom: null,
       timeRegions: [],
       timeShift: null,
-      title: 'CPU Usage (2m avg)',
+      title: 'CPU Usage',
       tooltip: {
         msResolution: true,
         shared: true,
@@ -304,6 +286,7 @@ local dashboardConfig = {
       },
       yaxes: [
         {
+          '$$hashKey': 'object:206',
           format: 'none',
           label: 'cores',
           logBase: 1,
@@ -312,6 +295,7 @@ local dashboardConfig = {
           show: true,
         },
         {
+          '$$hashKey': 'object:207',
           format: 'short',
           label: null,
           logBase: 1,
@@ -327,28 +311,40 @@ local dashboardConfig = {
     },
     {
       cacheTimeout: null,
-      colorBackground: false,
-      colorValue: true,
-      colors: [
-        '#e24d42',
-        '#f9934e',
-        '#e0f9d7',
-      ],
       datasource: '$datasource',
-      decimals: null,
       fieldConfig: {
         defaults: {
           custom: {},
+          mappings: [
+            {
+              id: 0,
+              op: '=',
+              text: 'N/A',
+              type: 1,
+              value: 'null',
+            },
+          ],
+          nullValueMode: 'connected',
+          thresholds: {
+            mode: 'absolute',
+            steps: [
+              {
+                color: '#e24d42',
+                value: null,
+              },
+              {
+                color: '#f9934e',
+                value: 1,
+              },
+              {
+                color: '#e0f9d7',
+                value: 2,
+              },
+            ],
+          },
+          unit: 'none',
         },
         overrides: [],
-      },
-      format: 'none',
-      gauge: {
-        maxValue: 100,
-        minValue: 0,
-        show: false,
-        thresholdLabels: false,
-        thresholdMarkers: true,
       },
       gridPos: {
         h: 2,
@@ -359,84 +355,75 @@ local dashboardConfig = {
       id: 52,
       interval: null,
       links: [],
-      mappingType: 1,
-      mappingTypes: [
-        {
-          name: 'value to text',
-          value: 1,
-        },
-        {
-          name: 'range to text',
-          value: 2,
-        },
-      ],
       maxDataPoints: 100,
-      nullPointMode: 'connected',
-      nullText: null,
-      postfix: '',
-      postfixFontSize: '30%',
-      prefix: '',
-      prefixFontSize: '30%',
-      rangeMaps: [
-        {
-          from: 'null',
-          text: 'N/A',
-          to: 'null',
+      options: {
+        colorMode: 'value',
+        fieldOptions: {
+          calcs: [
+            'lastNotNull',
+          ],
         },
-      ],
-      sparkline: {
-        fillColor: 'rgba(31, 118, 189, 0.18)',
-        full: true,
-        lineColor: 'rgb(31, 120, 193)',
-        show: true,
+        graphMode: 'area',
+        justifyMode: 'auto',
+        orientation: 'horizontal',
+        reduceOptions: {
+          calcs: [
+            'lastNotNull',
+          ],
+          fields: '',
+          values: false,
+        },
       },
-      tableColumn: '',
+      pluginVersion: '7.0.3',
       targets: [
         {
-          expr: 'sum( kube_deployment_status_replicas_updated{namespace=~"^$Namespace$",deployment=~"^$Deployment"} )',
+          expr: 'sum(kube_deployment_status_replicas_updated{namespace=~"$namespace",deployment=~"$deployment"})',
           format: 'time_series',
+          interval: '',
           intervalFactor: 1,
+          legendFormat: '',
           refId: 'A',
         },
       ],
-      thresholds: '1,2',
       title: 'Updated',
-      type: 'singlestat',
-      valueFontSize: '50%',
-      valueMaps: [
-        {
-          op: '=',
-          text: 'N/A',
-          value: 'null',
-        },
-      ],
-      valueName: 'current',
+      type: 'stat',
     },
     {
       cacheTimeout: null,
-      colorBackground: false,
-      colorPrefix: false,
-      colorValue: true,
-      colors: [
-        '#e0f9d7',
-        '#f9934e',
-        '#e24d42',
-      ],
       datasource: '$datasource',
-      decimals: null,
       fieldConfig: {
         defaults: {
           custom: {},
+          mappings: [
+            {
+              id: 0,
+              op: '=',
+              text: 'N/A',
+              type: 1,
+              value: 'null',
+            },
+          ],
+          nullValueMode: 'connected',
+          thresholds: {
+            mode: 'absolute',
+            steps: [
+              {
+                color: '#e0f9d7',
+                value: null,
+              },
+              {
+                color: '#f9934e',
+                value: 1,
+              },
+              {
+                color: '#e24d42',
+                value: 5,
+              },
+            ],
+          },
+          unit: 'none',
         },
         overrides: [],
-      },
-      format: 'none',
-      gauge: {
-        maxValue: 100,
-        minValue: 0,
-        show: false,
-        thresholdLabels: false,
-        thresholdMarkers: true,
       },
       gridPos: {
         h: 2,
@@ -447,83 +434,72 @@ local dashboardConfig = {
       id: 53,
       interval: null,
       links: [],
-      mappingType: 1,
-      mappingTypes: [
-        {
-          name: 'value to text',
-          value: 1,
-        },
-        {
-          name: 'range to text',
-          value: 2,
-        },
-      ],
       maxDataPoints: 100,
-      nullPointMode: 'connected',
-      nullText: null,
-      postfix: '',
-      postfixFontSize: '30%',
-      prefix: '',
-      prefixFontSize: '30%',
-      rangeMaps: [
-        {
-          from: 'null',
-          text: 'N/A',
-          to: 'null',
+      options: {
+        colorMode: 'value',
+        fieldOptions: {
+          calcs: [
+            'lastNotNull',
+          ],
         },
-      ],
-      sparkline: {
-        fillColor: 'rgba(31, 118, 189, 0.18)',
-        full: true,
-        lineColor: 'rgb(31, 120, 193)',
-        show: true,
+        graphMode: 'area',
+        justifyMode: 'auto',
+        orientation: 'horizontal',
+        reduceOptions: {
+          calcs: [
+            'lastNotNull',
+          ],
+          fields: '',
+          values: false,
+        },
       },
-      tableColumn: '',
+      pluginVersion: '7.0.3',
       targets: [
         {
-          expr: 'sum( kube_deployment_status_replicas_unavailable{namespace=~"^$Namespace$",deployment=~"^$Deployment"} )',
+          expr: 'sum(kube_deployment_status_replicas_unavailable{namespace=~"$namespace",deployment=~"$deployment"})',
           format: 'time_series',
+          interval: '',
           intervalFactor: 1,
+          legendFormat: '',
           refId: 'A',
         },
       ],
-      thresholds: '1,5',
       title: 'Unavailable',
-      type: 'singlestat',
-      valueFontSize: '50%',
-      valueMaps: [
-        {
-          op: '=',
-          text: 'N/A',
-          value: 'null',
-        },
-      ],
-      valueName: 'current',
+      type: 'stat',
     },
     {
       cacheTimeout: null,
-      colorBackground: false,
-      colorValue: false,
-      colors: [
-        '#629e51',
-        '#f9934e',
-        '#e24d42',
-      ],
       datasource: '$datasource',
-      decimals: 3,
       fieldConfig: {
         defaults: {
           custom: {},
+          decimals: 3,
+          mappings: [
+            {
+              id: 0,
+              op: '=',
+              text: 'N/A',
+              type: 1,
+              value: 'null',
+            },
+          ],
+          nullValueMode: 'connected',
+          thresholds: {
+            mode: 'absolute',
+            steps: [
+              {
+                color: 'green',
+                value: null,
+              },
+              {
+                color: 'red',
+                value: 80,
+              },
+            ],
+          },
+          unit: 'none',
         },
         overrides: [],
-      },
-      format: 'none',
-      gauge: {
-        maxValue: 100,
-        minValue: 0,
-        show: false,
-        thresholdLabels: false,
-        thresholdMarkers: true,
       },
       gridPos: {
         h: 2,
@@ -534,83 +510,72 @@ local dashboardConfig = {
       id: 35,
       interval: null,
       links: [],
-      mappingType: 1,
-      mappingTypes: [
-        {
-          name: 'value to text',
-          value: 1,
-        },
-        {
-          name: 'range to text',
-          value: 2,
-        },
-      ],
       maxDataPoints: 100,
-      nullPointMode: 'connected',
-      nullText: null,
-      postfix: ' cores',
-      postfixFontSize: '30%',
-      prefix: '',
-      prefixFontSize: '30%',
-      rangeMaps: [
-        {
-          from: 'null',
-          text: 'N/A',
-          to: 'null',
+      options: {
+        colorMode: 'value',
+        fieldOptions: {
+          calcs: [
+            'lastNotNull',
+          ],
         },
-      ],
-      sparkline: {
-        fillColor: 'rgba(31, 118, 189, 0.18)',
-        full: true,
-        lineColor: 'rgb(31, 120, 193)',
-        show: true,
+        graphMode: 'area',
+        justifyMode: 'auto',
+        orientation: 'horizontal',
+        reduceOptions: {
+          calcs: [
+            'lastNotNull',
+          ],
+          fields: '',
+          values: false,
+        },
       },
-      tableColumn: '',
+      pluginVersion: '7.0.3',
       targets: [
         {
-          expr: 'sum (rate (container_cpu_usage_seconds_total{image!="",name=~"^k8s_.*",namespace=~"^$Namespace$",pod_name=~"^$Deployment-[a-z0-9]+-[a-z0-9]+"}[2m]))',
+          expr: 'sum(node_namespace_pod_container:container_cpu_usage_seconds_total:sum_rate{namespace=~"$namespace",pod=~"$deployment-[a-z0-9]+-[a-z0-9]+", container!="POD", container!=""})',
           format: 'time_series',
+          interval: '',
           intervalFactor: 1,
+          legendFormat: '',
           refId: 'A',
         },
       ],
-      thresholds: '',
       title: 'Used',
-      type: 'singlestat',
-      valueFontSize: '50%',
-      valueMaps: [
-        {
-          op: '=',
-          text: 'N/A',
-          value: 'null',
-        },
-      ],
-      valueName: 'current',
+      type: 'stat',
     },
     {
       cacheTimeout: null,
-      colorBackground: false,
-      colorValue: false,
-      colors: [
-        '#629e51',
-        '#f9934e',
-        '#e24d42',
-      ],
       datasource: '$datasource',
-      decimals: 3,
       fieldConfig: {
         defaults: {
           custom: {},
+          decimals: 3,
+          mappings: [
+            {
+              id: 0,
+              op: '=',
+              text: 'N/A',
+              type: 1,
+              value: 'null',
+            },
+          ],
+          nullValueMode: 'connected',
+          thresholds: {
+            mode: 'absolute',
+            steps: [
+              {
+                color: 'green',
+                value: null,
+              },
+              {
+                color: 'red',
+                value: 80,
+              },
+            ],
+          },
+          unit: 'none',
         },
         overrides: [],
-      },
-      format: 'none',
-      gauge: {
-        maxValue: 100,
-        minValue: 0,
-        show: false,
-        thresholdLabels: false,
-        thresholdMarkers: true,
       },
       gridPos: {
         h: 2,
@@ -621,83 +586,74 @@ local dashboardConfig = {
       id: 37,
       interval: null,
       links: [],
-      mappingType: 1,
-      mappingTypes: [
-        {
-          name: 'value to text',
-          value: 1,
-        },
-        {
-          name: 'range to text',
-          value: 2,
-        },
-      ],
       maxDataPoints: 100,
-      nullPointMode: 'connected',
-      nullText: null,
-      postfix: ' cores',
-      postfixFontSize: '30%',
-      prefix: '',
-      prefixFontSize: '30%',
-      rangeMaps: [
-        {
-          from: 'null',
-          text: 'N/A',
-          to: 'null',
+      options: {
+        colorMode: 'value',
+        fieldOptions: {
+          calcs: [
+            'lastNotNull',
+          ],
         },
-      ],
-      sparkline: {
-        fillColor: 'rgba(31, 118, 189, 0.18)',
-        full: true,
-        lineColor: 'rgb(31, 120, 193)',
-        show: true,
+        graphMode: 'area',
+        justifyMode: 'auto',
+        orientation: 'horizontal',
+        reduceOptions: {
+          calcs: [
+            'lastNotNull',
+          ],
+          fields: '',
+          values: false,
+        },
       },
-      tableColumn: '',
+      pluginVersion: '7.0.3',
       targets: [
         {
-          expr: 'sum (kube_pod_container_resource_requests_cpu_cores{container!="istio-proxy",namespace=~"^$Namespace$",pod=~"^$Deployment-[a-z0-9]+-[a-z0-9]+"})',
+          expr: 'sum(kube_pod_container_resource_requests_cpu_cores{namespace=~"$namespace", pod=~"$deployment-[a-z0-9]+-[a-z0-9]+"})',
           format: 'time_series',
+          instant: false,
+          interval: '',
           intervalFactor: 1,
+          legendFormat: '',
           refId: 'A',
         },
       ],
-      thresholds: '',
       title: 'Requests',
-      type: 'singlestat',
-      valueFontSize: '50%',
-      valueMaps: [
-        {
-          op: '=',
-          text: 'N/A',
-          value: 'null',
-        },
-      ],
-      valueName: 'current',
+      transformations: [],
+      type: 'stat',
     },
     {
       cacheTimeout: null,
-      colorBackground: false,
-      colorValue: false,
-      colors: [
-        '#629e51',
-        '#f9934e',
-        '#e24d42',
-      ],
       datasource: '$datasource',
-      decimals: 3,
       fieldConfig: {
         defaults: {
           custom: {},
+          decimals: 3,
+          mappings: [
+            {
+              id: 0,
+              op: '=',
+              text: 'N/A',
+              type: 1,
+              value: 'null',
+            },
+          ],
+          nullValueMode: 'connected',
+          thresholds: {
+            mode: 'absolute',
+            steps: [
+              {
+                color: 'green',
+                value: null,
+              },
+              {
+                color: 'red',
+                value: 80,
+              },
+            ],
+          },
+          unit: 'short',
         },
         overrides: [],
-      },
-      format: 'none',
-      gauge: {
-        maxValue: 100,
-        minValue: 0,
-        show: false,
-        thresholdLabels: false,
-        thresholdMarkers: true,
       },
       gridPos: {
         h: 2,
@@ -708,58 +664,38 @@ local dashboardConfig = {
       id: 44,
       interval: null,
       links: [],
-      mappingType: 1,
-      mappingTypes: [
-        {
-          name: 'value to text',
-          value: 1,
-        },
-        {
-          name: 'range to text',
-          value: 2,
-        },
-      ],
       maxDataPoints: 100,
-      nullPointMode: 'connected',
-      nullText: null,
-      postfix: ' cores',
-      postfixFontSize: '30%',
-      prefix: '',
-      prefixFontSize: '30%',
-      rangeMaps: [
-        {
-          from: 'null',
-          text: 'N/A',
-          to: 'null',
+      options: {
+        colorMode: 'value',
+        fieldOptions: {
+          calcs: [
+            'lastNotNull',
+          ],
         },
-      ],
-      sparkline: {
-        fillColor: 'rgba(31, 118, 189, 0.18)',
-        full: true,
-        lineColor: 'rgb(31, 120, 193)',
-        show: true,
+        graphMode: 'area',
+        justifyMode: 'auto',
+        orientation: 'horizontal',
+        reduceOptions: {
+          calcs: [
+            'lastNotNull',
+          ],
+          fields: '',
+          values: false,
+        },
       },
-      tableColumn: '',
+      pluginVersion: '7.0.3',
       targets: [
         {
-          expr: 'sum (kube_pod_container_resource_limits_cpu_cores{container!="istio-proxy",namespace=~"^$Namespace$",pod=~"^$Deployment-[a-z0-9]+-[a-z0-9]+"})',
+          expr: 'sum(kube_pod_container_resource_limits_cpu_cores{namespace=~"$namespace", pod=~"$deployment-[a-z0-9]+-[a-z0-9]+"})',
           format: 'time_series',
+          interval: '',
           intervalFactor: 1,
+          legendFormat: '',
           refId: 'A',
         },
       ],
-      thresholds: '',
       title: 'Limits',
-      type: 'singlestat',
-      valueFontSize: '50%',
-      valueMaps: [
-        {
-          op: '=',
-          text: 'N/A',
-          value: 'null',
-        },
-      ],
-      valueName: 'current',
+      type: 'stat',
     },
     {
       aliasColors: {},
@@ -813,7 +749,7 @@ local dashboardConfig = {
       steppedLine: true,
       targets: [
         {
-          expr: 'sum( kube_deployment_status_replicas_updated{namespace=~"^$Namespace$",deployment=~"^$Deployment"} )',
+          expr: 'sum(kube_deployment_status_replicas_updated{namespace=~"$namespace",deployment=~"$deployment"})',
           format: 'time_series',
           interval: '',
           intervalFactor: 1,
@@ -821,15 +757,17 @@ local dashboardConfig = {
           refId: 'A',
         },
         {
-          expr: 'sum( kube_deployment_status_replicas_available{namespace=~"^$Namespace$",deployment=~"^$Deployment"} )',
+          expr: 'sum(kube_deployment_status_replicas_available{namespace=~"$namespace",deployment=~"$deployment"})',
           format: 'time_series',
+          interval: '',
           intervalFactor: 1,
           legendFormat: 'available',
           refId: 'B',
         },
         {
-          expr: 'sum( kube_deployment_status_replicas_unavailable{namespace=~"^$Namespace$",deployment=~"^$Deployment"} )',
+          expr: 'sum(kube_deployment_status_replicas_unavailable{namespace=~"$namespace",deployment=~"$deployment"})',
           format: 'time_series',
+          interval: '',
           intervalFactor: 1,
           legendFormat: 'unavailable',
           refId: 'C',
@@ -855,6 +793,7 @@ local dashboardConfig = {
       },
       yaxes: [
         {
+          '$$hashKey': 'object:891',
           format: 'short',
           label: '',
           logBase: 1,
@@ -863,6 +802,7 @@ local dashboardConfig = {
           show: true,
         },
         {
+          '$$hashKey': 'object:892',
           format: 'short',
           label: null,
           logBase: 1,
@@ -878,27 +818,42 @@ local dashboardConfig = {
     },
     {
       cacheTimeout: null,
-      colorBackground: false,
-      colorValue: true,
-      colors: [
-        '#629e51',
-        '#f9934e',
-        '#e24d42',
-      ],
       datasource: '$datasource',
       fieldConfig: {
         defaults: {
           custom: {},
+          mappings: [
+            {
+              id: 0,
+              op: '=',
+              text: 'N/A',
+              type: 1,
+              value: 'null',
+            },
+          ],
+          max: 100,
+          min: 0,
+          nullValueMode: 'connected',
+          thresholds: {
+            mode: 'absolute',
+            steps: [
+              {
+                color: '#629e51',
+                value: null,
+              },
+              {
+                color: '#f9934e',
+                value: 65,
+              },
+              {
+                color: '#e24d42',
+                value: 90,
+              },
+            ],
+          },
+          unit: 'percent',
         },
         overrides: [],
-      },
-      format: 'percent',
-      gauge: {
-        maxValue: 100,
-        minValue: 0,
-        show: true,
-        thresholdLabels: false,
-        thresholdMarkers: true,
       },
       gridPos: {
         h: 5,
@@ -909,41 +864,28 @@ local dashboardConfig = {
       id: 33,
       interval: null,
       links: [],
-      mappingType: 1,
-      mappingTypes: [
-        {
-          name: 'value to text',
-          value: 1,
-        },
-        {
-          name: 'range to text',
-          value: 2,
-        },
-      ],
       maxDataPoints: 100,
-      nullPointMode: 'connected',
-      nullText: null,
-      postfix: '',
-      postfixFontSize: '50%',
-      prefix: '',
-      prefixFontSize: '50%',
-      rangeMaps: [
-        {
-          from: 'null',
-          text: 'N/A',
-          to: 'null',
+      options: {
+        fieldOptions: {
+          calcs: [
+            'lastNotNull',
+          ],
         },
-      ],
-      sparkline: {
-        fillColor: 'rgba(31, 118, 189, 0.18)',
-        full: false,
-        lineColor: 'rgb(31, 120, 193)',
-        show: false,
+        orientation: 'horizontal',
+        reduceOptions: {
+          calcs: [
+            'lastNotNull',
+          ],
+          fields: '',
+          values: false,
+        },
+        showThresholdLabels: false,
+        showThresholdMarkers: true,
       },
-      tableColumn: '',
+      pluginVersion: '7.0.3',
       targets: [
         {
-          expr: 'sum (container_memory_working_set_bytes{image!="",name=~"^k8s_.*",namespace=~"^$Namespace$",pod_name=~"^$Deployment-[a-z0-9]+-[a-z0-9]+"}) / sum (kube_pod_container_resource_requests_memory_bytes{namespace=~"^$Namespace$",pod=~"^$Deployment-[a-z0-9]+-[a-z0-9]+"}) * 100',
+          expr: 'sum(container_memory_working_set_bytes{namespace=~"$namespace", pod_name=~"$deployment-[a-z0-9]+-[a-z0-9]+", container!="POD", container!=""}) / sum(kube_pod_container_resource_requests_memory_bytes{namespace=~"$namespace", pod=~"$deployment-[a-z0-9]+-[a-z0-9]+"}) * 100',
           format: 'time_series',
           interval: '',
           intervalFactor: 1,
@@ -951,18 +893,8 @@ local dashboardConfig = {
           refId: 'A',
         },
       ],
-      thresholds: '65,90',
       title: 'Memory Usage',
-      type: 'singlestat',
-      valueFontSize: '80%',
-      valueMaps: [
-        {
-          op: '=',
-          text: 'N/A',
-          value: 'null',
-        },
-      ],
-      valueName: 'current',
+      type: 'gauge',
     },
     {
       aliasColors: {},
@@ -1022,7 +954,7 @@ local dashboardConfig = {
       steppedLine: false,
       targets: [
         {
-          expr: 'sum (container_memory_working_set_bytes{image!="",name=~"^k8s_.*",namespace=~"^$Namespace$",pod_name=~"^$Deployment-[a-z0-9]+-[a-z0-9]+"}) by (pod_name)',
+          expr: 'sum(container_memory_working_set_bytes{namespace=~"$namespace", pod_name=~"$deployment-[a-z0-9]+-[a-z0-9]+", container!="POD", container!=""}) by (pod_name)',
           format: 'time_series',
           interval: '',
           intervalFactor: 1,
@@ -1053,6 +985,7 @@ local dashboardConfig = {
       },
       yaxes: [
         {
+          '$$hashKey': 'object:123',
           format: 'bytes',
           label: null,
           logBase: 1,
@@ -1061,6 +994,7 @@ local dashboardConfig = {
           show: true,
         },
         {
+          '$$hashKey': 'object:124',
           format: 'short',
           label: null,
           logBase: 1,
@@ -1076,28 +1010,33 @@ local dashboardConfig = {
     },
     {
       cacheTimeout: null,
-      colorBackground: false,
-      colorValue: false,
-      colors: [
-        '#629e51',
-        '#f9934e',
-        '#e24d42',
-      ],
       datasource: '$datasource',
-      decimals: 2,
       fieldConfig: {
         defaults: {
           custom: {},
+          decimals: 2,
+          mappings: [
+            {
+              id: 0,
+              op: '=',
+              text: 'N/A',
+              type: 1,
+              value: 'null',
+            },
+          ],
+          nullValueMode: 'connected',
+          thresholds: {
+            mode: 'absolute',
+            steps: [
+              {
+                color: 'green',
+                value: null,
+              },
+            ],
+          },
+          unit: 'bytes',
         },
         overrides: [],
-      },
-      format: 'bytes',
-      gauge: {
-        maxValue: 100,
-        minValue: 0,
-        show: false,
-        thresholdLabels: false,
-        thresholdMarkers: true,
       },
       gridPos: {
         h: 2,
@@ -1108,41 +1047,29 @@ local dashboardConfig = {
       id: 39,
       interval: null,
       links: [],
-      mappingType: 1,
-      mappingTypes: [
-        {
-          name: 'value to text',
-          value: 1,
-        },
-        {
-          name: 'range to text',
-          value: 2,
-        },
-      ],
       maxDataPoints: 100,
-      nullPointMode: 'connected',
-      nullText: null,
-      postfix: '',
-      postfixFontSize: '20%',
-      prefix: '',
-      prefixFontSize: '20%',
-      rangeMaps: [
-        {
-          from: 'null',
-          text: 'N/A',
-          to: 'null',
+      options: {
+        colorMode: 'value',
+        fieldOptions: {
+          calcs: [
+            'lastNotNull',
+          ],
         },
-      ],
-      sparkline: {
-        fillColor: 'rgba(31, 118, 189, 0.18)',
-        full: true,
-        lineColor: 'rgb(31, 120, 193)',
-        show: true,
+        graphMode: 'area',
+        justifyMode: 'auto',
+        orientation: 'horizontal',
+        reduceOptions: {
+          calcs: [
+            'lastNotNull',
+          ],
+          fields: '',
+          values: false,
+        },
       },
-      tableColumn: '',
+      pluginVersion: '7.0.3',
       targets: [
         {
-          expr: 'sum (container_memory_working_set_bytes{image!="",name=~"^k8s_.*",namespace=~"^$Namespace$",pod_name=~"^$Deployment-[a-z0-9]+-[a-z0-9]+"})',
+          expr: 'sum(container_memory_working_set_bytes{namespace=~"$namespace", pod_name=~"$deployment-[a-z0-9]+-[a-z0-9]+", container!="POD", container!=""})',
           format: 'time_series',
           instant: false,
           interval: '',
@@ -1151,43 +1078,38 @@ local dashboardConfig = {
           refId: 'A',
         },
       ],
-      thresholds: '',
       title: 'Used',
-      type: 'singlestat',
-      valueFontSize: '50%',
-      valueMaps: [
-        {
-          op: '=',
-          text: 'N/A',
-          value: 'null',
-        },
-      ],
-      valueName: 'current',
+      type: 'stat',
     },
     {
       cacheTimeout: null,
-      colorBackground: false,
-      colorValue: false,
-      colors: [
-        '#629e51',
-        '#f9934e',
-        '#e24d42',
-      ],
       datasource: '$datasource',
-      decimals: 2,
       fieldConfig: {
         defaults: {
           custom: {},
+          decimals: 2,
+          mappings: [
+            {
+              id: 0,
+              op: '=',
+              text: 'N/A',
+              type: 1,
+              value: 'null',
+            },
+          ],
+          nullValueMode: 'connected',
+          thresholds: {
+            mode: 'absolute',
+            steps: [
+              {
+                color: 'green',
+                value: null,
+              },
+            ],
+          },
+          unit: 'bytes',
         },
         overrides: [],
-      },
-      format: 'bytes',
-      gauge: {
-        maxValue: 100,
-        minValue: 0,
-        show: false,
-        thresholdLabels: false,
-        thresholdMarkers: true,
       },
       gridPos: {
         h: 2,
@@ -1198,83 +1120,68 @@ local dashboardConfig = {
       id: 41,
       interval: null,
       links: [],
-      mappingType: 1,
-      mappingTypes: [
-        {
-          name: 'value to text',
-          value: 1,
-        },
-        {
-          name: 'range to text',
-          value: 2,
-        },
-      ],
       maxDataPoints: 100,
-      nullPointMode: 'connected',
-      nullText: null,
-      postfix: '',
-      postfixFontSize: '20%',
-      prefix: '',
-      prefixFontSize: '20%',
-      rangeMaps: [
-        {
-          from: 'null',
-          text: 'N/A',
-          to: 'null',
+      options: {
+        colorMode: 'value',
+        fieldOptions: {
+          calcs: [
+            'lastNotNull',
+          ],
         },
-      ],
-      sparkline: {
-        fillColor: 'rgba(31, 118, 189, 0.18)',
-        full: true,
-        lineColor: 'rgb(31, 120, 193)',
-        show: true,
+        graphMode: 'area',
+        justifyMode: 'auto',
+        orientation: 'horizontal',
+        reduceOptions: {
+          calcs: [
+            'lastNotNull',
+          ],
+          fields: '',
+          values: false,
+        },
       },
-      tableColumn: '',
+      pluginVersion: '7.0.3',
       targets: [
         {
-          expr: 'sum (kube_pod_container_resource_requests_memory_bytes{container!="istio-proxy",namespace=~"^$Namespace$",pod=~"^$Deployment-[a-z0-9]+-[a-z0-9]+"})',
+          expr: 'sum(kube_pod_container_resource_requests_memory_bytes{namespace=~"$namespace", pod=~"$deployment-[a-z0-9]+-[a-z0-9]+"})',
           format: 'time_series',
+          interval: '',
           intervalFactor: 1,
+          legendFormat: '',
           refId: 'A',
         },
       ],
-      thresholds: '',
       title: 'Requests',
-      type: 'singlestat',
-      valueFontSize: '50%',
-      valueMaps: [
-        {
-          op: '=',
-          text: 'N/A',
-          value: 'null',
-        },
-      ],
-      valueName: 'current',
+      type: 'stat',
     },
     {
       cacheTimeout: null,
-      colorBackground: false,
-      colorValue: false,
-      colors: [
-        '#629e51',
-        '#f9934e',
-        '#e24d42',
-      ],
       datasource: '$datasource',
-      decimals: 2,
       fieldConfig: {
         defaults: {
           custom: {},
+          decimals: 2,
+          mappings: [
+            {
+              id: 0,
+              op: '=',
+              text: 'N/A',
+              type: 1,
+              value: 'null',
+            },
+          ],
+          nullValueMode: 'connected',
+          thresholds: {
+            mode: 'absolute',
+            steps: [
+              {
+                color: 'green',
+                value: null,
+              },
+            ],
+          },
+          unit: 'bytes',
         },
         overrides: [],
-      },
-      format: 'bytes',
-      gauge: {
-        maxValue: 100,
-        minValue: 0,
-        show: false,
-        thresholdLabels: false,
-        thresholdMarkers: true,
       },
       gridPos: {
         h: 2,
@@ -1285,58 +1192,38 @@ local dashboardConfig = {
       id: 45,
       interval: null,
       links: [],
-      mappingType: 1,
-      mappingTypes: [
-        {
-          name: 'value to text',
-          value: 1,
-        },
-        {
-          name: 'range to text',
-          value: 2,
-        },
-      ],
       maxDataPoints: 100,
-      nullPointMode: 'connected',
-      nullText: null,
-      postfix: '',
-      postfixFontSize: '20%',
-      prefix: '',
-      prefixFontSize: '20%',
-      rangeMaps: [
-        {
-          from: 'null',
-          text: 'N/A',
-          to: 'null',
+      options: {
+        colorMode: 'value',
+        fieldOptions: {
+          calcs: [
+            'lastNotNull',
+          ],
         },
-      ],
-      sparkline: {
-        fillColor: 'rgba(31, 118, 189, 0.18)',
-        full: true,
-        lineColor: 'rgb(31, 120, 193)',
-        show: true,
+        graphMode: 'area',
+        justifyMode: 'auto',
+        orientation: 'horizontal',
+        reduceOptions: {
+          calcs: [
+            'lastNotNull',
+          ],
+          fields: '',
+          values: false,
+        },
       },
-      tableColumn: '',
+      pluginVersion: '7.0.3',
       targets: [
         {
-          expr: 'sum (kube_pod_container_resource_limits_memory_bytes{container!="istio-proxy",namespace=~"^$Namespace$",pod=~"^$Deployment-[a-z0-9]+-[a-z0-9]+"})',
+          expr: 'sum(kube_pod_container_resource_limits_memory_bytes{namespace=~"$namespace", pod=~"$deployment-[a-z0-9]+-[a-z0-9]+"})',
           format: 'time_series',
+          interval: '',
           intervalFactor: 1,
+          legendFormat: '',
           refId: 'A',
         },
       ],
-      thresholds: '',
       title: 'Limits',
-      type: 'singlestat',
-      valueFontSize: '50%',
-      valueMaps: [
-        {
-          op: '=',
-          text: 'N/A',
-          value: 'null',
-        },
-      ],
-      valueName: 'current',
+      type: 'stat',
     },
     {
       aliasColors: {},
@@ -1396,7 +1283,7 @@ local dashboardConfig = {
       steppedLine: false,
       targets: [
         {
-          expr: 'sum (rate (container_network_receive_bytes_total{image!="",name=~"^k8s_.*",namespace=~"^$Namespace$",pod_name=~"^$Deployment-[a-z0-9]+-[a-z0-9]+"}[2m])) by (pod_name)',
+          expr: 'sum(irate(container_network_receive_bytes_total{namespace=~"$namespace", pod_name=~"$deployment-[a-z0-9]+-[a-z0-9]+"}[$__interval])) by (pod_name)',
           format: 'time_series',
           interval: '',
           intervalFactor: 1,
@@ -1406,7 +1293,7 @@ local dashboardConfig = {
           step: 10,
         },
         {
-          expr: '- sum (rate (container_network_transmit_bytes_total{image!="",name=~"^k8s_.*",namespace=~"^$Namespace$",pod_name=~"^$Deployment-[a-z0-9]+-[a-z0-9]+"}[2m])) by (pod_name)',
+          expr: '- sum(irate(container_network_transmit_bytes_total{namespace=~"$namespace", pod_name=~"$deployment-[a-z0-9]+-[a-z0-9]+"}[$__interval])) by (pod_name)',
           format: 'time_series',
           interval: '',
           intervalFactor: 1,
@@ -1416,19 +1303,19 @@ local dashboardConfig = {
           step: 10,
         },
         {
-          expr: 'sum (rate (container_network_receive_bytes_total{image!="",name=~"^k8s_.*",namespace=~"^$Namespace$",pod_name=~"^$Deployment-[a-z0-9]+-[a-z0-9]+"}[2m]))',
+          expr: 'sum(irate(container_network_receive_bytes_total{namespace=~"$namespace", pod_name=~"$deployment-[a-z0-9]+-[a-z0-9]+"}[$__interval]))',
           format: 'time_series',
           interval: '',
           intervalFactor: 1,
-          legendFormat: '-> $Deployment',
+          legendFormat: '-> $deployment',
           refId: 'C',
         },
         {
-          expr: '- sum (rate (container_network_transmit_bytes_total{image!="",name=~"^k8s_.*",namespace=~"^$Namespace$",pod_name=~"^$Deployment-[a-z0-9]+-[a-z0-9]+"}[2m]))',
+          expr: '- sum(irate(container_network_transmit_bytes_total{namespace=~"$namespace", pod_name=~"$deployment-[a-z0-9]+-[a-z0-9]+"}[$__interval]))',
           format: 'time_series',
           interval: '',
           intervalFactor: 1,
-          legendFormat: '<- $Deployment ',
+          legendFormat: '<- $deployment ',
           refId: 'D',
         },
       ],
@@ -1436,7 +1323,7 @@ local dashboardConfig = {
       timeFrom: null,
       timeRegions: [],
       timeShift: null,
-      title: 'Network I/O (2m avg)',
+      title: 'Network I/O',
       tooltip: {
         msResolution: false,
         shared: true,
@@ -1453,6 +1340,7 @@ local dashboardConfig = {
       },
       yaxes: [
         {
+          '$$hashKey': 'object:1047',
           format: 'Bps',
           label: null,
           logBase: 1,
@@ -1461,6 +1349,7 @@ local dashboardConfig = {
           show: true,
         },
         {
+          '$$hashKey': 'object:1048',
           format: 'short',
           label: null,
           logBase: 1,
@@ -1524,7 +1413,7 @@ local dashboardConfig = {
       steppedLine: false,
       targets: [
         {
-          expr: 'increase(kube_pod_container_status_restarts_total{namespace=~"^$Namespace$",pod=~"^$Deployment-[a-z0-9]+-[a-z0-9]+", container=~"^$Deployment"}[10m])',
+          expr: 'increase(kube_pod_container_status_restarts_total{namespace=~"$namespace",pod=~"^$deployment-[a-z0-9]+-[a-z0-9]+", container=~"^$deployment"}[10m])',
           interval: '',
           legendFormat: '{{ pod }}',
           refId: 'A',
@@ -1550,6 +1439,7 @@ local dashboardConfig = {
       },
       yaxes: [
         {
+          '$$hashKey': 'object:2222',
           decimals: 0,
           format: 'none',
           label: 'restarts',
@@ -1559,6 +1449,7 @@ local dashboardConfig = {
           show: true,
         },
         {
+          '$$hashKey': 'object:2223',
           format: 'short',
           label: null,
           logBase: 1,
@@ -1585,17 +1476,17 @@ local dashboardConfig = {
       {
         allValue: '.*',
         current: {
-          selected: false,
-          text: 'administration',
-          value: 'administration',
+          selected: true,
+          text: 'tidepool-prod',
+          value: 'tidepool-prod',
         },
         datasource: '$datasource',
         definition: '',
         hide: 0,
         includeAll: false,
-        label: null,
+        label: 'Namespace',
         multi: false,
-        name: 'Namespace',
+        name: 'namespace',
         options: [],
         query: 'label_values(kube_namespace_labels, namespace)',
         refresh: 1,
@@ -1612,18 +1503,18 @@ local dashboardConfig = {
         allValue: '.*',
         current: {
           selected: false,
-          text: 'All',
-          value: '$__all',
+          text: 'export',
+          value: 'export',
         },
         datasource: '$datasource',
-        definition: '',
+        definition: 'label_values(kube_deployment_labels{namespace=~"$namespace"}, deployment)',
         hide: 0,
         includeAll: true,
-        label: null,
+        label: 'Deployment',
         multi: false,
-        name: 'Deployment',
+        name: 'deployment',
         options: [],
-        query: 'label_values(kube_deployment_labels{namespace=~"^$Namespace$"}, deployment)',
+        query: 'label_values(kube_deployment_labels{namespace=~"$namespace"}, deployment)',
         refresh: 2,
         regex: '',
         skipUrlSync: false,
@@ -1637,8 +1528,8 @@ local dashboardConfig = {
       {
         current: {
           selected: false,
-          text: 'prometheus',
-          value: 'prometheus',
+          text: 'Prometheus',
+          value: 'Prometheus',
         },
         hide: 2,
         includeAll: false,
@@ -1655,7 +1546,7 @@ local dashboardConfig = {
     ],
   },
   time: {
-    from: 'now-24h',
+    from: 'now-2d',
     to: 'now',
   },
   timepicker: {
@@ -1682,10 +1573,10 @@ local dashboardConfig = {
       '30d',
     ],
   },
-  timezone: 'browser',
+  timezone: 'utc',
   title: 'Kubernetes / Deployment / All',
   uid: 'kube-deployment',
-  version: 3,
+  version: 1,
 };
 
 local configmap(me) = grafana.dashboard(me, 'kubernetes-deployments', dashboardConfig);
