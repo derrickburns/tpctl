@@ -19,24 +19,32 @@ local deployment(me) = k8s.deployment(me) {
             image: 'us.gcr.io/k8s-artifacts-prod/autoscaling/vpa-recommender:%s' % lib.getElse(me, 'version', '0.8.0'),
             imagePullPolicy: 'IfNotPresent',
             args: [
-              '--storage=prometheus',
-              '--prometheus-address=http://prometheus-operator-prometheus.monitoring:9090',
-              '--v=4',
-              '--prometheus-cadvisor-job-name=kubelet',
-              '--history-length=4d',
+              // '--storage=prometheus',
+              // '--prometheus-address=http://prometheus-operator-prometheus.monitoring:9090',
+              // '--v=4',
+              // '--prometheus-cadvisor-job-name=kubelet',
+              // '--history-length=4d',
             ],
             ports: [{
               containerPort: 8080,
             }],
             resources: {
               limits: {
-                cpu: '400m',
-                memory: '3000Mi',
+                cpu: '50m',
+                memory: '500Mi',
               },
               requests: {
-                cpu: '300m',
-                memory: '2000Mi',
+                cpu: '200m',
+                memory: '1000Mi',
               },
+              // limits: {
+              // cpu: '400m',
+              // memory: '3000Mi',
+              // },
+              // requests: {
+              // cpu: '300m',
+              // memory: '2000Mi',
+              // },
             },
           },
         ],
