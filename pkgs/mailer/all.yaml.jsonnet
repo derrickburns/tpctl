@@ -20,16 +20,14 @@ local deployment(me) = flux.deployment(me) {
     }],
   },
   spec+: {
-    template+:
-      linkerd.metadata(me, true) +
-      {
-        spec+: {
-          serviceAccountName: me.pkg,
-          securityContext: {
-            fsGroup: 65534
-          },
+    template+: {
+      spec+: {
+        serviceAccountName: me.pkg,
+        securityContext: {
+          fsGroup: 65534
         },
       },
+    },
   },
 };
 
