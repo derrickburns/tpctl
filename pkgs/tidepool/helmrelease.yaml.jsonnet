@@ -240,6 +240,14 @@ local helmrelease(me) = k8s.helmrelease(me, {
         deployment+: {
           image: lib.getElse(prev, 'spec.values.auth.deployment.image', 'tidepool/platform-auth:master-latest'),
         },
+        resources: {
+          requests:
+            memory: 125Mi
+            cpu: 24m
+          limits:
+            memory: 125mi
+            cpu: 48m
+          }
       }, lib.getElse(me, 'auth', {})]),
 
       blip: lib.mergeList([common, {
