@@ -13,8 +13,8 @@ local tracing = import 'tracing.jsonnet';
          'linkerd.io/inject': 'enabled',
          'config.linkerd.io/proxy-cpu-limit': '60m',
          'config.linkerd.io/proxy-cpu-request': '30m',
-         'config.linkerd.io/proxy-memory-limit': '30Mi',
-         'config.linkerd.io/proxy-memory-request': '128Mi',
+         'config.linkerd.io/proxy-memory-request': '30Mi',
+         'config.linkerd.io/proxy-memory-limit': '128Mi',
        } else {}) + (if lib.isFalse(me, 'meshed') then {
                        'linkerd.io/inject': 'disabled',
                      } else {}) + (if global.isEnabled(me.config, 'oc-collector')
