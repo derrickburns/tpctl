@@ -201,7 +201,7 @@ local helmrelease(me) = k8s.helmrelease(me, {
     initContainers: [buddies.sysctl],
     securityContext: k8s.securityContext,
     serviceMonitor: {
-      enabled:  global.isEnabled(me.config, 'prometheus-operator'),
+      enabled: global.isEnabled(me.config, 'prometheus-operator'),
     },
     podSecurityContext: {
       allowPrivilegeEscalation: false,
@@ -240,11 +240,31 @@ local helmrelease(me) = k8s.helmrelease(me, {
         deployment+: {
           image: lib.getElse(prev, 'spec.values.auth.deployment.image', 'tidepool/platform-auth:master-latest'),
         },
+        resources: {
+          requests: {
+            memory: '60Mi',
+            cpu: '30m',
+          },
+          limits: {
+            memory: '120Mi',
+            cpu: '60m',
+          },
+        },
       }, lib.getElse(me, 'auth', {})]),
 
       blip: lib.mergeList([common, {
         deployment+: {
           image: lib.getElse(prev, 'spec.values.blip.deployment.image', 'tidepool/blip:master-latest'),
+        },
+        resources: {
+          requests: {
+            memory: '200Mi',
+            cpu: '30m',
+          },
+          limits: {
+            memory: '300Mi',
+            cpu: '45m',
+          },
         },
       }, lib.getElse(me, 'blip', {})]),
 
@@ -252,6 +272,16 @@ local helmrelease(me) = k8s.helmrelease(me, {
         extraContainers: extraContainers,
         serviceAccount: {
           name: 'blob',
+        },
+        resources: {
+          requests: {
+            memory: '75Mi',
+            cpu: '30m',
+          },
+          limits: {
+            memory: '110Mi',
+            cpu: '45m',
+          },
         },
         securityContext: {
           fsGroup: 65534,  // To be able to read Kubernetes and AWS token files
@@ -274,6 +304,16 @@ local helmrelease(me) = k8s.helmrelease(me, {
         deployment+: {
           image: lib.getElse(prev, 'spec.values.data.deployment.image', 'tidepool/platform-data:master-latest'),
           replicas: 3,
+        },
+        resources: {
+          requests: {
+            memory: '125Mi',
+            cpu: '125m',
+          },
+          limits: {
+            memory: '182Mi',
+            cpu: '172m',
+          },
         },
       }, lib.getElse(me, 'data', {})]),
 
