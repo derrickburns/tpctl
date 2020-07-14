@@ -1,5 +1,5 @@
 {
-  'sysctl': {
+  sysctl: {
     args: [
       '-c',
       'sysctl -w net.netfilter.nf_conntrack_tcp_timeout_close_wait=3600',
@@ -13,6 +13,10 @@
       requests: {
         cpu: '1m',
         memory: '1Mi',
+      },
+      limits: {
+        cpu: '12m',
+        memory: '12Mi',
       },
     },
     securityContext: {
