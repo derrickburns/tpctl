@@ -19,7 +19,7 @@ local dashboardConfig = {
   editable: false,
   gnetId: 9679,
   graphTooltip: 0,
-  iteration: 1594648511543,
+  iteration: 1594760389066,
   links: [],
   panels: [
     {
@@ -1476,7 +1476,7 @@ local dashboardConfig = {
       {
         allValue: '.*',
         current: {
-          selected: true,
+          selected: false,
           text: 'tidepool-prod',
           value: 'tidepool-prod',
         },
@@ -1509,7 +1509,7 @@ local dashboardConfig = {
         datasource: '$datasource',
         definition: 'label_values(kube_deployment_labels{namespace=~"$namespace"}, deployment)',
         hide: 0,
-        includeAll: true,
+        includeAll: false,
         label: 'Deployment',
         multi: false,
         name: 'deployment',
@@ -1576,7 +1576,7 @@ local dashboardConfig = {
   timezone: 'utc',
   title: 'Kubernetes / Deployment / All',
   uid: 'kube-deployment',
-  version: 1,
+  version: 2,
 };
 
 local configmap(me) = grafana.dashboard(me, 'kubernetes-deployments', dashboardConfig);
