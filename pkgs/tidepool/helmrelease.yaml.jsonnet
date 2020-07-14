@@ -458,6 +458,13 @@ local helmrelease(me) = k8s.helmrelease(me, {
       prescription: lib.mergeList([common, {
         extraContainers: extraContainers,
         deployment+: {
+          env: {
+            store: {
+              s3: {
+                bucket: lib.getElse(me, 'buckets.asset', assetBucket(config, me.namespace)),
+              },
+            },
+          },
           replicas: 0,
           image: lib.getElse(prev, 'spec.values.prescription.deployment.image', 'tidepool/platform-prescription:update-prescriptions-1245451dd04adba59d7483796ca8a5672b142f8c'),
         },
