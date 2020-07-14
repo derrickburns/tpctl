@@ -240,6 +240,12 @@ local helmrelease(me) = k8s.helmrelease(me, {
         deployment+: {
           image: lib.getElse(prev, 'spec.values.auth.deployment.image', 'tidepool/platform-auth:master-latest'),
         },
+        podAnnotations: {
+          'config.linkerd.io/proxy-cpu-limit': '10m',
+          'config.linkerd.io/proxy-cpu-request': '30m',
+          'config.linkerd.io/proxy-memory-request': '50Mi',
+          'config.linkerd.io/proxy-memory-limit': '100Mi',
+        },
         resources: {
           requests: {
             memory: '60Mi',
@@ -255,6 +261,12 @@ local helmrelease(me) = k8s.helmrelease(me, {
       blip: lib.mergeList([common, {
         deployment+: {
           image: lib.getElse(prev, 'spec.values.blip.deployment.image', 'tidepool/blip:master-latest'),
+        },
+        podAnnotations: {
+          'config.linkerd.io/proxy-cpu-limit': '10m',
+          'config.linkerd.io/proxy-cpu-request': '30m',
+          'config.linkerd.io/proxy-memory-request': '50Mi',
+          'config.linkerd.io/proxy-memory-limit': '100Mi',
         },
         resources: {
           requests: {
@@ -275,13 +287,19 @@ local helmrelease(me) = k8s.helmrelease(me, {
         },
         resources: {
           requests: {
-            memory: '75Mi',
-            cpu: '30m',
-          },
-          limits: {
-            memory: '110Mi',
+            memory: '128Mi',
             cpu: '45m',
           },
+          limits: {
+            memory: '172Mi',
+            cpu: '65m',
+          },
+        },
+        podAnnotations: {
+          'config.linkerd.io/proxy-cpu-limit': '20m',
+          'config.linkerd.io/proxy-cpu-request': '40m',
+          'config.linkerd.io/proxy-memory-request': '40Mi',
+          'config.linkerd.io/proxy-memory-limit': '100Mi',
         },
         securityContext: {
           fsGroup: 65534,  // To be able to read Kubernetes and AWS token files
@@ -305,14 +323,20 @@ local helmrelease(me) = k8s.helmrelease(me, {
           image: lib.getElse(prev, 'spec.values.data.deployment.image', 'tidepool/platform-data:master-latest'),
           replicas: 3,
         },
+        podAnnotations: {
+          'config.linkerd.io/proxy-cpu-limit': '20m',
+          'config.linkerd.io/proxy-cpu-request': '40m',
+          'config.linkerd.io/proxy-memory-request': '40Mi',
+          'config.linkerd.io/proxy-memory-limit': '100Mi',
+        },
         resources: {
           requests: {
-            memory: '125Mi',
-            cpu: '125m',
+            memory: '75Mi',
+            cpu: '140m',
           },
           limits: {
-            memory: '182Mi',
-            cpu: '172m',
+            memory: '110Mi',
+            cpu: '180m',
           },
         },
       }, lib.getElse(me, 'data', {})]),
