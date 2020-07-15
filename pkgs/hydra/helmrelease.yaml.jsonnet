@@ -4,7 +4,7 @@ local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
 local helmrelease(me) = (
-  k8s.helmrelease(me, { repository: 'https://k8s.ory.sh/helm/charts' }) {
+  k8s.helmrelease(me, { version:'0.4.0', repository: 'https://k8s.ory.sh/helm/charts' }) {
     spec+: {
       values+: {
         hydra: {
