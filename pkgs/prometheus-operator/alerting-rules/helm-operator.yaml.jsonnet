@@ -16,6 +16,39 @@ local groupConfig = [
           severity: 'critical',
         },
       },
+      {
+        alert: 'HelmOperatorFailedReleaseChart',
+        annotations: {
+          message: 'Failed to release chart for the release: {{ $labels.release_name }} in the namespace: {{ $labels.namespace }}. It has not been released for the past minute.',
+        },
+        expr: 'flux_helm_operator_release_condition_info{condition="ChartFetched"} < 0',
+        'for': '1m',
+        labels: {
+          severity: 'critical',
+        },
+      },
+      {
+        alert: 'HelmOperatorUpgradingChart',
+        annotations: {
+          message: ': {{ $labels.release_name }} in the namespace: {{ $labels.namespace }} is being upgraded for more than 5 minutes.',
+        },
+        expr: 'flux_helm_operator_release_condition_info{condition="Released"} == 0',
+        'for': '5m',
+        labels: {
+          severity: 'warning',
+        },
+      },
+      {
+        alert: 'HelmOperatorRollingBackChart',
+        annotations: {
+          message: ': {{ $labels.release_name }} in the namespace: {{ $labels.namespace }} is being RolledBack for more than 5 minutes.',
+        },
+        expr: 'flux_helm_operator_release_condition_info{condition="RolledBack"} == 1',
+        'for': '5m',
+        labels: {
+          severity: 'warning',
+        },
+      },
     ],
   },
 ];
