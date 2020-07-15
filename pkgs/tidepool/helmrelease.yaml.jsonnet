@@ -365,6 +365,23 @@ local helmrelease(me) = k8s.helmrelease(me, {
           replicas: 2,
           image: lib.getElse(prev, 'spec.values.gatekeeper.deployment.image', 'tidepool/gatekeeper:master-latest'),
         },
+        podAnnotations: {
+          'config.linkerd.io/proxy-cpu-request': '25m',
+          'config.linkerd.io/proxy-cpu-limit': '50m',
+          'config.linkerd.io/proxy-memory-request': '100Mi',
+          'config.linkerd.io/proxy-memory-limit': '200Mi',
+        },
+,
+        resources: {
+          requests: {
+            memory: '100Mi',
+            cpu: '200m',
+          },
+          limits: {
+            memory: '200Mi',
+            cpu: '300m',
+          },
+        },
       }, lib.getElse(me, 'gatekeeper', {})]),
 
       glooingress: lib.merge({
