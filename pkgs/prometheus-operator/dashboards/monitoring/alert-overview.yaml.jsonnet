@@ -49,7 +49,7 @@ local dashboardConfig = {
   editable: false,
   gnetId: 11098,
   graphTooltip: 1,
-  iteration: 1594204018980,
+  iteration: 1594828883929,
   links: [
     {
       icon: 'external link',
@@ -768,8 +768,8 @@ local dashboardConfig = {
       {
         current: {
           selected: false,
-          text: 'prometheus',
-          value: 'prometheus',
+          text: 'Prometheus',
+          value: 'Prometheus',
         },
         hide: 2,
         includeAll: false,
@@ -842,7 +842,7 @@ local dashboardConfig = {
     ],
   },
   time: {
-    from: 'now-6h',
+    from: 'now-1h',
     to: 'now',
   },
   timepicker: {
@@ -872,7 +872,7 @@ local dashboardConfig = {
   timezone: 'utc',
   title: 'Alertmanager / Alerts / Overview',
   uid: 'lcaKO4WGk',
-  version: 2732,
+  version: 3,
 };
 
 local configmap(me) = grafana.dashboard(me, 'alerts-overview', dashboardConfig);
