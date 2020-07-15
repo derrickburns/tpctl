@@ -8,7 +8,7 @@ local groupConfig = [
       {
         alert: 'TidepoolShorelineMarketoConfigInvalid',
         annotations: {
-          message: 'Marketo config is invalid for pod {{ $labels.job }} in namespace {{ $labels.namespace }}',
+          message: 'Marketo config is invalid for the pod: {{ $labels.job }} in the namespace: {{ $labels.namespace }}.',
         },
         expr: 'sum(tidepool_shoreline_marketo_config_valid) by (namespace)  == 0',
         'for': '1m',

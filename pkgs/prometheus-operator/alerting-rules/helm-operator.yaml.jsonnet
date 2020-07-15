@@ -8,7 +8,7 @@ local groupConfig = [
       {
         alert: 'HelmOperatorFailedFetchChart',
         annotations: {
-          message: 'Failed to fetch chart for release {{ $labels.release_name }}',
+          message: 'Failed to fetch chart for the release: {{ $labels.release_name }} in the namespace: {{ $labels.namespace }}. It has not been fetchable for the past minute.',
         },
         expr: 'flux_helm_operator_release_condition_info{condition="ChartFetched"} < 1',
         'for': '1m',
