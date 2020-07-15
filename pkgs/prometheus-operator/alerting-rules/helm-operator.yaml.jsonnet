@@ -30,7 +30,7 @@ local groupConfig = [
       {
         alert: 'HelmOperatorUpgradingChart',
         annotations: {
-          message: ': {{ $labels.release_name }} in the namespace: {{ $labels.namespace }} is being upgraded for more than 5 minutes.',
+          message: 'The release: {{ $labels.release_name }} in the namespace: {{ $labels.namespace }} is being upgraded for more than 5 minutes.',
         },
         expr: 'flux_helm_operator_release_condition_info{condition="Released"} == 0',
         'for': '5m',
@@ -41,7 +41,7 @@ local groupConfig = [
       {
         alert: 'HelmOperatorRollingBackChart',
         annotations: {
-          message: ': {{ $labels.release_name }} in the namespace: {{ $labels.namespace }} is being RolledBack for more than 5 minutes.',
+          message: 'The release: {{ $labels.release_name }} in the namespace: {{ $labels.namespace }} is being RolledBack for more than 5 minutes.',
         },
         expr: 'flux_helm_operator_release_condition_info{condition="RolledBack"} == 1',
         'for': '5m',
