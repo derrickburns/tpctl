@@ -21,6 +21,16 @@ local deployment(me) = flux.deployment(me) {
     ports: [{
       containerPort: containerPort,
     }],
+    resources: {
+      limits: {
+        cpu: '300m',
+        memory: '800Mi',
+      },
+      requests: {
+        cpu: '100m',
+        memory: '100Mi',
+      },
+    },
   },
   spec+: {
     template+: linkerd.metadata(me, true),
