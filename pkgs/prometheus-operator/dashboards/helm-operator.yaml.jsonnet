@@ -18,7 +18,7 @@ local dashboardConfig = {
   editable: false,
   gnetId: null,
   graphTooltip: 0,
-  iteration: 1594204320534,
+  iteration: 1594825033422,
   links: [],
   panels: [
     {
@@ -138,7 +138,7 @@ local dashboardConfig = {
         sortBy: [
           {
             desc: false,
-            displayName: 'Status',
+            displayName: 'Target namespace',
           },
         ],
       },
@@ -358,11 +358,11 @@ local dashboardConfig = {
             mode: 'absolute',
             steps: [
               {
-                color: 'red',
+                color: 'green',
                 value: null,
               },
               {
-                color: 'green',
+                color: 'red',
                 value: 1,
               },
             ],
@@ -379,6 +379,12 @@ local dashboardConfig = {
       id: 11,
       options: {
         showHeader: true,
+        sortBy: [
+          {
+            desc: true,
+            displayName: 'Time',
+          },
+        ],
       },
       pluginVersion: '7.0.3',
       targets: [
@@ -400,7 +406,7 @@ local dashboardConfig = {
           options: {
             excludeByName: {
               Time: true,
-              Value: true,
+              Value: false,
               __name__: true,
               condition: true,
               endpoint: true,
@@ -430,8 +436,8 @@ local dashboardConfig = {
       {
         current: {
           selected: false,
-          text: 'prometheus',
-          value: 'prometheus',
+          text: 'Prometheus',
+          value: 'Prometheus',
         },
         hide: 2,
         includeAll: false,
@@ -467,7 +473,7 @@ local dashboardConfig = {
   timezone: 'utc',
   title: 'Helm Operator',
   uid: 'c8qWijkGz',
-  version: 3047,
+  version: 2,
 };
 
 local configmap(me) = grafana.dashboard(me, 'helm-operator', dashboardConfig);
