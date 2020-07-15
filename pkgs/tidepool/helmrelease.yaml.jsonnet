@@ -241,8 +241,8 @@ local helmrelease(me) = k8s.helmrelease(me, {
           image: lib.getElse(prev, 'spec.values.auth.deployment.image', 'tidepool/platform-auth:master-latest'),
         },
         podAnnotations: {
-          'config.linkerd.io/proxy-cpu-limit': '10m',
-          'config.linkerd.io/proxy-cpu-request': '30m',
+          'config.linkerd.io/proxy-cpu-request': '10m',
+          'config.linkerd.io/proxy-cpu-limit': '30m',
           'config.linkerd.io/proxy-memory-request': '50Mi',
           'config.linkerd.io/proxy-memory-limit': '100Mi',
         },
@@ -263,8 +263,8 @@ local helmrelease(me) = k8s.helmrelease(me, {
           image: lib.getElse(prev, 'spec.values.blip.deployment.image', 'tidepool/blip:master-latest'),
         },
         podAnnotations: {
-          'config.linkerd.io/proxy-cpu-limit': '10m',
-          'config.linkerd.io/proxy-cpu-request': '30m',
+          'config.linkerd.io/proxy-cpu-request': '10m',
+          'config.linkerd.io/proxy-cpu-limit': '30m',
           'config.linkerd.io/proxy-memory-request': '50Mi',
           'config.linkerd.io/proxy-memory-limit': '100Mi',
         },
@@ -296,8 +296,8 @@ local helmrelease(me) = k8s.helmrelease(me, {
           },
         },
         podAnnotations: {
-          'config.linkerd.io/proxy-cpu-limit': '20m',
-          'config.linkerd.io/proxy-cpu-request': '40m',
+          'config.linkerd.io/proxy-cpu-request': '20m',
+          'config.linkerd.io/proxy-cpu-limit': '40m',
           'config.linkerd.io/proxy-memory-request': '40Mi',
           'config.linkerd.io/proxy-memory-limit': '100Mi',
         },
@@ -324,8 +324,8 @@ local helmrelease(me) = k8s.helmrelease(me, {
           replicas: 3,
         },
         podAnnotations: {
-          'config.linkerd.io/proxy-cpu-limit': '20m',
-          'config.linkerd.io/proxy-cpu-request': '40m',
+          'config.linkerd.io/proxy-cpu-request': '20m',
+          'config.linkerd.io/proxy-cpu-limit': '40m',
           'config.linkerd.io/proxy-memory-request': '40Mi',
           'config.linkerd.io/proxy-memory-limit': '100Mi',
         },
