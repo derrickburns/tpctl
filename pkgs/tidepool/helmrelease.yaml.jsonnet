@@ -371,7 +371,6 @@ local helmrelease(me) = k8s.helmrelease(me, {
           'config.linkerd.io/proxy-memory-request': '100Mi',
           'config.linkerd.io/proxy-memory-limit': '200Mi',
         },
-,
         resources: {
           requests: {
             memory: '100Mi',
@@ -444,6 +443,22 @@ local helmrelease(me) = k8s.helmrelease(me, {
         deployment+: {
           image: lib.getElse(prev, 'spec.values.highwater.deployment.image', 'tidepool/highwater:master-latest'),
         },
+        podAnnotations: {
+          'config.linkerd.io/proxy-cpu-request': '20m',
+          'config.linkerd.io/proxy-cpu-limit': '30m',
+          'config.linkerd.io/proxy-memory-request': '40Mi',
+          'config.linkerd.io/proxy-memory-limit': '60Mi',
+        },
+        resources: {
+          requests: {
+            memory: '150Mi',
+            cpu: '15m',
+          },
+          limits: {
+            memory: '225Mi',
+            cpu: '45m',
+          },
+        },
       }, lib.getElse(me, 'highwater', {})]),
 
       hydrophone: lib.mergeList([common, {
@@ -464,6 +479,22 @@ local helmrelease(me) = k8s.helmrelease(me, {
             type: 's3',
           },
           image: lib.getElse(prev, 'spec.values.hydrophone.deployment.image', 'tidepool/hydrophone:master-latest'),
+        },
+        podAnnotations: {
+          'config.linkerd.io/proxy-cpu-request': '10m',
+          'config.linkerd.io/proxy-cpu-limit': '20m',
+          'config.linkerd.io/proxy-memory-request': '35Mi',
+          'config.linkerd.io/proxy-memory-limit': '50Mi',
+        },
+        resources: {
+          requests: {
+            memory: '30Mi',
+            cpu: '20m',
+          },
+          limits: {
+            memory: '60Mi',
+            cpu: '45m',
+          },
         },
       }, lib.getElse(me, 'hydrophone', {})]),
 
