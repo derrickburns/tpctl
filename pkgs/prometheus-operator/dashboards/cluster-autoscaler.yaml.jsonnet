@@ -16,10 +16,10 @@ local dashboardConfig = {
     ],
   },
   description: 'Super simple dashboard showing an overview of kubernetes cluster autoscaling activity and status, using metrics reported by the autoscaler to prometheus.\r\n\r\nhttps://github.com/kubernetes/autoscaler/tree/master/cluster-autoscaler',
-  editable: true,
+  editable: false,
   gnetId: 3831,
   graphTooltip: 0,
-  iteration: 1594115900647,
+  iteration: 1594940456593,
   links: [],
   panels: [
     {
@@ -78,7 +78,7 @@ local dashboardConfig = {
         orientation: 'horizontal',
         reduceOptions: {
           calcs: [
-            'mean',
+            'lastNotNull',
           ],
           fields: '',
           values: false,
@@ -89,7 +89,10 @@ local dashboardConfig = {
         {
           expr: 'sum(cluster_autoscaler_nodes_count)\n',
           format: 'time_series',
+          instant: false,
+          interval: '',
           intervalFactor: 2,
+          legendFormat: '',
           refId: 'A',
           step: 600,
         },
@@ -121,16 +124,12 @@ local dashboardConfig = {
             mode: 'absolute',
             steps: [
               {
-                color: 'rgba(50, 172, 45, 0.97)',
+                color: 'red',
                 value: null,
               },
               {
-                color: 'rgba(237, 129, 40, 0.89)',
+                color: 'green',
                 value: 100,
-              },
-              {
-                color: 'rgba(245, 54, 54, 0.9)',
-                value: 95,
               },
             ],
           },
@@ -157,7 +156,7 @@ local dashboardConfig = {
         orientation: 'horizontal',
         reduceOptions: {
           calcs: [
-            'mean',
+            'lastNotNull',
           ],
           fields: '',
           values: false,
@@ -170,7 +169,10 @@ local dashboardConfig = {
         {
           expr: 'sum(cluster_autoscaler_nodes_count{state="ready"})/sum(cluster_autoscaler_nodes_count)*100',
           format: 'time_series',
-          intervalFactor: 2,
+          instant: false,
+          interval: '',
+          intervalFactor: 1,
+          legendFormat: '',
           refId: 'A',
           step: 600,
         },
@@ -246,7 +248,7 @@ local dashboardConfig = {
         orientation: 'horizontal',
         reduceOptions: {
           calcs: [
-            'mean',
+            'lastNotNull',
           ],
           fields: '',
           values: false,
@@ -317,7 +319,7 @@ local dashboardConfig = {
         orientation: 'horizontal',
         reduceOptions: {
           calcs: [
-            'mean',
+            'lastNotNull',
           ],
           fields: '',
           values: false,
@@ -393,7 +395,7 @@ local dashboardConfig = {
         orientation: 'horizontal',
         reduceOptions: {
           calcs: [
-            'mean',
+            'lastNotNull',
           ],
           fields: '',
           values: false,
@@ -469,7 +471,7 @@ local dashboardConfig = {
         orientation: 'horizontal',
         reduceOptions: {
           calcs: [
-            'mean',
+            'lastNotNull',
           ],
           fields: '',
           values: false,
@@ -919,7 +921,7 @@ local dashboardConfig = {
         orientation: 'horizontal',
         reduceOptions: {
           calcs: [
-            'mean',
+            'lastNotNull',
           ],
           fields: '',
           values: false,
