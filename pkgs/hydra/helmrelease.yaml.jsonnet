@@ -8,15 +8,16 @@ local helmrelease(me) = (
     spec+: {
       values+: {
         hydra: {
+          dangerousForceHttp: true,
           config: {
             dsn: 'memory',
             urls: {
               'self': {
                 issuer: 'https://hydra.dev.tidepool.org/',
               },
-              login: 'https://auth.dev.tidepool.org/login',
-              consent: 'https://auth.dev.tidepool.org/consent',
-              logout: 'https://auth.dev.tidepool.org/lgout'
+              login: 'https://hydra-idp.dev.tidepool.org/login',
+              consent: 'https://hydra-idp.dev.tidepool.org/consent',
+              logout: 'https://hydra-idp.dev.tidepool.org/logout'
             }
           }
         }
