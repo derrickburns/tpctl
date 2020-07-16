@@ -2,9 +2,13 @@ local common = import '../../lib/common.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
-local helmrelease(me) = k8s.helmrelease(me, { version: '0.6.3', repository: 'https://raw.githubusercontent.com/timescale/timescaledb-kubernetes/master/charts/repo' }) {
+local helmrelease(me) = k8s.helmrelease(me, { version: '0.6.2', repository: 'https://raw.githubusercontent.com/timescale/timescaledb-kubernetes/master/charts/repo' }) {
   spec+: {
     values+: {
+      affinity: {
+        nodeAffinity: k8s.nodeAffinity(values=['timescale']),
+      },
+      tolerations: [k8s.toleration(value='timescale')],
       persistentVolumes: {
         data: {
           size: lib.getElse(me, 'data-storage', '2Gi'),

@@ -2,8 +2,8 @@ local common = import '../../lib/common.jsonnet';
 local flux = import '../../lib/flux.jsonnet';
 local gloo = import '../../lib/gloo.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
-local linkerd = import '../../lib/linkerd.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
+local linkerd = import '../../lib/linkerd.jsonnet';
 
 local containerPort = 8080;
 
@@ -33,7 +33,14 @@ local deployment(me) = flux.deployment(me) {
     },
   },
   spec+: {
-    template+: linkerd.metadata(me, true),
+    template+: linkerd.metadata(me, true) + {
+      spec+: {
+        affinity: {
+          nodeAffinity: k8s.nodeAffinity(values=['timescale']),
+        },
+        tolerations: [k8s.toleration(value='timescale')],
+      },
+    },
   },
 };
 
