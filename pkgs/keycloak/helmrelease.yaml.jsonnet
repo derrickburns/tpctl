@@ -8,6 +8,9 @@ local helmrelease(me) = (
     spec+: {
       values+: {
         keycloak: {
+          image: {
+            tag: '10.0.1',
+          },
           password: 'admin',
         },
       },
