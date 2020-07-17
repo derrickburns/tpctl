@@ -16,100 +16,63 @@ local dashboardConfig = {
     ],
   },
   description: 'Cert Manager Monitoring',
-  editable: true,
+  editable: false,
   gnetId: 11001,
   graphTooltip: 0,
-  id: 23,
-  iteration: 1592740784999,
+  iteration: 1594978157636,
   links: [],
   panels: [
     {
-      collapsed: false,
-      datasource: '$datasource',
-      gridPos: {
-        h: 1,
-        w: 24,
-        x: 0,
-        y: 0,
-      },
-      id: 18,
-      panels: [],
-      title: 'Certificates',
-      type: 'row',
-    },
-    {
-      columns: [],
       datasource: '$datasource',
       fieldConfig: {
         defaults: {
-          custom: {},
+          custom: {
+            align: null,
+            displayMode: 'color-background',
+          },
+          mappings: [],
+          thresholds: {
+            mode: 'absolute',
+            steps: [
+              {
+                color: 'red',
+                value: null,
+              },
+              {
+                color: 'semi-dark-orange',
+                value: 2592000,
+              },
+              {
+                color: 'green',
+                value: 5184000,
+              },
+            ],
+          },
+          unit: 'dtdurations',
         },
         overrides: [],
       },
-      fontSize: '100%',
       gridPos: {
         h: 8,
         w: 12,
         x: 0,
-        y: 1,
+        y: 0,
       },
       id: 15,
-      pageSize: null,
-      pluginVersion: '6.3.4',
-      scroll: true,
-      showHeader: true,
-      sort: {
-        col: 0,
-        desc: true,
+      options: {
+        showHeader: true,
+        sortBy: [
+          {
+            desc: false,
+            displayName: 'Time left',
+          },
+        ],
       },
-      styles: [
-        {
-          alias: 'Time',
-          align: 'auto',
-          dateFormat: 'YYYY-MM-DD HH:mm:ss',
-          pattern: 'Time',
-          type: 'hidden',
-        },
-        {
-          alias: 'Time Left',
-          align: 'auto',
-          colorMode: 'cell',
-          colors: [
-            'rgba(245, 54, 54, 0.9)',
-            'rgba(237, 129, 40, 0.89)',
-            'rgba(50, 172, 45, 0.97)',
-          ],
-          decimals: 2,
-          pattern: 'Value',
-          thresholds: [
-            '2592000',
-            '5184000',
-            '7776000',
-          ],
-          type: 'number',
-          unit: 'dtdurations',
-        },
-        {
-          alias: 'Certificate',
-          align: 'auto',
-          colorMode: null,
-          colors: [
-            'rgba(245, 54, 54, 0.9)',
-            'rgba(237, 129, 40, 0.89)',
-            'rgba(50, 172, 45, 0.97)',
-          ],
-          dateFormat: 'YYYY-MM-DD HH:mm:ss',
-          decimals: 2,
-          mappingType: 1,
-          pattern: 'Metric',
-          thresholds: [],
-          type: 'string',
-          unit: 'short',
-        },
-      ],
+      pluginVersion: '7.0.3',
       targets: [
         {
           expr: 'sort_desc( sum(certmanager_certificate_expiration_timestamp_seconds{exported_namespace=~"$namespace"} - time()) BY (name,exported_namespace) )',
+          format: 'table',
           instant: true,
           interval: '',
           legendFormat: ' {{exported_namespace}} / {{name}}',
@@ -119,8 +82,29 @@ local dashboardConfig = {
       timeFrom: null,
       timeShift: null,
       title: 'Time Left',
-      transform: 'timeseries_to_rows',
-      type: 'table-old',
+      transformations: [
+        {
+          id: 'organize',
+          options: {
+            excludeByName: {
+              Time: true,
+            },
+            indexByName: {
+              Time: 0,
+              Value: 3,
+              exported_namespace: 2,
+              name: 1,
+            },
+            renameByName: {
+              Time: '',
+              Value: 'Time left',
+              exported_namespace: 'Namespace',
+              name: 'DNS',
+            },
+          },
+        },
+      ],
+      type: 'table',
     },
     {
       aliasColors: {},
@@ -141,7 +125,7 @@ local dashboardConfig = {
         h: 8,
         w: 12,
         x: 12,
-        y: 1,
+        y: 0,
       },
       hiddenSeries: false,
       id: 13,
@@ -221,6 +205,20 @@ local dashboardConfig = {
         align: false,
         alignLevel: null,
       },
+    },
+    {
+      collapsed: false,
+      datasource: '$datasource',
+      gridPos: {
+        h: 1,
+        w: 24,
+        x: 0,
+        y: 8,
+      },
+      id: 18,
+      panels: [],
+      title: 'Certificates',
+      type: 'row',
     },
     {
       aliasColors: {},
@@ -1323,8 +1321,8 @@ local dashboardConfig = {
       {
         current: {
           selected: false,
-          text: 'prometheus',
-          value: 'prometheus',
+          text: 'Prometheus',
+          value: 'Prometheus',
         },
         hide: 2,
         includeAll: false,
@@ -1342,7 +1340,7 @@ local dashboardConfig = {
     ],
   },
   time: {
-    from: 'now-24h',
+    from: 'now-2d',
     to: 'now',
   },
   timepicker: {
@@ -1372,7 +1370,7 @@ local dashboardConfig = {
   timezone: 'utc',
   title: 'Cert Manager',
   uid: 'u6M5igpWk',
-  version: 4,
+  version: 2,
 };
 
 local configmap(me) = grafana.dashboard(me, 'cert-manager', dashboardConfig);
