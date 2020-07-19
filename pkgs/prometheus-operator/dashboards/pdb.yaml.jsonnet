@@ -18,8 +18,7 @@ local dashboardConfig = {
   editable: false,
   gnetId: null,
   graphTooltip: 0,
-  id: 280,
-  iteration: 1594202137951,
+  iteration: 1595188363076,
   links: [],
   panels: [
     {
@@ -60,7 +59,7 @@ local dashboardConfig = {
         orientation: 'auto',
         reduceOptions: {
           calcs: [
-            'mean',
+            'lastNotNull',
           ],
           fields: '',
           values: false,
@@ -69,7 +68,7 @@ local dashboardConfig = {
       pluginVersion: '7.0.3',
       targets: [
         {
-          expr: 'kube_poddisruptionbudget_status_desired_healthy{poddisruptionbudget=~"$pdb"}',
+          expr: 'kube_poddisruptionbudget_status_desired_healthy{namespace=~"$namespace",poddisruptionbudget=~"$pdb"}',
           format: 'time_series',
           instant: true,
           interval: '',
@@ -120,7 +119,7 @@ local dashboardConfig = {
         orientation: 'auto',
         reduceOptions: {
           calcs: [
-            'mean',
+            'lastNotNull',
           ],
           fields: '',
           values: false,
@@ -129,7 +128,7 @@ local dashboardConfig = {
       pluginVersion: '7.0.3',
       targets: [
         {
-          expr: 'kube_poddisruptionbudget_status_current_healthy{poddisruptionbudget=~"$pdb"}',
+          expr: 'kube_poddisruptionbudget_status_current_healthy{namespace=~"$namespace",poddisruptionbudget=~"$pdb"}',
           format: 'time_series',
           instant: true,
           interval: '',
@@ -180,7 +179,7 @@ local dashboardConfig = {
         orientation: 'auto',
         reduceOptions: {
           calcs: [
-            'mean',
+            'lastNotNull',
           ],
           fields: '',
           values: false,
@@ -189,7 +188,7 @@ local dashboardConfig = {
       pluginVersion: '7.0.3',
       targets: [
         {
-          expr: 'kube_poddisruptionbudget_status_pod_disruptions_allowed{poddisruptionbudget=~"$pdb"}',
+          expr: 'kube_poddisruptionbudget_status_pod_disruptions_allowed{namespace=~"$namespace",poddisruptionbudget=~"$pdb"}',
           format: 'time_series',
           instant: true,
           interval: '',
@@ -240,7 +239,7 @@ local dashboardConfig = {
         orientation: 'auto',
         reduceOptions: {
           calcs: [
-            'mean',
+            'lastNotNull',
           ],
           fields: '',
           values: false,
@@ -249,7 +248,7 @@ local dashboardConfig = {
       pluginVersion: '7.0.3',
       targets: [
         {
-          expr: 'kube_poddisruptionbudget_status_current_healthy{poddisruptionbudget=~"$pdb"}',
+          expr: 'kube_poddisruptionbudget_status_current_healthy{namespace=~"$namespace",poddisruptionbudget=~"$pdb"}',
           format: 'time_series',
           instant: true,
           interval: '',
@@ -326,7 +325,7 @@ local dashboardConfig = {
       steppedLine: false,
       targets: [
         {
-          expr: 'kube_poddisruptionbudget_status_current_healthy{poddisruptionbudget=~"$pdb"}',
+          expr: 'kube_poddisruptionbudget_status_current_healthy{namespace=~"$namespace",poddisruptionbudget=~"$pdb"}',
           format: 'time_series',
           instant: false,
           interval: '',
@@ -334,19 +333,19 @@ local dashboardConfig = {
           refId: 'A',
         },
         {
-          expr: 'kube_poddisruptionbudget_status_expected_pods{poddisruptionbudget=~"$pdb"}',
+          expr: 'kube_poddisruptionbudget_status_expected_pods{namespace=~"$namespace",poddisruptionbudget=~"$pdb"}',
           interval: '',
           legendFormat: 'Expected',
           refId: 'B',
         },
         {
-          expr: 'kube_poddisruptionbudget_status_desired_healthy{poddisruptionbudget=~"$pdb"}',
+          expr: 'kube_poddisruptionbudget_status_desired_healthy{namespace=~"$namespace",poddisruptionbudget=~"$pdb"}',
           interval: '',
           legendFormat: 'Desired',
           refId: 'C',
         },
         {
-          expr: 'kube_poddisruptionbudget_status_pod_disruptions_allowed{poddisruptionbudget=~"$pdb"}',
+          expr: 'kube_poddisruptionbudget_status_pod_disruptions_allowed{namespace=~"$namespace",poddisruptionbudget=~"$pdb"}',
           interval: '',
           legendFormat: 'Disruptions allowed',
           refId: 'D',
@@ -372,6 +371,7 @@ local dashboardConfig = {
       },
       yaxes: [
         {
+          '$$hashKey': 'object:275',
           format: 'short',
           label: null,
           logBase: 1,
@@ -380,6 +380,7 @@ local dashboardConfig = {
           show: true,
         },
         {
+          '$$hashKey': 'object:276',
           format: 'short',
           label: null,
           logBase: 1,
@@ -405,8 +406,8 @@ local dashboardConfig = {
       {
         current: {
           selected: false,
-          text: 'prometheus',
-          value: 'prometheus',
+          text: 'Prometheus',
+          value: 'Prometheus',
         },
         hide: 2,
         includeAll: false,
@@ -425,20 +426,47 @@ local dashboardConfig = {
         current: {
           selected: true,
           tags: [],
-          text: 'ingress-nginx-controller',
+          text: 'kafka + qa2',
           value: [
-            'ingress-nginx-controller',
+            'kafka',
+            'qa2',
           ],
         },
         datasource: '$datasource',
-        definition: 'label_values(kube_poddisruptionbudget_status_current_healthy{}, poddisruptionbudget)',
+        definition: 'label_values(kube_poddisruptionbudget_status_current_healthy{}, namespace)',
+        hide: 0,
+        includeAll: true,
+        label: 'Namespace',
+        multi: true,
+        name: 'namespace',
+        options: [],
+        query: 'label_values(kube_poddisruptionbudget_status_current_healthy{}, namespace)',
+        refresh: 1,
+        regex: '',
+        skipUrlSync: false,
+        sort: 0,
+        tagValuesQuery: '',
+        tags: [],
+        tagsQuery: '',
+        type: 'query',
+        useTags: false,
+      },
+      {
+        allValue: null,
+        current: {
+          selected: true,
+          text: 'blob',
+          value: 'blob',
+        },
+        datasource: '$datasource',
+        definition: 'label_values(kube_poddisruptionbudget_status_current_healthy{namespace=~"$namespace"}, poddisruptionbudget)',
         hide: 0,
         includeAll: false,
         label: 'Pod Disruption Budget',
-        multi: true,
+        multi: false,
         name: 'pdb',
         options: [],
-        query: 'label_values(kube_poddisruptionbudget_status_current_healthy{}, poddisruptionbudget)',
+        query: 'label_values(kube_poddisruptionbudget_status_current_healthy{namespace=~"$namespace"}, poddisruptionbudget)',
         refresh: 1,
         regex: '',
         skipUrlSync: false,
@@ -471,7 +499,7 @@ local dashboardConfig = {
   timezone: 'utc',
   title: 'Kubernetes / Autoscaler / Pod Disruption Budget',
   uid: 'bTvhizMGz',
-  version: 1,
+  version: 2,
 };
 
 local configmap(me) = grafana.dashboard(me, 'pdb', dashboardConfig);
