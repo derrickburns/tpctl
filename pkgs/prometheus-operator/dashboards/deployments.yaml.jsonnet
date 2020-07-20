@@ -19,7 +19,7 @@ local dashboardConfig = {
   editable: false,
   gnetId: 9679,
   graphTooltip: 0,
-  iteration: 1594760389066,
+  iteration: 1595269020808,
   links: [],
   panels: [
     {
@@ -885,7 +885,7 @@ local dashboardConfig = {
       pluginVersion: '7.0.3',
       targets: [
         {
-          expr: 'sum(container_memory_working_set_bytes{namespace=~"$namespace", pod_name=~"$deployment-[a-z0-9]+-[a-z0-9]+", container!="POD", container!=""}) / sum(kube_pod_container_resource_requests_memory_bytes{namespace=~"$namespace", pod=~"$deployment-[a-z0-9]+-[a-z0-9]+"}) * 100',
+          expr: 'sum(container_memory_working_set_bytes{namespace=~"$namespace", pod=~"$deployment-[a-z0-9]+-[a-z0-9]+", image!="", container!="POD", container!=""}) / sum(kube_pod_container_resource_requests_memory_bytes{namespace=~"$namespace", pod=~"$deployment-[a-z0-9]+-[a-z0-9]+"}) * 100',
           format: 'time_series',
           interval: '',
           intervalFactor: 1,
@@ -954,7 +954,7 @@ local dashboardConfig = {
       steppedLine: false,
       targets: [
         {
-          expr: 'sum(container_memory_working_set_bytes{namespace=~"$namespace", pod_name=~"$deployment-[a-z0-9]+-[a-z0-9]+", container!="POD", container!=""}) by (pod_name)',
+          expr: 'sum(container_memory_working_set_bytes{namespace=~"$namespace", pod=~"$deployment-[a-z0-9]+-[a-z0-9]+", image!="", container!="POD", container!=""}) by (pod_name)',
           format: 'time_series',
           interval: '',
           intervalFactor: 1,
@@ -1069,7 +1069,7 @@ local dashboardConfig = {
       pluginVersion: '7.0.3',
       targets: [
         {
-          expr: 'sum(container_memory_working_set_bytes{namespace=~"$namespace", pod_name=~"$deployment-[a-z0-9]+-[a-z0-9]+", container!="POD", container!=""})',
+          expr: 'sum(container_memory_working_set_bytes{namespace=~"$namespace", pod=~"$deployment-[a-z0-9]+-[a-z0-9]+", image!="", container!="POD", container!=""})',
           format: 'time_series',
           instant: false,
           interval: '',
@@ -1509,7 +1509,7 @@ local dashboardConfig = {
         datasource: '$datasource',
         definition: 'label_values(kube_deployment_labels{namespace=~"$namespace"}, deployment)',
         hide: 0,
-        includeAll: false,
+        includeAll: true,
         label: 'Deployment',
         multi: false,
         name: 'deployment',
