@@ -1,42 +1,6 @@
 local common = import '../../lib/common.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
-local accessLogging = {
-    accessLoggingService: {
-      accessLog: [
-        {
-          fileSink: {
-            jsonFormat: {
-              authority: '%REQ(:authority)%',
-              authorization: '%REQ(authorization)%',
-              content: '%REQ(content-type)%',
-              duration: '%DURATION%',
-              forwardedFor: '%REQ(X-FORWARDED-FOR)%',
-              method: '%REQ(:method)%',
-              path: '%REQ(:path)%',
-              remoteAddress: '%DOWNSTREAM_REMOTE_ADDRESS_WITHOUT_PORT%',
-              request: '%REQ(x-tidepool-trace-request)%',
-              response: '%RESPONSE_CODE%',
-              scheme: '%REQ(:scheme)%',
-              bytesReceived: '%BYTES_RECEIVED%',
-              responseCodeDetail: '%RESPONSE_CODE_DETAILS%',
-              requestDuration: '%REQUEST_DURATION%',
-              responseFlags: '%RESPONSE_FLAGS%',
-              session: '%REQ(x-tidepool-trace-session)%',
-              startTime: '%START_TIME%',
-              token: '%REQ(x-tidepool-session-token)%',
-              upstream: '%UPSTREAM_CLUSTER%',
-              clientName: '%REQ(x-tidepool-client-name)%',
-              userAgent: '%REQ(user-agent)%',
-              referer: '%REQ(referer)%',
-            },
-            path: '/dev/stdout',
-          },
-        },
-      ],
-    },
-  };
-
 {
   shadowNames(names):: std.map(function(x) '%s-shadow' % x, names),
 

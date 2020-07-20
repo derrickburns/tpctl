@@ -330,15 +330,15 @@ local i = {
         virtualServiceSelector: gw.selector,
         virtualServiceNamespaces: ['*'],
         options:
-          (if lib.getElse(gw, 'options.healthCheck', false) then i.healthCheckOption else {})
-          + (if lib.getElse(gw, 'options.tracing', false) then i.httpConnectionManagerOption else {}),
+          (if lib.getElse(gw, 'flags.healthCheck', false) then i.healthCheckOption else {})
+          + (if lib.getElse(gw, 'flags.tracing', false) then i.httpConnectionManagerOption else {}),
       },
-      options: lib.getElse(gw, 'accessLogging', {}),
+      options: lib.getElse(gw, 'options', {}),
       bindAddress: '::',
       bindPort: i.bindPort(gw.selector.protocol),
       proxyNames: [ gw.proxy ],
-      useProxyProto: lib.getElse(gw, 'options.proxyProtocol', false),
-      ssl: lib.getElse(gw, 'options.ssl', false),
+      useProxyProto: lib.getElse(gw, 'flags.proxyProtocol', false),
+      ssl: lib.getElse(gw, 'flags.ssl', false),
     },
   },
 

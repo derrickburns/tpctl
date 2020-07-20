@@ -4,7 +4,6 @@ local lib = import '../../lib/lib.jsonnet';
 local gloo = import '../../lib/gloo.jsonnet';
 
 local accessLogging = {
-  accessLoggingService: {
     accessLog: [
       {
         fileSink: {
@@ -36,14 +35,15 @@ local accessLogging = {
         },
       },
     ],
-  },
 };
 
 local gateways = {
   'gateway-proxy'+: {
     enabled: true,
-    accessLogging: accessLogging,
-    options+: {
+    options: {
+      accessLoggingService: accessLogging,
+    },
+    flags+: {
       healthCheck: true,
       proxyProtocol: true,
       tracing: true,
@@ -56,8 +56,10 @@ local gateways = {
   },
   'gateway-proxy-ssl'+: {
     enabled: true,
-    accessLogging: accessLogging,
-    options+: {
+    options: {
+      accessLoggingService: accessLogging,
+    },
+    flags+: {
       healthCheck: true,
       proxyProtocol: true,
       ssl: true,
@@ -71,8 +73,10 @@ local gateways = {
   },
   'internal-gateway-proxy'+: {
     enabled: true,
-    accessLogging: accessLogging,
-    options+: {
+    options: {
+      accessLoggingService: accessLogging,
+    },
+    flags+: {
       tracing: true,
     },
     proxy: 'internal-gateway-proxy',
@@ -83,8 +87,10 @@ local gateways = {
   },
   'internal-gateway-proxy-ssl'+: {
     enabled: true,
-    accessLogging: accessLogging,
-    options+: {
+    options: {
+      accessLoggingService: accessLogging,
+    },
+    flags+: {
       ssl: true,
       tracing: true,
     },

@@ -3,35 +3,33 @@ local lib = import '../../lib/lib.jsonnet';
 local pomerium = import '../../lib/pomerium.jsonnet';
 
 local accessLoggingOption = {
-  accessLoggingService: {
-    accessLog: [
-      {
-        fileSink: {
-          jsonFormat: {
-            authority: '%REQ(:authority)%',
-            authorization: '%REQ(authorization)%',
-            content: '%REQ(content-type)%',
-            duration: '%DURATION%',
-            forwardedFor: '%REQ(X-FORWARDED-FOR)%',
-            method: '%REQ(:method)%',
-            path: '%REQ(:path)%',
-            remoteAddress: '%DOWNSTREAM_REMOTE_ADDRESS_WITHOUT_PORT%',
-            response: '%RESPONSE_CODE%',
-            scheme: '%REQ(:scheme)%',
-            bytesReceived: '%BYTES_RECEIVED%',
-            responseCodeDetail: '%RESPONSE_CODE_DETAILS%',
-            requestDuration: '%REQUEST_DURATION%',
-            responseFlags: '%RESPONSE_FLAGS%',
-            startTime: '%START_TIME%',
-            upstream: '%UPSTREAM_CLUSTER%',
-            userAgent: '%REQ(user-agent)%',
-            referer: '%REQ(referer)%',
-          },
-          path: '/dev/stdout',
+  accessLog: [
+    {
+      fileSink: {
+        jsonFormat: {
+          authority: '%REQ(:authority)%',
+          authorization: '%REQ(authorization)%',
+          content: '%REQ(content-type)%',
+          duration: '%DURATION%',
+          forwardedFor: '%REQ(X-FORWARDED-FOR)%',
+          method: '%REQ(:method)%',
+          path: '%REQ(:path)%',
+          remoteAddress: '%DOWNSTREAM_REMOTE_ADDRESS_WITHOUT_PORT%',
+          response: '%RESPONSE_CODE%',
+          scheme: '%REQ(:scheme)%',
+          bytesReceived: '%BYTES_RECEIVED%',
+          responseCodeDetail: '%RESPONSE_CODE_DETAILS%',
+          requestDuration: '%REQUEST_DURATION%',
+          responseFlags: '%RESPONSE_FLAGS%',
+          startTime: '%START_TIME%',
+          upstream: '%UPSTREAM_CLUSTER%',
+          userAgent: '%REQ(user-agent)%',
+          referer: '%REQ(referer)%',
         },
+        path: '/dev/stdout',
       },
-    ],
-  },
+    },
+  ],
 };
 
 {
@@ -88,8 +86,10 @@ local accessLoggingOption = {
     'pomerium-proxy': {
       enabled: true,
       namespace: 'gloo-system',
-      accessLogging: accessLoggingOption,
-      options+: {
+      options: {
+        accessLoggingService: accessLoggingOption,
+      },
+      flags+: {
         healthCheck: true,
         proxyProtocol: true,
         tracing: true,
@@ -103,8 +103,10 @@ local accessLoggingOption = {
     'pomerium-proxy-ssl': {
       enabled: true,
       namespace: 'gloo-system',
-      accessLogging: accessLoggingOption,
-      options+: {
+      options: {
+        accessLoggingService: accessLoggingOption,
+      },
+      flags+: {
         healthCheck: true,
         proxyProtocol: true,
         ssl: true,
