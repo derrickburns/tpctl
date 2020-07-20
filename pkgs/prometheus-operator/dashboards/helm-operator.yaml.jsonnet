@@ -18,7 +18,7 @@ local dashboardConfig = {
   editable: false,
   gnetId: null,
   graphTooltip: 0,
-  iteration: 1594825033422,
+  iteration: 1595241352882,
   links: [],
   panels: [
     {
@@ -138,7 +138,7 @@ local dashboardConfig = {
         sortBy: [
           {
             desc: false,
-            displayName: 'Target namespace',
+            displayName: 'Status',
           },
         ],
       },
@@ -368,7 +368,20 @@ local dashboardConfig = {
             ],
           },
         },
-        overrides: [],
+        overrides: [
+          {
+            matcher: {
+              id: 'byName',
+              options: 'Status',
+            },
+            properties: [
+              {
+                id: 'custom.width',
+                value: null,
+              },
+            ],
+          },
+        ],
       },
       gridPos: {
         h: 9,
@@ -382,7 +395,7 @@ local dashboardConfig = {
         sortBy: [
           {
             desc: true,
-            displayName: 'Time',
+            displayName: 'Status',
           },
         ],
       },
@@ -418,6 +431,7 @@ local dashboardConfig = {
             },
             indexByName: {},
             renameByName: {
+              Value: 'Status',
               release_name: 'Release name',
               service: 'Service',
               target_namespace: 'Target namespace',
@@ -473,7 +487,7 @@ local dashboardConfig = {
   timezone: 'utc',
   title: 'Helm Operator',
   uid: 'c8qWijkGz',
-  version: 2,
+  version: 3,
 };
 
 local configmap(me) = grafana.dashboard(me, 'helm-operator', dashboardConfig);
