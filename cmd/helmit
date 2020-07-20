@@ -2,6 +2,7 @@
 # Usage:
 #   helmit template ${file:-helmrelease.yaml} - expand template for HelmRelease
 #   helmit install ${file:-helmrelease.yaml} - install HelmRelease
+#   helmit upgrade ${file:-helmrelease.yaml} - upgrade HelmRelease
 #   helmit delete ${file:-helmrelease.yaml} - delete HelmRelease
 #   helmit cmp ${file:-helmrelease.yaml} [$file2] - compare expanded HelmRelease outputs, if file2 is not given, extract from cluster
 
