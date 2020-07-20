@@ -182,9 +182,9 @@ local i = {
     loopBackAddress: '127.0.0.1',
     globalDownstreamMaxConnections: 250000,
     podTemplate: {
-      disableNetBind: false,
+      disableNetBind: true,
       floatingUserId: false,
-      probes: true,
+      probes: false,
       image: {
         repository: if me.pkg == 'gloo' then 'gloo-envoy-wrapper' else 'gloo-ee-envoy-wrapper',
         tag: lib.require(me, 'gloo.version'),
@@ -192,6 +192,8 @@ local i = {
       httpPort: 8080,
       httpsPort: 8443,
       runAsUser: 10101,
+      fsGroup: 10101,
+      runUnprivileged: true,
       extraAnnotations: linkerd.annotations(me, true, skipInboundPorts=8081),
       resources: {
         limits: {
