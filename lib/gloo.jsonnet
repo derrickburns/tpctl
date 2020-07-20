@@ -171,6 +171,7 @@ local i = {
   ),
 
   baseGatewayProxy(me, name):: {
+    antiAffinity: false,
     kind: {
       deployment: {
         replicas: lib.getElse(me, 'proxies.' + name + '.replicas', 2),
@@ -194,6 +195,7 @@ local i = {
       runAsUser: 10101,
       fsGroup: 10101,
       runUnprivileged: true,
+      tolerations: null,
       extraAnnotations: linkerd.annotations(me, true, skipInboundPorts=8081),
       resources: {
         limits: {
