@@ -224,7 +224,7 @@ local i = {
       image: {
         repository: 'gateway',
       },
-      replicas: 1,
+      replicas: 2,
       runAsUser: 10101,
       stats: {
         enabled: true,
@@ -379,6 +379,7 @@ local i = {
   glooValues(me):: {
     gloo+: {
       deployment+: {
+        replicas: 2,
         resources+: {
           requests+: {
             cpu: '500m',
