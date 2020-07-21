@@ -190,7 +190,7 @@ local i = {
     podTemplate: {
       disableNetBind: true,
       floatingUserId: false,
-      probes: false,
+      probes: true,
       image: {
         repository: if me.pkg == 'gloo' then 'gloo-envoy-wrapper' else 'gloo-ee-envoy-wrapper',
         tag: lib.require(me, 'gloo.version'),

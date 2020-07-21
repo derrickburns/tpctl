@@ -64,6 +64,7 @@ local gateways = {
       proxyProtocol: true,
       ssl: true,
       tracing: true,
+      buffer: true,
     },
     proxy: 'gateway-proxy',
     selector: {
