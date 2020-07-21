@@ -239,19 +239,19 @@ local helmrelease(me) = k8s.helmrelease(me, {
           image: lib.getElse(prev, 'spec.values.auth.deployment.image', 'tidepool/platform-auth:master-latest'),
         },
         podAnnotations: {
-          'config.linkerd.io/proxy-cpu-request': '10m',
-          'config.linkerd.io/proxy-cpu-limit': '30m',
+          'config.linkerd.io/proxy-cpu-request': '20m',
+          'config.linkerd.io/proxy-cpu-limit': '40m',
           'config.linkerd.io/proxy-memory-request': '50Mi',
           'config.linkerd.io/proxy-memory-limit': '100Mi',
         },
         resources: {
           requests: {
-            memory: '60Mi',
+            memory: '90Mi',
             cpu: '30m',
           },
           limits: {
-            memory: '120Mi',
-            cpu: '60m',
+            memory: '180Mi',
+            cpu: '90m',
           },
         },
       }, lib.getElse(me, 'auth', {})]),
@@ -273,7 +273,7 @@ local helmrelease(me) = k8s.helmrelease(me, {
           },
           limits: {
             memory: '300Mi',
-            cpu: '45m',
+            cpu: '90m',
           },
         },
       }, lib.getElse(me, 'blip', {})]),
@@ -290,7 +290,7 @@ local helmrelease(me) = k8s.helmrelease(me, {
           },
           limits: {
             memory: '172Mi',
-            cpu: '65m',
+            cpu: '135m',
           },
         },
         podAnnotations: {
@@ -322,19 +322,19 @@ local helmrelease(me) = k8s.helmrelease(me, {
           replicas: 3,
         },
         podAnnotations: {
-          'config.linkerd.io/proxy-cpu-request': '20m',
-          'config.linkerd.io/proxy-cpu-limit': '40m',
-          'config.linkerd.io/proxy-memory-request': '40Mi',
-          'config.linkerd.io/proxy-memory-limit': '100Mi',
+          'config.linkerd.io/proxy-cpu-request': '45m',
+          'config.linkerd.io/proxy-cpu-limit': '90m',
+          'config.linkerd.io/proxy-memory-request': '60Mi',
+          'config.linkerd.io/proxy-memory-limit': '120Mi',
         },
         resources: {
           requests: {
-            memory: '75Mi',
-            cpu: '140m',
+            memory: '125Mi',
+            cpu: '110m',
           },
           limits: {
-            memory: '110Mi',
-            cpu: '180m',
+            memory: '250Mi',
+            cpu: '220m',
           },
         },
       }, lib.getElse(me, 'data', {})]),
@@ -364,19 +364,19 @@ local helmrelease(me) = k8s.helmrelease(me, {
           image: lib.getElse(prev, 'spec.values.gatekeeper.deployment.image', 'tidepool/gatekeeper:master-latest'),
         },
         podAnnotations: {
-          'config.linkerd.io/proxy-cpu-request': '25m',
-          'config.linkerd.io/proxy-cpu-limit': '50m',
+          'config.linkerd.io/proxy-cpu-request': '30m',
+          'config.linkerd.io/proxy-cpu-limit': '90m',
           'config.linkerd.io/proxy-memory-request': '100Mi',
           'config.linkerd.io/proxy-memory-limit': '200Mi',
         },
         resources: {
           requests: {
-            memory: '100Mi',
-            cpu: '200m',
+            memory: '200Mi',
+            cpu: '100m',
           },
           limits: {
-            memory: '200Mi',
-            cpu: '300m',
+            memory: '300Mi',
+            cpu: '200m',
           },
         },
       }, lib.getElse(me, 'gatekeeper', {})]),
