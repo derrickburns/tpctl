@@ -8,7 +8,13 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '2.2.3', repository: 'htt
     values: {
       installVPA: if global.isEnabled(me.config, 'vpa-recommender') then false else true,
       dashboard: {
-        enabled: false,
+        enabled: true,
+        resources: {
+          limits: {
+            cpu: '60m',
+            memory: '64Mi',
+          },
+        },
       },
       controller: {
         resources: {
