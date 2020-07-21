@@ -49,7 +49,7 @@ local dashboardConfig = {
   editable: false,
   gnetId: 11098,
   graphTooltip: 1,
-  iteration: 1594828883929,
+  iteration: 1595354655501,
   links: [
     {
       icon: 'external link',
@@ -703,7 +703,7 @@ local dashboardConfig = {
       steppedLine: false,
       targets: [
         {
-          expr: 'sum without (instance, job, service, endpoint) (ALERTS{alertname=~"$alertname", alertstate=~"$alertstate"})',
+          expr: 'sum without (instance, service, endpoint) (ALERTS{alertname=~"$alertname", alertstate=~"$alertstate"})',
           instant: false,
           interval: '',
           legendFormat: '',
@@ -872,7 +872,7 @@ local dashboardConfig = {
   timezone: 'utc',
   title: 'Alertmanager / Alerts / Overview',
   uid: 'lcaKO4WGk',
-  version: 3,
+  version: 4,
 };
 
 local configmap(me) = grafana.dashboard(me, 'alerts-overview', dashboardConfig);
