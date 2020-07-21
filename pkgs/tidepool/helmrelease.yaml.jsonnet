@@ -1,4 +1,3 @@
-local buddies = import '../../lib/buddies.jsonnet';
 local common = import '../../lib/common.jsonnet';
 local expand = import '../../lib/expand.jsonnet';
 local global = import '../../lib/global.jsonnet';
@@ -198,7 +197,6 @@ local helmrelease(me) = k8s.helmrelease(me, {
     podAnnotations: linkerd.annotations(me, true) + {
       'cluster-autoscaler.kubernetes.io/safe-to-evict': 'true',  // XXX
     },
-    initContainers: [buddies.sysctl],
     securityContext: k8s.securityContext,
     serviceMonitor: {
       enabled: global.isEnabled(me.config, 'prometheus-operator'),

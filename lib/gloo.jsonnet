@@ -161,6 +161,11 @@ local i = {
     },
   },
 
+  bufferOption:: {
+    buffer: {
+      maxRequestBytes: 1000000,
+    },
+  },
 
   certificateSecretName(base, namespace):: namespace + '-' + base + '-certificate',
 
@@ -331,7 +336,8 @@ local i = {
         virtualServiceNamespaces: ['*'],
         options:
           (if lib.getElse(gw, 'flags.healthCheck', false) then i.healthCheckOption else {})
-          + (if lib.getElse(gw, 'flags.tracing', false) then i.httpConnectionManagerOption else {}),
+          + (if lib.getElse(gw, 'flags.tracing', false) then i.httpConnectionManagerOption else {})
+          + (if lib.getElse(gw, 'flags.buffer', false) then i.bufferOption else {}),
       },
       options: lib.getElse(gw, 'options', {}),
       bindAddress: '::',
