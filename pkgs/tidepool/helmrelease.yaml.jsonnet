@@ -442,19 +442,19 @@ local helmrelease(me) = k8s.helmrelease(me, {
           image: lib.getElse(prev, 'spec.values.highwater.deployment.image', 'tidepool/highwater:master-latest'),
         },
         podAnnotations: {
-          'config.linkerd.io/proxy-cpu-request': '20m',
-          'config.linkerd.io/proxy-cpu-limit': '30m',
-          'config.linkerd.io/proxy-memory-request': '40Mi',
-          'config.linkerd.io/proxy-memory-limit': '60Mi',
+          'config.linkerd.io/proxy-cpu-request': '30m',
+          'config.linkerd.io/proxy-cpu-limit': '90m',
+          'config.linkerd.io/proxy-memory-request': '60Mi',
+          'config.linkerd.io/proxy-memory-limit': '120Mi',
         },
         resources: {
           requests: {
             memory: '150Mi',
-            cpu: '15m',
+            cpu: '30m',
           },
           limits: {
             memory: '225Mi',
-            cpu: '45m',
+            cpu: '90m',
           },
         },
       }, lib.getElse(me, 'highwater', {})]),
@@ -479,19 +479,19 @@ local helmrelease(me) = k8s.helmrelease(me, {
           image: lib.getElse(prev, 'spec.values.hydrophone.deployment.image', 'tidepool/hydrophone:master-latest'),
         },
         podAnnotations: {
-          'config.linkerd.io/proxy-cpu-request': '10m',
-          'config.linkerd.io/proxy-cpu-limit': '20m',
-          'config.linkerd.io/proxy-memory-request': '35Mi',
-          'config.linkerd.io/proxy-memory-limit': '50Mi',
+          'config.linkerd.io/proxy-cpu-request': '30m',
+          'config.linkerd.io/proxy-cpu-limit': '60m',
+          'config.linkerd.io/proxy-memory-request': '50Mi',
+          'config.linkerd.io/proxy-memory-limit': '100Mi',
         },
         resources: {
           requests: {
-            memory: '30Mi',
-            cpu: '20m',
+            memory: '90Mi',
+            cpu: '30m',
           },
           limits: {
-            memory: '60Mi',
-            cpu: '45m',
+            memory: '180Mi',
+            cpu: '90m',
           },
         },
       }, lib.getElse(me, 'hydrophone', {})]),
