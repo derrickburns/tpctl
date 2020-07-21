@@ -11,7 +11,7 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '2.2.3', repository: 'htt
         enabled: true,
         resources: {
           limits: {
-            cpu: '60m',
+            cpu: '140m',
             memory: '64Mi',
           },
         },
@@ -19,7 +19,7 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '2.2.3', repository: 'htt
       controller: {
         resources: {
           limits: {
-            cpu: '60m',
+            cpu: '170m',
             memory: '64Mi',
           },
         },
