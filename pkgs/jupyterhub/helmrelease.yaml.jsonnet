@@ -9,7 +9,7 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '0.9.1', repository: 'htt
       singleuser: {
         image: {
           name: "jupyter/datascience-notebook",
-          tag: "177037d09156"
+          tag: "b90cce83f37b"
         },
       },
       proxy: {
