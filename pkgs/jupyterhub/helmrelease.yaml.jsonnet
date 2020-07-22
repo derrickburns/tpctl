@@ -8,7 +8,9 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '0.9.1', repository: 'htt
     values: {
       proxy: {
         secretToken: "7994c473966b6614690557a8e2e075a182cf485429b9dc84c92c55c2b9e9d312",
-        type: "ClusterIP"
+        service: {
+          type: "ClusterIP"
+        },
       },
     },
   },
