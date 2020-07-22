@@ -100,6 +100,33 @@ local dashboardConfig = {
         },
         overrides: [],
       },
+      gridPos: {
+        h: 4,
+        w: 8,
+        x: 16,
+        y: 1,
+      },
+      headings: false,
+      id: 46,
+      limit: 10,
+      query: 'Backups',
+      recent: false,
+      search: true,
+      starred: false,
+      tags: [],
+      timeFrom: null,
+      timeShift: null,
+      title: 'Backups',
+      type: 'dashlist',
+    },
+    {
+      datasource: '$datasource',
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
       folderId: null,
       gridPos: {
         h: 3,
@@ -142,6 +169,7 @@ local dashboardConfig = {
         },
         overrides: [],
       },
+      folderId: null,
       gridPos: {
         h: 3,
         w: 8,
@@ -880,6 +908,7 @@ local dashboardConfig = {
         },
         overrides: [],
       },
+      folderId: null,
       gridPos: {
         h: 10,
         w: 8,
@@ -926,7 +955,7 @@ local dashboardConfig = {
   timezone: 'utc',
   title: 'Home',
   uid: 'HRN3fEzGk',
-  version: 3,
+  version: 2,
 };
 
 local configmap(me) = grafana.dashboard(me, 'home', dashboardConfig);
