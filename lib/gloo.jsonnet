@@ -163,7 +163,7 @@ local i = {
 
   bufferOption:: {
     buffer: {
-      maxRequestBytes: 1000000,
+      maxRequestBytes: 10 * 1024 * 1024,
     },
   },
 
