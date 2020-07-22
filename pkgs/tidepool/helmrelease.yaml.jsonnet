@@ -240,7 +240,6 @@ local helmrelease(me) = k8s.helmrelease(me, {
         },
         podAnnotations: {
           'config.linkerd.io/proxy-cpu-request': '20m',
-          'config.linkerd.io/proxy-cpu-limit': '80m',
           'config.linkerd.io/proxy-memory-request': '60Mi',
           'config.linkerd.io/proxy-memory-limit': '120Mi',
         },
@@ -251,7 +250,6 @@ local helmrelease(me) = k8s.helmrelease(me, {
           },
           limits: {
             memory: '180Mi',
-            cpu: '90m',
           },
         },
       }, lib.getElse(me, 'auth', {})]),
@@ -262,7 +260,6 @@ local helmrelease(me) = k8s.helmrelease(me, {
         },
         podAnnotations: {
           'config.linkerd.io/proxy-cpu-request': '20m',
-          'config.linkerd.io/proxy-cpu-limit': '60m',
           'config.linkerd.io/proxy-memory-request': '50Mi',
           'config.linkerd.io/proxy-memory-limit': '100Mi',
         },
@@ -273,7 +270,6 @@ local helmrelease(me) = k8s.helmrelease(me, {
           },
           limits: {
             memory: '300Mi',
-            cpu: '90m',
           },
         },
       }, lib.getElse(me, 'blip', {})]),
@@ -290,12 +286,10 @@ local helmrelease(me) = k8s.helmrelease(me, {
           },
           limits: {
             memory: '172Mi',
-            cpu: '135m',
           },
         },
         podAnnotations: {
           'config.linkerd.io/proxy-cpu-request': '20m',
-          'config.linkerd.io/proxy-cpu-limit': '60m',
           'config.linkerd.io/proxy-memory-request': '40Mi',
           'config.linkerd.io/proxy-memory-limit': '100Mi',
         },
@@ -323,7 +317,6 @@ local helmrelease(me) = k8s.helmrelease(me, {
         },
         podAnnotations: {
           'config.linkerd.io/proxy-cpu-request': '45m',
-          'config.linkerd.io/proxy-cpu-limit': '110m',
           'config.linkerd.io/proxy-memory-request': '60Mi',
           'config.linkerd.io/proxy-memory-limit': '120Mi',
         },
@@ -334,7 +327,6 @@ local helmrelease(me) = k8s.helmrelease(me, {
           },
           limits: {
             memory: '250Mi',
-            cpu: '220m',
           },
         },
       }, lib.getElse(me, 'data', {})]),
@@ -365,7 +357,6 @@ local helmrelease(me) = k8s.helmrelease(me, {
         },
         podAnnotations: {
           'config.linkerd.io/proxy-cpu-request': '30m',
-          'config.linkerd.io/proxy-cpu-limit': '90m',
           'config.linkerd.io/proxy-memory-request': '100Mi',
           'config.linkerd.io/proxy-memory-limit': '200Mi',
         },
@@ -376,7 +367,6 @@ local helmrelease(me) = k8s.helmrelease(me, {
           },
           limits: {
             memory: '300Mi',
-            cpu: '200m',
           },
         },
       }, lib.getElse(me, 'gatekeeper', {})]),
@@ -443,7 +433,6 @@ local helmrelease(me) = k8s.helmrelease(me, {
         },
         podAnnotations: {
           'config.linkerd.io/proxy-cpu-request': '30m',
-          'config.linkerd.io/proxy-cpu-limit': '90m',
           'config.linkerd.io/proxy-memory-request': '60Mi',
           'config.linkerd.io/proxy-memory-limit': '120Mi',
         },
@@ -454,7 +443,6 @@ local helmrelease(me) = k8s.helmrelease(me, {
           },
           limits: {
             memory: '225Mi',
-            cpu: '150m',
           },
         },
       }, lib.getElse(me, 'highwater', {})]),
@@ -480,7 +468,6 @@ local helmrelease(me) = k8s.helmrelease(me, {
         },
         podAnnotations: {
           'config.linkerd.io/proxy-cpu-request': '30m',
-          'config.linkerd.io/proxy-cpu-limit': '60m',
           'config.linkerd.io/proxy-memory-request': '50Mi',
           'config.linkerd.io/proxy-memory-limit': '100Mi',
         },
@@ -491,7 +478,6 @@ local helmrelease(me) = k8s.helmrelease(me, {
           },
           limits: {
             memory: '180Mi',
-            cpu: '90m',
           },
         },
       }, lib.getElse(me, 'hydrophone', {})]),
