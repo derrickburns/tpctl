@@ -18,8 +18,7 @@ local dashboardConfig = {
   editable: false,
   gnetId: null,
   graphTooltip: 0,
-  id: 478,
-  iteration: 1595355518558,
+  iteration: 1595424710943,
   links: [],
   panels: [
     {
@@ -265,7 +264,7 @@ local dashboardConfig = {
       fill: 1,
       fillGradient: 0,
       gridPos: {
-        h: 5,
+        h: 6,
         w: 12,
         x: 0,
         y: 7,
@@ -331,6 +330,7 @@ local dashboardConfig = {
       },
       yaxes: [
         {
+          '$$hashKey': 'object:647',
           format: 'short',
           label: null,
           logBase: 1,
@@ -339,6 +339,7 @@ local dashboardConfig = {
           show: true,
         },
         {
+          '$$hashKey': 'object:648',
           format: 'short',
           label: null,
           logBase: 1,
@@ -418,7 +419,7 @@ local dashboardConfig = {
       ],
       timeFrom: null,
       timeShift: null,
-      title: 'Confluence Cron Jobs',
+      title: 'Jira Cron Jobs',
       transformations: [
         {
           id: 'organize',
@@ -770,6 +771,7 @@ local dashboardConfig = {
       },
       yaxes: [
         {
+          '$$hashKey': 'object:568',
           format: 'short',
           label: null,
           logBase: 1,
@@ -778,6 +780,7 @@ local dashboardConfig = {
           show: true,
         },
         {
+          '$$hashKey': 'object:569',
           format: 'short',
           label: null,
           logBase: 1,
@@ -902,7 +905,9 @@ local dashboardConfig = {
   ],
   schemaVersion: 25,
   style: 'dark',
-  tags: ['ops'],
+  tags: [
+    'ops',
+  ],
   templating: {
     list: [
       {
@@ -926,7 +931,7 @@ local dashboardConfig = {
     ],
   },
   time: {
-    from: 'now-5m',
+    from: 'now-30d',
     to: 'now',
   },
   timepicker: {
@@ -943,9 +948,9 @@ local dashboardConfig = {
     ],
   },
   timezone: '',
-  title: 'Ops / Atlassian Backups',
+  title: 'Operations / Backups / Atlassian',
   uid: 'OrKE9XnMz',
-  version: 3,
+  version: 4,
 };
 
 local configmap(me) = grafana.dashboard(me, 'atlassian-backups', dashboardConfig);
