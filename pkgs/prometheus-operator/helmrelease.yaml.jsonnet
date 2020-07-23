@@ -3,31 +3,6 @@ local global = import '../../lib/global.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
-local affinity = {
-  nodeAffinity: {
-    requiredDuringSchedulingIgnoredDuringExecution: {
-      nodeSelectorTerms: [{
-        matchExpressions: [
-          {
-            key: 'role',
-            operator: 'In',
-            values: ['monitoring'],
-          },
-        ],
-      }],
-    },
-  },
-};
-
-local tolerations = [
-  {
-    key: 'role',
-    operator: 'Equal',
-    value: 'monitoring',
-    effect: 'NoSchedule',
-  },
-];
-
 local helmrelease(me) = k8s.helmrelease(me, { version: '8.16.1' }) {
   spec+: {
     values+: {
@@ -57,14 +32,18 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '8.16.1' }) {
             memory: '500Mi',
           },
         },
-        affinity: affinity,
-        tolerations: tolerations,
+        affinity: {
+          nodeAffinity: k8s.nodeAffinity(),
+        },
+        tolerations: [k8s.toleration()],
       },
       alertmanager: {
         enabled: lib.isEnabledAt(me, 'alertmanager'),
         alertmanagerSpec: {
-          affinity: affinity,
-          tolerations: tolerations,
+          affinity: {
+            nodeAffinity: k8s.nodeAffinity(),
+          },
+          tolerations: [k8s.toleration()],
           retention: '240h',
         },
       },
@@ -92,8 +71,10 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '8.16.1' }) {
               memory: '12G',
             },
           },
-          affinity: affinity,
-          tolerations: tolerations,
+          affinity: {
+            nodeAffinity: k8s.nodeAffinity(),
+          },
+          tolerations: [k8s.toleration()],
           thanos: if global.isEnabled(me.config, 'thanos') then {
             image: 'quay.io/thanos/thanos:v0.12.2',
             version: 'v0.12.2',
@@ -155,8 +136,10 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '8.16.1' }) {
         },
       },
       prometheusOperator: {
-        affinity: affinity,
-        tolerations: tolerations,
+        affinity: {
+          nodeAffinity: k8s.nodeAffinity(),
+        },
+        tolerations: [k8s.toleration()],
         annotations: {
           'cluster-autoscaler.kubernetes.io/safe-to-evict': 'false',
         },
