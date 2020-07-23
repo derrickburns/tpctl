@@ -43,7 +43,7 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '8.16.1' }) {
           affinity: {
             nodeAffinity: k8s.nodeAffinity(),
           },
-          externalUrl: "prometheus.%s" % config.cluster.metadata.domain
+          externalUrl: 'prometheus.%s' % me.config.cluster.metadata.domain,
           tolerations: [k8s.toleration()],
           retention: '240h',
         },
