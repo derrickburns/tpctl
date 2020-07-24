@@ -5,7 +5,6 @@
 
 set -e
 export FLUX_FORWARD_NAMESPACE=flux
-export REVIEWERS="derrickburns pazaan jamesraby todd haroldbernard adinhodovic"
 export APPROVE=false
 export USE_LOCAL_FILESYSTEM=false
 export SKIP_REVIEW=false
@@ -26,6 +25,7 @@ MANIFEST_TEMP_DIR=generated-temp
 VALUES_FILE=values.yaml
 LOG_LEVEL=3
 PARALLEL=false
+UPDATE_TPCTL=true
 
 python3 -m pip install ruamel.yaml >/dev/null 2>&1
 
@@ -311,11 +311,11 @@ function check_remote_repo() {
 # clean up all temporary files
 function cleanup() {
   if [ -d .git ]; then
-    git reset
+    git reset --hard
   fi
   if [ -f "$TMP_DIR" ]; then
     cd /
-    rm -rf $TMP_DIR
+    rm -rf $TMP_DIR $MANIFEST_TEMP_DIR
   fi
 }
 
@@ -355,7 +355,12 @@ function clone_remote() {
 }
 
 function set_template_dir() {
-  if [ -z "$TEMPLATE_DIR" ]; then
+  if [ "$UPDATE_TPCTL" == "true" ]; then
+    git submodule update --remote
+  fi
+  if [ "$USE_LOCAL_FILESYSTEM" == "true" ]; then
+    export TEMPLATE_DIR="tpctl/"
+  elif [ -z "$TEMPLATE_DIR" ]; then
     export TEMPLATE_DIR="$(CDPATH= cd -- "$DIR" && cd .. && pwd -P)/"
   fi
   info "TEMPLATE_DIR=$TEMPLATE_DIR"
@@ -1462,6 +1467,10 @@ main() {
       -v | --verbose)
         LOG_LEVEL=$2
 	shift 2
+        ;;
+      --no-update)
+        UPDATE_TPCTL=false
+	shift 1
         ;;
       -p | --parallel)
         LOG_LEVEL=2
