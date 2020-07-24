@@ -445,6 +445,10 @@ function get_namespaces() {
   yq r values.yaml -p p namespaces.* | sed -e "s/namespaces\.//"
 }
 
+function get_reviewers() {
+  yq r values.yaml general.github.reviewers.*
+}
+
 # retrieve names of tidepool environments
 function get_environments() {
   yq r values.yaml -p p namespaces.*.tidepool | sed -e "s/namespaces\.//" -e "s/\..*//"
@@ -974,7 +978,8 @@ function save_changes() {
     expect_success "git push failed"
     complete
     echo "Please select PR reviewer: "
-    select REVIEWER in none $REVIEWERS; do
+    local reviewers=$(get_reviewers)
+    select REVIEWER in none $reviewers; do
       if [ "$REVIEWER" == "none" ]; then
         hub pull-request -m "$message"
         expect_success "failed to create pull request, please create manually"
