@@ -1,0 +1,62 @@
+---
+apiVersion: v1
+kind: Secret
+metadata:
+    name: alertmanager-slack-template
+    namespace: monitoring
+type: Opaque
+stringData:
+  slack-template.tmpl: |-
+    {{ define "__alert_silence_link" -}}
+        {{ .ExternalURL }}/#/silences/new?filter=%7B
+        {{- range .CommonLabels.SortedPairs -}}
+            {{- if ne .Name "alertname" -}}
+                {{- .Name }}%3D"{{- .Value -}}"%2C%20
+            {{- end -}}
+        {{- end -}}
+        alertname%3D"{{ .CommonLabels.alertname }}"%7D
+    {{- end }}
+
+    {{/* First line of Slack alerts */}}
+    {{ define "slack.tidepool.title" -}}
+        [{{ .Status | toUpper -}}
+        {{ if eq .Status "firing" }}:{{ .Alerts.Firing | len }}{{- end -}}
+        ] {{ .CommonLabels.alertname }}
+    {{- end }}
+
+
+    {{/* Color of Slack attachment (appears as line next to alert )*/}}
+    {{ define "slack.tidepool.color" -}}
+        {{ if eq .Status "firing" -}}
+            {{ if eq .CommonLabels.severity "warning" -}}
+                warning
+            {{- else if eq .CommonLabels.severity "critical" -}}
+                danger
+            {{- else -}}
+                #439FE0
+            {{- end -}}
+        {{ else -}}
+        good
+        {{- end }}
+    {{- end }}
+
+
+    {{/* Emoji to display as user icon (custom emoji supported!) */}}
+    {{ define "slack.tidepool.icon_emoji" }}:tidepool:{{ end }}
+
+    {{/* The test to display in the alert */}}
+    {{ define "slack.tidepool.text" -}}
+        {{ range .Alerts }}
+            {{- if .Annotations.message }}
+                {{ .Annotations.message }}
+            {{- end }}
+        {{- end }}
+    {{- end }}
+
+    {{ define "slack.tidepool.link_button_text" -}}
+        {{- if .CommonAnnotations.link_text -}}
+            {{- .CommonAnnotations.link_text -}}
+        {{- else -}}
+            Link
+        {{- end }} :link:
+    {{- end }}
