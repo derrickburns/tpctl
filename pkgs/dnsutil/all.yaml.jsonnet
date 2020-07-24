@@ -8,7 +8,7 @@ local deployment(me) = k8s.deployment(me) {
       'sleep',
       '3600',
     ],
-    image: 'gcr.io/kubernetes-e2e-test-images/dnsutils:1.3',
+    image: 'gcr.io/kubernetes-e2e-test-images/dnsutils:1.3'
   },
 };
 
