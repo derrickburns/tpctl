@@ -7,7 +7,7 @@ local helmrelease(me) = k8s.helmrelease(me, { path: 'charts/cp-schema-registry',
   spec+: {
     values: {
       kafka: {
-        bootstrapServers: 'PLAINTEXT://kafka-kafka-bootstrap.%s.svc.cluster.local:9092' % me.namespace,
+        bootstrapServers: 'PLAINTEXT://kafka-kafka-bootstrap.%s.svc.cluster.local:9092' % me.namespace
       },
     }
   },
