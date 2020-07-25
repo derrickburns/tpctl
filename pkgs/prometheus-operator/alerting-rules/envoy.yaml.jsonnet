@@ -10,7 +10,7 @@ local groupConfig = [
         annotations: {
           message: 'High count({{ $value }}) of 5xx by the upstream {{ $labels.envoy_cluster_name }} in the namespace {{ $labels.namespace }}.',
         },
-        expr: 'sum(increase(envoy_cluster_upstream_rq_xx{envoy_response_code_class="5"}[1m])) > 0',  // Replace 0 with an acceptable value
+        expr: 'sum(increase(envoy_cluster_upstream_rq_xx{envoy_response_code_class="5"}[1m])) by (envoy_cluster_name, namespace) > 0',  // Replace 0 with an acceptable value
         'for': '1m',
         labels: {
           severity: 'critical',
