@@ -7,8 +7,8 @@ local helmrelease(me) = (
   k8s.helmrelease(me + { chart: { name: 'example-idp' } }, { version:'0.4.0', repository: 'https://k8s.ory.sh/helm/charts' }) {
     spec+: {
       values+: {
-        hydraAdminUrl: 'http://hydra-admin.hydra:4445',
-        hydraPublicUrl: 'https://hydra.dev.tidepool.org',
+        hydraAdminUrl: 'http://hydra-admin.%s:4445' % me.namespace,
+        hydraPublicUrl: 'https://hydra.%s' % me.config.cluster.metadata.rootDomain,
       },
     },
   }
