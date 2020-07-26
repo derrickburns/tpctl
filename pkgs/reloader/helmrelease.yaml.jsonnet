@@ -2,7 +2,7 @@ local k8s = import '../../lib/k8s.jsonnet';
 local common = import '../../lib/common.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
-local helmrelease(me) = k8s.helmrelease(me, { version: 'v0.0.51', repository: 'https://stakater.github.io/stakater-charts' }) {
+local helmrelease(me) = k8s.helmrelease(me, { version: 'v0.0.63', repository: 'https://stakater.github.io/stakater-charts' }) {
   spec+: {
     values+: {
       reloader: {
