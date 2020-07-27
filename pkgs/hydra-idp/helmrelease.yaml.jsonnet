@@ -8,7 +8,7 @@ local helmrelease(me) = (
     spec+: {
       values+: {
         hydraAdminUrl: 'http://hydra-admin.%s:4445' % me.namespace,
-        hydraPublicUrl: 'https://hydra.%s' % me.config.cluster.metadata.rootDomain,
+        hydraPublicUrl: 'https://hydra.%s' % me.config.cluster.metadata.domain,
       },
     },
   }
