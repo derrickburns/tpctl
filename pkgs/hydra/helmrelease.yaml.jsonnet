@@ -23,7 +23,7 @@ local helmrelease(me) = (
               },
               login: 'https://hydra-idp.%s/login' % me.config.cluster.metadata.domain,
               consent: 'https://hydra-idp.%s/consent' % me.config.cluster.metadata.domain,
-              logout: 'https://hydra-idp.%s/logout % me.config.cluster.metadata.domain,
+              logout: 'https://hydra-idp.%s/logout' % me.config.cluster.metadata.domain,
             }
           }
         }
