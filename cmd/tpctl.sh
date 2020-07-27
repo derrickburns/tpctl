@@ -942,13 +942,10 @@ function make_config() {
 
 # persist changes to config repo in GitHub
 function save_changes() {
-  if [ "$USE_LOCAL_FILESYSTEM" == "true" ]; then
-    return
-  fi
-
   start "adding and diffing changes for directory $(pwd)"
   rm -rf $CONFIG_DIR/$MANIFEST_TEMP_DIR
   git add .
+
   expect_success "git add failed"
   export GIT_PAGER=/bin/cat
   DIFFS=$(git diff --cached HEAD)
