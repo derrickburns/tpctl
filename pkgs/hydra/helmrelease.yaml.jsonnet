@@ -12,18 +12,18 @@ local helmrelease(me) =
             enabled: false,
           },
         },
-      },
-      hydra: {
-        dangerousForceHttp: true,
-        config: {
-          dsn: 'memory',
-          urls: {
-            'self': {
-              issuer: 'https://hydra.%s/' % me.config.cluster.metadata.domain,
+        hydra: {
+          dangerousForceHttp: true,
+          config: {
+            dsn: 'memory',
+            urls: {
+              'self': {
+                issuer: 'https://hydra.%s/' % me.config.cluster.metadata.domain,
+              },
+              login: 'https://hydra-idp.%s/login' % me.config.cluster.metadata.domain,
+              consent: 'https://hydra-idp.%s/consent' % me.config.cluster.metadata.domain,
+              logout: 'https://hydra-idp.%s/logout' % me.config.cluster.metadata.domain,
             },
-            login: 'https://hydra-idp.%s/login' % me.config.cluster.metadata.domain,
-            consent: 'https://hydra-idp.%s/consent' % me.config.cluster.metadata.domain,
-            logout: 'https://hydra-idp.%s/logout' % me.config.cluster.metadata.domain,
           },
         },
       },
