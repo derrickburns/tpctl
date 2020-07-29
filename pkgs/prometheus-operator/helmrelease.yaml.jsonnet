@@ -50,6 +50,22 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '9.2.2' }) {
           externalUrl: 'https://alertmanager.%s' % me.config.cluster.metadata.domain,
           tolerations: [k8s.toleration()],
           retention: '240h',
+          storage: {
+            volumeClaimTemplate: {
+              metadata: {
+                name: 'alertmanager',
+                namespace: me.namespace,
+              },
+              spec: {
+                storageClassName: 'monitoring-expanding',
+                resources: {
+                  requests: {
+                    storage: '1Gi',
+                  },
+                },
+              },
+            },
+          },
         },
       },
       prometheus: {
