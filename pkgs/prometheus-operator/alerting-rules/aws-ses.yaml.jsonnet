@@ -1,7 +1,7 @@
 local common = import '../../../lib/common.jsonnet';
 local prometheus = import '../../../lib/prometheus.jsonnet';
 
-local groupConfig = [
+local groupConfig(me) = [
   {
     name: 'ses.rules',
     rules: [
@@ -33,7 +33,7 @@ local groupConfig = [
   },
 ];
 
-local prometheusRule(me) = prometheus.prometheusRule(me, 'aws-ses', groupConfig);
+local prometheusRule(me) = prometheus.prometheusRule(me, 'aws-ses', groupConfig(me));
 
 function(config, prev, namespace, pkg) (
   local me = common.package(config, prev, namespace, pkg);
