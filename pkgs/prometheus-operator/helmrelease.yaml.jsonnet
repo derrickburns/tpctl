@@ -28,7 +28,7 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '9.2.2' }) {
           },
         ],
         resources: {
-          limits: {
+          requests: {
             memory: '500Mi',
           },
         },
@@ -43,7 +43,7 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '9.2.2' }) {
           affinity: {
             nodeAffinity: k8s.nodeAffinity(),
           },
-          externalUrl: 'https://prometheus.%s' % me.config.cluster.metadata.domain,
+          externalUrl: 'https://alertmanager.%s' % me.config.cluster.metadata.domain,
           tolerations: [k8s.toleration()],
           retention: '240h',
         },
@@ -56,6 +56,7 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '9.2.2' }) {
         prometheusSpec: {
           ruleSelectorNilUsesHelmValues: false,
           serviceMonitorSelectorNilUsesHelmValues: false,
+          externalUrl: 'https://prometheus.%s' % me.config.cluster.metadata.domain,
           podMonitorSelectorNilUsesHelmValues: false,
           enableAdminAPI: true,
           containers: [
