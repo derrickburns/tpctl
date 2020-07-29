@@ -43,6 +43,9 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '9.2.2' }) {
           affinity: {
             nodeAffinity: k8s.nodeAffinity(),
           },
+          configMaps: [
+            'alertmanager-slack-template',
+          ],
           configSecret: 'alertmanager-config',
           externalUrl: 'https://alertmanager.%s' % me.config.cluster.metadata.domain,
           tolerations: [k8s.toleration()],
