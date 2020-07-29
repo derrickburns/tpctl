@@ -47,7 +47,6 @@ data:
     {{ define "slack.tidepool.title" -}}
         [{{ .Status | toUpper -}}
         {{ if eq .Status "firing" }}:{{ .Alerts.Firing | len }}{{- end -}}
-        # yamllint disable-line rule:line-length
         ] {{ template "__alert_severity_prefix_title" . }} {{ .CommonLabels.alertname }}
     {{- end }}
 
@@ -75,8 +74,8 @@ data:
     {{ define "slack.tidepool.text" -}}
         {{ range .Alerts }}
             {{- if .Annotations.message }}
-              Started at: {{ .StartsAt }}\n
-              {{ .Annotations.message }}\n\n
+              Started at: {{ .StartsAt }}{{- "\n" -}}
+              {{ .Annotations.message }}{{- "\n\n" -}}
             {{- end }}
         {{- end }}
     {{- end }}
