@@ -16,12 +16,6 @@ data:
         alertname%3D"{{- .CommonLabels.alertname -}}"%7D
     {{- end }}
 
-    {{/* First line of Slack alerts */}}
-    {{ define "slack.tidepool.title" -}}
-        [{{ .Status | toUpper -}}
-        {{ if eq .Status "firing" }}:{{ .Alerts.Firing | len }}{{- end -}}
-        ] {{ .CommonLabels.alertname }}
-    {{- end }}
     {{ define "__alert_severity_prefix" -}}
         {{ if ne .Status "firing" -}}
         :lgtm:
