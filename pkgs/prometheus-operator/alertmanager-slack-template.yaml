@@ -16,38 +16,23 @@ data:
         alertname%3D"{{- .CommonLabels.alertname -}}"%7D
     {{- end }}
 
-    {{ define "__alert_severity_prefix" -}}
-        {{ if ne .Status "firing" -}}
-        :lgtm:
-        {{- else if eq .Labels.severity "critical" -}}
-        :fire:
-        {{- else if eq .Labels.severity "warning" -}}
-        :warning:
-        {{- else -}}
-        :question:
-        {{- end }}
-    {{- end }}
-
-    {{ define "__alert_severity_prefix_title" -}}
-        {{ if ne .Status "firing" -}}
-        :lgtm:
-        {{- else if eq .CommonLabels.severity "critical" -}}
-        :fire:
+    {{ define "__alert_severity" -}}
+        {{- if eq .CommonLabels.severity "critical" -}}
+        *Severity:* `Critical`
         {{- else if eq .CommonLabels.severity "warning" -}}
-        :warning:
+        *Severity:* `Warning`
         {{- else if eq .CommonLabels.severity "info" -}}
-        :information_source:
+        *Severity:* `Info`
         {{- else -}}
-        :question:
+        *Severity:* :question: {{ .CommonLabels.severity }}
         {{- end }}
     {{- end }}
-
 
     {{/* First line of Slack alerts */}}
     {{ define "slack.tidepool.title" -}}
-        [{{ .Status | toUpper -}}
-        {{ if eq .Status "firing" }}:{{ .Alerts.Firing | len }}{{- end -}}
-        ] {{ template "__alert_severity_prefix_title" . }} {{ .CommonLabels.alertname }}
+      [{{ .Status | toUpper -}}
+      {{ if eq .Status "firing" }}:{{ .Alerts.Firing | len }}{{- end -}}
+      ] {{ .CommonLabels.alertname }}
     {{- end }}
 
 
@@ -72,10 +57,13 @@ data:
 
     {{/* The test to display in the alert */}}
     {{ define "slack.tidepool.text" -}}
+        {{- "\n\n" -}}
+        • {{ template "__alert_severity" . }}
         {{ range .Alerts }}
             {{- if .Annotations.message }}
-              Started at: {{ .StartsAt }}{{- "\n" -}}
-              {{ .Annotations.message }}{{- "\n\n" -}}
+              {{- "\n" -}}
+              {{ .Annotations.message }}
+              {{- "\n" -}}
             {{- end }}
         {{- end }}
     {{- end }}
