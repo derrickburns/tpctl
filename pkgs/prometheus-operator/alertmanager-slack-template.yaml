@@ -57,15 +57,33 @@ data:
 
     {{/* The test to display in the alert */}}
     {{ define "slack.tidepool.text" -}}
+
         {{- "\n\n" -}}
+
         • {{ template "__alert_severity" . }}
+
         {{ range .Alerts }}
+
+            {{- if .Annotations.summary }}
+              {{- "\n" -}}
+              *Summary:* {{ .Annotations.summary }}
+              {{- "\n" -}}
+            {{- end }}
+
+            {{- if .Annotations.description }}
+              {{- "\n" -}}
+              *Description:* {{ .Annotations.description }}
+              {{- "\n" -}}
+            {{- end }}
+
             {{- if .Annotations.message }}
               {{- "\n" -}}
               {{ .Annotations.message }}
               {{- "\n" -}}
             {{- end }}
+
         {{- end }}
+
     {{- end }}
 
     {{ define "slack.tidepool.link_button_text" -}}
