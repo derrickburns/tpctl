@@ -11,7 +11,7 @@ local groupConfig(me) = [
           message: 'Marketo config is invalid for the pod: {{ $labels.pod }} in the namespace: {{ $labels.namespace }}.',
           dashboard: 'https://grafana.%s/d/5sv7jfiGk/shoreline?orgId=1&refresh=10s' % me.config.cluster.metadata.domain,
         },
-        expr: 'sum(tidepool_shoreline_marketo_config_valid) by (namespace)  == 0',
+        expr: 'sum(tidepool_shoreline_marketo_config_valid) by (namespace, pod)  == 0',
         'for': '1m',
         labels: {
           severity: 'critical',
