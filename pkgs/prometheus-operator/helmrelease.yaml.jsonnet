@@ -111,7 +111,7 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '9.2.2' }) {
               key: 'object-store.yaml',
             },
           } else {},
-          retentionSize: '140GiB',
+          retentionSize: lib.getElse(me, 'prometheus.retentionSize', '130GiB'),
           retention: '90d',
           storageSpec: {
             volumeClaimTemplate: {
@@ -123,7 +123,7 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '9.2.2' }) {
                 storageClassName: 'monitoring-expanding',
                 resources: {
                   requests: {
-                    storage: '150Gi',
+                    storage: lib.getElse(me, 'prometheus.storageSize', '150Gi'),
                   },
                 },
               },
