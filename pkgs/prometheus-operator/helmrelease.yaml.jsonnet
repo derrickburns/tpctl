@@ -112,7 +112,7 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '9.2.2' }) {
             },
           } else {},
           retentionSize: lib.getElse(me, 'prometheus.retentionSize', '130GiB'),
-          retention: '90d',
+          retention: lib.getElse(me, 'prometheus.retentionPeriod', '90d'),
           storageSpec: {
             volumeClaimTemplate: {
               metadata: {
