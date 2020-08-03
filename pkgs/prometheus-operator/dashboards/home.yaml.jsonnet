@@ -67,6 +67,36 @@ local dashboardConfig = {
     },
     {
       datasource: '$datasource',
+      description: '',
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
+      gridPos: {
+        h: 4,
+        w: 8,
+        x: 8,
+        y: 1,
+      },
+      headings: false,
+      id: 38,
+      limit: 10,
+      query: 'Export',
+      recent: false,
+      search: true,
+      starred: false,
+      tags: [
+        'export',
+      ],
+      timeFrom: null,
+      timeShift: null,
+      title: 'Export',
+      type: 'dashlist',
+    },
+    {
+      datasource: '$datasource',
       fieldConfig: {
         defaults: {
           custom: {},
@@ -336,6 +366,7 @@ local dashboardConfig = {
         },
         overrides: [],
       },
+      folderId: null,
       gridPos: {
         h: 4,
         w: 8,
@@ -830,7 +861,7 @@ local dashboardConfig = {
   timezone: 'utc',
   title: 'Home',
   uid: 'HRN3fEzGk',
-  version: 3,
+  version: 1,
 };
 
 local configmap(me) = grafana.dashboard(me, 'home', dashboardConfig);
