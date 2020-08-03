@@ -18,7 +18,7 @@ local dashboardConfig = {
   editable: false,
   gnetId: null,
   graphTooltip: 0,
-  iteration: 1594145734847,
+  iteration: 1596473142184,
   links: [],
   panels: [
     {
@@ -85,7 +85,7 @@ local dashboardConfig = {
       steppedLine: false,
       targets: [
         {
-          expr: 'sum(increase(tidepool_shoreline_failed_status_count{namespace="$env"}[5m])) by (status_reason, status_code)',
+          expr: 'sum(increase(tidepool_shoreline_failed_status_count{namespace="$env"}[1m])) by (status_reason, status_code)',
           interval: '',
           legendFormat: '{{status_reason}} - {{status_code}}',
           refId: 'A',
@@ -95,7 +95,7 @@ local dashboardConfig = {
       timeFrom: null,
       timeRegions: [],
       timeShift: null,
-      title: 'Failed Statuses [5m]',
+      title: 'Failed Statuses [1m]',
       tooltip: {
         shared: true,
         sort: 0,
@@ -284,7 +284,7 @@ local dashboardConfig = {
       steppedLine: false,
       targets: [
         {
-          expr: 'sum(increase(tidepool_shoreline_failed_marketo_upload_total{namespace="$env"}[5m])) by (service)',
+          expr: 'sum(increase(tidepool_shoreline_failed_marketo_upload_total{namespace="$env"}[1m])) by (service)',
           interval: '',
           legendFormat: '{{ service }}',
           refId: 'A',
@@ -294,7 +294,7 @@ local dashboardConfig = {
       timeFrom: null,
       timeRegions: [],
       timeShift: null,
-      title: 'Failed Uploads to Marketo [5m]',
+      title: 'Failed Uploads to Marketo [1m]',
       tooltip: {
         shared: true,
         sort: 0,
@@ -364,9 +364,9 @@ local dashboardConfig = {
       {
         allValue: null,
         current: {
-          selected: true,
-          text: 'tidepool-prod',
-          value: 'tidepool-prod',
+          selected: false,
+          text: 'qa1',
+          value: 'qa1',
         },
         datasource: '$datasource',
         definition: 'label_values(tidepool_shoreline_failed_status_count, namespace)',
@@ -409,7 +409,7 @@ local dashboardConfig = {
   timezone: 'utc',
   title: 'Shoreline',
   uid: '5sv7jfiGk',
-  version: 4,
+  version: 1,
 };
 
 local configmap(me) = grafana.dashboard(me, 'tidepool-shoreline', dashboardConfig);
