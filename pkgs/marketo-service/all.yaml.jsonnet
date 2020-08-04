@@ -3,6 +3,7 @@ local common = import '../../lib/common.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 local flux = import '../../lib/flux.jsonnet';
 local linkerd = import '../../lib/linkerd.jsonnet';
+local gloo = import '../../lib/gloo.jsonnet';
 
 local port = 8080;
 
