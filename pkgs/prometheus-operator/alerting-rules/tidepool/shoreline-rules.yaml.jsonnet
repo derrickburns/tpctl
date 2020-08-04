@@ -6,18 +6,6 @@ local groupConfig(me) = [
     name: 'shoreline.rules',
     rules: [
       {
-        alert: 'TidepoolShorelineMarketoConfigInvalid',
-        annotations: {
-          message: 'Marketo config is invalid for the pod: {{ $labels.pod }} in the namespace: {{ $labels.namespace }}.',
-          dashboard: 'https://grafana.%s/d/5sv7jfiGk/shoreline?orgId=1&refresh=10s' % me.config.cluster.metadata.domain,
-        },
-        expr: 'sum(tidepool_shoreline_marketo_config_valid) by (namespace, pod)  == 0',
-        'for': '1m',
-        labels: {
-          severity: 'critical',
-        },
-      },
-      {
         alert: 'TidepoolShoreline5xx',
         annotations: {
           message: 'High count({{ $value }}) of {{ $labels.status_code }} with the reason: {{ $labels.status_reason }} by the Shoreline pod: {{ $labels.pod }} in the namespace: {{ $labels.namespace }}.',
@@ -29,8 +17,31 @@ local groupConfig(me) = [
           severity: 'critical',
         },
       },
+      {
+        alert: 'TidepoolShorelineMarketoConfigInvalid',
+        annotations: {
+          message: 'Marketo config is invalid for the pod: {{ $labels.pod }} in the namespace: {{ $labels.namespace }}.',
+          dashboard: 'https://grafana.%s/d/5sv7jfiGk/shoreline?orgId=1&refresh=10s' % me.config.cluster.metadata.domain,
+        },
+        expr: 'sum(tidepool_shoreline_marketo_config_valid) by (namespace, pod) == 0',
+        'for': '1m',
+        labels: {
+          severity: 'critical',
+        },
+      },
+      {
+        alert: 'TidepoolShorelineFailedMarketoUpload',
+        annotations: {
+          message: 'High count({{ $value }}) of failed Marketo uploads by the Shoreline pod: {{ $labels.pod }} in the namespace: {{ $labels.namespace }}.',
+          dashboard: 'https://grafana.%s/d/5sv7jfiGk/shoreline?orgId=1&refresh=10s' % me.config.cluster.metadata.domain,
+        },
+        expr: 'sum(increase(tidepool_shoreline_failed_marketo_upload_total[1m])) by (namespace, pod) > 0',
+        'for': '10s',
+        labels: {
+          severity: 'warning',
+        },
+      },
     ],
-sum(increase(tidepool_shoreline_failed_status_count
   },
 ];
 
