@@ -11,7 +11,7 @@ local deployment(me) = flux.deployment(me) {
     image: 'tidepool/marketo-service:master-latest',
     env: [
       k8s.envVar('KAFKA_BROKERS', lib.getElse(me, 'kafka-brokers', 'kafka-kafka-bootstrap.kafka.svc.cluster.local:9092')),
-      k8s.envVar('KAFKA_TOPIC', lib.getElse(me, 'kafka-topic', 'Marketo' )),
+      k8s.envVar('KAFKA_TOPIC', lib.getElse(me, 'kafka-topic', 'marketo' )),
     ],
     imagePullPolicy: 'Always',
     ports: [{
