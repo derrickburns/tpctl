@@ -8,7 +8,7 @@ local groupConfig(me) = [
       {
         alert: 'CertManagerExpiringCertificate',
         annotations: {
-          message: 'The certificate {{ $labels.name }} in the namespace {{ $labels.exported_namespace }} is expiring within 3 weeks.',
+          message: 'The certificate {{ $labels.exported_namespace }}/{{ $labels.name }} is expiring within 3 weeks.',
           dashboard: 'https://grafana.%s/d/u6M5igpWk/cert-manager?orgId=1' % me.config.cluster.metadata.domain,
         },
         expr: 'certmanager_certificate_expiration_timestamp_seconds - time() < 1814400',
@@ -20,7 +20,7 @@ local groupConfig(me) = [
       {
         alert: 'CertManagerCertificateNotReady',
         annotations: {
-          message: 'The certificate {{ $labels.name }} in the namespace {{ $labels.exported_namespace }} is not ready.',
+          message: 'The certificate {{ $labels.exported_namespace }}/{{ $labels.name }} is not ready.',
           dashboard: 'https://grafana.%s/d/u6M5igpWk/cert-manager?orgId=1' % me.config.cluster.metadata.domain,
         },
         expr: 'certmanager_certificate_ready_status{condition="False"} > 0',
