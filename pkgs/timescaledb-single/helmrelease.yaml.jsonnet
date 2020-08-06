@@ -11,10 +11,10 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '0.6.2', repository: 'htt
       tolerations: [k8s.toleration(value='timescale')],
       persistentVolumes: {
         data: {
-          size: lib.getElse(me, 'data-storage', '2Gi'),
+          size: lib.getElse(me, 'data_storage', '2Gi'),
         },
         wal: {
-          size: lib.getElse(me, 'wal-storage', '1Gi'),
+          size: lib.getElse(me, 'wal_storage', '1Gi'),
         },
       },
       patroni: {
