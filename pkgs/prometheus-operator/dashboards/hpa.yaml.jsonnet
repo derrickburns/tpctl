@@ -19,7 +19,8 @@ local dashboardConfig = {
   editable: false,
   gnetId: 10257,
   graphTooltip: 0,
-  iteration: 1594288585346,
+  id: 451,
+  iteration: 1596803142904,
   links: [],
   panels: [
     {
@@ -468,12 +469,18 @@ local dashboardConfig = {
           refId: 'A',
         },
         {
-          expr: 'avg(kube_pod_container_resource_requests{job="kube-state-metrics", namespace="$namespace", resource="cpu", pod=~"$hpa.*"})',
+          expr: 'sum(kube_pod_container_resource_requests{job="kube-state-metrics", namespace="$namespace", resource="cpu", pod=~"$hpa.*"})',
           hide: false,
           instant: false,
           interval: '',
-          legendFormat: 'Requested: $hpa',
+          legendFormat: 'Requested',
           refId: 'B',
+        },
+        {
+          expr: 'sum(node_namespace_pod_container:container_cpu_usage_seconds_total:sum_rate{namespace="$namespace", pod=~"$hpa.*", container!="POD"})',
+          interval: '',
+          legendFormat: 'Total Usage',
+          refId: 'C',
         },
       ],
       thresholds: [],
@@ -569,7 +576,7 @@ local dashboardConfig = {
       steppedLine: false,
       targets: [
         {
-          expr: 'sum(node_namespace_pod_container:container_memory_working_set_bytes{namespace="$namespace", pod=~"$hpa.*", container!=""}) by (pod)',
+          expr: 'sum(node_namespace_pod_container:container_memory_working_set_bytes{namespace="$namespace", pod=~"$hpa.*", image!="", container!=""}) by (pod)',
           format: 'time_series',
           hide: false,
           interval: '',
@@ -578,12 +585,18 @@ local dashboardConfig = {
           refId: 'A',
         },
         {
-          expr: 'avg(kube_pod_container_resource_requests_memory_bytes{namespace="$namespace", pod=~"$hpa.*"})',
+          expr: 'sum(kube_pod_container_resource_requests_memory_bytes{namespace="$namespace", pod=~"$hpa.*"})',
           hide: false,
           instant: false,
           interval: '',
-          legendFormat: 'Requested: $hpa',
+          legendFormat: 'Requested',
           refId: 'B',
+        },
+        {
+          expr: 'sum(node_namespace_pod_container:container_memory_working_set_bytes{namespace="$namespace", pod=~"$hpa.*", image!="", container!=""})',
+          interval: '',
+          legendFormat: 'Total Usage',
+          refId: 'C',
         },
       ],
       thresholds: [],
@@ -772,8 +785,8 @@ local dashboardConfig = {
       {
         current: {
           selected: false,
-          text: 'Prometheus',
-          value: 'Prometheus',
+          text: 'prometheus',
+          value: 'prometheus',
         },
         hide: 2,
         includeAll: false,
@@ -791,8 +804,8 @@ local dashboardConfig = {
         allValue: null,
         current: {
           selected: false,
-          text: 'tidepool-prod',
-          value: 'tidepool-prod',
+          text: 'gateway',
+          value: 'gateway',
         },
         datasource: '$datasource',
         definition: 'label_values(kube_hpa_metadata_generation{job="kube-state-metrics"}, namespace)',
@@ -817,8 +830,8 @@ local dashboardConfig = {
         allValue: null,
         current: {
           selected: false,
-          text: 'tide-whisperer',
-          value: 'tide-whisperer',
+          text: 'ingress-nginx-controller',
+          value: 'ingress-nginx-controller',
         },
         datasource: '$datasource',
         definition: 'label_values(kube_hpa_labels{job="kube-state-metrics", namespace="$namespace"}, hpa)',
@@ -842,7 +855,7 @@ local dashboardConfig = {
     ],
   },
   time: {
-    from: 'now-6h',
+    from: 'now-30m',
     to: 'now',
   },
   timepicker: {
@@ -869,10 +882,10 @@ local dashboardConfig = {
       '30d',
     ],
   },
-  timezone: 'utc',
+  timezone: '',
   title: 'Kubernetes / Autoscaler / Horizontal Pod Autoscaler',
   uid: 'alJY6yWZz',
-  version: 1,
+  version: 23216,
 };
 
 local configmap(me) = grafana.dashboard(me, 'hpa', dashboardConfig);
