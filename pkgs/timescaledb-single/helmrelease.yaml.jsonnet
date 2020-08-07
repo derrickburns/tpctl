@@ -3,7 +3,7 @@ local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
 local helmrelease(me) = k8s.helmrelease(me, { version: '0.6.2', repository: 'https://raw.githubusercontent.com/timescale/timescaledb-kubernetes/master/charts/repo' }) {
-  spec+: {
+  spec+: lib.merge({
     values+: {
       affinity: {
         nodeAffinity: k8s.nodeAffinity(values=['timescale']),
@@ -34,7 +34,7 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '0.6.2', repository: 'htt
         },
       },
     },
-  },
+  }, lib.getElse(me, 'spec', {})),
 };
 
 function(config, prev, namespace, pkg) helmrelease(common.package(config, prev, namespace, pkg))
