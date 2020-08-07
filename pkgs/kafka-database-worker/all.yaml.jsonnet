@@ -32,7 +32,7 @@ local deployment(me) = flux.deployment(me) {
       },
     },
   },
-  spec+: {
+  spec+: lib.merge({
     template+: linkerd.metadata(me, true) + {
       spec+: {
         affinity: {
@@ -41,7 +41,7 @@ local deployment(me) = flux.deployment(me) {
         tolerations: [k8s.toleration(value='timescale')],
       },
     },
-  },
+  }, lib.getElse(me, 'spec', {})),
 };
 
 local service(me) = k8s.service(me) {
