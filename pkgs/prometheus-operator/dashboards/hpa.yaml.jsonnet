@@ -804,8 +804,8 @@ local dashboardConfig = {
         allValue: null,
         current: {
           selected: false,
-          text: 'gateway',
-          value: 'gateway',
+          text: 'tidepool-prod',
+          value: 'tidepool-prod',
         },
         datasource: '$datasource',
         definition: 'label_values(kube_hpa_metadata_generation{job="kube-state-metrics"}, namespace)',
@@ -830,8 +830,8 @@ local dashboardConfig = {
         allValue: null,
         current: {
           selected: false,
-          text: 'ingress-nginx-controller',
-          value: 'ingress-nginx-controller',
+          text: 'tide-whisperer',
+          value: 'tide-whisperer',
         },
         datasource: '$datasource',
         definition: 'label_values(kube_hpa_labels{job="kube-state-metrics", namespace="$namespace"}, hpa)',
