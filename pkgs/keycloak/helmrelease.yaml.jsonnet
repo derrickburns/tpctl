@@ -8,7 +8,7 @@ local helmrelease(me) = (
     spec+: {
       values+: {
         image: {
-          tag: '10.0.1',
+          tag: '11.0.0',
         },
         postgresql: {
           enabled: false,
@@ -38,6 +38,41 @@ local helmrelease(me) = (
             {
               name: 'KEYCLOAK_STATISTICS',
               value: 'all',
+            },
+          ],
+          indent_array_in_object=false
+        ),
+        extraInitContainers: std.manifestYamlDoc(
+          [
+            {
+              name: 'extensions',
+              image: 'busybox',
+              imagePullPolicy: 'IfNotPresent',
+              command: ['wget', '-O', '/deployments/keycloak-rest-provider-0.1.jar', 'https://github.com/toddkazakov/keycloak-user-migration/releases/download/0.1/keycloak-rest-provider-0.1.jar'],
+              volumeMounts: [
+                {
+                  name: 'extensions',
+                  mountPath: '/deployments'
+                }
+              ]
+            },
+          ],
+          indent_array_in_object=false
+        ),
+        extraVolumes: std.manifestYamlDoc(
+          [
+            {
+              name: 'extensions',
+              emptyDir: {},
+            },
+          ],
+          indent_array_in_object=false
+        ),
+        extraVolumeMounts: std.manifestYamlDoc(
+          [
+            {
+              name: 'extensions',
+              mountPath: '/opt/jboss/keycloak/standalone/deployments',
             },
           ],
           indent_array_in_object=false
