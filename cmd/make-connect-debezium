@@ -8,5 +8,5 @@ USER 1001
 EOF
 
 export DOCKER_ORG=tidepool
-docker build . -t ${DOCKER_ORG}/connect-debezium
+docker build . -t ${DOCKER_ORG}/connect-debezium:0.2.0
 docker push ${DOCKER_ORG}/connect-debezium:0.2.0
