@@ -35,9 +35,16 @@ local helmrelease(me) = (
               name: 'PROXY_ADDRESS_FORWARDING',
               value: 'true',
             },
+            {
+              name: 'KEYCLOAK_STATISTICS',
+              value: 'all',
+            },
           ],
           indent_array_in_object=false
         ),
+        serviceMonitor: {
+          enabled: true,
+        },
         extraEnvFrom: std.manifestYamlDoc(
           [
             {
