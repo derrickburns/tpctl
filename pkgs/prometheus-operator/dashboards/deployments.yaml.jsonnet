@@ -19,7 +19,7 @@ local dashboardConfig = {
   editable: false,
   gnetId: 9679,
   graphTooltip: 0,
-  iteration: 1595851691590,
+  iteration: 1597175308260,
   links: [],
   panels: [
     {
@@ -1283,27 +1283,27 @@ local dashboardConfig = {
       steppedLine: false,
       targets: [
         {
-          expr: 'sum(irate(container_network_receive_bytes_total{namespace=~"$namespace", pod_name=~"$deployment-[a-z0-9]+-[a-z0-9]+"}[$__interval])) by (pod_name)',
+          expr: 'sum(irate(container_network_receive_bytes_total{namespace=~"$namespace", pod=~"$deployment-[a-z0-9]+-[a-z0-9]+", image!="", container!=""}[5m])) by (pod)',
           format: 'time_series',
           interval: '',
           intervalFactor: 1,
-          legendFormat: '-> {{ pod_name }}',
+          legendFormat: '-> {{ pod }}',
           metric: 'network',
           refId: 'A',
           step: 10,
         },
         {
-          expr: '- sum(irate(container_network_transmit_bytes_total{namespace=~"$namespace", pod_name=~"$deployment-[a-z0-9]+-[a-z0-9]+"}[$__interval])) by (pod_name)',
+          expr: '- sum(irate(container_network_transmit_bytes_total{namespace=~"$namespace", pod=~"$deployment-[a-z0-9]+-[a-z0-9]+", image!="", container!=""}[5m])) by (pod)',
           format: 'time_series',
           interval: '',
           intervalFactor: 1,
-          legendFormat: '<- {{ pod_name }}',
+          legendFormat: '<- {{ pod }}',
           metric: 'network',
           refId: 'B',
           step: 10,
         },
         {
-          expr: 'sum(irate(container_network_receive_bytes_total{namespace=~"$namespace", pod_name=~"$deployment-[a-z0-9]+-[a-z0-9]+"}[$__interval]))',
+          expr: 'sum(irate(container_network_receive_bytes_total{namespace=~"$namespace", pod=~"$deployment-[a-z0-9]+-[a-z0-9]+", image!="", container!=""}[5m]))',
           format: 'time_series',
           interval: '',
           intervalFactor: 1,
@@ -1311,7 +1311,7 @@ local dashboardConfig = {
           refId: 'C',
         },
         {
-          expr: '- sum(irate(container_network_transmit_bytes_total{namespace=~"$namespace", pod_name=~"$deployment-[a-z0-9]+-[a-z0-9]+"}[$__interval]))',
+          expr: '- sum(irate(container_network_transmit_bytes_total{namespace=~"$namespace", pod=~"$deployment-[a-z0-9]+-[a-z0-9]+", image!="", container!=""}[5m]))',
           format: 'time_series',
           interval: '',
           intervalFactor: 1,
@@ -1476,7 +1476,7 @@ local dashboardConfig = {
       {
         allValue: '.*',
         current: {
-          selected: true,
+          selected: false,
           text: 'tidepool-prod',
           value: 'tidepool-prod',
         },
@@ -1546,7 +1546,7 @@ local dashboardConfig = {
     ],
   },
   time: {
-    from: 'now-7d',
+    from: 'now-24h',
     to: 'now',
   },
   timepicker: {
@@ -1576,7 +1576,7 @@ local dashboardConfig = {
   timezone: 'utc',
   title: 'Kubernetes / Deployment / All',
   uid: 'kube-deployment',
-  version: 3,
+  version: 1,
 };
 
 local configmap(me) = grafana.dashboard(me, 'kubernetes-deployments', dashboardConfig);
