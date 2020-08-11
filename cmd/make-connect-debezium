@@ -3,7 +3,7 @@
 cat <<EOF >Dockerfile
 FROM strimzi/kafka:0.18.0-kafka-2.5.0
 USER root:root
-RUN curl -sL "https://repo1.maven.org/maven2/io/debezium/debezium-connector-mongodb/1.2.0.Final/debezium-connector-mongodb-1.2.0.Final-plugin.tar.gz" | tar xz -C /tmp && mv /tmp/debezium-connector-mongodb /opt/kafka/plugins/
+RUN curl -sL "https://repo1.maven.org/maven2/io/debezium/debezium-connector-mongodb/1.2.1.Final/debezium-connector-mongodb-1.2.1.Final-plugin.tar.gz" | tar xz -C /tmp && mv /tmp/debezium-connector-mongodb /opt/kafka/plugins/
 USER 1001
 EOF
 
