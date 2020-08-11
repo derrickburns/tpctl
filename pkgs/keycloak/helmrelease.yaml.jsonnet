@@ -31,6 +31,10 @@ local helmrelease(me) = (
               name: 'DB_DATABASE',
               value: 'keycloak',
             },
+            {
+              name: 'PROXY_ADDRESS_FORWARDING',
+              value: 'true',
+            },
           ],
           indent_array_in_object=false
         ),
