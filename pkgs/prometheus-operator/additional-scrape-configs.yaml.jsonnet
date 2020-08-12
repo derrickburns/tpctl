@@ -3,14 +3,14 @@ local global = import '../../lib/global.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
-local scrapeConfigs(me) = k8s.configmap(me, name='prometheus-additionl-scrape-configs') + k8s.metadata(
+local scrapeConfigs(me) = k8s.secret(me, name='prometheus-additionl-scrape-configs') + k8s.metadata(
   'prometheus-operator-prometheus-additional-scrape-configs', me.namespace
 ) {
-  data+: {
+  stringData+: {
     'scrape-configs.yaml': std.manifestYamlDoc(
       [
         {
-          job_name: 'kafka',
+          job_name: 'static/kafka',
           scrape_interval: '30s',
           metrics_path: '/metrics',
           scheme: 'http',
