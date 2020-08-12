@@ -13,7 +13,7 @@ local kafkaconnect(me) = k8s.k('kafka.strimzi.io/v1beta1', 'KafkaConnect') + k8s
     bootstrapServers: 'kafka-kafka-bootstrap.%s.svc.cluster.local:9093' % me.namespace,
     image: 'tidepool/connect-debezium:0.3.7',
     env: [
-      k8s.envVar('CLASSPATH', '/opt/kafka/plugins'),
+      k8s.envVar('CLASSPATH', '/opt/kafka/extlibs'),
     ],
     imagePullPolicy: 'Always',
     replicas: 1,
