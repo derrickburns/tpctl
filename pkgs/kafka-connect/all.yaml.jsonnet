@@ -11,10 +11,7 @@ local kafkaconnect(me) = k8s.k('kafka.strimzi.io/v1beta1', 'KafkaConnect') + k8s
   },
   spec+: lib.merge({
     bootstrapServers: 'kafka-kafka-bootstrap.%s.svc.cluster.local:9093' % me.namespace,
-    image: 'tidepool/connect-debezium:0.3.7',
-    env: [
-      k8s.envVar('CLASSPATH', '/opt/kafka/extlibs'),
-    ],
+    image: 'tidepool/connect-debezium:0.3.8',
     imagePullPolicy: 'Always',
     replicas: 1,
     tls: {
