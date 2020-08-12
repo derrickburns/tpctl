@@ -78,6 +78,11 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '9.2.2' }) {
           serviceMonitorSelectorNilUsesHelmValues: false,
           externalUrl: 'https://prometheus.%s' % me.config.cluster.metadata.domain,
           podMonitorSelectorNilUsesHelmValues: false,
+          additionalScrapeConfigsSecret: {
+            enabled: lib.getElse(me, 'prometheus.additionalScrapeConfigsSecret', false),
+            name: 'prometheus-operator-prometheus-additional-scrape-configs',
+            key: 'scrape-configs.yaml',
+          },
           enableAdminAPI: true,
           containers: [
             {
