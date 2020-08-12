@@ -16,7 +16,6 @@ local helmrelease(me) = k8s.helmrelease(me, { name: 'kowl', version: lib.getElse
             brokers: me.brokers,
             tls: {
               enabled: true,
-              insecureSkipTlsVerify: true,
             },
           },
         },
