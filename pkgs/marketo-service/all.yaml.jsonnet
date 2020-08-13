@@ -9,7 +9,7 @@ local port = 8080;
 
 local deployment(me) = flux.deployment(me) {
   _containers:: {
-    image: 'tidepool/marketo-service:master-latest',
+    image: 'tidepool/marketo-service:latest',
     env: [
       k8s.envVar('KAFKA_BROKERS', lib.getElse(me, 'kafka-brokers', 'kafka-kafka-bootstrap.kafka.svc.cluster.local:9092')),
       k8s.envVar('KAFKA_TOPIC', lib.getElse(me, 'kafka-topic', 'marketo' )),
