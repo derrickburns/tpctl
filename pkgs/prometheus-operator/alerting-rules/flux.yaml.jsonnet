@@ -12,7 +12,6 @@ local groupConfig(me) = [
           dashboard: 'https://grafana.%s/d/vJMuruVWk/weave-flux?orgId=1' % me.config.cluster.metadata.domain,
         },
         expr: 'flux_daemon_sync_manifests{success="false"} > 0',
-        'for': '30s',
         labels: {
           severity: 'critical',
         },

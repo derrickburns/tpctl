@@ -24,7 +24,7 @@ local groupConfig(me) = [
           dashboard: 'https://grafana.%s/d/u6M5igpWk/cert-manager?orgId=1' % me.config.cluster.metadata.domain,
         },
         expr: 'certmanager_certificate_ready_status{condition="False"} > 0',
-        'for': '10m',
+        'for': '5m',
         labels: {
           severity: 'critical',
         },

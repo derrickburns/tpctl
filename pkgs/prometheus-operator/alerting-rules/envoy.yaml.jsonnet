@@ -12,7 +12,6 @@ local groupConfig(me) = [
           dashboard: 'https://grafana.%s/d/gloo_upstreams/gloo-upstreams?orgId=1&refresh=5s' % me.config.cluster.metadata.domain,
         },
         expr: 'sum(increase(envoy_cluster_upstream_rq_xx{envoy_response_code_class="5"}[1m])) by (envoy_cluster_name, namespace) > 0',  // Replace 0 with an acceptable value
-        'for': '1m',
         labels: {
           severity: 'critical',
         },
