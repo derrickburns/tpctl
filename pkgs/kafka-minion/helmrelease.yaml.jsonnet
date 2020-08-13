@@ -17,7 +17,7 @@ local helmrelease(me) = k8s.helmrelease(me, { name: 'kafka-minion', version: lib
         },
       },
       serviceMonitor: {
-        enabled: true,
+        create: true,
         interval: '10s',
       },
     },
