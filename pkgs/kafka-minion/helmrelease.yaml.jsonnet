@@ -3,7 +3,7 @@ local global = import '../../lib/global.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
-local helmrelease(me) = k8s.helmrelease(me, { name: 'kafka-minion', version: lib.getElse(me, 'version', '1.3.0'), repository: 'https://raw.githubusercontent.com/cloudworkz/kafka-minion-helm-chart/master' }) {
+local helmrelease(me) = k8s.helmrelease(me, { name: 'kafka-minion', version: lib.getElse(me, 'version', '1.3.1'), repository: 'https://raw.githubusercontent.com/adinhodovic/kafka-minion-helm-chart/release' }) {
   spec+: {
     values+: {
       affinity: {
@@ -11,13 +11,13 @@ local helmrelease(me) = k8s.helmrelease(me, { name: 'kafka-minion', version: lib
       },
       tolerations: [k8s.toleration()],
       kafka: {
-        brokers: me.brokers,
+        brokers: std.join(',', me.brokers),
         tls: {
           enabled: true,
         },
       },
       serviceMonitor: {
-        enabled: true,
+        create: true,
         interval: '10s',
       },
     },
