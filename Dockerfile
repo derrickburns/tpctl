@@ -1,36 +1,14 @@
-FROM tidepool/tpctl-base:latest AS tpctl-base
+FROM strimzi/kafka:0.18.0-kafka-2.5.0
+USER root
 
-FROM ubuntu:18.04 AS tpctl
-ENV TERM xterm-256color
-ENV TZ America/Los_Angeles
-ENV DEBIAN_FRONTEND noninteractive
-RUN apt-get update -y && \
-    apt-get --no-install-recommends install git openssh-client curl python3-setuptools python3-pip python3 locales -y && \
-    pip3 install --no-cache-dir --upgrade --user awscli boto3 environs && \
-    locale-gen en_US.UTF-8 && \
-    rm -rf /var/lib/apt/lists/*
-COPY --from=tpctl-base \
-     /usr/local/bin/jq \
-     /usr/local/bin/helm \
-     /usr/local/bin/eksctl \
-     /usr/local/bin/kubectl \
-     /usr/local/bin/kubecfg \
-     /usr/local/bin/kubectx \
-     /usr/local/bin/kubeval \
-     /usr/local/bin/kubens \
-     /usr/local/bin/yq \
-     /usr/local/bin/aws-iam-authenticator \
-     /usr/local/bin/fluxctl \
-     /usr/local/bin/linkerd \
-     /usr/local/bin/glooctl \
-     /usr/local/bin/hub \
-     /usr/local/bin/sops \
-     /usr/local/bin/python3 \
-     /usr/local/bin/
-COPY cmd /usr/local/bin/
-COPY pkgs /templates/pkgs/
-COPY lib  /templates/lib/
-COPY eksctl  /templates/eksctl/
-ENV TEMPLATE_DIR /templates/
-ENV COMMAND_DIR /usr/local/bin
-ENTRYPOINT [ "/usr/local/bin/tpctl.sh"  ]
+RUN yum -q -y install unzip
+RUN mkdir -p /opt/kafka/plugins/debezium-connector-mongodb
+
+RUN curl -sL "https://repo1.maven.org/maven2/io/debezium/debezium-connector-mongodb/1.2.0.Final/debezium-connector-mongodb-1.2.0.Final-plugin.tar.gz" | tar xz -C /tmp && cp -r /tmp/debezium-connector-mongodb/* /opt/kafka/plugins/debezium-connector-mongodb/
+
+RUN curl -sl "https://archive.apache.org/dist/groovy/3.0.5/distribution/apache-groovy-binary-3.0.5.zip" --output /tmp/groovy-3.0.5.zip && unzip -q /tmp/groovy-3.0.5.zip -d /tmp && cp /tmp/groovy-3.0.5/lib/groovy-3.0.5.jar /opt/kafka/libs
+
+#RUN curl -sL "https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-20.1.0/graalvm-ce-java11-linux-amd64-20.1.0.tar.gz" | tar xz -C /tmp && cp -r /tmp/graalvm-ce-java11-20.1.0/lib/graalvm/* /opt/kafka/plugins/debezium-connector-mongodb/
+
+RUN chown -R 1001 /opt/kafka/plugins
+USER 1001
