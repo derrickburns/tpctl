@@ -171,6 +171,7 @@ local svcs = [
   'prescription',
   'seagull',
   'shoreline',
+  'summary',
   'task',
   'tidewhisperer',
   'tools',
@@ -482,27 +483,6 @@ local helmrelease(me) = k8s.helmrelease(me, {
         },
       }, lib.getElse(me, 'hydrophone', {})]),
 
-      image: lib.mergeList([common, {
-        extraContainers: extraContainers,
-        serviceAccount: {
-          name: 'image',
-        },
-        securityContext: {
-          fsGroup: 65534,  // To be able to read Kubernetes and AWS token files
-        },
-        deployment+: {
-          env: {
-            store: {
-              s3: {
-                bucket: virtualBucket(config, lib.getElse(me, 'buckets.data', dataBucket(config, me.namespace))),
-              },
-              type: 's3',
-            },
-          },
-          image: lib.getElse(prev, 'spec.values.image.deployment.image', 'tidepool/platform-image:master-latest'),
-        },
-      }, lib.getElse(me, 'image', {})]),
-
       jellyfish: lib.mergeList([common, {
         extraContainers: extraContainers,
         serviceAccount: {
@@ -544,12 +524,12 @@ local helmrelease(me) = k8s.helmrelease(me, {
         enabled: lib.isEnabledAt(me, 'mongodb'),
       },
 
-      notification: lib.mergeList([common, {
+      summary: lib.mergeList([common, {
         extraContainers: extraContainers,
         deployment+: {
-          image: lib.getElse(prev, 'spec.values.notification.deployment.image', 'tidepool/platform-notification:master-latest'),
+          image: lib.getElse(prev, 'spec.values.summary.deployment.image', 'tidepool/summary:master-latest'),
         },
-      }, lib.getElse(me, 'notification', {})]),
+      }, lib.getElse(me, 'summary', {})]),
 
       prescription: lib.mergeList([common, {
         extraContainers: extraContainers,
