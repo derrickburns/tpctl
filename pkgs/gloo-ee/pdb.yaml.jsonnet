@@ -21,9 +21,25 @@ local add_pdb(me, selector, enabled, name) = (
 function(config, prev, namespace, pkg) (
   local me = common.package(config, prev, namespace, pkg);
   [
-    add_pdb(me, { gloo: 'gloo' }, lib.isEnabledAt(me, 'pdb'), 'gloo'),
-    add_pdb(me, { 'gateway-proxy-id': 'gateway-proxy' }, lib.isEnabledAt(me, 'proxies.gatewayProxy.pdb'), 'gateway-proxy'),
-    add_pdb(me, { 'gateway-proxy-id': 'internal-gateway-proxy' }, lib.isEnabledAt(me, 'proxies.internalGatewayProxy.pdb'), 'internal-gateway-proxy'),
-    add_pdb(me, { 'gateway-proxy-id': 'pomerium-gateway-proxy' }, lib.isEnabledAt(me, 'proxies.pomeriumGatewayProxy.pdb'), 'pomerium-gateway-proxy'),
+    add_pdb(me, {
+      matchLabels: {
+        gloo: 'gloo',
+      },
+    }, lib.isEnabledAt(me, 'pdb'), 'gloo'),
+    add_pdb(me, {
+      matchLabels: {
+        'gateway-proxy-id': 'gateway-proxy',
+      },
+    }, lib.isEnabledAt(me, 'proxies.gatewayProxy.pdb'), 'gateway-proxy'),
+    add_pdb(me, {
+      matchLabels: {
+        'gateway-proxy-id': 'internal-gateway-proxy',
+      },
+    }, lib.isEnabledAt(me, 'proxies.internalGatewayProxy.pdb'), 'internal-gateway-proxy'),
+    add_pdb(me, {
+      matchLabels: {
+        'gateway-proxy-id': 'pomerium-gateway-proxy',
+      },
+    }, lib.isEnabledAt(me, 'proxies.pomeriumGatewayProxy.pdb'), 'pomerium-gateway-proxy'),
   ]
 )
