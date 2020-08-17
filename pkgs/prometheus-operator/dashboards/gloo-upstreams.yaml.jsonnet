@@ -16,10 +16,10 @@ local dashboardConfig = {
     ],
   },
   description: 'Envoy proxy monitoring Dashboard with cluster and host level templates. ',
-  editable: false,
+  editable: true,
   gnetId: null,
   graphTooltip: 0,
-  iteration: 1595318908591,
+  iteration: 1597700665531,
   links: [],
   panels: [
     {
@@ -72,7 +72,8 @@ local dashboardConfig = {
         {
           expr: 'sum(envoy_cluster_upstream_cx_active{envoy_cluster_name="$upstream", gateway_proxy_id=~"$proxy"}) by (envoy_cluster_name)',
           format: 'time_series',
-          intervalFactor: 2,
+          interval: '',
+          intervalFactor: 1,
           legendFormat: '{{envoy_cluster_name}}',
           refId: 'A',
         },
@@ -81,7 +82,7 @@ local dashboardConfig = {
       timeFrom: null,
       timeRegions: [],
       timeShift: null,
-      title: 'Total active connections in $upstream',
+      title: 'Total active connections',
       tooltip: {
         shared: true,
         sort: 0,
@@ -97,6 +98,7 @@ local dashboardConfig = {
       },
       yaxes: [
         {
+          '$$hashKey': 'object:783',
           format: 'short',
           label: null,
           logBase: 1,
@@ -105,6 +107,7 @@ local dashboardConfig = {
           show: true,
         },
         {
+          '$$hashKey': 'object:784',
           format: 'short',
           label: null,
           logBase: 1,
@@ -168,7 +171,8 @@ local dashboardConfig = {
         {
           expr: 'sum(irate(envoy_cluster_upstream_rq_total{ envoy_cluster_name="$upstream", gateway_proxy_id=~"$proxy"}[1m])) by (envoy_cluster_name)',
           format: 'time_series',
-          intervalFactor: 2,
+          interval: '',
+          intervalFactor: 1,
           legendFormat: '{{envoy_cluster_name}}',
           refId: 'A',
         },
@@ -177,7 +181,7 @@ local dashboardConfig = {
       timeFrom: null,
       timeRegions: [],
       timeShift: null,
-      title: 'Total requests in $upstream',
+      title: 'Total requests',
       tooltip: {
         shared: true,
         sort: 0,
@@ -193,6 +197,7 @@ local dashboardConfig = {
       },
       yaxes: [
         {
+          '$$hashKey': 'object:453',
           format: 'short',
           label: null,
           logBase: 1,
@@ -201,6 +206,7 @@ local dashboardConfig = {
           show: true,
         },
         {
+          '$$hashKey': 'object:454',
           format: 'short',
           label: null,
           logBase: 1,
@@ -280,7 +286,7 @@ local dashboardConfig = {
       timeFrom: null,
       timeRegions: [],
       timeShift: null,
-      title: 'Upstream Network Traffic in $upstream',
+      title: 'Upstream Network Traffic',
       tooltip: {
         shared: true,
         sort: 0,
@@ -417,6 +423,7 @@ local dashboardConfig = {
       },
       yaxes: [
         {
+          '$$hashKey': 'object:536',
           format: 'short',
           label: 'RPM',
           logBase: 1,
@@ -425,6 +432,7 @@ local dashboardConfig = {
           show: true,
         },
         {
+          '$$hashKey': 'object:537',
           format: 'short',
           label: null,
           logBase: 1,
@@ -461,10 +469,12 @@ local dashboardConfig = {
       hiddenSeries: false,
       id: 19,
       legend: {
+        alignAsTable: true,
         avg: false,
         current: false,
         max: false,
         min: false,
+        rightSide: true,
         show: true,
         total: false,
         values: false,
@@ -566,7 +576,7 @@ local dashboardConfig = {
       {
         allValue: null,
         current: {
-          selected: true,
+          selected: false,
           text: 'export_tidepool-prod',
           value: 'export_tidepool-prod',
         },
@@ -593,7 +603,6 @@ local dashboardConfig = {
         allValue: null,
         current: {
           selected: true,
-          tags: [],
           text: 'All',
           value: [
             '$__all',
@@ -639,7 +648,7 @@ local dashboardConfig = {
     ],
   },
   time: {
-    from: 'now-12h',
+    from: 'now-24h',
     to: 'now',
   },
   timepicker: {
@@ -669,7 +678,7 @@ local dashboardConfig = {
   timezone: 'utc',
   title: 'Gloo Upstreams',
   uid: 'gloo_upstreams',
-  version: 2,
+  version: 1,
 };
 
 local configmap(me) = grafana.dashboard(me, 'gloo-upstreams', dashboardConfig);
