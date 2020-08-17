@@ -18,7 +18,7 @@ local dashboardConfig = {
   editable: false,
   gnetId: null,
   graphTooltip: 0,
-  iteration: 1596482811031,
+  iteration: 1597663133253,
   links: [],
   panels: [
     {
@@ -73,7 +73,7 @@ local dashboardConfig = {
       steppedLine: false,
       targets: [
         {
-          expr: 'sum(increase(tidepool_export_status_count{namespace="$env"}[1m])) by (status_code, export_format)',
+          expr: 'sum(increase(tidepool_export_status_count{namespace="$env"}[5m])) by (status_code, export_format)',
           interval: '',
           legendFormat: '{{ export_format }} - {{ status_code }}',
           refId: 'A',
@@ -83,7 +83,7 @@ local dashboardConfig = {
       timeFrom: null,
       timeRegions: [],
       timeShift: null,
-      title: 'Export Statuses [1m]',
+      title: 'Export Statuses [5m]',
       tooltip: {
         shared: true,
         sort: 0,
@@ -152,8 +152,8 @@ local dashboardConfig = {
         allValue: null,
         current: {
           selected: false,
-          text: 'qa1',
-          value: 'qa1',
+          text: 'tidepool-prod',
+          value: 'tidepool-prod',
         },
         datasource: '$datasource',
         definition: 'label_values(tidepool_export_status_count, namespace)',
@@ -177,7 +177,7 @@ local dashboardConfig = {
     ],
   },
   time: {
-    from: 'now-3h',
+    from: 'now-7d',
     to: 'now',
   },
   timepicker: {
@@ -196,7 +196,7 @@ local dashboardConfig = {
   timezone: '',
   title: 'Tidepool / Services / Export',
   uid: 'HNqFvjVGk',
-  version: 6,
+  version: 1,
 };
 
 function(config, prev, namespace, pkg) (
