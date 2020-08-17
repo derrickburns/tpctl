@@ -286,6 +286,15 @@ local configmapNamesFromPod(pod) = lib.pruneList(
     },
   },
 
+  pdb(me, minAvailable='50%'):: $.k('policy/v1beta1', 'PodDisruptionBudget') + $.metadata(me.pkg, me.namespace) {
+    spec+: {
+      minAvailable: minAvailable,
+      selector: {
+        app: me.pkg,
+      },
+    },
+  },
+
   externalname(me):: $.service(me, type='ExternalName') {
     metadata+: {
       namespace: if lib.isTrue(me, 'global') then 'global' else me.namespace,
