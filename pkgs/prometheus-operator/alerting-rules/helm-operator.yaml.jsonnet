@@ -8,7 +8,7 @@ local groupConfig(me) = [
       {
         alert: 'HelmOperatorFailedFetchChart',
         annotations: {
-          message: 'Failed to fetch chart for the release {{ $labels.namespace }}/{{ $labels.release_name }}. The chart has not been available for the past minute.',
+          message: 'Failed to fetch chart for the release {{ $labels.target_namespace }}/{{ $labels.release_name }}. The chart has not been available for the past minute.',
           dashboard_url: 'https://grafana.%s/d/c8qWijkGz/helm-operator?orgId=1' % me.config.cluster.metadata.domain,
         },
         expr: 'flux_helm_operator_release_condition_info{condition="ChartFetched"} < 1',
@@ -20,7 +20,7 @@ local groupConfig(me) = [
       {
         alert: 'HelmOperatorFailedReleaseChart',
         annotations: {
-          message: 'Failed to release chart for the release {{ $labels.namespace }}/{{ $labels.release_name }}. The chart has not been released for the past minute.',
+          message: 'Failed to release chart for the release {{ $labels.target_namespace }}/{{ $labels.release_name }}. The chart has not been released for the past minute.',
           dashboard_url: 'https://grafana.%s/d/c8qWijkGz/helm-operator?orgId=1' % me.config.cluster.metadata.domain,
         },
         expr: 'flux_helm_operator_release_condition_info{condition="ChartFetched"} < 0',
@@ -32,7 +32,7 @@ local groupConfig(me) = [
       {
         alert: 'HelmOperatorUpgradingChart',
         annotations: {
-          message: 'The release {{ $labels.namespace }}/{{ $labels.release_name }} is being upgraded for more than 5 minutes.',
+          message: 'The release {{ $labels.target_namespace }}/{{ $labels.release_name }} is being upgraded for more than 5 minutes.',
           dashboard_url: 'https://grafana.%s/d/c8qWijkGz/helm-operator?orgId=1' % me.config.cluster.metadata.domain,
         },
         expr: 'flux_helm_operator_release_condition_info{condition="Released"} == 0',
@@ -44,7 +44,7 @@ local groupConfig(me) = [
       {
         alert: 'HelmOperatorRollingBackChart',
         annotations: {
-          message: 'The release {{ $labels.namespace }}/{{ $labels.release_name }} is being rolled back for more than 5 minutes.',
+          message: 'The release {{ $labels.target_namespace }}/{{ $labels.release_name }} is being rolled back for more than 5 minutes.',
           dashboard_url: 'https://grafana.%s/d/c8qWijkGz/helm-operator?orgId=1' % me.config.cluster.metadata.domain,
         },
         expr: 'flux_helm_operator_release_condition_info{condition="RolledBack"} == 1',
