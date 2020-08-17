@@ -26,14 +26,6 @@ local linkerdController(me) = k8s.k('monitoring.coreos.com/v1', 'PodMonitor') + 
         relabelings: [
           {
             sourceLabels: [
-              '__name__',
-            ],
-            targetLabel: '__name__',
-            replacement: 'linkerd_${1}',
-            action: 'replace',
-          },
-          {
-            sourceLabels: [
               'linkerd_io_control_plane_component',
             ],
             targetLabel: 'component',
@@ -67,14 +59,6 @@ local linkerdProxy(me) = k8s.k('monitoring.coreos.com/v1', 'PodMonitor') + k8s.m
         port: 'linkerd-admin',
         interval: '10s',
         relabelings: [
-          {
-            sourceLabels: [
-              '__name__',
-            ],
-            targetLabel: '__name__',
-            replacement: 'linkerd_${1}',
-            action: 'replace',
-          },
           {
             sourceLabels: [
               'linkerd_io_proxy_deployment',
