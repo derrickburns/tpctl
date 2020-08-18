@@ -18,7 +18,7 @@ local dashboardConfig = {
   editable: false,
   gnetId: null,
   graphTooltip: 0,
-  iteration: 1596473142184,
+  iteration: 1597756531819,
   links: [],
   panels: [
     {
@@ -66,7 +66,7 @@ local dashboardConfig = {
         min: false,
         rightSide: true,
         show: true,
-        total: true,
+        total: false,
         values: true,
       },
       lines: true,
@@ -85,7 +85,7 @@ local dashboardConfig = {
       steppedLine: false,
       targets: [
         {
-          expr: 'sum(increase(tidepool_shoreline_failed_status_count{namespace="$env"}[1m])) by (status_reason, status_code)',
+          expr: 'sum(increase(tidepool_shoreline_failed_status_count{namespace="$env"}[2m])) by (status_reason, status_code)',
           interval: '',
           legendFormat: '{{status_reason}} - {{status_code}}',
           refId: 'A',
@@ -95,7 +95,7 @@ local dashboardConfig = {
       timeFrom: null,
       timeRegions: [],
       timeShift: null,
-      title: 'Failed Statuses [1m]',
+      title: 'Failed Statuses [2m]',
       tooltip: {
         shared: true,
         sort: 0,
@@ -284,7 +284,7 @@ local dashboardConfig = {
       steppedLine: false,
       targets: [
         {
-          expr: 'sum(increase(tidepool_shoreline_failed_marketo_upload_total{namespace="$env"}[1m])) by (service)',
+          expr: 'sum(increase(tidepool_shoreline_failed_marketo_upload_total{namespace="$env"}[2m])) by (service)',
           interval: '',
           legendFormat: '{{ service }}',
           refId: 'A',
@@ -294,7 +294,7 @@ local dashboardConfig = {
       timeFrom: null,
       timeRegions: [],
       timeShift: null,
-      title: 'Failed Uploads to Marketo [1m]',
+      title: 'Failed Uploads to Marketo [2m]',
       tooltip: {
         shared: true,
         sort: 0,
@@ -390,7 +390,7 @@ local dashboardConfig = {
     ],
   },
   time: {
-    from: 'now-12h',
+    from: 'now-2d',
     to: 'now',
   },
   timepicker: {
@@ -409,7 +409,7 @@ local dashboardConfig = {
   timezone: 'utc',
   title: 'Shoreline',
   uid: '5sv7jfiGk',
-  version: 1,
+  version: 2,
 };
 
 local configmap(me) = grafana.dashboard(me, 'tidepool-shoreline', dashboardConfig);
