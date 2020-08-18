@@ -18,7 +18,7 @@ local dashboardConfig = {
   editable: false,
   gnetId: null,
   graphTooltip: 0,
-  iteration: 1597700538123,
+  iteration: 1597758746977,
   links: [],
   panels: [
     {
@@ -47,15 +47,15 @@ local dashboardConfig = {
       interval: '',
       legend: {
         alignAsTable: true,
-        avg: true,
-        current: true,
+        avg: false,
+        current: false,
         hideZero: true,
         max: false,
         min: false,
         rightSide: true,
         show: true,
-        total: true,
-        values: true,
+        total: false,
+        values: false,
       },
       lines: true,
       linewidth: 1,
@@ -123,7 +123,6 @@ local dashboardConfig = {
       },
     },
   ],
-  refresh: false,
   schemaVersion: 25,
   style: 'dark',
   tags: [
@@ -178,7 +177,7 @@ local dashboardConfig = {
     ],
   },
   time: {
-    from: 'now-2d',
+    from: 'now-7d',
     to: 'now',
   },
   timepicker: {
