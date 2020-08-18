@@ -18,7 +18,7 @@ local dashboardConfig = {
   editable: false,
   gnetId: null,
   graphTooltip: 0,
-  iteration: 1597756531819,
+  iteration: 1597756106999,
   links: [],
   panels: [
     {
@@ -284,7 +284,7 @@ local dashboardConfig = {
       steppedLine: false,
       targets: [
         {
-          expr: 'sum(increase(tidepool_shoreline_failed_marketo_upload_total{namespace="$env"}[2m])) by (service)',
+          expr: 'sum(increase(tidepool_shoreline_failed_marketo_upload_total{namespace="$env"}[5m])) by (service)',
           interval: '',
           legendFormat: '{{ service }}',
           refId: 'A',
@@ -294,7 +294,7 @@ local dashboardConfig = {
       timeFrom: null,
       timeRegions: [],
       timeShift: null,
-      title: 'Failed Uploads to Marketo [2m]',
+      title: 'Failed Uploads to Marketo [5m]',
       tooltip: {
         shared: true,
         sort: 0,
@@ -365,8 +365,8 @@ local dashboardConfig = {
         allValue: null,
         current: {
           selected: false,
-          text: 'qa1',
-          value: 'qa1',
+          text: 'tidepool-prod',
+          value: 'tidepool-prod',
         },
         datasource: '$datasource',
         definition: 'label_values(tidepool_shoreline_failed_status_count, namespace)',
