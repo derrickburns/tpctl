@@ -63,7 +63,7 @@ local dashboardConfig = {
         x: 0,
         y: 1,
       },
-      id: 3,
+      id: 5,
       options: {
         colorMode: 'value',
         graphMode: 'area',
@@ -80,7 +80,7 @@ local dashboardConfig = {
       pluginVersion: '7.0.3',
       targets: [
         {
-          expr: 'kube_poddisruptionbudget_status_desired_healthy{namespace=~"$namespace",poddisruptionbudget=~"$pdb"}',
+          expr: 'kube_poddisruptionbudget_status_pod_disruptions_allowed{namespace=~"$namespace",poddisruptionbudget=~"$pdb"}',
           format: 'time_series',
           instant: true,
           interval: '',
@@ -90,7 +90,7 @@ local dashboardConfig = {
       ],
       timeFrom: null,
       timeShift: null,
-      title: 'Desired healthy',
+      title: 'Disruptions allowed',
       type: 'stat',
     },
     {
@@ -123,7 +123,7 @@ local dashboardConfig = {
         x: 6,
         y: 1,
       },
-      id: 4,
+      id: 3,
       options: {
         colorMode: 'value',
         graphMode: 'area',
@@ -140,7 +140,7 @@ local dashboardConfig = {
       pluginVersion: '7.0.3',
       targets: [
         {
-          expr: 'kube_poddisruptionbudget_status_current_healthy{namespace=~"$namespace",poddisruptionbudget=~"$pdb"}',
+          expr: 'kube_poddisruptionbudget_status_desired_healthy{namespace=~"$namespace",poddisruptionbudget=~"$pdb"}',
           format: 'time_series',
           instant: true,
           interval: '',
@@ -150,7 +150,7 @@ local dashboardConfig = {
       ],
       timeFrom: null,
       timeShift: null,
-      title: 'Currently healthy',
+      title: 'Acceptable Available',
       type: 'stat',
     },
     {
@@ -183,7 +183,7 @@ local dashboardConfig = {
         x: 12,
         y: 1,
       },
-      id: 5,
+      id: 4,
       options: {
         colorMode: 'value',
         graphMode: 'area',
@@ -200,7 +200,7 @@ local dashboardConfig = {
       pluginVersion: '7.0.3',
       targets: [
         {
-          expr: 'kube_poddisruptionbudget_status_pod_disruptions_allowed{namespace=~"$namespace",poddisruptionbudget=~"$pdb"}',
+          expr: 'kube_poddisruptionbudget_status_current_healthy{namespace=~"$namespace",poddisruptionbudget=~"$pdb"}',
           format: 'time_series',
           instant: true,
           interval: '',
@@ -210,7 +210,7 @@ local dashboardConfig = {
       ],
       timeFrom: null,
       timeShift: null,
-      title: 'Disruptions allowed',
+      title: 'Currently Available',
       type: 'stat',
     },
     {
@@ -270,7 +270,7 @@ local dashboardConfig = {
       ],
       timeFrom: null,
       timeShift: null,
-      title: 'Expected pods',
+      title: 'Expected',
       type: 'stat',
     },
     {
@@ -341,7 +341,7 @@ local dashboardConfig = {
           format: 'time_series',
           instant: false,
           interval: '',
-          legendFormat: 'Currently healthy',
+          legendFormat: 'Currently Available',
           refId: 'A',
         },
         {
@@ -353,7 +353,7 @@ local dashboardConfig = {
         {
           expr: 'kube_poddisruptionbudget_status_desired_healthy{namespace=~"$namespace",poddisruptionbudget=~"$pdb"}',
           interval: '',
-          legendFormat: 'Desired',
+          legendFormat: 'Acceptable Available',
           refId: 'C',
         },
         {
@@ -525,9 +525,9 @@ local dashboardConfig = {
               poddisruptionbudget: 0,
             },
             renameByName: {
-              'Value #A': 'Currently Healthy',
+              'Value #A': 'Currently Available',
               'Value #B': 'Expected',
-              'Value #C': 'Desired Available',
+              'Value #C': 'Accepted Available',
               'Value #D': 'Disruptions Allowed',
               poddisruptionbudget: 'Pod Disruption Budget',
             },
