@@ -18,9 +18,21 @@ local dashboardConfig = {
   editable: false,
   gnetId: null,
   graphTooltip: 0,
-  iteration: 1595188363076,
+  iteration: 1597777823686,
   links: [],
   panels: [
+    {
+      datasource: null,
+      gridPos: {
+        h: 1,
+        w: 24,
+        x: 0,
+        y: 0,
+      },
+      id: 11,
+      title: '$pdb',
+      type: 'row',
+    },
     {
       datasource: '$datasource',
       fieldConfig: {
@@ -49,7 +61,7 @@ local dashboardConfig = {
         h: 5,
         w: 6,
         x: 0,
-        y: 0,
+        y: 1,
       },
       id: 3,
       options: {
@@ -109,7 +121,7 @@ local dashboardConfig = {
         h: 5,
         w: 6,
         x: 6,
-        y: 0,
+        y: 1,
       },
       id: 4,
       options: {
@@ -169,7 +181,7 @@ local dashboardConfig = {
         h: 5,
         w: 6,
         x: 12,
-        y: 0,
+        y: 1,
       },
       id: 5,
       options: {
@@ -229,7 +241,7 @@ local dashboardConfig = {
         h: 5,
         w: 6,
         x: 18,
-        y: 0,
+        y: 1,
       },
       id: 6,
       options: {
@@ -295,7 +307,7 @@ local dashboardConfig = {
         h: 9,
         w: 24,
         x: 0,
-        y: 5,
+        y: 6,
       },
       hiddenSeries: false,
       id: 2,
@@ -394,6 +406,136 @@ local dashboardConfig = {
         alignLevel: null,
       },
     },
+    {
+      collapsed: false,
+      datasource: null,
+      gridPos: {
+        h: 1,
+        w: 24,
+        x: 0,
+        y: 15,
+      },
+      id: 9,
+      panels: [],
+      title: 'Namespace Summary',
+      type: 'row',
+    },
+    {
+      datasource: '$datasource',
+      fieldConfig: {
+        defaults: {
+          custom: {
+            align: null,
+          },
+          mappings: [],
+          thresholds: {
+            mode: 'absolute',
+            steps: [
+              {
+                color: 'green',
+                value: null,
+              },
+              {
+                color: 'red',
+                value: 80,
+              },
+            ],
+          },
+        },
+        overrides: [],
+      },
+      gridPos: {
+        h: 9,
+        w: 24,
+        x: 0,
+        y: 16,
+      },
+      id: 7,
+      options: {
+        showHeader: true,
+      },
+      pluginVersion: '7.0.3',
+      targets: [
+        {
+          expr: 'kube_poddisruptionbudget_status_current_healthy{namespace=~"$namespace"}',
+          format: 'table',
+          instant: false,
+          interval: '',
+          legendFormat: '',
+          refId: 'A',
+        },
+        {
+          expr: 'kube_poddisruptionbudget_status_expected_pods{namespace=~"$namespace"}',
+          format: 'table',
+          instant: true,
+          interval: '',
+          legendFormat: '',
+          refId: 'B',
+        },
+        {
+          expr: 'kube_poddisruptionbudget_status_desired_healthy{namespace=~"$namespace"}',
+          format: 'table',
+          instant: true,
+          interval: '',
+          legendFormat: '',
+          refId: 'C',
+        },
+        {
+          expr: 'kube_poddisruptionbudget_status_pod_disruptions_allowed{namespace=~"$namespace"}',
+          format: 'table',
+          instant: true,
+          interval: '',
+          legendFormat: '',
+          refId: 'D',
+        },
+      ],
+      timeFrom: null,
+      timeShift: null,
+      title: '$namespace PDBs',
+      transformations: [
+        {
+          id: 'seriesToColumns',
+          options: {
+            byField: 'poddisruptionbudget',
+          },
+        },
+        {
+          id: 'filterFieldsByName',
+          options: {
+            include: {
+              names: [
+                'poddisruptionbudget',
+                'Value #A',
+                'Value #B',
+                'Value #C',
+                'Value #D',
+              ],
+            },
+          },
+        },
+        {
+          id: 'organize',
+          options: {
+            excludeByName: {},
+            indexByName: {
+              'Value #A': 3,
+              'Value #B': 4,
+              'Value #C': 2,
+              'Value #D': 1,
+              poddisruptionbudget: 0,
+            },
+            renameByName: {
+              'Value #A': 'Currently Healthy',
+              'Value #B': 'Expected',
+              'Value #C': 'Desired Available',
+              'Value #D': 'Disruptions Allowed',
+              poddisruptionbudget: 'Pod Disruption Budget',
+            },
+          },
+        },
+      ],
+      type: 'table',
+    },
   ],
   schemaVersion: 25,
   style: 'dark',
@@ -426,10 +568,9 @@ local dashboardConfig = {
         current: {
           selected: true,
           tags: [],
-          text: 'kafka + qa2',
+          text: 'kube-system',
           value: [
-            'kafka',
-            'qa2',
+            'kube-system',
           ],
         },
         datasource: '$datasource',
@@ -454,9 +595,9 @@ local dashboardConfig = {
       {
         allValue: null,
         current: {
-          selected: true,
-          text: 'blob',
-          value: 'blob',
+          selected: false,
+          text: 'cluster-autoscaler',
+          value: 'cluster-autoscaler',
         },
         datasource: '$datasource',
         definition: 'label_values(kube_poddisruptionbudget_status_current_healthy{namespace=~"$namespace"}, poddisruptionbudget)',
@@ -499,7 +640,7 @@ local dashboardConfig = {
   timezone: 'utc',
   title: 'Kubernetes / Autoscaler / Pod Disruption Budget',
   uid: 'bTvhizMGz',
-  version: 2,
+  version: 1,
 };
 
 local configmap(me) = grafana.dashboard(me, 'pdb', dashboardConfig);
