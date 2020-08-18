@@ -25,7 +25,7 @@ function(config, prev, namespace, pkg) (
       matchLabels: {
         gloo: 'gloo',
       },
-    }, lib.isEnabledAt(me, 'pdb'), 'gloo'),
+    }, lib.isEnabledAt(me, 'gloo.pdb'), 'gloo'),
     add_pdb(me, {
       matchLabels: {
         'gateway-proxy-id': 'gateway-proxy',
