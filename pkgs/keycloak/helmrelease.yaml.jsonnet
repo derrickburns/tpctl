@@ -35,10 +35,6 @@ local helmrelease(me) = (
               name: 'PROXY_ADDRESS_FORWARDING',
               value: 'true',
             },
-            {
-              name: 'KEYCLOAK_STATISTICS',
-              value: 'all',
-            },
           ],
           indent_array_in_object=false
         ),
@@ -52,9 +48,21 @@ local helmrelease(me) = (
               volumeMounts: [
                 {
                   name: 'extensions',
-                  mountPath: '/deployments'
-                }
-              ]
+                  mountPath: '/deployments',
+                },
+              ],
+            },
+            {
+              name: 'prometheus-metrics',
+              image: 'busybox',
+              imagePullPolicy: 'IfNotPresent',
+              command: ['wget', '-O', '/deployments/keycloak-metrics-spi.jar', 'https://github.com/aerogear/keycloak-metrics-spi/releases/download/1.0.1/keycloak-metrics-spi-1.0.1.jar'],
+              volumeMounts: [
+                {
+                  name: 'extensions',
+                  mountPath: '/deployments',
+                },
+              ],
             },
           ],
           indent_array_in_object=false
