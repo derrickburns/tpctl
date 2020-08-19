@@ -20,6 +20,7 @@ local grafanaConfig(me) = k8s.configmap(me, 'grafana-ini') {
           header_property: 'email',
           auto_sign_up: true,
           sync_ttl: '60',
+          default_home_dashboard_path: '/tmp/dashboards/home.json',
         },
         log: {
           mode: 'console',
