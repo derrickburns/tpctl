@@ -74,6 +74,7 @@ local dashboardConfig = {
         },
         overrides: [],
       },
+      folderId: null,
       gridPos: {
         h: 4,
         w: 8,
@@ -256,7 +257,7 @@ local dashboardConfig = {
       },
       folderId: null,
       gridPos: {
-        h: 4,
+        h: 8,
         w: 8,
         x: 0,
         y: 20,
@@ -342,34 +343,6 @@ local dashboardConfig = {
       gridPos: {
         h: 4,
         w: 8,
-        x: 0,
-        y: 24,
-      },
-      headings: false,
-      id: 36,
-      limit: 10,
-      query: 'Persistent Volumes',
-      recent: false,
-      search: true,
-      starred: false,
-      tags: [],
-      timeFrom: null,
-      timeShift: null,
-      title: 'Persistent Volumes',
-      type: 'dashlist',
-    },
-    {
-      datasource: '$datasource',
-      fieldConfig: {
-        defaults: {
-          custom: {},
-        },
-        overrides: [],
-      },
-      folderId: null,
-      gridPos: {
-        h: 4,
-        w: 8,
         x: 8,
         y: 24,
       },
@@ -384,6 +357,34 @@ local dashboardConfig = {
       timeFrom: null,
       timeShift: null,
       title: 'Cronjobs / Jobs',
+      type: 'dashlist',
+    },
+    {
+      datasource: '$datasource',
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
+      folderId: null,
+      gridPos: {
+        h: 4,
+        w: 8,
+        x: 16,
+        y: 24,
+      },
+      headings: false,
+      id: 36,
+      limit: 10,
+      query: 'Persistent Volumes',
+      recent: false,
+      search: true,
+      starred: false,
+      tags: [],
+      timeFrom: null,
+      timeShift: null,
+      title: 'Persistent Volumes',
       type: 'dashlist',
     },
     {
@@ -861,7 +862,7 @@ local dashboardConfig = {
   timezone: 'utc',
   title: 'Home',
   uid: 'HRN3fEzGk',
-  version: 1,
+  version: 2,
 };
 
 local configmap(me) = grafana.dashboard(me, 'home', dashboardConfig);
