@@ -8,6 +8,7 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '9.2.2' }) {
     values+: {
       grafana: {
         enabled: lib.isEnabledAt(me, 'grafana'),
+        plugins: ['grafana-piechart-panel']
         persistence: {
           enabled: true,
           storageClassName: 'monitoring-expanding',
