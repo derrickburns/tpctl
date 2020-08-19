@@ -87,6 +87,8 @@ local helmrelease(me) = (
         ),
         serviceMonitor: {
           enabled: true,
+          path: '/auth/realms/master/metrics',
+          port: 'http',
         },
         extraEnvFrom: std.manifestYamlDoc(
           [
