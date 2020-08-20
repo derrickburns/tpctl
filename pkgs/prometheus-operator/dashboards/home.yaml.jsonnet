@@ -98,6 +98,36 @@ local dashboardConfig = {
     },
     {
       datasource: '$datasource',
+      description: '',
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
+      gridPos: {
+        h: 4,
+        w: 8,
+        x: 16,
+        y: 1,
+      },
+      headings: false,
+      id: 39,
+      limit: 10,
+      query: 'Tide Whisperer',
+      recent: false,
+      search: true,
+      starred: false,
+      tags: [
+        'tide-whisperer',
+      ],
+      timeFrom: null,
+      timeShift: null,
+      title: 'Tide Whisperer',
+      type: 'dashlist',
+    },
+    {
+      datasource: '$datasource',
       fieldConfig: {
         defaults: {
           custom: {},
@@ -155,6 +185,11 @@ local dashboardConfig = {
       },
       id: 6,
       mode: 'html',
+      options: {
+        content: '<h3 style="text-align: center;">\nKubernetes Resources\n</h3>\n<hr/>\n\n',
+        mode: 'html',
+      },
+      pluginVersion: '7.1.0',
       timeFrom: null,
       timeShift: null,
       title: '',
@@ -404,6 +439,11 @@ local dashboardConfig = {
       },
       id: 19,
       mode: 'html',
+      options: {
+        content: '<hr/>\n',
+        mode: 'html',
+      },
+      pluginVersion: '7.1.0',
       timeFrom: null,
       timeShift: null,
       title: '',
@@ -427,6 +467,11 @@ local dashboardConfig = {
       },
       id: 8,
       mode: 'html',
+      options: {
+        content: '<h3 style="text-align: center;">\nAPI Gateway\n</h3>\n<hr/>\n\n',
+        mode: 'html',
+      },
+      pluginVersion: '7.1.0',
       timeFrom: null,
       timeShift: null,
       title: '',
@@ -450,6 +495,11 @@ local dashboardConfig = {
       },
       id: 9,
       mode: 'html',
+      options: {
+        content: '<h3 style="text-align: center;">\nLinkerd\n</h3>\n<hr/>\n\n',
+        mode: 'html',
+      },
+      pluginVersion: '7.1.0',
       timeFrom: null,
       timeShift: null,
       title: '',
@@ -557,6 +607,11 @@ local dashboardConfig = {
       },
       id: 12,
       mode: 'html',
+      options: {
+        content: '<h3 style="text-align: center;">\nCI/CD\n</h3>\n<hr/>\n\n',
+        mode: 'html',
+      },
+      pluginVersion: '7.1.0',
       timeFrom: null,
       timeShift: null,
       title: '',
@@ -666,6 +721,11 @@ local dashboardConfig = {
       },
       id: 15,
       mode: 'html',
+      options: {
+        content: '<h3 style="text-align: center;">\nUtils\n</h3>\n<hr/>\n\n',
+        mode: 'html',
+      },
+      pluginVersion: '7.1.0',
       timeFrom: null,
       timeShift: null,
       title: '',
@@ -745,6 +805,11 @@ local dashboardConfig = {
       },
       id: 20,
       mode: 'html',
+      options: {
+        content: '<h3 style="text-align: center;">\nMonitoring\n</h3>\n<hr/>\n\n',
+        mode: 'html',
+      },
+      pluginVersion: '7.1.0',
       timeFrom: null,
       timeShift: null,
       title: '',
@@ -836,7 +901,7 @@ local dashboardConfig = {
       type: 'dashlist',
     },
   ],
-  schemaVersion: 25,
+  schemaVersion: 26,
   style: 'dark',
   tags: [],
   templating: {
@@ -862,7 +927,7 @@ local dashboardConfig = {
   timezone: 'utc',
   title: 'Home',
   uid: 'HRN3fEzGk',
-  version: 2,
+  version: 1,
 };
 
 local configmap(me) = grafana.dashboard(me, 'home', dashboardConfig);

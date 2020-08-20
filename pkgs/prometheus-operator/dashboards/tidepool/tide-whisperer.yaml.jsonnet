@@ -15,11 +15,11 @@ local dashboardConfig = {
       },
     ],
   },
-  editable: true,
+  editable: false,
   gnetId: null,
   graphTooltip: 0,
   id: 392,
-  iteration: 1597930264903,
+  iteration: 1597930495773,
   links: [],
   panels: [
     {
@@ -118,7 +118,9 @@ local dashboardConfig = {
   ],
   schemaVersion: 26,
   style: 'dark',
-  tags: [],
+  tags: [
+    'tide-whisperer',
+  ],
   templating: {
     list: [
       {
