@@ -62,23 +62,21 @@ data:
 
         • {{ template "__alert_severity" . }}
 
-        {{ range .Alerts }}
+        {{- if .Annotations.summary }}
+        • *Summary:* {{ .Annotations.summary }}
+        {{- end }}
 
-            {{- if .Annotations.summary }}
-              {{- "\n" -}}
-              *Summary:* {{ .Annotations.summary }}
-              {{- "\n" -}}
-            {{- end }}
+        {{ range .Alerts }}
 
             {{- if .Annotations.description }}
               {{- "\n" -}}
-              *Description:* {{ .Annotations.description }}
+              > {{ .Annotations.description }}
               {{- "\n" -}}
             {{- end }}
 
             {{- if .Annotations.message }}
               {{- "\n" -}}
-              {{ .Annotations.message }}
+              > {{ .Annotations.message }}
               {{- "\n" -}}
             {{- end }}
 
