@@ -26,6 +26,9 @@ local helmrelease(me) = k8s.helmrelease(me, { name: 'cost-analyzer', version: li
       serviceMonitor: {
         enabled: true,
       },
+      prometheusRule: {
+        enabled: true,
+      },
       persistentVolume: {
         storageClass: 'gp2-expanding',
       },
