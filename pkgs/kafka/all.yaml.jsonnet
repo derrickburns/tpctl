@@ -3,7 +3,7 @@ local global = import '../../lib/global.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 
 local kafka(me) = k8s.k('kafka.strimzi.io/v1beta1', 'Kafka') + k8s.metadata(me.pkg, me.namespace) {
-  spec+: {
+  spec+: lib.merge({
     entityOperator: {
       topicOperator: {},
       userOperator: {},
@@ -41,7 +41,7 @@ local kafka(me) = k8s.k('kafka.strimzi.io/v1beta1', 'Kafka') + k8s.metadata(me.p
         type: 'persistent-claim',
       },
     },
-  },
+  }, lib.getElse(me, 'spec', {})),
 };
 
 local externalname(me) = k8s.externalname( me {
