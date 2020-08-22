@@ -19,7 +19,7 @@ local dashboardConfig = {
   editable: false,
   gnetId: 3831,
   graphTooltip: 0,
-  iteration: 1598019262241,
+  iteration: 1598134822715,
   links: [],
   panels: [
     {
@@ -83,8 +83,9 @@ local dashboardConfig = {
           fields: '',
           values: false,
         },
+        textMode: 'auto',
       },
-      pluginVersion: '7.0.3',
+      pluginVersion: '7.1.1',
       targets: [
         {
           expr: 'sum(cluster_autoscaler_nodes_count)\n',
@@ -164,7 +165,7 @@ local dashboardConfig = {
         showThresholdLabels: false,
         showThresholdMarkers: false,
       },
-      pluginVersion: '7.0.3',
+      pluginVersion: '7.1.1',
       targets: [
         {
           expr: 'sum(cluster_autoscaler_nodes_count{state="ready"})/sum(cluster_autoscaler_nodes_count)*100',
@@ -253,8 +254,9 @@ local dashboardConfig = {
           fields: '',
           values: false,
         },
+        textMode: 'auto',
       },
-      pluginVersion: '7.0.3',
+      pluginVersion: '7.1.1',
       targets: [
         {
           expr: 'sum(cluster_autoscaler_cluster_safe_to_autoscale)',
@@ -324,8 +326,9 @@ local dashboardConfig = {
           fields: '',
           values: false,
         },
+        textMode: 'auto',
       },
-      pluginVersion: '7.0.3',
+      pluginVersion: '7.1.1',
       targets: [
         {
           expr: 'sum(cluster_autoscaler_unschedulable_pods_count)',
@@ -400,8 +403,9 @@ local dashboardConfig = {
           fields: '',
           values: false,
         },
+        textMode: 'auto',
       },
-      pluginVersion: '7.0.3',
+      pluginVersion: '7.1.1',
       targets: [
         {
           expr: 'sum(time()-cluster_autoscaler_last_activity{activity="scaleDown"})',
@@ -477,8 +481,9 @@ local dashboardConfig = {
           fields: '',
           values: false,
         },
+        textMode: 'auto',
       },
-      pluginVersion: '7.0.3',
+      pluginVersion: '7.1.1',
       targets: [
         {
           expr: 'sum(time()-cluster_autoscaler_last_activity{activity="autoscaling"})',
@@ -506,6 +511,7 @@ local dashboardConfig = {
       fieldConfig: {
         defaults: {
           custom: {},
+          links: [],
         },
         overrides: [],
       },
@@ -534,10 +540,8 @@ local dashboardConfig = {
       linewidth: 2,
       links: [],
       nullPointMode: 'null as zero',
-      options: {
-        dataLinks: [],
-      },
       percentage: false,
+      pluginVersion: '7.1.1',
       pointradius: 5,
       points: false,
       renderer: 'flot',
@@ -547,8 +551,9 @@ local dashboardConfig = {
       steppedLine: false,
       targets: [
         {
-          expr: 'sum(cluster_autoscaler_unschedulable_pods_count)',
+          expr: 'sum(increase(cluster_autoscaler_unschedulable_pods_count[1m]))',
           format: 'time_series',
+          instant: false,
           interval: '',
           intervalFactor: 1,
           legendFormat: 'unscheduled pods',
@@ -556,9 +561,10 @@ local dashboardConfig = {
           step: 60,
         },
         {
-          expr: 'sum(cluster_autoscaler_evicted_pods_total)',
+          expr: 'sum(increase(cluster_autoscaler_evicted_pods_total[1m]))',
           format: 'time_series',
           hide: false,
+          instant: false,
           interval: '',
           intervalFactor: 1,
           legendFormat: 'evicted pods',
@@ -624,6 +630,7 @@ local dashboardConfig = {
       fieldConfig: {
         defaults: {
           custom: {},
+          links: [],
         },
         overrides: [],
       },
@@ -652,10 +659,8 @@ local dashboardConfig = {
       linewidth: 2,
       links: [],
       nullPointMode: 'null as zero',
-      options: {
-        dataLinks: [],
-      },
       percentage: false,
+      pluginVersion: '7.1.1',
       pointradius: 5,
       points: false,
       renderer: 'flot',
@@ -750,6 +755,7 @@ local dashboardConfig = {
       fieldConfig: {
         defaults: {
           custom: {},
+          links: [],
         },
         overrides: [],
       },
@@ -778,10 +784,8 @@ local dashboardConfig = {
       linewidth: 2,
       links: [],
       nullPointMode: 'connected',
-      options: {
-        dataLinks: [],
-      },
       percentage: false,
+      pluginVersion: '7.1.1',
       pointradius: 5,
       points: false,
       renderer: 'flot',
@@ -809,23 +813,23 @@ local dashboardConfig = {
           step: 40,
         },
         {
-          expr: 'sum(cluster_autoscaler_scaled_up_nodes_total)',
+          expr: 'sum(increase(cluster_autoscaler_scaled_up_nodes_total[1m]))',
           format: 'time_series',
           hide: false,
           interval: '',
           intervalFactor: 1,
-          legendFormat: 'scaled up total',
+          legendFormat: 'scaled up',
           metric: '',
           refId: 'B',
           step: 200,
         },
         {
-          expr: 'sum(cluster_autoscaler_scaled_down_nodes_total)',
+          expr: 'sum(increase(cluster_autoscaler_scaled_down_nodes_total[1m]))',
           format: 'time_series',
           hide: false,
           interval: '',
           intervalFactor: 1,
-          legendFormat: 'scaled down total',
+          legendFormat: 'scaled down',
           metric: '',
           refId: 'A',
           step: 200,
@@ -953,8 +957,9 @@ local dashboardConfig = {
           fields: '',
           values: false,
         },
+        textMode: 'auto',
       },
-      pluginVersion: '7.0.3',
+      pluginVersion: '7.1.1',
       targets: [
         {
           expr: 'sum(cluster_autoscaler_scaled_up_nodes_total)-sum(cluster_autoscaler_scaled_down_nodes_total)',
@@ -971,7 +976,7 @@ local dashboardConfig = {
     },
   ],
   refresh: false,
-  schemaVersion: 25,
+  schemaVersion: 26,
   style: 'dark',
   tags: [
     'prometheus',
@@ -999,7 +1004,7 @@ local dashboardConfig = {
     ],
   },
   time: {
-    from: 'now-5m',
+    from: 'now-12h',
     to: 'now',
   },
   timepicker: {
@@ -1029,7 +1034,7 @@ local dashboardConfig = {
   timezone: 'utc',
   title: 'Kubernetes / Autoscaler / Cluster Autoscaler',
   uid: 'Yb9THjkMk',
-  version: 1,
+  version: 2,
 };
 
 local configmap(me) = grafana.dashboard(me, 'cluster-autoscaler', dashboardConfig);
