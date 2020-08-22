@@ -205,7 +205,6 @@ local dashboardConfig = {
         },
         overrides: [],
       },
-      folderId: null,
       gridPos: {
         h: 9,
         w: 8,
@@ -219,7 +218,9 @@ local dashboardConfig = {
       recent: false,
       search: true,
       starred: false,
-      tags: [],
+      tags: [
+        'kubernetes-mixin',
+      ],
       timeFrom: null,
       timeShift: null,
       title: 'Cluster',
@@ -983,7 +984,7 @@ local dashboardConfig = {
   timezone: 'utc',
   title: 'Home',
   uid: 'HRN3fEzGk',
-  version: 2,
+  version: 3,
 };
 
 local configmap(me) = grafana.dashboard(me, 'home', dashboardConfig);
