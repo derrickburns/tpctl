@@ -105,6 +105,7 @@ local dashboardConfig = {
         },
         overrides: [],
       },
+      folderId: null,
       gridPos: {
         h: 4,
         w: 8,
@@ -900,6 +901,61 @@ local dashboardConfig = {
       title: 'Alertmanager',
       type: 'dashlist',
     },
+    {
+      content: '<h3 style="text-align: center;">\nMonitoring\n</h3>\n<hr/>\n\n',
+      datasource: '$datasource',
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
+      gridPos: {
+        h: 2,
+        w: 24,
+        x: 0,
+        y: 60,
+      },
+      id: 40,
+      mode: 'html',
+      options: {
+        content: '<h3 style="text-align: center;">\nAdministration\n</h3>\n<hr/>\n\n',
+        mode: 'html',
+      },
+      pluginVersion: '7.1.0',
+      timeFrom: null,
+      timeShift: null,
+      title: '',
+      transparent: true,
+      type: 'text',
+    },
+    {
+      datasource: '$datasource',
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
+      gridPos: {
+        h: 5,
+        w: 8,
+        x: 0,
+        y: 62,
+      },
+      headings: false,
+      id: 41,
+      limit: 10,
+      query: 'Kubecost',
+      recent: false,
+      search: true,
+      starred: false,
+      tags: [],
+      timeFrom: null,
+      timeShift: null,
+      title: 'Kubecost',
+      type: 'dashlist',
+    },
   ],
   schemaVersion: 26,
   style: 'dark',
@@ -927,7 +983,7 @@ local dashboardConfig = {
   timezone: 'utc',
   title: 'Home',
   uid: 'HRN3fEzGk',
-  version: 1,
+  version: 2,
 };
 
 local configmap(me) = grafana.dashboard(me, 'home', dashboardConfig);
