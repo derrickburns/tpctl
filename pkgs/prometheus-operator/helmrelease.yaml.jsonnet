@@ -97,11 +97,11 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '9.3.1' }) {
               },
             },
           ],
-          resources: {
+          resources: lib.getElse(me, 'prometheus.resources', {
             limits: {
               memory: '12G',
             },
-          },
+          }),
           affinity: {
             nodeAffinity: k8s.nodeAffinity(),
           },
