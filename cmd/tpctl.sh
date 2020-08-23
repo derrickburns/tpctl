@@ -356,7 +356,12 @@ function clone_remote() {
 
 function set_template_dir() {
   if [ "$UPDATE_TPCTL" == "true" ]; then
-    git submodule update --remote
+    if [ "$(ls -A tpctl)" ]; then
+      git submodule update --remote
+    else
+      git submodules init
+      git submodule update --remote
+    fi
   fi
   if [ "$USE_LOCAL_FILESYSTEM" == "true" ]; then
     export TEMPLATE_DIR="tpctl/"
