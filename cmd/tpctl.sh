@@ -359,7 +359,7 @@ function set_template_dir() {
     if [ "$(ls -A tpctl)" ]; then
       git submodule update --remote
     else
-      git submodules init
+      git submodule init
       git submodule update --remote
     fi
   fi
