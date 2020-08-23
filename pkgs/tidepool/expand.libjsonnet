@@ -67,7 +67,7 @@ local lib = import '../../lib/lib.jsonnet';
             enabled: true,
           },
           virtualHostOptions: {
-            cors: $.cors(if lib.isEnabledAt(me, 'cors') then dnsNames else []),
+            cors: $.cors(if lib.isEnabledAt(me, 'cors') then (dnsNames + lib.getElse(me, 'corsNames', [])) else []),
             stats: {
               virtualClusters: lib.getElse(me, 'virtualClusters', []),
             },
