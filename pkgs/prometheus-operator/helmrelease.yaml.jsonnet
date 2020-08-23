@@ -31,11 +31,13 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '9.3.1' }) {
             subPath: 'grafana.ini',
           },
         ],
-        resources: {
-          requests: {
-            memory: '500Mi',
+        resources: lib.getElse(
+          me, 'grafana.resources', {
+            requests: {
+              memory: '500Mi',
+            },
           },
-        },
+        ),
         affinity: {
           nodeAffinity: k8s.nodeAffinity(),
         },
