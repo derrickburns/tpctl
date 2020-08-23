@@ -14,7 +14,7 @@ local deployment(me) = flux.deployment(me) {
       k8s.envSecret('TIDEPOOL_STORE_TLS', 'mongo', 'Tls'),
       k8s.envSecret('GATEKEEPER_SECRET', 'userdata', 'GroupIdEncryptionKey'),
     ],
-    image: 'tidepool/platform-migrations:db-back-393-latest',
+    image: 'tidepool/platform-migrations:master-latest',
     name: 'platform-migrations',
   },
 };
