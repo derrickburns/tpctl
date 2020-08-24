@@ -18,9 +18,9 @@ local scrapeConfigs(me) = k8s.secret(me, name='prometheus-additionl-scrape-confi
             [
               {
                 targets: [
-                  'b-1.default-ops.dkr5k0.c4.kafka.us-west-2.amazonaws.com:11002',
-                  'b-2.default-ops.dkr5k0.c4.kafka.us-west-2.amazonaws.com:11002',
-                  'b-3.default-ops.dkr5k0.c4.kafka.us-west-2.amazonaws.com:11002',
+                  'b-1.default-ops.gxm6gl.c4.kafka.us-west-2.amazonaws.com:11002',
+                  'b-2.default-ops.gxm6gl.c4.kafka.us-west-2.amazonaws.com:11002',
+                  'b-3.default-ops.gxm6gl.c4.kafka.us-west-2.amazonaws.com:11002',
                 ],
                 labels: {
                   job: 'node-exporter',
@@ -28,9 +28,9 @@ local scrapeConfigs(me) = k8s.secret(me, name='prometheus-additionl-scrape-confi
               },
               {
                 targets: [
-                  'b-1.default-ops.dkr5k0.c4.kafka.us-west-2.amazonaws.com:11001',
-                  'b-2.default-ops.dkr5k0.c4.kafka.us-west-2.amazonaws.com:11001',
-                  'b-3.default-ops.dkr5k0.c4.kafka.us-west-2.amazonaws.com:11001',
+                  'b-1.default-ops.gxm6gl.c4.kafka.us-west-2.amazonaws.com:11001',
+                  'b-2.default-ops.gxm6gl.c4.kafka.us-west-2.amazonaws.com:11001',
+                  'b-3.default-ops.gxm6gl.c4.kafka.us-west-2.amazonaws.com:11001',
                 ],
                 labels: {
                   job: 'jmx-exporter',
