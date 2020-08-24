@@ -14,7 +14,7 @@ local helmrelease(me) = k8s.helmrelease(me, {
   spec+: {
     values: {
       image: {
-        tag: lib.getElse(me, 'version', '1.19.0'),
+        tag: lib.getElse(me, 'version', '1.20.1'),
       },
 
       helm: {
