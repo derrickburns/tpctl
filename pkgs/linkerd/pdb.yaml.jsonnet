@@ -48,7 +48,7 @@ function(config, prev, namespace, pkg) (
     }, lib.isEnabledAt(me, 'pdb'), 'linkerd-sp-validator'),
     add_pdb(me, {
       matchLabels: {
-        'linkerd.io/control-plane-component': 'linkerd-tap',
+        'linkerd.io/control-plane-component': 'tap',
       },
     }, lib.isEnabledAt(me, 'pdb'), 'linkerd-tap'),
   ]
