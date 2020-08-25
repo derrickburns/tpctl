@@ -6,7 +6,9 @@
 set -e
 export FLUX_FORWARD_NAMESPACE=flux
 export APPROVE=false
-export USE_LOCAL_FILESYSTEM=false
+export COMMIT=true
+export USE_LOCAL_TEMPLATE=false
+export USE_LOCAL_CONFIG=false
 export SKIP_REVIEW=false
 export GITHUB_ORG=${GITHUB_ORG:-tidepool-org}
 X=$( dirname "${BASH_SOURCE[0]}" )
@@ -338,7 +340,7 @@ function repo_with_token() {
 
 # clone remote
 function clone_remote() {
-  if [ "$USE_LOCAL_FILESYSTEM" == "false" ]; then
+  if [ "$USE_LOCAL_CONFIG" == "false" ]; then
     cd $TMP_DIR
     if [[ ! -d $(basename $HTTPS_REMOTE_REPO) ]]; then
       start "cloning configuration repo"
@@ -363,7 +365,7 @@ function set_template_dir() {
       git submodule update --remote
     fi
   fi
-  if [ "$USE_LOCAL_FILESYSTEM" == "true" ]; then
+  if [ "$USE_LOCAL_TEMPLATE" == "true" ]; then
     export TEMPLATE_DIR="tpctl/"
   elif [ -z "$TEMPLATE_DIR" ]; then
     export TEMPLATE_DIR="$(CDPATH= cd -- "$DIR" && cd .. && pwd -P)/"
@@ -970,32 +972,36 @@ function save_changes() {
     expect_success "git checkout failed"
   fi
   expect_success "git checkout failed"
-  git commit -m "$message"
   complete
-  expect_success "git commit failed"
-  if [ "$SKIP_REVIEW" == true ]; then
-    start "merging locally"
-    git checkout master
-    git merge $branch
-    git push
-    complete
-  else
-    start "pushing branch $branch"
-    git push origin $branch
-    expect_success "git push failed"
-    complete
-    echo "Please select PR reviewer: "
-    local reviewers=$(get_reviewers)
-    select REVIEWER in none $reviewers; do
-      if [ "$REVIEWER" == "none" ]; then
-        hub pull-request -m "$message"
-        expect_success "failed to create pull request, please create manually"
-      else
-        hub pull-request -m "$message" -r $REVIEWER
-        expect_success "failed to create pull request, please create manually"
-      fi
-      break
-    done
+  if [ "$COMMIT" == "true" ]
+  then
+    git commit -m "$message"
+  
+    expect_success "git commit failed"
+    if [ "$SKIP_REVIEW" == true ]; then
+      start "merging locally"
+      git checkout master
+      git merge $branch
+      git push
+      complete
+    else
+      start "pushing branch $branch"
+      git push origin $branch
+      expect_success "git push failed"
+      complete
+      echo "Please select PR reviewer: "
+      local reviewers=$(get_reviewers)
+      select REVIEWER in none $reviewers; do
+        if [ "$REVIEWER" == "none" ]; then
+          hub pull-request -m "$message"
+          expect_success "failed to create pull request, please create manually"
+        else
+          hub pull-request -m "$message" -r $REVIEWER
+          expect_success "failed to create pull request, please create manually"
+        fi
+        break
+      done
+    fi
   fi
 }
 
@@ -1374,7 +1380,7 @@ function make_repo() {
   expect_success "Could not create repo $org/$repo"
   complete
 
-  if [ "$USE_LOCAL_FILESYSTEM" == "true" ]; then
+  if [ "$USE_LOCAL_CONFIG" == "true" ]; then
     info "cloning configuration repo"
     git clone http://github.com/${org}/${repo}.git
     cd $repo
@@ -1462,23 +1468,31 @@ main() {
         set -x
         shift 1
         ;;
-      -l | --local)
-        USE_LOCAL_FILESYSTEM=true
+      --local-template)
+        USE_LOCAL_TEMPLATE=true
+        shift 1
+        ;;
+      --skip-commit)
+        COMMIT=false
+        shift 1
+        ;;   
+      --local-config)
+        USE_LOCAL_CONFIG=true
         shift 1
         ;;
       -v | --verbose)
         LOG_LEVEL=$2
-	shift 2
+	      shift 2
         ;;
       --no-update)
         UPDATE_TPCTL=false
-	shift 1
+	      shift 1
         ;;
       -p | --parallel)
         LOG_LEVEL=2
-	PARALLEL="true"
-	shift 1
-	;;
+	      PARALLEL="true"
+	      shift 1
+	      ;;
       -h | --help)
         help
         exit 0
