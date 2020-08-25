@@ -10,7 +10,7 @@ local cronJob(me, test) = k8s.k('argoproj.io/v1alpha1', 'CronWorkflow') + k8s.me
   spec: {
     schedule: test.schedule,
     timezone: 'Etc/UTC',
-    failedJobsHistoryLimit: 3,
+    failedJobsHistoryLimit: 20,
     workflowSpec: {
       serviceAccountName: 'argo-workflow',
       entrypoint: 'api-tests-%s-%s' % [test.name, std.asciiLower(test.env)],
