@@ -10,7 +10,8 @@ local cronJob(me, test) = k8s.k('argoproj.io/v1alpha1', 'CronWorkflow') + k8s.me
   spec: {
     schedule: test.schedule,
     timezone: 'Etc/UTC',
-    failedJobsHistoryLimit: 20,
+    failedJobsHistoryLimit: 6,
+    successfulJobsHistoryLimit: 6,
     workflowSpec: {
       serviceAccountName: 'argo-workflow',
       entrypoint: 'api-tests-%s-%s' % [test.name, std.asciiLower(test.env)],
@@ -26,6 +27,38 @@ local cronJob(me, test) = k8s.k('argoproj.io/v1alpha1', 'CronWorkflow') + k8s.me
       templates: [
         {
           name: 'api-tests-%s-%s' % [test.name, std.asciiLower(test.env)],
+          metrics: {
+            prometheus: [
+              {
+                name: 'api_tests_status',
+                help: 'Status indication of API tests',
+                labels: [
+                  {
+                    key: 'env',
+                    value: test.env,
+                  },
+                ],
+                when: '{{status}} == Failed',
+                gauge: {
+                  value: '0',
+                },
+              },
+              {
+                name: 'api_tests_status',
+                help: 'Status indication of API tests',
+                labels: [
+                  {
+                    key: 'env',
+                    value: test.env,
+                  },
+                ],
+                when: '{{status}} == Succeeded',
+                gauge: {
+                  value: '1',
+                },
+              },
+            ],
+          },
           container: {
             name: 'api-tests-%s-%s' % [test.name, std.asciiLower(test.env)],
             image: 'tidepool/api-tests:v0.3.0',
