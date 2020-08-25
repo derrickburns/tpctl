@@ -9,8 +9,8 @@ local groupConfig(me) = [
         alert: 'ApiTestFailed',
         annotations: {
           summary: 'API Test Failed.',
-          description: 'The API Test in ${labels.env} failed.',
-          dashboard_url: 'https://argo.shared.tidepool.org/workflows/qa?label=workflows.argoproj.io%2Fcron-workflow%3Dapi-tests-default-${labels.env}',
+          description: 'The API Test in {{ $labels.env }} failed.',
+          dashboard_url: 'https://argo.shared.tidepool.org/workflows/qa?label=workflows.argoproj.io%2Fcron-workflow%3Dapi-tests-default-{{ $labels.env }}',
         },
         expr: 'sum(argo_workflows_api_tests_status) by (env) == 0',
         'for': '1m',
