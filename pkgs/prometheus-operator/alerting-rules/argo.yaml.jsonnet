@@ -6,10 +6,10 @@ local groupConfig(me) = [
     name: 'argo.rules',
     rules: [
       {
-        alert: 'ApiTestFailed',
+        alert: 'APITestsFailed',
         annotations: {
-          summary: 'API Test Failed.',
-          description: 'The API Test in {{ $labels.env }} failed.',
+          summary: 'API Tests Failed.',
+          description: 'The API tests in {{ $labels.env }} failed.',
           dashboard_url: 'https://argo.shared.tidepool.org/workflows/qa',
         },
         expr: 'sum(argo_workflows_api_tests_status) by (env) == 0',
