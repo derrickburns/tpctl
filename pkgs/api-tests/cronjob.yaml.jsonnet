@@ -35,7 +35,7 @@ local cronJob(me, test) = k8s.k('argoproj.io/v1alpha1', 'CronWorkflow') + k8s.me
                 labels: [
                   {
                     key: 'env',
-                    value: test.env,
+                    value: std.asciiLower(test.env),
                   },
                 ],
                 when: '{{status}} == Failed',
@@ -49,7 +49,7 @@ local cronJob(me, test) = k8s.k('argoproj.io/v1alpha1', 'CronWorkflow') + k8s.me
                 labels: [
                   {
                     key: 'env',
-                    value: test.env,
+                    value: std.asciiLower(test.env),
                   },
                 ],
                 when: '{{status}} == Succeeded',
