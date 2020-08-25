@@ -7,6 +7,9 @@ local helmrelease(me) = k8s.helmrelease(me, { name: 'argo', version: lib.getElse
   spec+: {
     values+: {
       controller: {
+        metricsConfig: {
+          enabled: true,
+        },
         serviceMonitor: {
           enabled: true,
         },
