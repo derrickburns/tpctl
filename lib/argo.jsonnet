@@ -44,18 +44,18 @@ local lib = import 'lib.jsonnet';
     ],
   },
 
-  roleBinding(me):: k8s.rolebinding(me) {
+  roleBinding(me, name='argo-workflow', subject_name='argo-workflow', role_name='argo-workflow'):: k8s.rolebinding(me) {
     metadata: {
-      name: 'argo-workflow',
+      name: name,
       namespace: me.namespace,
     },
     roleRef+: {
-      name: 'argo-workflow',
+      name: role_name,
     },
     subjects: [
       {
         kind: 'ServiceAccount',
-        name: 'argo-workflow',
+        name: subject_name,
       },
     ],
   },
