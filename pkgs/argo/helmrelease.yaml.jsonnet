@@ -6,6 +6,9 @@ local lib = import '../../lib/lib.jsonnet';
 local helmrelease(me) = k8s.helmrelease(me, { name: 'argo', version: lib.getElse(me, 'version', '0.9.8'), repository: 'https://argoproj.github.io/argo-helm' }) {
   spec+: {
     values+: {
+      images: {
+        tag: 'v2.10.0',
+      },
       controller: {
         metricsConfig: {
           enabled: true,
