@@ -1,3 +1,4 @@
+local argo = import '../../lib/argo.jsonnet';
 local common = import '../../lib/common.jsonnet';
 local global = import '../../lib/global.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
@@ -24,6 +25,7 @@ local helmrelease(me) = k8s.helmrelease(me, { name: 'argo', version: lib.getElse
 function(config, prev, namespace, pkg) (
   local me = common.package(config, prev, namespace, pkg);
   [
+    argo.defaultSa(me),
     helmrelease(me),
   ]
 )

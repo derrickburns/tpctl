@@ -10,7 +10,7 @@ local lib = import 'lib.jsonnet';
     },
   },
 
-  role(me):: k8s.role(me) {
+  clusterRole(me):: k8s.clusterrole(me) {
     metadata: {
       name: 'argo-workflow',
       namespace: me.namespace,
@@ -44,7 +44,7 @@ local lib = import 'lib.jsonnet';
     ],
   },
 
-  roleBinding(me, name='argo-workflow', subject_name='argo-workflow', role_name='argo-workflow'):: k8s.rolebinding(me) {
+  clusterRoleBinding(me, name='argo-workflow', subject_name='argo-workflow', role_name='argo-workflow'):: k8s.clusterrolebinding(me) {
     metadata: {
       name: name,
       namespace: me.namespace,
@@ -56,13 +56,14 @@ local lib = import 'lib.jsonnet';
       {
         kind: 'ServiceAccount',
         name: subject_name,
+        namespace: me.namespace,
       },
     ],
   },
 
   defaultSa(me):: [
     $.serviceAccount(me),
-    $.role(me),
-    $.roleBinding(me),
+    $.clusterRole(me),
+    $.clusterRoleBinding(me),
   ],
 }

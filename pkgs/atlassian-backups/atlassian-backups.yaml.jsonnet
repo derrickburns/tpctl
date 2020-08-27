@@ -21,15 +21,67 @@ local workflowSpec(me, backup) = k8s.k('argoproj.io/v1alpha1', 'WorkflowTemplate
         name: 'docker-hub',
       },
     ],
-    volumes: [
+    volumeClaimTemplates: [
       {
-        name: me.pkg,
-        emptyDir: {},
+        metadata: {
+          name: me.pkg,
+        },
+        spec: {
+          accessModes: ['ReadWriteOnce'],
+          resources: {
+            requests: {
+              storage: '40Gi',
+            },
+          },
+        },
       },
     ],
     templates: [
       {
         name: 'atlassian-%s-backup' % backup.name,
+        dag: {
+          tasks: [
+            {
+              name: 'create-backup',
+              template: 'create-backup',
+            },
+            {
+              name: 'upload-backup',
+              template: 'upload-backup',
+              dependencies: [
+                'create-backup',
+              ],
+            },
+          ],
+        },
+      },
+      {
+        name: 'create-backup',
+        container: {
+          name: 'atlassian-%s-backup' % backup.name,
+          image: 'tidepool/atlassian-backups:v0.1.0',
+          command: [
+            'python',
+            '%s_backup.py' % backup.name,
+          ],
+          args: [
+            '--folder=%s/' % backupFolder,
+          ] + backup.extraArgs,
+          volumeMounts: [
+            {
+              mountPath: backupFolder,
+              name: me.pkg,
+            },
+          ],
+          envFrom: [{
+            secretRef: {
+              name: 'atlassian-backups',
+            },
+          }],
+        },
+      },
+      {
+        name: 'upload-backup',
         container: {
           name: 's3-upload',
           image: 'amazon/aws-cli:2.0.24',
@@ -51,30 +103,6 @@ local workflowSpec(me, backup) = k8s.k('argoproj.io/v1alpha1', 'WorkflowTemplate
             },
           ],
         },
-        initContainers: [
-          {
-            name: 'atlassian-%s-backup' % backup.name,
-            image: 'tidepool/atlassian-backups:v0.1.0',
-            command: [
-              'python',
-              '%s_backup.py' % backup.name,
-            ],
-            args: [
-              '--folder=%s/' % backupFolder,
-            ] + backup.extraArgs,
-            volumeMounts: [
-              {
-                mountPath: backupFolder,
-                name: me.pkg,
-              },
-            ],
-            envFrom: [{
-              secretRef: {
-                name: 'atlassian-backups',
-              },
-            }],
-          },
-        ],
       },
     ],
   },
@@ -118,5 +146,5 @@ function(config, prev, namespace, pkg) (
     },
   ];
   local me = common.package(config, prev, namespace, pkg);
-  [argo.roleBinding(me, 'argo-atlassian-backups-s3', 'atlassian-backups-s3')] + [workflowSpec(me, backupItem) for backupItem in backups] + [cronJob(me, backupItem) for backupItem in backups]
+  [argo.clusterRoleBinding(me, 'argo-atlassian-backups-s3', 'atlassian-backups-s3')] + [workflowSpec(me, backupItem) for backupItem in backups] + [cronJob(me, backupItem) for backupItem in backups]
 )

@@ -126,5 +126,5 @@ local cronJob(me, test) = k8s.k('argoproj.io/v1alpha1', 'CronWorkflow') + k8s.me
 
 function(config, prev, namespace, pkg) (
   local me = common.package(config, prev, namespace, pkg);
-  [argo.roleBinding(me, 'argo-account-tool', 'account-tool')] + [workflowSpec(me, test) for test in me.tests] + [cronJob(me, test) for test in me.tests]
+  [argo.clusterRoleBinding(me, 'argo-account-tool', 'account-tool')] + [workflowSpec(me, test) for test in me.tests] + [cronJob(me, test) for test in me.tests]
 )
