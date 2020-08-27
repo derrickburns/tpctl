@@ -6,12 +6,14 @@
 set -e
 export FLUX_FORWARD_NAMESPACE=flux
 export APPROVE=false
-export USE_LOCAL_FILESYSTEM=false
+export COMMIT=true
+export USE_LOCAL_TEMPLATE=false
+export USE_LOCAL_CONFIG=false
 export SKIP_REVIEW=false
 export GITHUB_ORG=${GITHUB_ORG:-tidepool-org}
-X=$( dirname "${BASH_SOURCE[0]}" )
+X=$(dirname "${BASH_SOURCE[0]}")
 export DIR
-DIR=$( cd "$X" >/dev/null 2>&1 && pwd )
+DIR=$(cd "$X" >/dev/null 2>&1 && pwd)
 REPOS='
 cluster-dev
 cluster-qa2
@@ -338,7 +340,7 @@ function repo_with_token() {
 
 # clone remote
 function clone_remote() {
-  if [ "$USE_LOCAL_FILESYSTEM" == "false" ]; then
+  if [ "$USE_LOCAL_CONFIG" == "false" ]; then
     cd $TMP_DIR
     if [[ ! -d $(basename $HTTPS_REMOTE_REPO) ]]; then
       start "cloning configuration repo"
@@ -363,7 +365,7 @@ function set_template_dir() {
       git submodule update --remote
     fi
   fi
-  if [ "$USE_LOCAL_FILESYSTEM" == "true" ]; then
+  if [ "$USE_LOCAL_TEMPLATE" == "true" ]; then
     export TEMPLATE_DIR="tpctl/"
   elif [ -z "$TEMPLATE_DIR" ]; then
     export TEMPLATE_DIR="$(CDPATH= cd -- "$DIR" && cd .. && pwd -P)/"
@@ -377,9 +379,8 @@ function set_template_dir() {
 # convert values file into json, return name of json file
 function get_values() {
   local out=$TMP_DIR/values.json
-  if [ ! -f "$out" ]
-  then
-    yq r values.yaml -j > $out
+  if [ ! -f "$out" ]; then
+    yq r values.yaml -j >$out
     if [ $? -ne 0 ]; then
       panic "cannot parse values.yaml"
     fi
@@ -442,8 +443,7 @@ function get_package_type() {
   local namespace=$1
   local pkgName=$2
   local pkgType=$(yq r values.yaml namespaces.${namespace}.${pkgName}.type | sed -e "s/- //" -e 's/"//g')
-  if [ -n "$pkgType" ]
-  then
+  if [ -n "$pkgType" ]; then
     echo $pkgType
   else
     echo $pkgName
@@ -607,7 +607,7 @@ function reset_config_dir() {
 # return list of enabled packages
 function enabled_pkgs() {
   local key=$1
-  yq r values.yaml -p pv ${key}.*.enabled | grep "true" | sed -e 's/\.enabled:.*//'  -e 's/.*\.//'
+  yq r values.yaml -p pv ${key}.*.enabled | grep "true" | sed -e 's/\.enabled:.*//' -e 's/.*\.//'
 }
 
 # make K8s manifest files for shared services
@@ -639,7 +639,7 @@ function validate() {
   if [ -d $directory ]; then
     start "validating previous files"
     for file in $(find $directory -type f -name \*.yaml -print); do
-      kubeval $file | grep -v "PASS" |  grep -v 404 >>/dev/stderr || true
+      kubeval $file | grep -v "PASS" | grep -v 404 >>/dev/stderr || true
     done
     complete
   fi
@@ -660,8 +660,8 @@ function show() {
 function create_jwks_configmap() {
   namespace=$1
   # generate private and public keys
-  openssl genrsa 2048 > $TMP_DIR/private-key.pem
-  openssl rsa -in $TMP_DIR/private-key.pem -pubout > $TMP_DIR/public-key.pem
+  openssl genrsa 2048 >$TMP_DIR/private-key.pem
+  openssl rsa -in $TMP_DIR/private-key.pem -pubout >$TMP_DIR/public-key.pem
   # save in secret
   mkdir -p secrets/${namespace}
   kubectl -n ${namespace} create secret generic token-signing-key --from-file=public=$TMP_DIR/public-key.pem --from-file=private=$TMP_DIR/private-key.pem -o yaml --dry-run=client >secrets/${namespace}/token-signing-key.yaml
@@ -669,11 +669,11 @@ function create_jwks_configmap() {
 
   # convert to JWKS format
   npm install -g pem-jwk
-  cat $TMP_DIR/public-key.pem | pem-jwk | jq . > $TMP_DIR/jwks.json
+  cat $TMP_DIR/public-key.pem | pem-jwk | jq . >$TMP_DIR/jwks.json
   jq '.+{alg:"RS256"}|.+{use:"sig"}' jwks.json | tee $TMP_DIR/tmp.json && mv $TMP_DIR/tmp.json $TMP_DIR/jwks.json
   jq '{"keys":[.]}' $TMP_DIR/jwks.json | tee $TMP_DIR/tmp.json && mv $TMP_DIR/tmp.json $TMP_DIR/jwks.json
   mkdir -p configmaps/${namespace}
-  kubectl -n ${namespace} create configmap jwks --from-file=jwks.json=$TMP_DIR/jwks.json -o yaml --dry-run=client > configmaps/${namespace}/jwks.yaml
+  kubectl -n ${namespace} create configmap jwks --from-file=jwks.json=$TMP_DIR/jwks.json -o yaml --dry-run=client >configmaps/${namespace}/jwks.yaml
 }
 
 # make service accounts  for namespace given config, path, prefix, and environment name
@@ -794,7 +794,7 @@ function expand_helm() {
 
   start "helm release from $src"
   echo "$hr" | jq .spec.values | yq r - >$tmp
-  helm repo add $name $chart  >/dev/null
+  helm repo add $name $chart >/dev/null
   helm repo update >/dev/null
   helm template --version $version -f $tmp $release $name/$name --namespace ${namespace}
   complete
@@ -820,8 +820,7 @@ function generate() {
   local pkgName=$4
   local pkgType=$(get_package_type $3 $4)
 
-  if [ "$pkgType" != "$pkgName" ]
-  then
+  if [ "$pkgType" != "$pkgName" ]; then
     start "package $pkgName of type $pkgType"
   else
     start "package $pkgName"
@@ -838,7 +837,7 @@ function generate() {
       expand_jsonnet $values $prev $namespace $pkg $f | output $namespace $pkg $src
     elif [ "${src: -17}" == "yaml.helm.jsonnet" ]; then
       local dehelmed=$dir/${src}.dehelmed
-      expand_jsonnet $values $prev $namespace $pkg $f > $dehelmed
+      expand_jsonnet $values $prev $namespace $pkg $f >$dehelmed
       expand_helm $namespace $pkg $src $dehelmed | output $namespace $pkg $src
     elif [ "${src: -14}" == "policy.jsonnet" ]; then
       :
@@ -915,15 +914,14 @@ function expand() {
   local prev=$2
   start "expanding all namespaces"
   local namespace
-  if [ "$PARALLEL" == "true" ]
-  then
+  if [ "$PARALLEL" == "true" ]; then
     for namespace in $(get_namespaces); do
       expand_namespace $values $prev $namespace &
     done
     wait
   else
     for namespace in $(get_namespaces); do
-      expand_namespace $values $prev $namespace 
+      expand_namespace $values $prev $namespace
     done
   fi
   complete
@@ -932,7 +930,7 @@ function expand() {
 # make K8s manifests
 function make_namespace_config() {
   local values=$(get_values)
-  show $TMP_DIR/old/$MANIFEST_DIR > $TMP_DIR/prev
+  show $TMP_DIR/old/$MANIFEST_DIR >$TMP_DIR/prev
   expand $values $TMP_DIR/prev
 }
 
@@ -970,32 +968,35 @@ function save_changes() {
     expect_success "git checkout failed"
   fi
   expect_success "git checkout failed"
-  git commit -m "$message"
   complete
-  expect_success "git commit failed"
-  if [ "$SKIP_REVIEW" == true ]; then
-    start "merging locally"
-    git checkout master
-    git merge $branch
-    git push
-    complete
-  else
-    start "pushing branch $branch"
-    git push origin $branch
-    expect_success "git push failed"
-    complete
-    echo "Please select PR reviewer: "
-    local reviewers=$(get_reviewers)
-    select REVIEWER in none $reviewers; do
-      if [ "$REVIEWER" == "none" ]; then
-        hub pull-request -m "$message"
-        expect_success "failed to create pull request, please create manually"
-      else
-        hub pull-request -m "$message" -r $REVIEWER
-        expect_success "failed to create pull request, please create manually"
-      fi
-      break
-    done
+  if [ "$COMMIT" == "true" ]; then
+    git commit -m "$message"
+
+    expect_success "git commit failed"
+    if [ "$SKIP_REVIEW" == true ]; then
+      start "merging locally"
+      git checkout master
+      git merge $branch
+      git push
+      complete
+    else
+      start "pushing branch $branch"
+      git push origin $branch
+      expect_success "git push failed"
+      complete
+      echo "Please select PR reviewer: "
+      local reviewers=$(get_reviewers)
+      select REVIEWER in none $reviewers; do
+        if [ "$REVIEWER" == "none" ]; then
+          hub pull-request -m "$message"
+          expect_success "failed to create pull request, please create manually"
+        else
+          hub pull-request -m "$message" -r $REVIEWER
+          expect_success "failed to create pull request, please create manually"
+        fi
+        break
+      done
+    fi
   fi
 }
 
@@ -1374,7 +1375,7 @@ function make_repo() {
   expect_success "Could not create repo $org/$repo"
   complete
 
-  if [ "$USE_LOCAL_FILESYSTEM" == "true" ]; then
+  if [ "$USE_LOCAL_CONFIG" == "true" ]; then
     info "cloning configuration repo"
     git clone http://github.com/${org}/${repo}.git
     cd $repo
@@ -1445,7 +1446,6 @@ function help() {
   echo "$HELP"
 }
 
-
 main() {
   declare -a PARAMS
   while (("$#")); do
@@ -1462,23 +1462,31 @@ main() {
         set -x
         shift 1
         ;;
-      -l | --local)
-        USE_LOCAL_FILESYSTEM=true
+      --local-template)
+        USE_LOCAL_TEMPLATE=true
+        shift 1
+        ;;
+      --skip-commit)
+        COMMIT=false
+        shift 1
+        ;;
+      --local-config)
+        USE_LOCAL_CONFIG=true
         shift 1
         ;;
       -v | --verbose)
         LOG_LEVEL=$2
-	shift 2
+        shift 2
         ;;
       --no-update)
         UPDATE_TPCTL=false
-	shift 1
+        shift 1
         ;;
       -p | --parallel)
         LOG_LEVEL=2
-	PARALLEL="true"
-	shift 1
-	;;
+        PARALLEL="true"
+        shift 1
+        ;;
       -h | --help)
         help
         exit 0
@@ -1731,7 +1739,7 @@ main() {
         echo
         echo "$choices"
       else
-	panic "Unknown command: $cmd"
+        panic "Unknown command: $cmd"
       fi
       ;;
   esac
