@@ -18,9 +18,42 @@ local workflowSpec(me, test) = k8s.k('argoproj.io/v1alpha1', 'WorkflowTemplate')
       nodeAffinity: k8s.nodeAffinity(),
     },
     tolerations: [k8s.toleration()],
+    volumeClaimTemplates: [
+      {
+        metadata: {
+          name: me.pkg,
+        },
+        spec: {
+          accessModes: ['ReadWriteOnce'],
+          resources: {
+            requests: {
+              storage: '1Gi',
+            },
+          },
+        },
+      },
+    ],
     templates: [
       {
         name: 'k6-%s-%s' % [test.name, test.env],
+        dag: {
+          tasks: [
+            {
+              name: 'get-credentials',
+              template: 'get-credentials',
+            },
+            {
+              name: 'run-api-tests',
+              template: 'run-api-tests',
+              dependencies: [
+                'get-credentials',
+              ],
+            },
+          ],
+        },
+      },
+      {
+        name: 'run-api-tests',
         container: {
           name: 'k6-%s-%s' % [test.name, test.env],
           image: 'tidepool/loadtest:v0.1.0',
@@ -49,33 +82,28 @@ local workflowSpec(me, test) = k8s.k('argoproj.io/v1alpha1', 'WorkflowTemplate')
             },
           ],
         },
-        initContainers: [
-          {
-            name: 's3-fetch-%s' % test.env,
-            image: 'amazon/aws-cli:2.0.24',
-            command: [
-              'aws',
-              's3',
-              'cp',
-            ],
-            args: [
-              's3://tidepool-account-tool/%s-credentials.csv' % test.env,
-              '/opt/accounts/Account-Credentials.csv',
-            ],
-            volumeMounts: [
-              {
-                mountPath: '/opt/accounts',
-                name: me.pkg,
-              },
-            ],
-          },
-        ],
-        volumes: [
-          {
-            name: me.pkg,
-            emptyDir: {},
-          },
-        ],
+      },
+      {
+        name: 'get-credentials',
+        container: {
+          name: 's3-fetch-%s' % test.env,
+          image: 'amazon/aws-cli:2.0.24',
+          command: [
+            'aws',
+            's3',
+            'cp',
+          ],
+          args: [
+            's3://tidepool-account-tool/%s-credentials.csv' % test.env,
+            '/opt/accounts/Account-Credentials.csv',
+          ],
+          volumeMounts: [
+            {
+              mountPath: '/opt/accounts',
+              name: me.pkg,
+            },
+          ],
+        },
       },
     ],
   },
