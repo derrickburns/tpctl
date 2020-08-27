@@ -1,3 +1,4 @@
+local argo = import '../../lib/argo.jsonnet';
 local common = import '../../lib/common.jsonnet';
 local flux = import '../../lib/flux.jsonnet';
 local global = import '../../lib/global.jsonnet';
@@ -6,80 +7,88 @@ local lib = import '../../lib/lib.jsonnet';
 
 local backupFolder = '/opt/backups';
 
-local backup(me, backup) = k8s.k('batch/v1beta1', 'CronJob') + k8s.metadata('atlassian-%s-backup' % backup.name, me.namespace) {
-  spec+: {
-    schedule: backup.schedule,
-    jobTemplate: {
-      spec+: {
-        backoffLimit: 0,
-        template: {
-          spec: {
-            affinity: {
-              nodeAffinity: k8s.nodeAffinity(),
+
+local workflowSpec(me, backup) = k8s.k('argoproj.io/v1alpha1', 'WorkflowTemplate') + k8s.metadata('atlassian-%s-backup' % backup.name, me.namespace) {
+  spec: {
+    entrypoint: 'atlassian-%s-backup' % backup.name,
+    serviceAccountName: 'atlassian-backups-s3',
+    affinity: {
+      nodeAffinity: k8s.nodeAffinity(),
+    },
+    tolerations: [k8s.toleration()],
+    imagePullSecrets: [
+      {
+        name: 'docker-hub',
+      },
+    ],
+    volumes: [
+      {
+        name: me.pkg,
+        emptyDir: {},
+      },
+    ],
+    templates: [
+      {
+        name: 'atlassian-%s-backup' % backup.name,
+        container: {
+          name: 's3-upload',
+          image: 'amazon/aws-cli:2.0.24',
+          command: [
+            'aws',
+            's3',
+            'cp',
+          ],
+          args: [
+            backupFolder,
+            's3://tidepool-%s-backup' % backup.name,
+            '--recursive',
+            '--storage-class=GLACIER',
+          ],
+          volumeMounts: [
+            {
+              mountPath: backupFolder,
+              name: me.pkg,
             },
-            tolerations: [k8s.toleration()],
-            restartPolicy: 'Never',
-            containers+: [
-              {
-                name: 's3-upload',
-                image: 'amazon/aws-cli:2.0.24',
-                command: [
-                  'aws',
-                  's3',
-                  'cp',
-                ],
-                args: [
-                  backupFolder,
-                  's3://tidepool-%s-backup' % backup.name,
-                  '--recursive',
-                  '--storage-class=GLACIER',
-                ],
-                volumeMounts: [
-                  {
-                    mountPath: backupFolder,
-                    name: me.pkg,
-                  },
-                ],
-              },
-            ],
-            initContainers+: [
-              {
-                name: 'atlassian-%s-backup' % backup.name,
-                image: 'tidepool/atlassian-backups:v0.1.0',
-                command: [
-                  'python',
-                  '%s_backup.py' % backup.name,
-                ],
-                args: [
-                  '--folder=%s/' % backupFolder,
-                ] + backup.extraArgs,
-                volumeMounts: [
-                  {
-                    mountPath: backupFolder,
-                    name: me.pkg,
-                  },
-                ],
-                envFrom: [{
-                  secretRef: {
-                    name: 'atlassian-backups',
-                  },
-                }],
-              },
-            ],
-            serviceAccountName: 'atlassian-backups-s3',
-            imagePullSecrets: [
-              {
-                name: 'docker-hub',
-              },
-            ],
-            volumes: [
-              {
-                name: me.pkg,
-                emptyDir: {},
-              },
-            ],
-          },
+          ],
         },
+        initContainers: [
+          {
+            name: 'atlassian-%s-backup' % backup.name,
+            image: 'tidepool/atlassian-backups:v0.1.0',
+            command: [
+              'python',
+              '%s_backup.py' % backup.name,
+            ],
+            args: [
+              '--folder=%s/' % backupFolder,
+            ] + backup.extraArgs,
+            volumeMounts: [
+              {
+                mountPath: backupFolder,
+                name: me.pkg,
+              },
+            ],
+            envFrom: [{
+              secretRef: {
+                name: 'atlassian-backups',
+              },
+            }],
+          },
+        ],
+      },
+    ],
+  },
+};
+
+local cronJob(me, backup) = k8s.k('argoproj.io/v1alpha1', 'CronWorkflow') + k8s.metadata('atlassian-%s-backup' % backup.name, me.namespace) {
+  spec: {
+    schedule: backup.schedule,
+    timezone: 'Etc/UTC',
+    failedJobsHistoryLimit: 6,
+    successfulJobsHistoryLimit: 6,
+    workflowSpec: {
+      workflowTemplateRef: {
+        name: 'atlassian-%s-backup' % backup.name,
       },
     },
   },
@@ -109,5 +118,5 @@ function(config, prev, namespace, pkg) (
     },
   ];
   local me = common.package(config, prev, namespace, pkg);
-  [backup(me, backupItem) for backupItem in backups]
+  [argo.roleBinding(me, 'argo-atlassian-backups-s3', 'atlassian-backups-s3')] + [workflowSpec(me, backupItem) for backupItem in backups] + [cronJob(me, backupItem) for backupItem in backups]
 )
