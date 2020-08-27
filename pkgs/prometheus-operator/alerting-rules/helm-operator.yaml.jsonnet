@@ -25,7 +25,7 @@ local groupConfig(me) = [
           description: 'Failed to release chart for the release {{ $labels.target_namespace }}/{{ $labels.release_name }}. The chart has not been released for the past minute.',
           dashboard_url: 'https://grafana.%s/d/c8qWijkGz/helm-operator?orgId=1' % me.config.cluster.metadata.domain,
         },
-        expr: 'flux_helm_operator_release_condition_info{condition="ChartFetched"} < 0',
+        expr: 'flux_helm_operator_release_condition_info{condition="Released"} < 0',
         'for': '1m',
         labels: {
           severity: 'critical',
@@ -47,8 +47,8 @@ local groupConfig(me) = [
       {
         alert: 'HelmOperatorRollingBackChart',
         annotations: {
-          summary: 'Helm Chart is stuck rolling back.',
-          description: 'The release {{ $labels.target_namespace }}/{{ $labels.release_name }} is being rolled back for more than 5 minutes.',
+          summary: 'Helm Chart is rolled back.',
+          description: 'The release {{ $labels.target_namespace }}/{{ $labels.release_name }} is rolled back for more than 5 minutes.',
           dashboard_url: 'https://grafana.%s/d/c8qWijkGz/helm-operator?orgId=1' % me.config.cluster.metadata.domain,
         },
         expr: 'flux_helm_operator_release_condition_info{condition="RolledBack"} == 1',
