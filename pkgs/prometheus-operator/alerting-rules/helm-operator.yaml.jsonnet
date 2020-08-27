@@ -45,7 +45,7 @@ local groupConfig(me) = [
         },
       },
       {
-        alert: 'HelmOperatorRollingBackChart',
+        alert: 'HelmOperatorRolledBackChart',
         annotations: {
           summary: 'Helm Chart is rolled back.',
           description: 'The release {{ $labels.target_namespace }}/{{ $labels.release_name }} is rolled back for more than 5 minutes.',
