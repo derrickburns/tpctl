@@ -146,5 +146,5 @@ function(config, prev, namespace, pkg) (
     },
   ];
   local me = common.package(config, prev, namespace, pkg);
-  [argo.clusterRoleBinding(me, 'argo-atlassian-backups-s3', 'atlassian-backups-s3')] + [workflowSpec(me, backupItem) for backupItem in backups] + [cronJob(me, backupItem) for backupItem in backups]
+  [argo.roleBinding(me, 'argo-atlassian-backups-s3', 'atlassian-backups-s3')] + [workflowSpec(me, backupItem) for backupItem in backups] + [cronJob(me, backupItem) for backupItem in backups]
 )
