@@ -111,11 +111,11 @@ local workflowSpec(me, test) = k8s.k('argoproj.io/v1alpha1', 'WorkflowTemplate')
 
 local cronJob(me, test) = k8s.k('argoproj.io/v1alpha1', 'CronWorkflow') + k8s.metadata('k6-%s-%s' % [test.name, test.env], me.namespace) {
   spec: {
-    schedule: test.schedule,
+    schedule: test.cronJob.schedule,
     timezone: 'Etc/UTC',
     failedJobsHistoryLimit: 6,
     successfulJobsHistoryLimit: 6,
-    suspend: test.suspend,
+    suspend: test.cronJob.suspend,
     workflowSpec: {
       workflowTemplateRef: {
         name: 'k6-%s-%s' % [test.name, test.env],
@@ -126,5 +126,5 @@ local cronJob(me, test) = k8s.k('argoproj.io/v1alpha1', 'CronWorkflow') + k8s.me
 
 function(config, prev, namespace, pkg) (
   local me = common.package(config, prev, namespace, pkg);
-  [argo.roleBinding(me, 'argo-account-tool', 'account-tool')] + [workflowSpec(me, test) for test in me.tests] + [cronJob(me, test) for test in me.tests]
+  [argo.roleBinding(me, 'argo-account-tool', 'account-tool')] + [workflowSpec(me, test) for test in me.tests] + [cronJob(me, test) for test in me.tests if test.cronJob.enabled == true]
 )
