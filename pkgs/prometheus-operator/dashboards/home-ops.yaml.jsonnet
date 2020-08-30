@@ -102,7 +102,6 @@ local dashboardConfig = {
         },
         overrides: [],
       },
-      folderId: null,
       gridPos: {
         h: 4,
         w: 8,
@@ -112,14 +111,14 @@ local dashboardConfig = {
       headings: false,
       id: 50,
       limit: 10,
-      query: 'Argo',
+      query: 'Kubernetes / Jobs',
       recent: false,
       search: true,
       starred: false,
       tags: [],
       timeFrom: null,
       timeShift: null,
-      title: 'Argo',
+      title: 'Kubernetes / Jobs',
       type: 'dashlist',
     },
     {
@@ -158,6 +157,7 @@ local dashboardConfig = {
         },
         overrides: [],
       },
+      folderId: null,
       gridPos: {
         h: 4,
         w: 8,
@@ -1106,7 +1106,7 @@ local dashboardConfig = {
   timezone: 'utc',
   title: 'Home',
   uid: 'HRN3fEzGk',
-  version: 1,
+  version: 2,
 };
 
 local configmap(me) = grafana.dashboard(me, 'home', dashboardConfig);
