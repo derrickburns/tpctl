@@ -24,7 +24,7 @@ local defaultClusterConfig = {
   },
 };
 
-local strip(k8slist) = std.map( function(c) lib.strip(c, ['apiVersion', 'kind']), k8slist);
+local strip(k8slist) = std.map(function(c) lib.strip(c, ['apiVersion', 'kind']), k8slist);
 
 local all(config, serviceaccounts) =
   defaultClusterConfig
@@ -32,7 +32,7 @@ local all(config, serviceaccounts) =
     metadata+: {
       name: config.cluster.metadata.name,
       region: lib.getElse(config, 'cluster.metadata.region', 'us-west-2'),
-      version: lib.getElse(config, 'config.metadata.version', 'auto'),
+      version: lib.getElse(config, 'cluster.metadata.version', 'auto'),
     },
     cloudWatch+: config.cluster.cloudWatch,
     vpc+: lib.getElse(config, 'cluster.vpc', {}),
