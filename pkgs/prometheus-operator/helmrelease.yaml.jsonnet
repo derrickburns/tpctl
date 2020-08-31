@@ -58,6 +58,8 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '9.3.1' }) {
           retention: '240h',
           storage: {
             volumeClaimTemplate: {
+              apiVersion: 'v1',
+              kind: 'EmbeddedPersistentVolumeClaim',
               metadata: {
                 name: 'alertmanager',
                 namespace: me.namespace,
@@ -126,6 +128,8 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '9.3.1' }) {
           retention: lib.getElse(me, 'prometheus.retentionPeriod', '90d'),
           storageSpec: {
             volumeClaimTemplate: {
+              apiVersion: 'v1',
+              kind: 'EmbeddedPersistentVolumeClaim',
               metadata: {
                 name: 'prometheus',
                 namespace: me.namespace,
@@ -173,6 +177,9 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '9.3.1' }) {
           nodeAffinity: k8s.nodeAffinity(),
         },
         tolerations: [k8s.toleration()],
+        image: {
+          tag: 'v0.38.2',
+        },
         annotations: {
           'cluster-autoscaler.kubernetes.io/safe-to-evict': 'false',
         },
