@@ -60,7 +60,6 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '9.3.1' }) {
             volumeClaimTemplate: {
               metadata: {
                 name: 'alertmanager',
-                namespace: me.namespace,
               },
               spec: {
                 storageClassName: 'monitoring-expanding',
@@ -128,7 +127,6 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '9.3.1' }) {
             volumeClaimTemplate: {
               metadata: {
                 name: 'prometheus',
-                namespace: me.namespace,
               },
               spec: {
                 storageClassName: 'monitoring-expanding',
@@ -173,6 +171,9 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '9.3.1' }) {
           nodeAffinity: k8s.nodeAffinity(),
         },
         tolerations: [k8s.toleration()],
+        image: {
+          tag: 'v0.38.2',
+        },
         annotations: {
           'cluster-autoscaler.kubernetes.io/safe-to-evict': 'false',
         },
