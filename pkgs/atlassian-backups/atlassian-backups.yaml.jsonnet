@@ -7,8 +7,17 @@ local lib = import '../../lib/lib.jsonnet';
 
 local backupFolder = '/opt/backups';
 
-
 local workflowSpec(me, backup) = k8s.k('argoproj.io/v1alpha1', 'WorkflowTemplate') + k8s.metadata('atlassian-%s-backup' % backup.name, me.namespace) {
+  local prometheusMetricsBackupStatus = {
+    name: 'atlassian_backups_status',
+    help: 'Status indication of Atlassian backups tests',
+    labels: [
+      {
+        key: 'backup_name',
+        value: '%s' % backup.name,
+      },
+    ],
+  },
   spec: {
     entrypoint: 'atlassian-%s-backup' % backup.name,
     serviceAccountName: 'atlassian-backups-s3',
@@ -89,6 +98,37 @@ local workflowSpec(me, backup) = k8s.k('argoproj.io/v1alpha1', 'WorkflowTemplate
       },
       {
         name: 'upload-backup',
+        metrics: {
+          prometheus: [
+            {
+              when: '{{status}} == Failed',
+              gauge: {
+                value: '0',
+              },
+            } + prometheusMetricsBackupStatus,
+            {
+              when: '{{status}} == Succeeded',
+              gauge: {
+                value: '1',
+              },
+            } + prometheusMetricsBackupStatus,
+            {
+              name: 'atlassian_last_successful_backup',
+              help: 'Last successful Atlassian backup.',
+              labels: [
+                {
+                  key: 'backup_name',
+                  value: '%s' % backup.name,
+                },
+              ],
+              when: '{{status}} == Succeeded',
+              gauge: {
+                realtime: true,
+                value: '{{workflow.creationTimestamp}}',
+              },
+            },
+          ],
+        },
         container: {
           name: 's3-upload',
           image: 'amazon/aws-cli:2.0.24',
