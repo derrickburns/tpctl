@@ -52,6 +52,13 @@ local workflowSpec(me, backup) = k8s.k('argoproj.io/v1alpha1', 'WorkflowTemplate
                 'create-backup',
               ],
             },
+            {
+              name: 'clean-up',
+              template: 'clean-up',
+              dependencies: [
+                'upload-backup',
+              ],
+            },
           ],
         },
       },
@@ -104,6 +111,26 @@ local workflowSpec(me, backup) = k8s.k('argoproj.io/v1alpha1', 'WorkflowTemplate
           ],
         },
       },
+      {
+        name: 'clean-up',
+        container: {
+          name: 'clean-up',
+          image: 'alpine:3',
+          command: [
+            'rm',
+          ],
+          args: [
+            '-rf',
+            '%s/*' % backupFolder,
+          ],
+          volumeMounts: [
+            {
+              mountPath: backupFolder,
+              name: me.pkg,
+            },
+          ],
+        },
+      },
     ],
   },
 };
@@ -137,11 +164,11 @@ function(config, prev, namespace, pkg) (
     {
       name: 'confluence',
       extraArgs: ['--attachments=y'] + defaultJiraConfluenceArgs,
-      schedule: '0 13 1,15 * *',
+      schedule: '0 14 1,15 * *',
     },
     {
       name: 'xray',
-      schedule: '0 14 1,15 * *',
+      schedule: '0 16 1,15 * *',
       extraArgs: [],
     },
   ];
