@@ -9,7 +9,7 @@ local backupFolder = '/opt/backups';
 
 local workflowSpec(me, backup) = k8s.k('argoproj.io/v1alpha1', 'WorkflowTemplate') + k8s.metadata('atlassian-%s-backup' % backup.name, me.namespace) {
   local prometheusMetricsBackupStatus = {
-    name: 'atlassian_backups_status',
+    name: 'atlassian_backup_status',
     help: 'Status indication of Atlassian backups tests',
     labels: [
       {
