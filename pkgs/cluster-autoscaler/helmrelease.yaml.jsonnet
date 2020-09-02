@@ -17,7 +17,7 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '1.0.2', repository: 'htt
         v: 5,
       } + lib.getElse(me, 'extraArgs', {}),
       image: {
-        tag: lib.getElse(me, 'version', 'v1.14.7'),  // XXX
+        tag: lib.getElse(me, 'version', 'v1.14.8'),  // XXX
       },
       rbac+: {
         create: true,
