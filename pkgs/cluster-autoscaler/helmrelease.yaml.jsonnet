@@ -3,8 +3,11 @@ local global = import '../../lib/global.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
-local helmrelease(me) = k8s.helmrelease(me, { version: '7.1.0' }) {
+local helmrelease(me) = k8s.helmrelease(me, { version: '1.0.2', repository: 'https://kubernetes.github.io/autoscaler' }) {
   spec+: {
+    chart+: {
+      name: 'cluster-autoscaler-chart',
+    },
     values: {
       autoDiscovery: {
         clusterName: me.config.cluster.metadata.name,
