@@ -138,24 +138,24 @@ local workflowSpec(me, backup) = k8s.k('argoproj.io/v1alpha1', 'WorkflowTemplate
       },
       {
         name: 'clean-up',
-        metrics: {
-          prometheus: [
-            {
-              name: 'atlassian_last_successful_backup',
-              help: 'Last successful Atlassian backup.',
-              labels: [
-                {
-                  key: 'backup_name',
-                  value: '%s' % backup.name,
-                },
-              ],
-              when: '{{status}} == Succeeded',
-              gauge: {
-                value: '{{tasks.upload-backup.finishedAt}}',
-              },
-            },
-          ],
-        },
+        // metrics: {
+        // prometheus: [
+        // {
+        // name: 'atlassian_last_successful_backup',
+        // help: 'Last successful Atlassian backup.',
+        // labels: [
+        // {
+        // key: 'backup_name',
+        // value: '%s' % backup.name,
+        // },
+        // ],
+        // when: '{{status}} == Succeeded',
+        // gauge: {
+        // value: '{{tasks.upload-backup.finishedAt}}',
+        // },
+        // },
+        // ],
+        // },
         container: {
           name: 'clean-up',
           image: 'alpine:3',

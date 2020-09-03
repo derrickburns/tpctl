@@ -8,7 +8,7 @@ local helmrelease(me) = k8s.helmrelease(me, { name: 'argo', version: lib.getElse
   spec+: {
     values+: {
       images: {
-        tag: 'v2.10.0',
+        tag: 'v2.10.1',
       },
       controller: {
         metricsConfig: {
