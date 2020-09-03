@@ -8,7 +8,7 @@ local groupConfig(me) = [
       {
         alert: 'EnvoyResponse5xx',
         annotations: {
-          summary: 'High rate of 5xx.',
+          summary: 'Envoy high rate of 5xx.',
           description: 'Envoy error rate for the upstream `{{ $labels.namespace }}/{{ $labels.envoy_cluster_name }}` is above 0.1% for the past 2 minutes.',
           dashboard_url: 'https://grafana.%s/d/gloo_upstreams/gloo-upstreams?orgId=1&refresh=5s' % me.config.cluster.metadata.domain,
         },
