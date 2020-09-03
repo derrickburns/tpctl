@@ -9,10 +9,10 @@ local groupConfig(me) = [
         alert: 'LinkerdHighErrorRate',
         annotations: {
           summary: 'Linkerd high error rate.',
-          description: 'Linkerd error rate for `{{ $labels.deployment }}{{ $labels.statefulset }}{{ $labels.daemonset }}` is above 0.1% for the past 5 minutes.',
+          description: 'Linkerd error rate for `{{ $labels.deployment }}{{ $labels.statefulset }}{{ $labels.daemonset }}` is above 1% for the past 5 minutes.',
           dashboard_url: 'https://grafana.%s/d/linkerd-topline/linkerd-topline?orgId=1&refresh=30s' % me.config.cluster.metadata.domain,
         },
-        expr: 'sum(rate(request_errors_total[5m])) by (deployment, statefulset, daemonset) / sum(rate(request_total[5m])) by (deployment, statefulset, daemonset) * 100 > 0.1',
+        expr: 'sum(rate(request_errors_total[5m])) by (deployment, statefulset, daemonset) / sum(rate(request_total[5m])) by (deployment, statefulset, daemonset) * 100 > 1',
         labels: {
           severity: 'critical',
         },
