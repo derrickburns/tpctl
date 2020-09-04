@@ -20,6 +20,12 @@ local deployment(me) = flux.deployment(me) {
       k8s.envSecret('TIDEPOOL_STORE_OPT_PARAMS', 'mongo', 'OptParams'),
       k8s.envSecret('TIDEPOOL_STORE_TLS', 'mongo', 'Tls'),
       k8s.envVar('TIDEPOOL_STORE_DATABASE', 'user'),
+      k8s.envSecret('MARKETO_SECRET', 'marketo', 'Secret', false),
+      k8s.envSecret('MARKETO_ID', 'marketo', 'ID', false),
+      k8s.envSecret('MARKETO_URL', 'marketo', 'URL', false),
+      k8s.envConfigmap('MARKETO_CLINIC_ROLE', 'marketo', 'ClinicRole', true),
+      k8s.envConfigmap('MARKETO_PATIENT_ROLE', 'marketo', 'PatientRole', true),
+      k8s.envConfigmap('MARKETO_TIMEOUT', 'marketo', 'Timeout', true),
     ],
     
     ports: [{
