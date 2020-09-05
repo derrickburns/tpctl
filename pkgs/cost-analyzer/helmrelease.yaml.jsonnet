@@ -24,7 +24,7 @@ local helmrelease(me) = k8s.helmrelease(me, { name: 'cost-analyzer', version: li
         grafanaURL: 'https://grafana.%s' % me.config.cluster.metadata.domain,
       },
       serviceMonitor: {
-        enabled: true,
+        enabled: global.isEnabled(me.config, 'prometheus-operator'),
       },
       prometheusRule: {
         enabled: true,

@@ -2,6 +2,7 @@ local common = import '../../lib/common.jsonnet';
 local gloo = import '../../lib/gloo.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
+local global = import '../../lib/global.jsonnet';
 
 local helmrelease(me) = (
   k8s.helmrelease(me, { version: '9.0.1', repository: 'https://codecentric.github.io/helm-charts' }) {
@@ -87,7 +88,7 @@ local helmrelease(me) = (
           indent_array_in_object=false
         ),
         serviceMonitor: {
-          enabled: true,
+          enabled: global.isEnabled(me.config, 'prometheus-operator'),
           path: '/auth/realms/master/metrics',
           port: 'http',
         },

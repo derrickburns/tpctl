@@ -17,7 +17,7 @@ local helmrelease(me) = k8s.helmrelease(me, { name: 'kafka-minion', version: lib
         },
       },
       serviceMonitor: {
-        create: true,
+        create: global.isEnabled(me.config, 'prometheus-operator'),
         interval: '10s',
       },
     },

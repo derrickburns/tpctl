@@ -14,7 +14,7 @@ local helmrelease(me) = k8s.helmrelease(me, { name: 'prometheus-cloudwatch-expor
       },
       tolerations: [k8s.toleration()],
       config: std.manifestYamlDoc({
-        region: 'us-west-2',
+        region: me.config.cluster.metadata.region,
         metrics: [
           {
             aws_namespace: 'AWS/SES',
@@ -42,7 +42,7 @@ local helmrelease(me) = k8s.helmrelease(me, { name: 'prometheus-cloudwatch-expor
         create: false,
       },
       serviceMonitor: {
-        enabled: true,
+        enabled: global.isEnabled(me.config, 'prometheus-operator'),
         interval: '2m',
       },
     },
