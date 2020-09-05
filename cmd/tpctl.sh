@@ -68,9 +68,9 @@ function create_kmskey() {
   alias="alias/kubernetes-$cluster"
   #aws kms delete-alias --alias-name $alias
   aws kms create-alias --alias-name "$alias" --target-key-id "$arn"
-  local region=$(get_region)
-  local account=$(get_aws_account)
-  local pgp=$(get_pgp)
+  local -r region=$(get_region)
+  local -r account=$(get_aws_account)
+  local -r pgp=$(get_pgp)
 
   yq w -i values.yaml general.sops.keys.arn "$arn"
   expect_success "Could not write arn to values.yaml file"
@@ -95,19 +95,19 @@ function vpa() {
 }
 
 function get_vpc() {
-  local cluster=$(get_cluster)
+  local -r cluster=$(get_cluster)
   aws cloudformation describe-stacks --stack-name eksctl-${cluster}-cluster | jq '.Stacks[0].Outputs| .[] | select(.OutputKey | contains("VPC")) | .OutputValue' | sed -e 's/"//g'
 }
 
 function find_peering_connections() {
-  local vpc=$(get_vpc)
+  local -r vpc=$(get_vpc)
   aws ec2 describe-vpc-peering-connections --filters Name=accepter-vpc-info.vpc-id,Values=$vpc
   aws ec2 describe-vpc-peering-connections --filters Name=requester-vpc-info.vpc-id,Values=$vpc
 }
 
 function delete_peering_connections() {
   start "deleting peering connections"
-  local ids=$(find_peering_connections | jq '.VpcPeeringConnections | .[].VpcPeeringConnectionId' | sed -e 's/"//g')
+  local -r ids=$(find_peering_connections | jq '.VpcPeeringConnections | .[].VpcPeeringConnectionId' | sed -e 's/"//g')
   confirm "Delete peering connections: $ids?"
   for id in $ids; do
     info "deleting peering connection $id"
@@ -127,9 +127,9 @@ function cluster_in_context() {
 
 function make_envrc() {
   start ".envrc"
-  local cluster=$(get_cluster)
+  local -r cluster=$(get_cluster)
   if [ -f kubeconfig.yaml ]; then
-    local context=$(yq r kubeconfig.yaml current-context)
+    local -r context=$(yq r kubeconfig.yaml current-context)
     echo "kubectx $context" >.envrc
   fi
   echo "export REMOTE_REPO=cluster-$cluster" >>.envrc # XXX fix name
@@ -144,11 +144,11 @@ function cluster_in_repo() {
 
 function install_glooctl() {
   start "checking glooctl"
-  local glooctl_version=$(require_value "pkgs.gloo.version")
+  local -r glooctl_version=$(require_value "pkgs.gloo.version")
   if ! command -v glooctl >/dev/null 2>&1 || [ $(glooctl version -o json | grep Client | yq r - 'Client.version') != "${glooctl_version}" ]; then
     start "installing glooctl"
     OS=$(ostype)
-    local name="https://github.com/solo-io/gloo/releases/download/v${glooctl_version}/glooctl-${OS}-amd64"
+    local -r name="https://github.com/solo-io/gloo/releases/download/v${glooctl_version}/glooctl-${OS}-amd64"
     curl -sL -o /usr/local/bin/glooctl "$name"
     expect_success "Failed to download $name"
     chmod 755 /usr/local/bin/glooctl
@@ -157,8 +157,8 @@ function install_glooctl() {
 }
 
 function confirm_matching_cluster() {
-  local in_context=$(cluster_in_context)
-  local in_repo=$(cluster_in_repo)
+  local -r in_context=$(cluster_in_context)
+  local -r in_repo=$(cluster_in_repo)
   if [ "${in_repo}" != "${in_context}" ]; then
     echo "${in_context} is cluster selected in KUBECONFIG config file"
     echo "${in_repo} is cluster named in $REMOTE_REPO repo"
@@ -341,7 +341,7 @@ function repo_with_token() {
 # clone remote
 function clone_remote() {
   if [ "$USE_LOCAL_CONFIG" == "false" ]; then
-    cd $TMP_DIR
+    cd "$TMP_DIR"
     if [[ ! -d $(basename $HTTPS_REMOTE_REPO) ]]; then
       start "cloning configuration repo"
       git clone $(repo_with_token $HTTPS_REMOTE_REPO)
@@ -385,13 +385,13 @@ function get_values() {
       panic "cannot parse values.yaml"
     fi
   fi
-  echo $out
+  echo "$out"
 }
 
 # retrieve value from values file, or return the second argument if the value is not found
 function default_value() {
-  local v=$(yq r values.yaml $1)
-  echo ${v:-$2}
+  local -r v=$(yq r values.yaml $1)
+  echo "${v:-$2}"
 }
 
 # retrieve value from values file, or exit if it is not available
@@ -473,9 +473,9 @@ function get_iam_users() {
 function get_bucket() {
   local env=$1
   local kind=$2
-  local bucket=$(yq r values.yaml namespaces.${env}.tidepool.buckets.${kind} | sed -e "/^  .*/d" -e s/:.*//)
+  local -r bucket=$(yq r values.yaml namespaces.${env}.tidepool.buckets.${kind} | sed -e "/^  .*/d" -e s/:.*//)
   if [ "$bucket" == "null" ]; then
-    local cluster=$(get_cluster)
+    local -r cluster=$(get_cluster)
     echo "tidepool-${cluster}-${env}-${kind}"
   else
     echo $bucket
@@ -485,8 +485,8 @@ function get_bucket() {
 # create asset bucket and populate it, if the bucket does not already exist
 function make_asset_bucket() {
   local env=$1
-  local create=$(yq r values.yaml namespaces.${env}.tidepool.buckets.create | sed -e "/^  .*/d" -e s/:.*//)
-  local asset_bucket=$(get_bucket $env asset)
+  local -r create=$(yq r values.yaml namespaces.${env}.tidepool.buckets.create | sed -e "/^  .*/d" -e s/:.*//)
+  local -r asset_bucket=$(get_bucket $env asset)
   if ! aws s3 ls s3://$asset_bucket >/dev/null 2>&1; then
     start "creating asset bucket $asset_bucket"
     aws s3 mb s3://$asset_bucket >/dev/null 2>&1
@@ -503,7 +503,7 @@ function make_asset_bucket() {
 # create data bucket if it does not exist
 function make_data_bucket() {
   local env=$1
-  local data_bucket=$(get_bucket $env data)
+  local -r data_bucket=$(get_bucket $env data)
   if ! aws s3 ls s3://$data_bucket >/dev/null 2>&1; then
     start "creating data bucket $data_bucket"
     aws s3 mb s3://$data_bucket >/dev/null 2>&1
@@ -530,13 +530,13 @@ function expect_github_token() {
 
 # retrieve kubeconfig value
 function get_kubeconfig() {
-  local kc=$(require_value "general.kubeconfig")
+  local -r kc=$(require_value "general.kubeconfig")
   realpath $(eval "echo $kc")
 }
 
 function update_kubeconfig() {
   start "updating kubeconfig"
-  local values=$(get_values)
+  local -r values=$(get_values)
   yq r ./kubeconfig.yaml -j >$TMP_DIR/kubeconfig.yaml
   kubecfg show --tla-code-file prev=${TMP_DIR}/kubeconfig.yaml --tla-code-file config="$values" ${TEMPLATE_DIR}eksctl/kubeconfig.jsonnet | k8s_sort >kubeconfig.yaml
   expect_success "updating kubeconfig failed"
@@ -544,7 +544,7 @@ function update_kubeconfig() {
 }
 
 function recreate_service_account() {
-  local cluster=$(get_cluster)
+  local -r cluster=$(get_cluster)
   local namespace=$1
   local name=$2
   start "recreating service account"
@@ -560,7 +560,7 @@ function recreate_service_account() {
 
 # create EKS cluster using config.yaml file, add kubeconfig to config repo
 function make_cluster() {
-  local cluster=$(get_cluster)
+  local -r cluster=$(get_cluster)
   start "crating cluster config for $cluster"
   eksctl create cluster -f config.yaml --kubeconfig ./kubeconfig.yaml
   expect_success "eksctl create cluster failed."
@@ -571,8 +571,8 @@ function make_cluster() {
 }
 
 function merge_kubeconfig() {
-  local local_kube_config=$(realpath ./kubeconfig.yaml)
-  local kubeconfig=$(get_kubeconfig)
+  local -r local_kube_config=$(realpath ./kubeconfig.yaml)
+  local -r kubeconfig=$(get_kubeconfig)
   if [ "$kubeconfig" != "$local_kube_config" ]; then
     if [ -f "$kubeconfig" ]; then
       info "merging kubeconfig into $kubeconfig"
@@ -623,7 +623,7 @@ function make_shared_config() {
 
 # make EKSCTL manifest file
 function make_cluster_config() {
-  local values=$(get_values)
+  local -r values=$(get_values)
   start "creating eksctl manifest"
   serviceAccountFile=$TMP_DIR/serviceaccounts
   make_policy_manifests | k8s_sort >$serviceAccountFile
@@ -636,7 +636,7 @@ function make_cluster_config() {
 # valdiate all yaml files in given directory
 function validate() {
   local directory=$1
-  if [ -d $directory ]; then
+  if [ -d "$directory" ]; then
     start "validating previous files"
     for file in $(find $directory -type f -name \*.yaml -print); do
       kubeval $file | grep -v "PASS" | grep -v 404 >>/dev/stderr || true
@@ -648,7 +648,7 @@ function validate() {
 # cat all yaml files in given directory to stdout
 function show() {
   local directory=$1
-  if [ -d $directory ]; then
+  if [ -d "$directory" ]; then
     for file in $(find $directory -type f -name \*.yaml -print); do
       echo "---"
       cat $file
@@ -686,18 +686,20 @@ function template_service_accounts() {
   start "creating AWS polices for $namespace"
   for fullpath in $(find $path -type f -print); do
     local filename=${fullpath#$prefix}
-    local pkgType=$(dirname $filename)
+    local pkgType
+    pkgType=$(dirname "$filename")
     local dir=$MANIFEST_DIR/$namespace/$pkgType
-    local file=$(basename $filename)
-    mkdir -p $dir
+    local file
+    file="$(basename "$filename")"
+    mkdir -p "$dir"
     if [ "${filename: -14}" == "policy.jsonnet" ]; then
       local newbasename=${file%.jsonnet}
       local out=$dir/${newbasename}
       echo "---"
       kubecfg show --tla-code prev="{}" --tla-code-file config=$values --tla-str namespace=$namespace $fullpath --tla-str pkg="$pkgName" | k8s_sort >$out
       expect_success "Templating failure $dir/$filename"
-      add_file ${out}
-      cat $out
+      add_file "${out}"
+      cat "$out"
     fi
   done
   complete
@@ -705,14 +707,15 @@ function template_service_accounts() {
 
 # make policy manifests
 function make_policy_manifests() {
-  local values=$(get_values)
+  local -r values=$(get_values)
   local ns
   start "making policy manifests"
   for ns in $(get_namespaces); do
     local pkg
     for pkgName in $(enabled_pkgs namespaces.$ns); do
       echo "---"
-      local pkgType=$(get_package_type $ns $pkgName)
+      local pkgType
+      pkgType=$(get_package_type "$ns" "$pkgName")
       template_service_accounts "$values" ${TEMPLATE_DIR}pkgs/$pkgType ${TEMPLATE_DIR}pkgs/ $ns $pkgName
     done
   done
@@ -721,14 +724,14 @@ function make_policy_manifests() {
 
 function namespace_enabled() {
   local namespace=$1
-  local enabled=$(yq r $CONFIG_DIR/${VALUES_FILE} namespaces.${namespace}.namespace.enabled)
+  local -r enabled=$(yq r $CONFIG_DIR/${VALUES_FILE} namespaces.${namespace}.namespace.enabled)
   [ "$enabled" == "true" ]
 }
 
 function show_enabled() {
   local namespace=$1
   start "processing copying raw repo specific for $namespace"
-  local dir=$(output_dir $namespace namespace)
+  local -r dir=$(output_dir $namespace namespace)
   if namespace_enabled $namespace; then
     if [ -d "$CONFIG_DIR/secrets/$namespace" ]; then
       mkdir -p $dir/secrets
@@ -751,15 +754,15 @@ function temp_dir() {
   local namespace=$1
   local pkg=$2
   local t="$CONFIG_DIR/$MANIFEST_TEMP_DIR/$namespace/$pkg"
-  mkdir -p $t
-  echo $t
+  mkdir -p "$t"
+  echo "$t"
 }
 
 function output() {
-  local namespace=$1
-  local pkg=$2
-  local src=$3
-  local dir=$(output_dir $namespace $pkg)
+  local -r namespace=$1
+  local -r pkg=$2
+  local -r src=$3
+  local -r dir=$(output_dir $namespace $pkg)
   local name
   if [[ $src == *"transform.jsonnet" ]]; then
     name=$(echo $src | sed -e "s/jsonnet$/yaml/")
@@ -769,32 +772,31 @@ function output() {
     name=$(echo $src | sed -e "s/\..*$//")
   fi
   local dest=$dir/$name
-  mkdir -p $(dirname $dest)
+  mkdir -p "$(dirname $dest)"
   cat >>$dest
   add_file $dest
 }
 
 # expand the HelmRelease file, write to stdout
 function expand_helm() {
-  local namespace=$1
-  local pkg=$2
-  local src=$3
-  local file=$4
-  local hr=$(yq r $file -j)
-  local values=$(echo "$hr" | jq .spec.values | yq r - >/tmp/foobar)
-  local chart=$(echo "$hr" | jq .spec.chart.repository | sed -e 's/"//g')
-  local version=$(echo "$hr" | jq .spec.chart.version | sed -e 's/"//g')
-  local name=$(echo "$hr" | jq .spec.chart.name | sed -e 's/"//g')
-  local release=$(echo "$hr" | jq .spec.releaseName | sed -e 's/"//g')
-  local namespace=$(echo "$hr" | jq .metadata.namespace | sed -e 's/"//g')
-  local release=${release:=${name}}
+  local -r namespace=$1
+  local -r pkg=$2
+  local -r src=$3
+  local -r file=$4
+  local -r hr=$(yq r "$file" -j)
+  local -r values=$(echo "$hr" | jq .spec.values | yq r - >/tmp/foobar)
+  local -r chart=$(echo "$hr" | jq .spec.chart.repository | sed -e 's/"//g')
+  local -r version=$(echo "$hr" | jq .spec.chart.version | sed -e 's/"//g')
+  local -r name=$(echo "$hr" | jq .spec.chart.name | sed -e 's/"//g')
+  local -r r=$(echo "$hr" | jq .spec.releaseName | sed -e 's/"//g')
+  local -r release=${r:=${name}}
 
-  local tmp=$(temp_dir $namespace $pkg)/$file
-  mkdir -p $(dirname $tmp)
+  local -r tmp=$(temp_dir "$namespace" $pkg)/$file
+  mkdir -p "$(dirname "$tmp")"
 
   start "helm release from $src"
   echo "$hr" | jq .spec.values | yq r - >$tmp
-  helm repo add $name $chart >/dev/null
+  helm repo add "$name" "$chart" >/dev/null
   helm repo update >/dev/null
   helm template --version $version -f $tmp $release $name/$name --namespace ${namespace}
   complete
@@ -802,36 +804,36 @@ function expand_helm() {
 
 # evaluate jsonnet file
 function expand_jsonnet() {
-  local values=$1
-  local prev=$2
-  local namespace=$3
-  local pkgName=$4
-  local template=$5
-  local short=${template#${TEMPLATE_DIR}}
+  local -r values=$1
+  local -r prev=$2
+  local -r namespace=$3
+  local -r pkgName=$4
+  local -r template=$5
+  local -r short=${template#${TEMPLATE_DIR}}
   info "template" "$short"
   kubecfg show --tla-str-file prev=$prev --tla-code-file config=$values --tla-str namespace=$namespace --tla-str pkg=$pkgName $template | k8s_sort
 }
 
 # generate all files in a pkg directory
 function generate() {
-  local values=$1
-  local prev=$2
-  local namespace=$3
-  local pkgName=$4
-  local pkgType=$(get_package_type $3 $4)
+  local -r values=$1
+  local -r prev=$2
+  local -r namespace=$3
+  local -r pkgName=$4
+  local -r pkgType=$(get_package_type $3 $4)
 
   if [ "$pkgType" != "$pkgName" ]; then
     start "package $pkgName of type $pkgType"
   else
     start "package $pkgName"
   fi
-  local dir=$(output_dir $namespace $pkgName)
+  local -r dir=$(output_dir $namespace $pkgName)
   local base=${TEMPLATE_DIR}pkgs/$pkgType
   for f in $(find $base -type f -print); do
     local src=${f#$base/}
     start "file $src"
     if [ "${src: -5}" == ".yaml" ]; then
-      mkdir -p $(dirname $dir/$src)
+      mkdir -p "$(dirname $dir/$src)"
       cp $f $dir/$src
     elif [ "${src: -13}" == ".yaml.jsonnet" ]; then
       expand_jsonnet $values $prev $namespace $pkg $f | output $namespace $pkg $src
@@ -855,19 +857,19 @@ function generate() {
 
 # transform files that were generated
 function transform() {
-  local values=$1
-  local namespace=$2
-  local pkg=$3
+  local -r values=$1
+  local -r namespace=$2
+  local -r pkg=$3
 
-  local base=${TEMPLATE_DIR}pkgs/$pkg
-  local src=transform.jsonnet
-  local transform=${base}/${src}
+  local -r base=${TEMPLATE_DIR}pkgs/$pkg
+  local -r src=transform.jsonnet
+  local -r transform=${base}/${src}
 
   if [ -f "$transform" ]; then
     start "transforming package $pkg"
-    local dir=$(output_dir $namespace $pkg)
-    local tmp=$(temp_dir $namespace $pkg)/transform
-    mkdir -p $(dirname $tmp)
+    local -r dir=$(output_dir $namespace $pkg)
+    local -r tmp=$(temp_dir $namespace $pkg)/transform
+    mkdir -p "$(dirname $tmp)"
     show $dir >$tmp
     rm -rf $dir
     expand_jsonnet $values $tmp $namespace $pkg $transform | output $namespace $pkg $src
@@ -877,10 +879,10 @@ function transform() {
 
 # compute all manifests for a namespace
 function expand_pkg() {
-  local values=$1
-  local prev=$2
-  local namespace=$3
-  local pkg=$4
+  local -r values=$1
+  local -r prev=$2
+  local -r namespace=$3
+  local -r pkg=$4
   start "expanding package $pkg for namespace $namespace"
   generate $values $prev $namespace $pkg
   transform $values $namespace $pkg
@@ -888,9 +890,9 @@ function expand_pkg() {
 }
 
 function expand_pkgs() {
-  local values=$1
-  local prev=$2
-  local namespace=$3
+  local -r values=$1
+  local -r prev=$2
+  local -r namespace=$3
   start "expanding packages for namespace $namespace"
   local pkg
   for pkg in $(enabled_pkgs namespaces.$namespace); do
@@ -900,9 +902,9 @@ function expand_pkgs() {
 }
 
 function expand_namespace() {
-  local values=$1
-  local prev=$2
-  local namespace=$3
+  local -r values=$1
+  local -r prev=$2
+  local -r namespace=$3
   start "expanding namespace $namespace"
   expand_pkgs $values $prev $namespace
   show_enabled $namespace
@@ -910,8 +912,8 @@ function expand_namespace() {
 }
 
 function expand() {
-  local values=$1
-  local prev=$2
+  local -r values=$1
+  local -r prev=$2
   start "expanding all namespaces"
   local namespace
   if [ "$PARALLEL" == "true" ]; then
@@ -946,7 +948,7 @@ function make_config() {
 # persist changes to config repo in GitHub
 function save_changes() {
   start "adding and diffing changes for directory $(pwd)"
-  rm -rf $CONFIG_DIR/$MANIFEST_TEMP_DIR
+  rm -rf "$CONFIG_DIR/$MANIFEST_TEMP_DIR"
   git add .
 
   expect_success "git add failed"
@@ -957,10 +959,10 @@ function save_changes() {
     return
   fi
   git diff --cached HEAD
-  local branch="tpctl-$(date '+%Y-%m-%d-%H-%M-%S')"
+  local -r branch="tpctl-$(date '+%Y-%m-%d-%H-%M-%S')"
   establish_ssh
   read -p "${GREEN}Commit Message [$1]? ${RESET} " -r
-  local message=${REPLY:-$1}
+  local -r message=${REPLY:-$1}
   complete
   start "saving changes"
   if [ "$branch" != "master" ]; then
@@ -985,7 +987,7 @@ function save_changes() {
       expect_success "git push failed"
       complete
       echo "Please select PR reviewer: "
-      local reviewers=$(get_reviewers)
+      local -r reviewers=$(get_reviewers)
       select REVIEWER in none $reviewers; do
         if [ "$REVIEWER" == "none" ]; then
           hub pull-request -m "$message"
@@ -1002,13 +1004,13 @@ function save_changes() {
 
 # confirm cluster exists or exist
 function expect_cluster_exists() {
-  local cluster=$(get_cluster)
+  local -r cluster=$(get_cluster)
   eksctl get cluster --name $cluster
   expect_success "cluster $cluster does not exist."
 }
 
 function install_helmrelease() {
-  local file=$1
+  local -r file=$1
   start "bootstrapping $file"
   if ! bash -x helmit install $file >${TMP_DIR}/out 2>&1; then
     cat $TMP_DIR/out
@@ -1034,7 +1036,7 @@ function install_fluxkey() {
 
   expect_github_token
 
-  local key=$(fluxctl --k8s-fwd-ns=${FLUX_FORWARD_NAMESPACE} identity 2>${TMP_DIR}/err)
+  local -r key=$(fluxctl --k8s-fwd-ns=${FLUX_FORWARD_NAMESPACE} identity 2>${TMP_DIR}/err)
 
   while [ -s ${TMP_DIR}/err ]; do
     cat ${TMP_DIR}/err
@@ -1043,8 +1045,8 @@ function install_fluxkey() {
     rm -f ${TMP_DIR}/err
     key="$(fluxctl --k8s-fwd-ns=${FLUX_FORWARD_NAMESPACE} identity 2>$TMP_DIR/err || true)"
   done
-  local reponame="$(echo $GIT_REMOTE_REPO | cut -d: -f2 | sed -e 's/\.git//')"
-  local cluster=$(get_cluster)
+  local -r reponame="$(echo $GIT_REMOTE_REPO | cut -d: -f2 | sed -e 's/\.git//')"
+  local -r cluster=$(get_cluster)
 
   curl -X POST -i \
     -H"Authorization: token $GITHUB_TOKEN" \
@@ -1060,7 +1062,7 @@ EOF
 }
 
 function mykubectl() {
-  KUBECONFIG=~/.kube/config kubectl $@
+  KUBECONFIG=~/.kube/config kubectl "$@"
 }
 
 function ostype() {
@@ -1075,11 +1077,11 @@ function ostype() {
 
 function install_mesh_client() {
   start "checking linkerd client"
-  local linkerd_version=$(require_value "pkgs.linkerd.version")
+  local -r linkerd_version=$(require_value "pkgs.linkerd.version")
   if ! command -v linkerd >/dev/null 2>&1 || [ $(linkerd version --client --short) != ${linkerd_version} ]; then
     start "installing linkerd client"
     OS=$(ostype)
-    local name="https://github.com/linkerd/linkerd2/releases/download/${linkerd_version}/linkerd2-cli-${linkerd_version}-${OS}"
+    local -r name="https://github.com/linkerd/linkerd2/releases/download/${linkerd_version}/linkerd2-cli-${linkerd_version}-${OS}"
     curl -sL -o /usr/local/bin/linkerd $name
     expect_success "Failed to download $name"
     chmod 755 /usr/local/bin/linkerd
@@ -1090,7 +1092,7 @@ function install_mesh_client() {
 }
 
 function make_mesh_with_helm() {
-  local linkerd_version=$(require_value "pkgs.linkerd.version")
+  local -r linkerd_version=$(require_value "pkgs.linkerd.version")
   install_mesh_client
   step certificate create identity.linkerd.cluster.local $TMP_DIR/ca.crt $TMP_DIR/ca.key --profile root-ca --no-password --insecure
   step certificate create identity.linkerd.cluster.local $TMP_DIR/issuer.crt $TMP_DIR/issuer.key --ca $TMP_DIR/ca.crt --ca-key $TMP_DIR/ca.key --profile intermediate-ca --not-after 8760h --no-password --insecure
@@ -1153,16 +1155,16 @@ function make_mesh() {
 
 # create k8s system master users [IDEMPOTENT]
 function make_users() {
-  local group=system:masters
-  local cluster=$(get_cluster)
-  local aws_region=$(get_region)
-  local account=$(get_aws_account)
+  local -r group=system:masters
+  local -r cluster=$(get_cluster)
+  local -r aws_region=$(get_region)
+  local -r account=$(get_aws_account)
 
   start "updating system masters"
   declare -A users
   local user
   for user in $(get_iam_users); do
-    local arn=arn:aws:iam::${account}:user/${user}
+    local -r arn=arn:aws:iam::${account}:user/${user}
     users[$arn]=true
     if ! eksctl get iamidentitymapping --region=$aws_region --arn=$arn --cluster=$cluster >/dev/null 2>&1; then
       eksctl create iamidentitymapping --region=$aws_region --arn=$arn --group=$group --cluster=$cluster --username=$user
@@ -1196,7 +1198,7 @@ function expect_values_not_exist() {
 # create initial values file
 function make_values() {
   start "creating values.yaml"
-  cat $TMP_DIR/tpctl/values.yaml >values.yaml
+  cat "$TMP_DIR/tpctl/values.yaml" >values.yaml
   cat >>values.yaml <<!
 general:
   github:
@@ -1224,8 +1226,8 @@ function diff_config() {
 function set_chart_dir() {
   if [[ ! -d $CHART_DIR ]]; then
     start "cloning development tools"
-    pushd $TMP_DIR >/dev/null 2>&1
-    git clone $(repo_with_token https://github.com/tidepool-org/development)
+    pushd "$TMP_DIR" >/dev/null 2>&1
+    git clone "$(repo_with_token https://github.com/tidepool-org/development)"
     cd development
     git pull
     CHART_DIR=$(pwd)/charts/tidepool
@@ -1236,23 +1238,23 @@ function set_chart_dir() {
 
 # get the name of the environment that is being shadowed, return empty string if no such environment
 function get_shadow_sender() {
-  local env=$1
-  local val=$(yq r values.yaml -j namespaces.${env}.tidepool.shadow.enabled | sed -e 's/"//g' -e "s/'//g")
-  if [ $? -ne 0 -o "$val" == "null" -o "$val" == "" -o "$val" == "false" ]; then
+  local -r env=$1
+  local -r val=$(yq r values.yaml -j "namespaces.${env}.tidepool.shadow.enabled" | sed -e 's/"//g' -e "s/'//g")
+  if [ $? -ne 0 ] | [ "$val" == "null" ] | [ "$val" == "" ] | [ "$val" == "false" ]; then
     echo ""
   fi
-  local val=$(yq r values.yaml -j namespaces.${env}.tidepool.shadow.sender | sed -e 's/"//g' -e "s/'//g")
-  if [ $? -ne 0 -o "$val" == "null" -o "$val" == "" ]; then
+  local -r val2=$(yq r values.yaml -j namespaces.${env}.tidepool.shadow.sender | sed -e 's/"//g' -e "s/'//g")
+  if [ $? -ne 0 ] | [ "$val2" == "null" ] | [ "$val2" == "" ]; then
     echo ""
   else
-    echo $val
+    echo $val2
   fi
 }
 
 function forward_shadow_secrets() {
   local env
   for env in $(get_environments); do
-    local sender=$(get_shadow_sender $env)
+    local -r sender=$(get_shadow_sender $env)
     if [[ -n $sender ]]; then
       for file in userdata; do
         if [ ! -f secrets/${env}/${file}.yaml ]; then
@@ -1267,16 +1269,16 @@ function forward_shadow_secrets() {
 # generate random secrets,  if they do not already exist
 function generate_secrets() {
   set_chart_dir
-  local cluster=$(get_cluster)
+  local -r cluster=$(get_cluster)
   local env
   mkdir -p secrets
   forward_shadow_secrets
   for env in $(get_environments); do
     start "generating secrets for $env"
     helm template --namespace $env --set gloo.enabled=false --set global.secret.generated=true $CHART_DIR -f $CHART_DIR/values.yaml | select_kind Secret >$TMP_DIR/x.yaml
-    local dir=$TMP_DIR/secrets
+    local -r dir=$TMP_DIR/secrets
     mkdir -p $dir
-    pushd $dir >/dev/null 2>&1
+    pushd "$dir" >/dev/null 2>&1
     separate_by_namespace <$TMP_DIR/x.yaml >/dev/null 2>&1
     popd >/dev/null 2>&1
     for file in $(find $dir -type f -print); do
@@ -1297,10 +1299,10 @@ function generate_secrets() {
 
 # delete cluster from EKS, including cloudformation templates
 function delete_cluster() {
-  cluster=$(get_cluster)
+  local -r cluster=$(get_cluster)
   confirm "Are you sure that you want to delete cluster $cluster?"
   start "deleting cluster $cluster"
-  eksctl delete cluster --name=$cluster
+  eksctl delete cluster --name="$cluster"
   expect_success "Cluster deletion failed."
   info "cluster $cluster deletion takes ~10 minutes to complete"
 }
@@ -1314,9 +1316,9 @@ function remove_mesh() {
 }
 
 function dehelm() {
-  local namespace=$1
-  local releaseName=$2
-  local pkgName=$3
+  local -r namespace=$1
+  local -r releaseName=$2
+  local -r pkgName=$3
   fluxoff
   info "deleting helm secrets for $namespace/$releaseName"
   kubectl delete secrets -n $namespace -l name=$releaseName,owner=helm
@@ -1367,18 +1369,18 @@ function make_repo() {
     export REMOTE_REPO=$org/$repo
   fi
 
-  local template='{"name":"yolo-test", "private":"true", "auto_init": true}'
-  local args=$(echo $template | sed -e "s/yolo-test/$repo/")
+  local -r template='{"name":"yolo-test", "private":"true", "auto_init": true}'
+  local -r args=${template//yolo-test/$repo/}
 
   info "creating private repo $org/$repo"
-  curl -H "Authorization: token ${GITHUB_TOKEN}" $dest -d "$args"
+  curl -H "Authorization: token ${GITHUB_TOKEN}" "$dest" -d "$args"
   expect_success "Could not create repo $org/$repo"
   complete
 
   if [ "$USE_LOCAL_CONFIG" == "true" ]; then
     info "cloning configuration repo"
     git clone http://github.com/${org}/${repo}.git
-    cd $repo
+    cd "$repo"
     info "cloned repo into $(pwd)"
   else
     info "clone repo using: "
@@ -1389,7 +1391,7 @@ function make_repo() {
 
 # await deletion of a CloudFormation template that represents a cluster before returning
 function await_deletion() {
-  local cluster=$(get_cluster)
+  local -r cluster=$(get_cluster)
   start "awaiting cluster $cluster deletion"
   aws cloudformation wait stack-delete-complete --stack-name eksctl-${cluster}-cluster
   expect_success "Aborting wait"
@@ -1639,7 +1641,7 @@ main() {
       ;;
     repo)
       setup_tmpdir
-      make_repo $@
+      make_repo "$@"
       check_remote_repo
       setup_tmpdir
       clone_remote
@@ -1704,7 +1706,7 @@ main() {
       get_vpc
       ;;
     dehelm)
-      dehelm $1 $2 $3
+      dehelm "$1" "$2" "$3"
       ;;
     fluxon)
       fluxon
@@ -1727,14 +1729,14 @@ main() {
       validate $MANIFEST_DIR
       ;;
     images)
-      fluxctl list-images --k8s-fwd-ns flux -n ${1} --workload ${1}:deployment/${2} -l 60
+      fluxctl list-images --k8s-fwd-ns flux -n "${1}" --workload "${1}:deployment/${2}" -l 60
       ;;
     workloads)
-      fluxctl list-workloads --k8s-fwd-ns flux -n ${1}
+      fluxctl list-workloads --k8s-fwd-ns flux -n "${1}"
       ;;
     *)
       if useFzf; then
-        choices=$(echo "$HELP" | fzf -f $cmd)
+        choices=$(echo "$HELP" | fzf -f "$cmd")
         error "Unknown command: \"$cmd\", perhaps you meant one of these: "
         echo
         echo "$choices"
