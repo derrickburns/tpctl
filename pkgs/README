@@ -16,6 +16,15 @@ Moreover, this convention eliminates a source of potential errors.
 All packages should be written to be indepdendent of the target namespace. In other words, do not hard
 code namespaces in your packages. This enables hour package to be installed into any namespace.
 
+Use "external name" packages to give simple aliases to external resources. For example, here we create the name "zk-1" for a zookeeper instance running at "z-1.default-ops.gxm6gl.c4.kafka.us-west-2.amazonaws.com".`
+
+   zk-1:
+      enabled: true
+      type: external-name
+      target:
+        name: z-1.default-ops.gxm6gl.c4.kafka.us-west-2.amazonaws.com
+        port: 2181
+
 If you follow these conventions judiciously, then the next person to read your code will have an eassier time
 understanding it and using it.
 

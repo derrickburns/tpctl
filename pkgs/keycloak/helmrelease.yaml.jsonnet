@@ -31,7 +31,7 @@ local helmrelease(me) = (
             },
             {
               name: 'DB_DATABASE',
-              value: 'keycloak',
+              value: me.pkg,
             },
             {
               name: 'PROXY_ADDRESS_FORWARDING',
@@ -96,7 +96,7 @@ local helmrelease(me) = (
           [
             {
               secretRef: {
-                name: 'keycloak',
+                name: me.pkg,
               },
             },
           ], indent_array_in_object=false
