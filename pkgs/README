@@ -1,5 +1,22 @@
 Each subdirectory in this directory represents a package that may be installed in a cluster.
 
-Packages are independent of the destination cluster and of each other. This means there there should be
-NO dependencies on the cluster in which the code is installed nor on other packages, unless the latter
-are marked global in the `value.yaml` file.
+Packages are meant to be independent of the destination cluster and of each other.
+This means there there should be NO dependencies on the cluster in which the code is
+installed nor on other packages, unless the latter are marked global in the `value.yaml` file.
+
+Packages should NOT use the values associated with other packages. This creates a dependency.
+
+If, however, your package needs to generate multiple names, then use the package name as a
+prefix of the generated names to avoid name collisions.
+
+The name of the sub-directory is the default name used for Kubernetes resources constructed for the package.
+This convention means that there can be no name collisions across packages that follow thi convention.
+Moreover, this convention eliminates a source of potential errors.
+
+All packages should be written to be indepdendent of the target namespace. In other words, do not hard
+code namespaces in your packages. This enables hour package to be installed into any namespace.
+
+If you follow these conventions judiciously, then the next person to read your code will have an eassier time
+understanding it and using it.
+
+
