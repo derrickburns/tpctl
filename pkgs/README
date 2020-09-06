@@ -1,0 +1,5 @@
+Each subdirectory in this directory represents a package that may be installed in a cluster.
+
+Packages are independent of the destination cluster and of each other. This means there there should be
+NO dependencies on the cluster in which the code is installed nor on other packages, unless the latter
+are marked global in the `value.yaml` file.
