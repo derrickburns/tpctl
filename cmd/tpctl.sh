@@ -640,8 +640,8 @@ function validate() {
   local directory=$1
   if [ -d "$directory" ]; then
     start "validating previous files"
-    # shellcheck disable=SC2044
-    for file in $(find "$directory" -type f -name \*.yaml -print); do
+    shopt -s globstar
+    for file in "$directory"/**/*.yaml; do
       kubeval "$file" | grep -v "PASS" | grep -v 404 >>/dev/stderr || true
     done
     complete
@@ -652,8 +652,8 @@ function validate() {
 function show() {
   local directory=$1
   if [ -d "$directory" ]; then
-    # shellcheck disable=SC2044
-    for file in $(find "$directory" -type f -name \*.yaml -print); do
+    shopt -s globstar
+    for file in "$directory"/**/*.yaml; do
       echo "---"
       cat "$file"
       echo
@@ -688,8 +688,12 @@ function template_service_accounts() {
   local namespace=$4
   local pkgName=$5
   start "creating AWS polices for $namespace"
-  # shellcheck disable=SC2044
-  for fullpath in $(find "$path" -type f -print); do
+
+  shopt -s globstar
+  for fullpath in "$path"/**/*; do
+    if [ ! -f "$fullpath" ]; then
+      continue
+    fi
     local filename=${fullpath#$prefix}
     local pkgType
     pkgType=$(dirname "$filename")
@@ -836,8 +840,13 @@ function generate() {
   fi
   local -r dir=$(output_dir "$namespace" "$pkgName")
   local base=${TEMPLATE_DIR}pkgs/$pkgType
-  # shellcheck disable=SC2044
-  for f in $(find "$base" -type f -print); do
+
+  shopt -s globstar
+  for f in "$base"/**/*; do
+    if [ ! -f "$f" ]
+    then
+      continue
+    fi 
     local src=${f#$base/}
     start "file $src"
     if [ "${src: -5}" == ".yaml" ]; then
@@ -1284,8 +1293,11 @@ function generate_secrets() {
     pushd "$dir" >/dev/null 2>&1
     separate_by_namespace <"$TMP_DIR/x.yaml" >/dev/null 2>&1
     popd >/dev/null 2>&1
-      # shellcheck disable=SC2044
-    for file in $(find "$dir" -type f -print); do
+    shopt -s globstar
+    for file in "$dir"/**/*; do
+      if [ ! -f "$file" ]; then
+        continue
+      fi
       local -r b=${file#${TMP_DIR}/}
       if [ ! -f "$b" ]; then
         mkdir -p "$(dirname "$b")"
