@@ -1,4 +1,5 @@
 local common = import '../../../../lib/common.jsonnet';
+local lib = import '../../../../lib/lib.jsonnet';
 local prometheus = import '../../../../lib/prometheus.jsonnet';
 
 local groupConfig(me) = [
@@ -37,7 +38,7 @@ local prometheusRule(me) = prometheus.prometheusRule(me, 'tidepool-export', grou
 
 function(config, prev, namespace, pkg) (
   local me = common.package(config, prev, namespace, pkg);
-  if me.config.cluster.metadata.name != 'shared'
+  if lib.getElse(me, 'tidepoolMonitoring', true)
   then [
     prometheusRule(me),
   ]
