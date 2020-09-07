@@ -20,7 +20,7 @@ local clusterpackageinstall(me) = {
     namespace: me.namespace,
   },
   spec: {
-    package: 'crossplane/provider-aws:v0.12.0`',
+    package: 'crossplane/provider-aws:v0.11.1',
   },
 };
 
