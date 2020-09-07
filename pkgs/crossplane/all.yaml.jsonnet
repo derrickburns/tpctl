@@ -24,10 +24,28 @@ local clusterpackageinstall(me) = {
   },
 };
 
+local provider(me) = {
+  apiVersion: 'aws.crossplane.io/v1alpha3',
+  kind: 'Provider',
+  metadata: {
+    name: 'aws-provider',
+  },
+  spec: {
+    credentialsSecretRef: {
+      key: 'key',
+      name: 'aws-creds',
+      namespace: me.namespace,
+    },
+    region: me.config.cluster.metadata.region,
+  },
+};
+
+
 function(config, prev, namespace, pkg) (
   local me = common.package(config, prev, namespace, pkg);
   [
      helmrelease(me),
      clusterpackageinstall(me),
+     provider(me),
   ]
 )
