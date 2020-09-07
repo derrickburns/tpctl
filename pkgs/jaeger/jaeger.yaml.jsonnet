@@ -8,6 +8,31 @@ local jaeger(me) = k8s.k('jaegertracing.io/v1', 'Jaeger') + k8s.metadata('jaeger
     ingress: {
       enabled: false,
     },
+    collector: {
+      image: 'jaegertracing/jaeger-opentelemetry-collector:latest',
+      config: {
+        extensions: {
+          health_check: {
+            port: 14269,
+          },
+        },
+        receivers: {
+          opencensus: {},
+          otlp: {
+            protocols: {
+              grpc: '',
+              http: '',
+            },
+          },
+          jaeger: {
+            protocols: {
+              grpc: '',
+              thrift_http: '',
+            },
+          },
+        },
+      },
+    },
     storage: {
       type: 'elasticsearch',
       secretName: 'elastic-credentials',

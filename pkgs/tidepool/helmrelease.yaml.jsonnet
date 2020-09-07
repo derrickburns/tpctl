@@ -4,6 +4,7 @@ local global = import '../../lib/global.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 local linkerd = import '../../lib/linkerd.jsonnet';
+local tracing = import '../../lib/tracing.jsonnet';
 local mylib = import 'lib.libjsonnet';
 
 local jwks(me) = {
@@ -195,7 +196,7 @@ local helmrelease(me) = k8s.helmrelease(me, {
   local common = {
     podAnnotations: linkerd.annotations(me, true) + {
       'cluster-autoscaler.kubernetes.io/safe-to-evict': 'true',  // XXX
-    },
+    } + tracing.tracingAnnotations(config),
     securityContext: k8s.securityContext,
     serviceMonitor: {
       enabled: global.isEnabled(me.config, 'prometheus-operator'),
