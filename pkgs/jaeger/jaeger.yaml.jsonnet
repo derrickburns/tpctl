@@ -18,12 +18,12 @@ local jaeger(me) = k8s.k('jaegertracing.io/v1', 'Jaeger') + k8s.metadata('jaeger
         },
         receivers: {
           opencensus: {},
-          otlp: {
-            protocols: {
-              grpc: {},
-              http: {},
-            },
-          },
+          // otlp: {
+          // protocols: {
+          // grpc: {},
+          // http: {},
+          // },
+          // },
         },
       },
     },

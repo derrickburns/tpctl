@@ -23,6 +23,6 @@ local lib = import 'lib.jsonnet';
 
   tracingAnnotations(config):: if global.isEnabled(config, 'jaeger') then {
     'sidecar.jaegertracing.io/inject': 'true',
-    'config.linkerd.io/trace-collector': 'http://jaeger-collector.%s:14268' % lib.getElse(global.package(config, 'jaeger'), 'namespace', null),
+    'config.linkerd.io/trace-collector': 'jaeger-collector.%s:14268' % lib.getElse(global.package(config, 'jaeger'), 'namespace', null),
   } else {},
 }
