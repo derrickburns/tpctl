@@ -43,7 +43,7 @@ local helmrelease(me) = (
         extraInitContainers: std.manifestYamlDoc(
           [
             {
-              name: 'extensions',
+              name: 'rest-provider',
               image: 'busybox',
               imagePullPolicy: 'IfNotPresent',
               command: ['wget', '-O', '/deployments/keycloak-rest-provider-0.1.jar', 'https://github.com/toddkazakov/keycloak-user-migration/releases/download/0.1/keycloak-rest-provider-0.1.jar'],
@@ -55,7 +55,7 @@ local helmrelease(me) = (
               ],
             },
             {
-              name: 'extensions',
+              name: 'tidepool-extensions',
               image: 'busybox',
               imagePullPolicy: 'IfNotPresent',
               command: ['wget', '-O', '/deployments/admin-0.0.1.jar', 'https://github.com/tidepool-org/keycloak-extensions/releases/download/0.0.1/admin-0.0.1.jar'],
