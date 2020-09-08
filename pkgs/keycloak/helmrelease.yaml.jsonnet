@@ -55,6 +55,18 @@ local helmrelease(me) = (
               ],
             },
             {
+              name: 'extensions',
+              image: 'busybox',
+              imagePullPolicy: 'IfNotPresent',
+              command: ['wget', '-O', '/deployments/admin-0.0.1.jar', 'https://github.com/tidepool-org/keycloak-extensions/releases/download/0.0.1/admin-0.0.1.jar'],
+              volumeMounts: [
+                {
+                  name: 'extensions',
+                  mountPath: '/deployments',
+                },
+              ],
+            },
+            {
               name: 'prometheus-metrics',
               image: 'busybox',
               imagePullPolicy: 'IfNotPresent',
