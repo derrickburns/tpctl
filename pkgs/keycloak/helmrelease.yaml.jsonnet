@@ -58,7 +58,7 @@ local helmrelease(me) = (
               name: 'tidepool-extensions',
               image: 'busybox',
               imagePullPolicy: 'IfNotPresent',
-              command: ['wget', '-O', '/deployments/admin-0.0.1.jar', 'https://github.com/tidepool-org/keycloak-extensions/releases/download/0.0.1/admin-0.0.1.jar'],
+              command: ['wget', '-O', '/deployments/admin-0.0.2.jar', 'https://github.com/tidepool-org/keycloak-extensions/releases/download/0.0.1/admin-0.0.2.jar'],
               volumeMounts: [
                 {
                   name: 'extensions',
