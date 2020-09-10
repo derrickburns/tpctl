@@ -13,7 +13,7 @@ local groupConfig(me) = [
           description: '${{ labels.backup_name }} backup failed.',
           dashboard_url: 'https://grafana.%s/d/WojOgXTmkf2f/aws-ses?orgId=1&refresh=10s' % me.config.cluster.metadata.domain,
         },
-        expr: 'sum(atlassian_backup_status) by (backup_name) == 0',
+        expr: 'sum(argo_workflows_atlassian_backup_status) by (backup_name) == 0',
         'for': '10m',
         labels: {
           severity: 'critical',
