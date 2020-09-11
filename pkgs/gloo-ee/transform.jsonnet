@@ -86,7 +86,7 @@ local extauthDeployment(me) = k8s.findMatch(me.prev, {
 local patchExtauthContainer(container) = (
   if !std.objectHas(container, 'name') || container.name != 'extauth' then container else
     container + {
-      command: '/bin/sh',
+      command: ['/bin/sh'],
       args: ['-c', 'sleep 10 && /usr/local/bin/extauth']
     }
 );
