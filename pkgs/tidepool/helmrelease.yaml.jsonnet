@@ -375,6 +375,9 @@ local helmrelease(me) = k8s.helmrelease(me, {
       }, lib.getElse(me, 'gatekeeper', {})]),
 
       glooingress: lib.merge({
+        extauth: lib.getElse(me, 'extauth', {
+          enabled: false,
+        }),
         virtualServices+: {
           http+: {
             jwt: {

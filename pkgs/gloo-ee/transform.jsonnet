@@ -1,6 +1,7 @@
 local common = import '../../lib/common.jsonnet';
 local global = import '../../lib/global.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
+local flux = import '../../lib/flux.jsonnet';
 local kustomize  = import '../../lib/kustomize.jsonnet';
 local buddies  = import '../../lib/buddies.jsonnet';
 
@@ -73,9 +74,45 @@ local sysctl(me, proxy) = {
 
 local addnamespace(me) = std.map(kustomize.namespace(me.namespace), me.prev);
 
-local transform(me) = 
+local extauthDeployment(me) = k8s.findMatch(me.prev, {
+  apiVersion: 'apps/v1',
+  kind: 'Deployment',
+  metadata+: {
+    name: 'extauth',
+    namespace: me.namespace,
+  },
+});
+
+local patchExtauthContainer(container) = (
+  if !std.objectHas(container, 'name') || container.name != 'extauth' then container else
+    container + {
+      command: '/bin/sh',
+      args: ['-c', 'sleep 10 && /usr/local/bin/extauth']
+    }
+);
+
+local patchExtauthContainers(deployment) = (
+  local containers = flux.containers(deployment);
+  deployment + {
+    spec+: {
+      template+: {
+        spec+: {
+          containers: std.map(patchExtauthContainer,containers)
+        }
+      }
+    }
+  }
+);
+
+local extauth(me) = (
+  local deployment = extauthDeployment(me);
+  if k8s.isResource(deployment) then patchExtauthContainers(deployment) else []
+);
+
+local transform(me) =
   k8s.asMap(addnamespace(me)) +
-  k8s.asMap(linkerd(me));
+  k8s.asMap(linkerd(me)) +
+  k8s.asMap(extauth(me));
   // k8s.asMap(gatewayAnnotations(me)) +
   // k8s.asMap(glooAnnotations(me));
 
