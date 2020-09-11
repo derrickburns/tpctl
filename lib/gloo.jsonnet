@@ -368,6 +368,16 @@ local i = {
       extensions+: {
         extAuth+: {
           enabled: lib.isEnabledAt(me, 'extAuth'),
+          plugins+: if lib.isEnabledAt(me, 'extAuth') then {
+            'remote-auth': {
+              image: {
+                repository: 'gloo-remote-auth-plugin',
+                registry: 'docker.io/tidepool',
+                pullPolicy: 'IfNotPresent',
+                tag: '1.4.4', # must match gloo version
+              },
+            },
+          } else {},
         },
       },
     },

@@ -13,14 +13,7 @@ local helmrelease(me) = (
         global+: {
           extensions+: {
             extAuth+: {
-              plugins: if lib.isEnabledAt(me, 'extauth') then {
-                remote_auth: {
-                  repository: 'gloo-remote-auth-plugin',
-                  registry: 'docker.io/tidepool',
-                  pullPolicy: 'IfNotPresent',
-                  tag: '1.4.4', # must match gloo version
-                }
-              } else {}
+              existingSecret: 'ext-auth-signing-key',
             },
           },
         },
