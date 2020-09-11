@@ -7,6 +7,9 @@ local lib = import '../../lib/lib.jsonnet';
 local helmrelease(me) = k8s.helmrelease(me, { name: 'argo', version: lib.getElse(me, 'version', '0.9.8'), repository: 'https://argoproj.github.io/argo-helm' }) {
   spec+: {
     values+: {
+      init: {
+        serviceAccount: 'argo-workflow',
+      },
       images: {
         tag: 'v2.11.0-rc2',
       },
