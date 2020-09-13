@@ -2,11 +2,14 @@ local global = import '../../global/common.jsonnet';
 local common = import '../../lib/common.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 
-local helmrelease(me) = k8s.helmrelease(me, { path: 'helm/spark-operator', ref: 'master', repository: 'https://github.com/radanalyticsio/spark-operator'}) {
+local helmrelease(me) = k8s.helmrelease(me, { path: 'helm/spark-operator', ref: 'master', repository: 'https://github.com/radanalyticsio/spark-operator' }) {
   spec+: {
     values: {
+      image: {
+        tag: '1.0.8',
+      },
       env: {
-        watchNamespace: "*",
+        watchNamespace: '*',
         installNamespace: me.namespace,
         metrics: global.isEnabled(me.config, 'prometheus-operator'),
       },
