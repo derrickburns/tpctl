@@ -151,7 +151,7 @@ local workflowSpec(me, backup) = k8s.k('argoproj.io/v1alpha1', 'WorkflowTemplate
               ],
               when: '{{status}} == Succeeded',
               gauge: {
-                value: '{{tasks.upload-backup.finishedAt}}',
+                value: '{{workflow.creationTimestamp.%H%M%S}}',
               },
             },
           ],
