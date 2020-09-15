@@ -18,7 +18,7 @@ local datasources(me) = k8s.configmap(me, name='grafana-extra-datasources') + k8
         if global.isEnabled(me.config, 'jaeger') then {
           name: 'Jaeger',
           type: 'jaeger',
-          url: 'http://jaeger-query.tracing:16686',
+          url: 'http://jaeger-query.observability:16686',
           access: 'server',
           'basic-auth': false,
         } else {},
