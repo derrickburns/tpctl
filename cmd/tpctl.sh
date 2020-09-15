@@ -1416,6 +1416,13 @@ function await_deletion() {
 
 # shellcheck disable=SC2016
 HELP='
+Options
+
+-p               update all namespaces in parallel (speed up)
+--local-config   uses current directory as config repo
+--local-template uses templates in the config repo submodule (edited) 
+--skip-commit    do not push a commit to GitHub
+
 ----- Repo Commands (safe)
 config                              - create K8s and eksctl K8s manifest files
 envrc                               - create .envrc file for direnv to change kubecontexts and to set REMOTE_REPO
