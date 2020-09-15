@@ -183,7 +183,7 @@ local annotations(me) =
   + prefixAnnotations('repository', svcs);
 
 local helmrelease(me) = k8s.helmrelease(me, {
-  repository: 'https://raw.githubusercontent.com/tidepool-org/tidepool-helm/master/',
+  repository: 'https://developer.tidepool.org/development',
   git: 'git@github.com:tidepool-org/development',
   path: 'charts/tidepool',
 }) {
