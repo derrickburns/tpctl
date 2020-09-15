@@ -30,6 +30,7 @@ local exp = import 'expand.jsonnet';
       pkg:: lib.kebabCase(pkgName),
       config: expanded,
       prev:: lib.removeNulls(kubecfg.parseYaml(prev)),
+      typeName: lib.getElse(me, 'type', pkgName),
     }
   ),
 

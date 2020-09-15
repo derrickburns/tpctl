@@ -19,8 +19,8 @@ local git(me) = {
 
 local chart(me, values) = (
   local defaults = { path: '.', ref: 'master', repository: 'https://kubernetes-charts.storage.googleapis.com' };
-  local custom = { name: me.pkg } + lib.getElse(me, 'chart', {});
-  local withDefaults = { name: me.pkg } + defaults + values + custom;
+  local custom = lib.getElse(me, 'chart', {});
+  local withDefaults = { name: me.typeName } + defaults + values + custom;
 
   if providesHelmRepo(custom) then helm(custom)
   else if providesGitRepo(custom) then git(custom)
