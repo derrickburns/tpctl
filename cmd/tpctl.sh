@@ -853,11 +853,11 @@ function generate() {
       mkdir -p "$(dirname "$dir/$src")"
       cp "$f" "$dir/$src"
     elif [ "${src: -13}" == ".yaml.jsonnet" ]; then
-      expand_jsonnet "$values" "$prev" "$namespace" "$pkg" "$f" | output "$namespace" "$pkg" "$src"
+      expand_jsonnet "$values" "$prev" "$namespace" "$pkgName" "$f" | output "$namespace" "$pkgName" "$src"
     elif [ "${src: -17}" == "yaml.helm.jsonnet" ]; then
       local dehelmed=$dir/${src}.dehelmed
-      expand_jsonnet "$values" "$prev" "$namespace" "$pkg" "$f" >"$dehelmed"
-      expand_helm "$namespace" "$pkg" "$src" "$dehelmed" | output "$namespace" "$pkg" "$src"
+      expand_jsonnet "$values" "$prev" "$namespace" "$pkgName" "$f" >"$dehelmed"
+      expand_helm "$namespace" "$pkgName" "$src" "$dehelmed" | output "$namespace" "$pkgName" "$src"
     elif [ "${src: -14}" == "policy.jsonnet" ]; then
       :
     elif [ "${src: -17}" == "transform.jsonnet" ]; then
@@ -899,10 +899,10 @@ function expand_pkg() {
   local -r values=$1
   local -r prev=$2
   local -r namespace=$3
-  local -r pkg=$4
+  local -r pkgName=$4
   start "expanding package $pkg for namespace $namespace"
-  generate "$values" "$prev" "$namespace" "$pkg"
-  transform "$values" "$namespace" "$pkg"
+  generate "$values" "$prev" "$namespace" "$pkgName"
+  transform "$values" "$namespace" "$pkgName"
   complete
 }
 
@@ -911,9 +911,9 @@ function expand_pkgs() {
   local -r prev=$2
   local -r namespace=$3
   start "expanding packages for namespace $namespace"
-  local pkg
-  for pkg in $(enabled_pkgs "namespaces.$namespace"); do
-    expand_pkg "$values" "$prev" "$namespace" "$pkg"
+  local pkgName
+  for pkgName in $(enabled_pkgs "namespaces.$namespace"); do
+    expand_pkg "$values" "$prev" "$namespace" "$pkgName"
   done
   complete
 }
