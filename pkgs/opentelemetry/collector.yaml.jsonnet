@@ -5,9 +5,6 @@ local lib = import '../../lib/lib.jsonnet';
 local linkerd = import '../../lib/linkerd.jsonnet';
 local prom = import '../../lib/prometheus.jsonnet';
 
-// This presumes that there is a jaeger collector running in the same namspace and it
-// is called `jaeger-collector`
-
 local configmap(me) = k8s.configmap(me, name='otel-collector-conf') {
   data: {
     'otel-collector-config': std.manifestYamlDoc(
@@ -76,8 +73,34 @@ local configmap(me) = k8s.configmap(me, name='otel-collector-conf') {
 };
 
 local deployment(me) = k8s.deployment(me) {
+  metadata: {
+    labels: {
+      app: 'opentelemetry',
+      component: 'otel-collector',
+    },
+    annotations: {
+      'configmap.reloader.stakater.com/reload': 'otel-collector-conf',
+    },
+    namespace: me.namespace,
+    name: 'otel-collector',
+  },
   spec+: {
-    template+: prom.metadata(me.config, 8888) + linkerd.metadata(me, true) {
+    selector: {
+      matchLabels: {
+        app: 'opentelemetry',
+        component: 'otel-collector',
+      },
+    },
+    template+: {
+      metadata: {
+        labels: {
+          app: 'opentelemetry',
+          component: 'otel-collector',
+        },
+        annotations: {
+          'linkerd.io/inject': 'enabled',
+        },
+      },
       spec+: {
         containers: [
           {
@@ -159,6 +182,14 @@ local deployment(me) = k8s.deployment(me) {
 
 
 local service(me) = k8s.service(me) {
+  metadata: {
+    name: 'otel-collector',
+    namespace: me.namespace,
+    labels: {
+      app: 'opentelemetry',
+      component: 'otel-collector',
+    },
+  },
   spec+: {
     ports: [
       k8s.port(55678, 55678, 'opencensus'),
@@ -168,10 +199,42 @@ local service(me) = k8s.service(me) {
       k8s.port(9411, 9411, 'zipkin'),
       k8s.port(8888, 8888, 'metrics'),
     ],
+    selector: {
+      component: 'otel-collector',
+      app: 'opentelemetry',
+    },
   },
 };
 
-local servicemonitor(me) = prom.Servicemonitor(me, 8888);
+local servicemonitor(me) = prom.Servicemonitor(me, 8888) {
+  metadata: {
+    name: 'otel-collector',
+    namespace: me.namespace,
+    labels: {
+      app: 'opentelemetry',
+      component: 'otel-collector',
+    },
+  },
+  spec: {
+    endpoints: [
+      {
+        honorLabels: true,
+        port: 'metrics',
+      },
+    ],
+    namespaceSelector: {
+      matchNames: [
+        me.namespace,
+      ],
+    },
+    selector: {
+      matchLabels: {
+        component: 'otel-collector',
+        app: 'opentelemetry',
+      },
+    },
+  },
+};
 
 function(config, prev, namespace, pkg) (
   local me = common.package(config, prev, namespace, pkg);
