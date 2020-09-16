@@ -865,7 +865,7 @@ function generate() {
     elif [ "${src: -11}" == ".libjsonnet" ]; then
       :
     else
-      echo "unknown file type $src" >/dev/stderr
+      echo "unknown file type $f $src" >/dev/stderr
     fi
     complete
   done
