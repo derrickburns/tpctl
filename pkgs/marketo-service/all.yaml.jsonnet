@@ -13,6 +13,7 @@ local deployment(me) = flux.deployment(me) {
     env: [
       k8s.envVar('KAFKA_BROKERS', lib.getElse(me, 'kafka-brokers', 'kafka-kafka-bootstrap.kafka.svc.cluster.local:9092')),
       k8s.envVar('KAFKA_TOPIC', lib.getElse(me, 'kafka-topic', 'marketo' )),
+      k8s.envVar('KAFKA_PREFIX', lib.getElse(me, 'kafka-prefix', me.namespace)),
       k8s.envSecret('TIDEPOOL_STORE_SCHEME', 'mongo', 'Scheme'),
       k8s.envSecret('TIDEPOOL_STORE_USERNAME', 'mongo', 'Username'),
       k8s.envSecret('TIDEPOOL_STORE_PASSWORD', 'mongo', 'Password'),
