@@ -7,6 +7,7 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '0.9.1', repository: 'htt
   spec+: {
     values: {
       singleuser: {
+        serviceAccountName: "spark",
         image: {
           //name: "tidepool/jupyter-datascience-notebook",
           name: "jupyter/pyspark-notebook",
