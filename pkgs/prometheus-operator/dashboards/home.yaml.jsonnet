@@ -437,7 +437,7 @@ local dashboardConfig = {
       },
       gridPos: {
         h: 2,
-        w: 24,
+        w: 12,
         x: 0,
         y: 28,
       },
@@ -455,6 +455,7 @@ local dashboardConfig = {
       type: 'text',
     },
     {
+      content: '<h3 style="text-align: center;">\nAPI Gateway\n</h3>\n<hr/>\n\n',
       datasource: '$datasource',
       fieldConfig: {
         defaults: {
@@ -463,8 +464,36 @@ local dashboardConfig = {
         overrides: [],
       },
       gridPos: {
+        h: 2,
+        w: 12,
+        x: 12,
+        y: 28,
+      },
+      id: 44,
+      mode: 'html',
+      options: {
+        content: '<h3 style="text-align: center;">\nKeycloak\n</h3>\n<hr/>\n\n',
+        mode: 'html',
+      },
+      pluginVersion: '7.1.0',
+      timeFrom: null,
+      timeShift: null,
+      title: '',
+      transparent: true,
+      type: 'text',
+    },
+    {
+      datasource: '$datasource',
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
+      folderId: null,
+      gridPos: {
         h: 4,
-        w: 24,
+        w: 12,
         x: 0,
         y: 30,
       },
@@ -479,6 +508,33 @@ local dashboardConfig = {
       timeFrom: null,
       timeShift: null,
       title: 'Postgres',
+      type: 'dashlist',
+    },
+    {
+      datasource: '$datasource',
+      fieldConfig: {
+        defaults: {
+          custom: {},
+        },
+        overrides: [],
+      },
+      gridPos: {
+        h: 4,
+        w: 12,
+        x: 12,
+        y: 30,
+      },
+      headings: false,
+      id: 45,
+      limit: 10,
+      query: 'keycloak',
+      recent: false,
+      search: true,
+      starred: false,
+      tags: [],
+      timeFrom: null,
+      timeShift: null,
+      title: 'Keycloak',
       type: 'dashlist',
     },
     {
@@ -1041,7 +1097,7 @@ local dashboardConfig = {
   timezone: 'utc',
   title: 'Home',
   uid: 'HRN3fEzGk',
-  version: 1,
+  version: 2,
 };
 
 local configmap(me) = grafana.dashboard(me, 'home', dashboardConfig);
