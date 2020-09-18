@@ -9,8 +9,8 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '0.9.1', repository: 'htt
       singleuser: {
         serviceAccountName: me.pkg,
         image: {
-          name: 'jupyter/pyspark-notebook',
-          tag: 'latest'
+          name: 'tidepool/pyspark',
+	  tag: '3.0.1-bin-custom',
         },
       },
       proxy: {
