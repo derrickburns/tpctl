@@ -10,7 +10,8 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '0.9.1', repository: 'htt
         serviceAccountName: me.pkg,
         image: {
           //name: "tidepool/jupyter-datascience-notebook",
-          name: 'jupyter/pyspark-notebook',
+          //name: 'jupyter/pyspark-notebook',
+          name: 'tidepool/pyspark-notebook:hadoop-2.7',
           tag: 'latest',
         },
       },
