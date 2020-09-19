@@ -47,6 +47,18 @@ local clusterrole(me) = k8s.clusterrole(me) {
         '*',
       ],
     },
+    {
+      apiGroups: [
+        '',
+      ],
+      resources: [
+        'pods/log',
+      ],
+      verbs: [
+        'get',
+        'list',
+      ],
+    },
   ],
 };
 
