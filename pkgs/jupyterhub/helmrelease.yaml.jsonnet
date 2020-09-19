@@ -23,51 +23,9 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '0.9.1', repository: 'htt
   },
 };
 
-local clusterrole(me) = k8s.clusterrole(me) {
-  rules: [
-    {
-      apiGroups: [
-        '',
-      ],
-      resources: [
-        'pods',
-      ],
-      verbs: [
-        '*',
-      ],
-    },
-    {
-      apiGroups: [
-        '',
-      ],
-      resources: [
-        'services',
-      ],
-      verbs: [
-        '*',
-      ],
-    },
-    {
-      apiGroups: [
-        '',
-      ],
-      resources: [
-        'pods/log',
-      ],
-      verbs: [
-        'get',
-        'list',
-      ],
-    },
-  ],
-};
-
 function(config, prev, namespace, pkg) (
   local me = common.package(config, prev, namespace, pkg);
   [
     helmrelease(me),
-    k8s.serviceaccount(me),
-    k8s.clusterrolebinding(me),
-    clusterrole(me),
   ]
 )
