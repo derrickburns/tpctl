@@ -1,0 +1,5 @@
+local kubecfg = import 'kubecfg.libsonnet';
+{
+  "_source":  "pkgs/weave-cluster-agent",
+  "weave-cluster-agent.yaml.jsonnet":: import "weave-cluster-agent.yaml.jsonnet",
+}

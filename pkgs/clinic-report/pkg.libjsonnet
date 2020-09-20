@@ -1,0 +1,6 @@
+local kubecfg = import 'kubecfg.libsonnet';
+{
+  "_source":  "pkgs/clinic-report",
+  "policy.jsonnet":: import "policy.jsonnet",
+  "deployment.yaml.jsonnet":: import "deployment.yaml.jsonnet",
+}

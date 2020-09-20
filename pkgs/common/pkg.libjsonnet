@@ -1,0 +1,9 @@
+local kubecfg = import 'kubecfg.libsonnet';
+{
+  "_source":  "pkgs/common",
+  "high-priority-class.yaml": kubecfg.parseYaml(importstr "high-priority-class.yaml"),
+  "clusterrole.yaml": kubecfg.parseYaml(importstr "clusterrole.yaml"),
+  "monitoring-storage-class.yaml": kubecfg.parseYaml(importstr "monitoring-storage-class.yaml"),
+  "gp2-storage-class.yaml": kubecfg.parseYaml(importstr "gp2-storage-class.yaml"),
+  "pod-security-policy.yaml": kubecfg.parseYaml(importstr "pod-security-policy.yaml"),
+}

@@ -1,0 +1,6 @@
+local kubecfg = import 'kubecfg.libsonnet';
+{
+  "_source":  "pkgs/cluster-autoscaler",
+  "policy.jsonnet":: import "policy.jsonnet",
+  "helmrelease.yaml.jsonnet":: import "helmrelease.yaml.jsonnet",
+}

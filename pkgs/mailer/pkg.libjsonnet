@@ -1,0 +1,6 @@
+local kubecfg = import 'kubecfg.libsonnet';
+{
+  "_source":  "pkgs/mailer",
+  "policy.jsonnet":: import "policy.jsonnet",
+  "all.yaml.jsonnet":: import "all.yaml.jsonnet",
+}

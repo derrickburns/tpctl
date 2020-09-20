@@ -1,0 +1,5 @@
+local kubecfg = import 'kubecfg.libsonnet';
+{
+  "_source":  "pkgs/nats-board",
+  "board.yaml.jsonnet":: import "board.yaml.jsonnet",
+}

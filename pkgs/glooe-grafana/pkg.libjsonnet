@@ -1,0 +1,11 @@
+local kubecfg = import 'kubecfg.libsonnet';
+{
+  "_source":  "pkgs/glooe-grafana",
+  "custom-dashboards-configmap.yaml.jsonnet":: import "custom-dashboards-configmap.yaml.jsonnet",
+  "glooe-grafana-configmap.yaml.jsonnet":: import "glooe-grafana-configmap.yaml.jsonnet",
+  "service.yaml.jsonnet":: import "service.yaml.jsonnet",
+  "pvc.yaml.jsonnet":: import "pvc.yaml.jsonnet",
+  "secret.yaml.jsonnet":: import "secret.yaml.jsonnet",
+  "serviceacccount.yaml.jsonnet":: import "serviceacccount.yaml.jsonnet",
+  "deployment.yaml.jsonnet":: import "deployment.yaml.jsonnet",
+}

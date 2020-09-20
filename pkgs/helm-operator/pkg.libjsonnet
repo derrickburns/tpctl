@@ -1,0 +1,7 @@
+local kubecfg = import 'kubecfg.libsonnet';
+{
+  "_source":  "pkgs/helm-operator",
+  "crds/crds.yaml": kubecfg.parseYaml(importstr "crds/crds.yaml"),
+  "helmrelease.yaml.helm.jsonnet":: import "helmrelease.yaml.helm.jsonnet",
+  "flux-helm-repositories-secret.yaml.jsonnet":: import "flux-helm-repositories-secret.yaml.jsonnet",
+}

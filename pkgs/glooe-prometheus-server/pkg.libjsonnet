@@ -1,0 +1,11 @@
+local kubecfg = import 'kubecfg.libsonnet';
+{
+  "_source":  "pkgs/glooe-prometheus-server",
+  "clusterrolebinding.yaml.jsonnet":: import "clusterrolebinding.yaml.jsonnet",
+  "service.yaml.jsonnet":: import "service.yaml.jsonnet",
+  "clusterrole.yaml.jsonnet":: import "clusterrole.yaml.jsonnet",
+  "serviceaccount.yaml.jsonnet":: import "serviceaccount.yaml.jsonnet",
+  "pvc.yaml.jsonnet":: import "pvc.yaml.jsonnet",
+  "configmap.yaml.jsonnet":: import "configmap.yaml.jsonnet",
+  "deployment.yaml.jsonnet":: import "deployment.yaml.jsonnet",
+}

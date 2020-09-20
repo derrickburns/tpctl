@@ -1,0 +1,6 @@
+local kubecfg = import 'kubecfg.libsonnet';
+{
+  "_source":  "pkgs/opentelemetry",
+  "agent.yaml.jsonnet":: import "agent.yaml.jsonnet",
+  "collector.yaml.jsonnet":: import "collector.yaml.jsonnet",
+}

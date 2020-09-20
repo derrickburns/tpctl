@@ -1,0 +1,7 @@
+local kubecfg = import 'kubecfg.libsonnet';
+{
+  "_source":  "pkgs/scratchpod",
+  "policy.jsonnet":: import "policy.jsonnet",
+  "pvc.yaml.jsonnet":: import "pvc.yaml.jsonnet",
+  "deployment.yaml.jsonnet":: import "deployment.yaml.jsonnet",
+}

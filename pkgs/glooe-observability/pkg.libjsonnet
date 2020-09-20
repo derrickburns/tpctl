@@ -1,0 +1,10 @@
+local kubecfg = import 'kubecfg.libsonnet';
+{
+  "_source":  "pkgs/glooe-observability",
+  "clusterrolebinding.yaml.jsonnet":: import "clusterrolebinding.yaml.jsonnet",
+  "clusterrole.yaml.jsonnet":: import "clusterrole.yaml.jsonnet",
+  "serviceaccount.yaml.jsonnet":: import "serviceaccount.yaml.jsonnet",
+  "secret.yaml.jsonnet":: import "secret.yaml.jsonnet",
+  "configmap.yaml.jsonnet":: import "configmap.yaml.jsonnet",
+  "deployment.yaml.jsonnet":: import "deployment.yaml.jsonnet",
+}

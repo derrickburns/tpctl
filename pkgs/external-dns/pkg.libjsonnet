@@ -1,0 +1,6 @@
+local kubecfg = import 'kubecfg.libsonnet';
+{
+  "_source":  "pkgs/external-dns",
+  "policy.jsonnet":: import "policy.jsonnet",
+  "helmrelease.yaml.jsonnet":: import "helmrelease.yaml.jsonnet",
+}

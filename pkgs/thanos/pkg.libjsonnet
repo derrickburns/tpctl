@@ -1,0 +1,7 @@
+local kubecfg = import 'kubecfg.libsonnet';
+{
+  "_source":  "pkgs/thanos",
+  "policy.jsonnet":: import "policy.jsonnet",
+  "helmrelease.yaml.jsonnet":: import "helmrelease.yaml.jsonnet",
+  "thanos-secret.yaml.jsonnet":: import "thanos-secret.yaml.jsonnet",
+}

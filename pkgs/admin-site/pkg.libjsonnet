@@ -1,0 +1,6 @@
+local kubecfg = import 'kubecfg.libsonnet';
+{
+  "_source":  "pkgs/admin-site",
+  "all.yaml.jsonnet":: import "all.yaml.jsonnet",
+  "serviceprofile.yaml.jsonnet":: import "serviceprofile.yaml.jsonnet",
+}

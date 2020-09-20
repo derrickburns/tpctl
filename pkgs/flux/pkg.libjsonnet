@@ -1,0 +1,6 @@
+local kubecfg = import 'kubecfg.libsonnet';
+{
+  "_source":  "pkgs/flux",
+  "policy.jsonnet":: import "policy.jsonnet",
+  "helmrelease.yaml.jsonnet":: import "helmrelease.yaml.jsonnet",
+}

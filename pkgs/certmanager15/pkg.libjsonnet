@@ -1,0 +1,9 @@
+local kubecfg = import 'kubecfg.libsonnet';
+{
+  "_source":  "pkgs/certmanager15",
+  "policy.jsonnet":: import "policy.jsonnet",
+  "crds/cert-manager.crds.yaml": kubecfg.parseYaml(importstr "crds/cert-manager.crds.yaml"),
+  "helmrelease.yaml.jsonnet":: import "helmrelease.yaml.jsonnet",
+  "letsencrypt-staging-clusterissuer.yaml.jsonnet":: import "letsencrypt-staging-clusterissuer.yaml.jsonnet",
+  "letsencrypt-production-clusterissuer.yaml.jsonnet":: import "letsencrypt-production-clusterissuer.yaml.jsonnet",
+}

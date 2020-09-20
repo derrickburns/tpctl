@@ -1,0 +1,5 @@
+local kubecfg = import 'kubecfg.libsonnet';
+{
+  "_source":  "pkgs/weave-scope-app",
+  "weave-scope-app.yaml.jsonnet":: import "weave-scope-app.yaml.jsonnet",
+}

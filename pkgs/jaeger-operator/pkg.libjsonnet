@@ -1,0 +1,6 @@
+local kubecfg = import 'kubecfg.libsonnet';
+{
+  "_source":  "pkgs/jaeger-operator",
+  "crds/jaeger-operator-crds.yaml": kubecfg.parseYaml(importstr "crds/jaeger-operator-crds.yaml"),
+  "all.yaml.jsonnet":: import "all.yaml.jsonnet",
+}

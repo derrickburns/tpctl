@@ -1,0 +1,6 @@
+local kubecfg = import 'kubecfg.libsonnet';
+{
+  "_source":  "pkgs/linkerd",
+  "servicemonitor.yaml.jsonnet":: import "servicemonitor.yaml.jsonnet",
+  "pdb.yaml.jsonnet":: import "pdb.yaml.jsonnet",
+}

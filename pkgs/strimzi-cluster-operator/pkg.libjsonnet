@@ -1,0 +1,22 @@
+local kubecfg = import 'kubecfg.libsonnet';
+{
+  "_source":  "pkgs/strimzi-cluster-operator",
+  "crds/kafkausers.kafka.strimzi.io.yaml": kubecfg.parseYaml(importstr "crds/kafkausers.kafka.strimzi.io.yaml"),
+  "crds/kafkaconnects.kafka.strimzi.io.yaml": kubecfg.parseYaml(importstr "crds/kafkaconnects.kafka.strimzi.io.yaml"),
+  "crds/kafkas.kafka.strimzi.io.yaml": kubecfg.parseYaml(importstr "crds/kafkas.kafka.strimzi.io.yaml"),
+  "crds/kafkarebalances.kafka.strimzi.io.yaml": kubecfg.parseYaml(importstr "crds/kafkarebalances.kafka.strimzi.io.yaml"),
+  "crds/kafkatopics.kafka.strimzi.io.yaml": kubecfg.parseYaml(importstr "crds/kafkatopics.kafka.strimzi.io.yaml"),
+  "crds/kafkaconnects2is.kafka.strimzi.io.yaml": kubecfg.parseYaml(importstr "crds/kafkaconnects2is.kafka.strimzi.io.yaml"),
+  "crds/kafkamirrormakers.kafka.strimzi.io.yaml": kubecfg.parseYaml(importstr "crds/kafkamirrormakers.kafka.strimzi.io.yaml"),
+  "crds/kafkabridges.kafka.strimzi.io.yaml": kubecfg.parseYaml(importstr "crds/kafkabridges.kafka.strimzi.io.yaml"),
+  "crds/kafkamirrormaker2s.kafka.strimzi.io.yaml": kubecfg.parseYaml(importstr "crds/kafkamirrormaker2s.kafka.strimzi.io.yaml"),
+  "crds/kafkaconnectors.kafka.strimzi.io.yaml": kubecfg.parseYaml(importstr "crds/kafkaconnectors.kafka.strimzi.io.yaml"),
+  "all.yaml.jsonnet":: import "all.yaml.jsonnet",
+  "ClusterRoleBinding/strimzi-cluster-operator-kafka-broker-delegation.yaml": kubecfg.parseYaml(importstr "ClusterRoleBinding/strimzi-cluster-operator-kafka-broker-delegation.yaml"),
+  "ClusterRoleBinding/strimzi-cluster-operator.yaml": kubecfg.parseYaml(importstr "ClusterRoleBinding/strimzi-cluster-operator.yaml"),
+  "ClusterRole/strimzi-cluster-operator-global.yaml": kubecfg.parseYaml(importstr "ClusterRole/strimzi-cluster-operator-global.yaml"),
+  "ClusterRole/strimzi-entity-operator.yaml": kubecfg.parseYaml(importstr "ClusterRole/strimzi-entity-operator.yaml"),
+  "ClusterRole/strimzi-kafka-broker.yaml": kubecfg.parseYaml(importstr "ClusterRole/strimzi-kafka-broker.yaml"),
+  "ClusterRole/strimzi-cluster-operator-namespaced.yaml": kubecfg.parseYaml(importstr "ClusterRole/strimzi-cluster-operator-namespaced.yaml"),
+  "ClusterRole/strimzi-topic-operator.yaml": kubecfg.parseYaml(importstr "ClusterRole/strimzi-topic-operator.yaml"),
+}

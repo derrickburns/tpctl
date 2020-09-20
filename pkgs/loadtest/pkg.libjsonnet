@@ -1,0 +1,6 @@
+local kubecfg = import 'kubecfg.libsonnet';
+{
+  "_source":  "pkgs/loadtest",
+  "generate-accounts.yaml.jsonnet":: import "generate-accounts.yaml.jsonnet",
+  "k6.yaml.jsonnet":: import "k6.yaml.jsonnet",
+}

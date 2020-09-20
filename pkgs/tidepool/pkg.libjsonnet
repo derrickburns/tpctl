@@ -1,0 +1,13 @@
+local kubecfg = import 'kubecfg.libsonnet';
+{
+  "_source":  "pkgs/tidepool",
+  "helmrelease.yaml.jsonnet":: import "helmrelease.yaml.jsonnet",
+  "blob-policy.jsonnet":: import "blob-policy.jsonnet",
+  "image-policy.jsonnet":: import "image-policy.jsonnet",
+  "jellyfish-policy.jsonnet":: import "jellyfish-policy.jsonnet",
+  "certificate.yaml.jsonnet":: import "certificate.yaml.jsonnet",
+  "vpa.yaml.jsonnet":: import "vpa.yaml.jsonnet",
+  "canary.yaml.jsonnet":: import "canary.yaml.jsonnet",
+  "hydrophone-policy.jsonnet":: import "hydrophone-policy.jsonnet",
+  "virtual-services.yaml.jsonnet":: import "virtual-services.yaml.jsonnet",
+}

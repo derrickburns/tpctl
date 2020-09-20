@@ -1,0 +1,6 @@
+local kubecfg = import 'kubecfg.libsonnet';
+{
+  "_source":  "pkgs/nats-operator",
+  "crds/crds.yaml": kubecfg.parseYaml(importstr "crds/crds.yaml"),
+  "all.yaml.jsonnet":: import "all.yaml.jsonnet",
+}

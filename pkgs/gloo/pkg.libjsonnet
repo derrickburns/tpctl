@@ -1,0 +1,15 @@
+local kubecfg = import 'kubecfg.libsonnet';
+{
+  "_source":  "pkgs/gloo",
+  "crds/settings.yaml": kubecfg.parseYaml(importstr "crds/settings.yaml"),
+  "crds/virtual_service.yaml": kubecfg.parseYaml(importstr "crds/virtual_service.yaml"),
+  "crds/proxy.yaml": kubecfg.parseYaml(importstr "crds/proxy.yaml"),
+  "crds/auth_config.yaml": kubecfg.parseYaml(importstr "crds/auth_config.yaml"),
+  "crds/route_table.yaml": kubecfg.parseYaml(importstr "crds/route_table.yaml"),
+  "crds/gateway.yaml": kubecfg.parseYaml(importstr "crds/gateway.yaml"),
+  "crds/upstream_group.yaml": kubecfg.parseYaml(importstr "crds/upstream_group.yaml"),
+  "crds/upstream.yaml": kubecfg.parseYaml(importstr "crds/upstream.yaml"),
+  "helmrelease.yaml.jsonnet":: import "helmrelease.yaml.jsonnet",
+  "upstreams.yaml.jsonnet":: import "upstreams.yaml.jsonnet",
+  "podmonitor.yaml.jsonnet":: import "podmonitor.yaml.jsonnet",
+}

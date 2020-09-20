@@ -1,0 +1,7 @@
+local kubecfg = import 'kubecfg.libsonnet';
+{
+  "_source":  "pkgs/vpa-recommender",
+  "crds/vpa-rbac.yaml": kubecfg.parseYaml(importstr "crds/vpa-rbac.yaml"),
+  "crds/vpa-v1-crd.yaml": kubecfg.parseYaml(importstr "crds/vpa-v1-crd.yaml"),
+  "all.yaml.jsonnet":: import "all.yaml.jsonnet",
+}

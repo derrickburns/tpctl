@@ -1,0 +1,8 @@
+local kubecfg = import 'kubecfg.libsonnet';
+{
+  "_source":  "pkgs/elastic-operator",
+  "crds/kibanas.kibana.k8s.elastic.co.yaml": kubecfg.parseYaml(importstr "crds/kibanas.kibana.k8s.elastic.co.yaml"),
+  "crds/apmservers.apm.k8s.elastic.co.yaml": kubecfg.parseYaml(importstr "crds/apmservers.apm.k8s.elastic.co.yaml"),
+  "crds/elasticsearches.elasticsearch.k8s.elastic.co.yaml": kubecfg.parseYaml(importstr "crds/elasticsearches.elasticsearch.k8s.elastic.co.yaml"),
+  "all.yaml.jsonnet":: import "all.yaml.jsonnet",
+}

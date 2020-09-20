@@ -1,0 +1,7 @@
+local kubecfg = import 'kubecfg.libsonnet';
+{
+  "_source":  "pkgs/keptn",
+  "keptn-domain-configmap.yaml": kubecfg.parseYaml(importstr "keptn-domain-configmap.yaml"),
+  "core.yaml": kubecfg.parseYaml(importstr "core.yaml"),
+  "quality-gates.yaml": kubecfg.parseYaml(importstr "quality-gates.yaml"),
+}

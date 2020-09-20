@@ -1,0 +1,5 @@
+local kubecfg = import 'kubecfg.libsonnet';
+{
+  "_source":  "pkgs/hydra-idp",
+  "helmrelease.yaml.jsonnet":: import "helmrelease.yaml.jsonnet",
+}

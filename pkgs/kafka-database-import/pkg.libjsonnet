@@ -1,0 +1,5 @@
+local kubecfg = import 'kubecfg.libsonnet';
+{
+  "_source":  "pkgs/kafka-database-import",
+  "all.yaml.jsonnet":: import "all.yaml.jsonnet",
+}

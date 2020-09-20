@@ -1,0 +1,6 @@
+local kubecfg = import 'kubecfg.libsonnet';
+{
+  "_source":  "pkgs/jaeger",
+  "jaeger.yaml.jsonnet":: import "jaeger.yaml.jsonnet",
+  "podmonitor.yaml.jsonnet":: import "podmonitor.yaml.jsonnet",
+}

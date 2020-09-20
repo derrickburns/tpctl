@@ -1,0 +1,4 @@
+local kubecfg = import 'kubecfg.libsonnet';
+{
+  "_source":  "pkgs/strimzi-kakfa",
+}

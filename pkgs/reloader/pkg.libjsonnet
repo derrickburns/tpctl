@@ -1,0 +1,6 @@
+local kubecfg = import 'kubecfg.libsonnet';
+{
+  "_source":  "pkgs/reloader",
+  "helmrelease.yaml.jsonnet":: import "helmrelease.yaml.jsonnet",
+  "serviceaccount.yaml.jsonnet":: import "serviceaccount.yaml.jsonnet",
+}

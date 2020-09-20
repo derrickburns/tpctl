@@ -1,0 +1,5 @@
+local kubecfg = import 'kubecfg.libsonnet';
+{
+  "_source":  "pkgs/kafka-manager",
+  "helmrelease.yaml.jsonnet":: import "helmrelease.yaml.jsonnet",
+}

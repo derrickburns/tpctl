@@ -1,0 +1,5 @@
+local kubecfg = import 'kubecfg.libsonnet';
+{
+  "_source":  "pkgs/sumologic-all",
+  "sumologic-helmrelease.yaml.jsonnet":: import "sumologic-helmrelease.yaml.jsonnet",
+}
