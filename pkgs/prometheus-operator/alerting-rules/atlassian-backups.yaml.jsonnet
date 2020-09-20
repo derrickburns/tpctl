@@ -11,7 +11,7 @@ local groupConfig(me) = [
         annotations: {
           summary: 'Atlassian backup failed.',
           description: '{{ $labels.backup_name }} backup failed.',
-          dashboard_url: 'https://grafana.%s/d/WojOgXTmkf2f/aws-ses?orgId=1&refresh=10s' % me.config.cluster.metadata.domain,
+          dashboard_url: 'https://argo.%s.tidepool.org/workflows/tools' % me.config.cluster.metadata.domain,
         },
         expr: 'sum(argo_workflows_atlassian_backup_status) by (backup_name) == 0',
         'for': '10m',
