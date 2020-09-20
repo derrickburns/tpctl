@@ -1,0 +1,9 @@
+#!/bin/bash
+echo "{"
+for x in $(find . -name *pkg.libjsonnet)
+do
+y=${x/\.\//}
+y=${y/\/pkg.libjsonnet}
+echo "  \"$y\":: import \"$x\","
+done
+echo "}"
