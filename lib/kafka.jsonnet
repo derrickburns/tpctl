@@ -11,5 +11,6 @@ local k8s = import '../../k8s/lib.jsonnet';
   spec: lib.merge({
     partitions: 1,
     replicas: 1,
-  }, lib.getElse(me, 'spec', {})),
+  }, lib.getElse(me, 'spec', {}))
+}
 }

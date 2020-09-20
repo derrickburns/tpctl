@@ -206,8 +206,6 @@
   // which is not json-patch.
   patchesJson6902(target, patch):: error "TODO: No json-patch implementation for jsonnet yet.",
 
-  crds: error "TODO(gus): think about how to merge this with above functions",
-
   vars(vars):: function(o) (
     error "FIXME: not yet implemented"
   ),
