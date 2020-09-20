@@ -8,7 +8,10 @@ for pkg in $pkgs
 do
 	x=${pkg/${PKG_SOURCE}\//}
   if [[ $x == *".yaml" ]]; then
-	  echo "  \"$x\": kubecfg.parseYaml(importstr \"$x\"),"
+	  target=${pkg/\.yaml/\.jsonnet}
+	  yq r $pkg -j | jq | jsonnetfmt - >$target
+	  #echo "  \"$x\": kubecfg.parseYaml(importstr \"$x\"),"
+	  echo "  \"$x\":: import \"$target\","
   elif [[ $x == *"yaml.jsonnet" ]]; then
 	  echo "  \"$x\":: import \"$x\","
   elif [[ $x == *"yaml.helm.jsonnet" ]]; then
