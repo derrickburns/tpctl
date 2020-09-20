@@ -11,7 +11,7 @@ do
 	  target=${pkg/\.yaml/\.jsonnet}
 	  yq r $pkg -j | jq | jsonnetfmt - >$target
 	  #echo "  \"$x\": kubecfg.parseYaml(importstr \"$x\"),"
-	  echo "  \"$x\":: import \"$target\","
+	  echo "  \"$x\":: import \"${target/{PKG_SOURCE}\//\","
   elif [[ $x == *"yaml.jsonnet" ]]; then
 	  echo "  \"$x\":: import \"$x\","
   elif [[ $x == *"yaml.helm.jsonnet" ]]; then
