@@ -7,12 +7,22 @@ local linkerd = import '../../lib/linkerd.jsonnet';
 
 local containerPort = 8080;
 
+local namespaced(ns, list) = [ ns + "." + x for x in list ];
+
+local list = [ 
+  'data.data.deviceData',
+  'clinician.clinic.clinicsClinicians',
+  'clinic.clinic.clinic',
+  'patient.clinic.clinicsPatients',
+  'gatekeeper.gatekeeper.perms',
+];
+
 local deployment(me) = flux.deployment(me) {
   _containers:: {
     image: 'tidepool/kafka-database-worker:latest',
     env: [
       k8s.envVar('KAFKA_BROKERS', lib.getElse(me, 'kafka-brokers', 'kafka-kafka-bootstrap.kafka.svc.cluster.local:9092')),
-      k8s.envVar('KAFKA_TOPIC', lib.getElse(me, 'kafka-topic', me.namespace + '.' + 'data.data.deviceData' + ',' + me.namespace + '.' + 'clinician.clinic.clinicsClinicians' + ',' + me.namespace + '.' + 'clinic.clinic.clinic' + ',' + me.namespace + '.' + 'patient.clinic.clinicsPatients' + ',' + me.namespace + '.' + 'gatekeeper.gatekeeper.perms')),
+      k8s.envVar('KAFKA_TOPIC', lib.getElse(me, 'kafka-topic', std.join(",", namespaced(me.namespace, list)))), 
       k8s.envVar('TIMESCALEDB_HOST', lib.getElse(me, 'postgres-host', 'timescaledb-single.timescaledb.svc.cluster.local')),
       k8s.envVar('TIMESCALEDB_USER', lib.getElse(me, 'postgres-user', 'postgres')),
       k8s.envVar('TIMESCALEDB_DBNAME', lib.getElse(me, 'postgres-dbname', 'postgres')),
