@@ -7,19 +7,19 @@ local helmrelease(me) = k8s.helmrelease(me, { path: 'charts/cp-ksql-server', git
   spec+: {
     values: {
       external: {
-        type: "ClusterIP",
+        type: 'ClusterIP',
       },
       imageTag: '5.4.2',
       kafka: {
         bootstrapServers: 'PLAINTEXT://kafka-kafka-bootstrap.%s.svc.cluster.local:9092' % me.namespace,
       },
-      'cp-zookeeper' : {
-         url: 'kafka-zookeeper-client.%s.svc.cluster.local' % me.namespace,
+      'cp-zookeeper': {
+        url: 'kafka-zookeeper-client.%s.svc.cluster.local' % me.namespace,
       },
       'cp-schema-registry': {
-	url: "cp-schema-registry.%s.svc.cluster.local:8081" % me.namespace,
+        url: 'cp-schema-registry.%s.svc.cluster.local:8081' % me.namespace,
       },
-    }
+    },
   },
 };
 

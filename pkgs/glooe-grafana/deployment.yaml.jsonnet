@@ -2,8 +2,9 @@ local common = import '../../lib/common.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
-local deployment(me) = k8s.deployment(me) {
-  _containers: {
+local deployment(me) = k8s.deployment(
+  me,
+  containers={
     env: [
       k8s.envSecret('GF_SECURITY_ADMIN_USER', me.pkg, 'admin-user'),
       k8s.envSecret('GF_SECURITY_ADMIN_PASSWORD', me.pkg, 'admin-password'),
@@ -63,6 +64,28 @@ local deployment(me) = k8s.deployment(me) {
       },
     ],
   },
+  volumes=[
+    {
+      configMap: {
+        name: me.pkg,
+      },
+      name: 'config',
+    },
+    {
+      configMap: {
+        name: 'glooe-grafana-custom-dashboards',
+      },
+      name: 'dashboards-gloo',
+    },
+    {
+      name: 'storage',
+      persistentVolumeClaim: {
+        claimName: me.pkg,
+      },
+    },
+  ],
+  serviceAccount=true,
+) {
   spec+: {
     template+: {
       spec+: {
@@ -93,27 +116,6 @@ local deployment(me) = k8s.deployment(me) {
           fsGroup: 472,
           runAsUser: 472,
         },
-        serviceAccountName: me.pkg,
-        volumes: [
-          {
-            configMap: {
-              name: me.pkg,
-            },
-            name: 'config',
-          },
-          {
-            configMap: {
-              name: 'glooe-grafana-custom-dashboards',
-            },
-            name: 'dashboards-gloo',
-          },
-          {
-            name: 'storage',
-            persistentVolumeClaim: {
-              claimName: me.pkg,
-            },
-          },
-        ],
       },
     },
   },

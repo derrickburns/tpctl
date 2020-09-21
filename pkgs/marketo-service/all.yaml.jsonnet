@@ -1,18 +1,19 @@
-local k8s = import '../../lib/k8s.jsonnet';
 local common = import '../../lib/common.jsonnet';
-local lib = import '../../lib/lib.jsonnet';
 local flux = import '../../lib/flux.jsonnet';
-local linkerd = import '../../lib/linkerd.jsonnet';
 local gloo = import '../../lib/gloo.jsonnet';
+local k8s = import '../../lib/k8s.jsonnet';
+local lib = import '../../lib/lib.jsonnet';
+local linkerd = import '../../lib/linkerd.jsonnet';
 
 local port = 8080;
 
-local deployment(me) = flux.deployment(me) {
-  _containers:: {
+local deployment(me) = flux.deployment(
+  me,
+  containers={
     image: 'tidepool/marketo-service:latest',
     env: [
       k8s.envVar('KAFKA_BROKERS', lib.getElse(me, 'kafka-brokers', 'kafka-kafka-bootstrap.kafka.svc.cluster.local:9092')),
-      k8s.envVar('KAFKA_TOPIC', lib.getElse(me, 'kafka-topic', 'marketo' )),
+      k8s.envVar('KAFKA_TOPIC', lib.getElse(me, 'kafka-topic', 'marketo')),
       k8s.envVar('KAFKA_PREFIX', lib.getElse(me, 'kafka-prefix', me.namespace + '-')),
       k8s.envSecret('TIDEPOOL_STORE_SCHEME', 'mongo', 'Scheme'),
       k8s.envSecret('TIDEPOOL_STORE_USERNAME', 'mongo', 'Username'),
@@ -28,17 +29,16 @@ local deployment(me) = flux.deployment(me) {
       k8s.envConfigmap('MARKETO_PATIENT_ROLE', 'marketo', 'PatientRole', true),
       k8s.envConfigmap('MARKETO_TIMEOUT', 'marketo', 'Timeout', true),
     ],
-    
     ports: [{
-      containerPort: port
+      containerPort: port,
     }],
-  },
-};
+  }
+);
 
 local service(me) = k8s.service(me) {
   spec+: {
     ports: [
-        k8s.port(port, port),
+      k8s.port(port, port),
     ],
   },
 };

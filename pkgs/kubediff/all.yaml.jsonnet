@@ -15,7 +15,7 @@ local clusterrole(me) = k8s.clusterrole(me) {
         'get',
       ],
     },
-  ]
+  ],
 };
 
 local service(me) = k8s.service(me) {
@@ -24,9 +24,10 @@ local service(me) = k8s.service(me) {
   },
 };
 
-local deployment(me) = k8s.deployment(me) {
-  _serviceAccount:: true,
-  _containers:: {
+local deployment(me) = k8s.deployment(
+  me,
+  serviceAccount=true,
+  containers={
     'git-sync': {
       args: [
         '-repo=%s' % me.config.general.github.https,
@@ -82,19 +83,13 @@ local deployment(me) = k8s.deployment(me) {
       ],
     },
   },
-  spec+: {
-    template+: {
-      spec+: {
-        volumes: [
-          {
-            emptyDir: {},
-            name: 'repo',
-          },
-        ],
-      },
+  volumes=[
+    {
+      emptyDir: {},
+      name: 'repo',
     },
-  },
-};
+  ]
+);
 
 function(config, prev, namespace, pkg) (
   local me = common.package(config, prev, namespace, pkg);

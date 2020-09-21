@@ -2,8 +2,9 @@ local common = import '../../lib/common.jsonnet';
 local global = import '../../lib/global.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 
-local daemonset(me) = k8s.daemonset(me) {
-  _containers:: {
+local daemonset(me) = k8s.daemonset(
+  me,
+  containers={
     args: [
       '--mode=probe',
       '--probe-only',
@@ -43,6 +44,27 @@ local daemonset(me) = k8s.daemonset(me) {
       },
     ],
   },
+  volumes=[
+    {
+      hostPath: {
+        path: '/var/run/scope/plugins',
+      },
+      name: 'scope-plugins',
+    },
+    {
+      hostPath: {
+        path: '/sys/kernel/debug',
+      },
+      name: 'sys-kernel-debug',
+    },
+    {
+      hostPath: {
+        path: '/var/run/docker.sock',
+      },
+      name: 'docker-socket',
+    },
+  ]
+) {
   spec+: {
     template+: {
       spec+: {
@@ -57,26 +79,6 @@ local daemonset(me) = k8s.daemonset(me) {
           {
             effect: 'NoExecute',
             operator: 'Exists',
-          },
-        ],
-        volumes: [
-          {
-            hostPath: {
-              path: '/var/run/scope/plugins',
-            },
-            name: 'scope-plugins',
-          },
-          {
-            hostPath: {
-              path: '/sys/kernel/debug',
-            },
-            name: 'sys-kernel-debug',
-          },
-          {
-            hostPath: {
-              path: '/var/run/docker.sock',
-            },
-            name: 'docker-socket',
           },
         ],
       },

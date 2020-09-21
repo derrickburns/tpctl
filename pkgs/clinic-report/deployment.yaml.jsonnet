@@ -3,8 +3,9 @@ local flux = import '../../lib/flux.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
-local deployment(me) = flux.deployment(me) {
-  _containers:: {
+local deployment(me) = flux.deployment(
+  me,
+  containers={
     image: 'tidepool/clinic-report:latest',
     env: [
       k8s.envSecret('SALT_DEPLOY', 'userdata', 'UserIdSalt'),
@@ -17,13 +18,7 @@ local deployment(me) = flux.deployment(me) {
       k8s.envVar('MONGO_DATABASE', 'user'),
     ],
   },
-  spec+: {
-    template+: {
-      spec+: {
-        serviceAccountName: me.pkg,
-      },
-    },
-  },
-};
+  serviceAccount=true
+);
 
 function(config, prev, namespace, pkg) deployment(common.package(config, prev, namespace, pkg))

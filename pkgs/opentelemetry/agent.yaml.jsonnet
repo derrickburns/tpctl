@@ -72,7 +72,80 @@ local configmap(me) = k8s.configmap(me, name='otel-agent-conf') {
   },
 };
 
-local daemonset(me) = k8s.daemonset(me) {
+local daemonset(me) = k8s.daemonset(me,
+                                    containers=
+                                    {
+                                      command: [
+                                        '/otelcol',
+                                        '--config=/conf/otel-agent-config.yaml',
+                                        '--mem-ballast-size-mib=165',
+                                      ],
+                                      image: 'otel/opentelemetry-collector-dev:latest',
+                                      name: 'otel-agent',
+                                      resources: {
+                                        limits: {
+                                          cpu: '500m',
+                                          memory: '500Mi',
+                                        },
+                                        requests: {
+                                          cpu: '100m',
+                                          memory: '100Mi',
+                                        },
+                                      },
+                                      ports: [
+                                        {
+                                          containerPort: 55679,
+                                        },
+                                        {
+                                          containerPort: 55680,
+                                        },
+                                        {
+                                          containerPort: 14250,
+                                        },
+                                        {
+                                          containerPort: 14268,
+                                        },
+                                        {
+                                          containerPort: 9411,
+                                        },
+                                        {
+                                          containerPort: 8888,
+                                        },
+                                      ],
+                                      volumeMounts: [
+                                        {
+                                          name: 'otel-agent-config-vol',
+                                          mountPath: '/conf',
+                                        },
+                                      ],
+                                      livenessProbe: {
+                                        httpGet: {
+                                          path: '/',
+                                          port: 13133,
+                                        },
+                                      },
+                                      readinessProbe: {
+                                        httpGet: {
+                                          path: '/',
+                                          port: 13133,
+                                        },
+                                      },
+                                    },
+
+                                    volumes=[
+                                      {
+                                        configMap: {
+                                          name: 'otel-agent-conf',
+                                          items: [
+                                            {
+                                              key: 'otel-agent-config',
+                                              path: 'otel-agent-config.yaml',
+                                            },
+                                          ],
+                                        },
+                                        name: 'otel-agent-config-vol',
+                                      },
+                                    ]) {
   metadata: {
     labels: {
       app: 'otel-agent',
@@ -93,81 +166,6 @@ local daemonset(me) = k8s.daemonset(me) {
           app: 'opentelemetry',
           component: 'otel-agent',
         },
-      },
-      spec: {
-        containers: [
-          {
-            command: [
-              '/otelcol',
-              '--config=/conf/otel-agent-config.yaml',
-              '--mem-ballast-size-mib=165',
-            ],
-            image: 'otel/opentelemetry-collector-dev:latest',
-            name: 'otel-agent',
-            resources: {
-              limits: {
-                cpu: '500m',
-                memory: '500Mi',
-              },
-              requests: {
-                cpu: '100m',
-                memory: '100Mi',
-              },
-            },
-            ports: [
-              {
-                containerPort: 55679,
-              },
-              {
-                containerPort: 55680,
-              },
-              {
-                containerPort: 14250,
-              },
-              {
-                containerPort: 14268,
-              },
-              {
-                containerPort: 9411,
-              },
-              {
-                containerPort: 8888,
-              },
-            ],
-            volumeMounts: [
-              {
-                name: 'otel-agent-config-vol',
-                mountPath: '/conf',
-              },
-            ],
-            livenessProbe: {
-              httpGet: {
-                path: '/',
-                port: 13133,
-              },
-            },
-            readinessProbe: {
-              httpGet: {
-                path: '/',
-                port: 13133,
-              },
-            },
-          },
-        ],
-        volumes: [
-          {
-            configMap: {
-              name: 'otel-agent-conf',
-              items: [
-                {
-                  key: 'otel-agent-config',
-                  path: 'otel-agent-config.yaml',
-                },
-              ],
-            },
-            name: 'otel-agent-config-vol',
-          },
-        ],
       },
     },
   },

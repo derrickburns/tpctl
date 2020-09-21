@@ -3,8 +3,9 @@ local flux = import '../../lib/flux.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
-local deployment(me) = flux.deployment(me) {
-  _containers:: {
+local deployment(me) = flux.deployment(
+  me,
+  containers={
     env: [
       k8s.envSecret('TIDEPOOL_STORE_SCHEME', 'mongo', 'Scheme'),
       k8s.envSecret('TIDEPOOL_STORE_USERNAME', 'mongo', 'Username'),
@@ -16,8 +17,8 @@ local deployment(me) = flux.deployment(me) {
     ],
     image: 'tidepool/platform-migrations:master-latest',
     name: 'platform-migrations',
-  },
-};
+  }
+);
 
 function(config, prev, namespace, pkg) (
   local me = common.package(config, prev, namespace, pkg);

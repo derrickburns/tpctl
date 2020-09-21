@@ -1,10 +1,10 @@
-local lib = import '../../lib/lib.jsonnet';
 local common = import '../../lib/common.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
+local lib = import '../../lib/lib.jsonnet';
 local p = import '../../lib/policy.jsonnet';
 
 local policy(me) = (
-  local bucket = lib.getElse(me, "bucket", "tidepool-thanos");
+  local bucket = lib.getElse(me, 'bucket', 'tidepool-thanos');
   p.policy() + k8s.metadata(me.pkg, me.namespace) + p.attachPolicy(
     [
       p.statement(p.bucketArn(bucket), 's3:ListBucket'),

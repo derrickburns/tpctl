@@ -15,65 +15,61 @@ local configmap(me) = k8s.configmap(me) {
     'liftbridge.yaml': std.manifestJson({
       listen: '0.0.0.0:%s' % grpcPort,
       logging: {
-        level: "debug"
+        level: 'debug',
       },
       nats: {
         servers: [
-           "nats://nats.%s.svc.cluster.local:4222" % me.namespace,
+          'nats://nats.%s.svc.cluster.local:4222' % me.namespace,
         ],
       },
-      'clustering.min.insync.replicas': 1
+      'clustering.min.insync.replicas': 1,
     }),
   },
 };
 
-local statefulset(me) = k8s.statefulset(me) {
-  _containers:: {
-    image: 'liftbridge/liftbridge:v1.0.0',
-    ports: [
-      {
-        containerPort: grpcPort,
-        name: 'grpc',
-      },
-    ],
-    readinessProbe: {
-      exec: {
-        command: [
-          '/bin/grpc_health_probe',
-          '-service=proto.API',
-          '-addr=:%s' % grpcPort,
-        ],
-      },
-      initialDelaySeconds: 5,
-    },
-    volumeMounts: [
-      {
-        mountPath: '/data',
-        name: 'liftbridge-data',
-      },
-      {
-        mountPath: '/etc/liftbridge.yaml',
-        name: 'liftbridge-config',
-        subPath: 'liftbridge.yaml',
-      },
-    ],
-  },
+local statefulset(me) = k8s.statefulset(me,
+                                        containers={
+                                          image: 'liftbridge/liftbridge:v1.0.0',
+                                          ports: [
+                                            {
+                                              containerPort: grpcPort,
+                                              name: 'grpc',
+                                            },
+                                          ],
+                                          readinessProbe: {
+                                            exec: {
+                                              command: [
+                                                '/bin/grpc_health_probe',
+                                                '-service=proto.API',
+                                                '-addr=:%s' % grpcPort,
+                                              ],
+                                            },
+                                            initialDelaySeconds: 5,
+                                          },
+                                          volumeMounts: [
+                                            {
+                                              mountPath: '/data',
+                                              name: 'liftbridge-data',
+                                            },
+                                            {
+                                              mountPath: '/etc/liftbridge.yaml',
+                                              name: 'liftbridge-config',
+                                              subPath: 'liftbridge.yaml',
+                                            },
+                                          ],
+                                        },
+                                        volumes=[
+                                          {
+                                            configMap: {
+                                              name: me.pkg,
+                                            },
+                                            name: 'liftbridge-config',
+                                          },
+                                        ]) {
   spec+: {
     podManagementPolicy: 'Parallel',
     replicas: 3,
     serviceName: me.pkg,
-    template+: {
-      spec+: {
-        volumes: [
-          {
-            configMap: {
-              name: me.pkg,
-            },
-            name: 'liftbridge-config',
-          },
-        ],
-      },
-    },
     volumeClaimTemplates: [
       {
         metadata: {

@@ -6,18 +6,19 @@ local lib = import '../../lib/lib.jsonnet';
 
 local containerPort = 8080;
 
-local deployment(me) = flux.deployment(me) {
-  _containers:: [{
+local deployment(me) = flux.deployment(
+  me,
+  containers={
     name: me.pkg,
     image: 'tidepool/slack-tidebot:master-latest',
     imagePullPolicy: 'Always',
     env: [
-      k8s.envVar( 'HUBOT_CONCURRENT_REQUESTS', '1'),
+      k8s.envVar('HUBOT_CONCURRENT_REQUESTS', '1'),
     ],
     envFrom: [{
       configMapRef: {
         name: me.pkg,
-      }
+      },
     }, {
       secretRef: {
         name: me.pkg,
@@ -26,8 +27,8 @@ local deployment(me) = flux.deployment(me) {
     ports: [{
       containerPort: containerPort,
     }],
-  }],
-};
+  },
+);
 
 local service(me) = k8s.service(me) {
   spec+: {

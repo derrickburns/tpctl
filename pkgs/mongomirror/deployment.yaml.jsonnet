@@ -2,8 +2,9 @@ local common = import '../../lib/common.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
-local deployment(me) = k8s.deployment(me) {
-  _containers: {
+local deployment(me) = k8s.deployment(
+  me,
+  containers={
     args: [
       '--host',
       '$(HOST)',
@@ -45,21 +46,15 @@ local deployment(me) = k8s.deployment(me) {
       },
     ],
   },
-  spec+: {
-    template+: {
-      spec+: {
-        volumes: [
-          {
-            name: 'certs',
-            secret: {
-              defaultMode: 256,
-              secretName: 'mongomirror',
-            },
-          },
-        ],
+  volumes=[
+    {
+      name: 'certs',
+      secret: {
+        defaultMode: 256,
+        secretName: 'mongomirror',
       },
     },
-  },
-};
+  ]
+);
 
 function(config, prev, namespace, pkg) deployment(common.package(config, prev, namespace, pkg))

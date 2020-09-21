@@ -2,9 +2,9 @@ local common = import '../../lib/common.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
-local statefulset(me) = k8s.statefulset(me) {
-  _serviceAccount:: true,
-  _containers:: {
+local statefulset(me) = k8s.statefulset(
+  me,
+  containers={
     args: [
       'manager',
       '--operator-roles',
@@ -36,7 +36,8 @@ local statefulset(me) = k8s.statefulset(me) {
       },
     },
   },
-};
+  serviceAccount=true
+);
 
 local clusterrole(me) = k8s.clusterrole(me) {
   rules: [

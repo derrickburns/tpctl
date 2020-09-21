@@ -1,8 +1,9 @@
 local common = import '../../lib/common.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 
-local deployment = k8s.deployment(me) {
-  _containers: {
+local deployment = k8s.deployment(
+  me,
+  containers={
     env: [
       {
         name: 'EVENTBROKER_URI',
@@ -10,8 +11,8 @@ local deployment = k8s.deployment(me) {
       },
       {
         name: 'DATASTORE_URI',
-        value: 'keptn-mongo.%s.svc.cluster.local:8080' % me.namespace,  
-      }, 
+        value: 'keptn-mongo.%s.svc.cluster.local:8080' % me.namespace,
+      },
       {
         name: 'CONFIGURATION_URI',
         value: 'keptn-configuration-service.%s.svc.cluster.local:8080' % me.namespace,
@@ -21,7 +22,7 @@ local deployment = k8s.deployment(me) {
         valueFrom: {
           secretKeyRef: {
             key: 'keptn-api-token',
-            name: 'keptn-api-token', // XXX who generates this
+            name: 'keptn-api-token',  // XXX who generates this
           },
         },
       },
@@ -43,7 +44,7 @@ local deployment = k8s.deployment(me) {
       },
     },
   },
-};
+);
 
 local service(me) = k8s.service(me) {
   spec+: {

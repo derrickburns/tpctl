@@ -44,8 +44,8 @@ local provider(me) = {
 function(config, prev, namespace, pkg) (
   local me = common.package(config, prev, namespace, pkg);
   [
-     helmrelease(me),
-     clusterpackageinstall(me),
-     provider(me),
+    helmrelease(me),
+    clusterpackageinstall(me),
+    provider(me),
   ]
 )

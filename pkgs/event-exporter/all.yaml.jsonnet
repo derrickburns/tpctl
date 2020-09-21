@@ -5,7 +5,7 @@ local lib = import '../../lib/lib.jsonnet';
 local clusterrolebinding(me) = k8s.clusterrolebinding(me) {
   roleRef+: {
     name: 'view',
-  }
+  },
 };
 
 local configmap(me) = k8s.configmap(me) {
@@ -14,39 +14,39 @@ local configmap(me) = k8s.configmap(me) {
       route: {
         match: [
           {
-            kind: "HelmRelease",
+            kind: 'HelmRelease',
             namespace: lib.getElse(me, 'watchNamespace', me.namespace),
-            receiver: "slack"
+            receiver: 'slack',
           },
         ],
         receivers: [
           {
-            name: "slack",
+            name: 'slack',
             webhook: {
-              endpoint: "${SLACK_WEBHOOK_URL}",
+              endpoint: '${SLACK_WEBHOOK_URL}',
               headers: {
-                "user-agent": "kube-event-exporter"
+                'user-agent': 'kube-event-exporter',
               },
               layout: {
-                text: "{{ .Message }}"
-              }
-            }
+                text: '{{ .Message }}',
+              },
+            },
           },
         ],
-      }
+      },
     }, '  '),
   },
 };
 
-local deployment(me) = k8s.deployment(me) {
-  _serviceAccount:: true,
-  _containers:: {
+local deployment(me) = k8s.deployment(
+  me,
+  containers={
     env: [
       k8s.envSecret('SLACK_WEBHOOK_URL', lib.getElse(me, 'secret', me.pkg), 'slack-webhook-url'),
     ],
     image: 'opsgenie/kubernetes-event-exporter:0.7',
     args: [
-      "-conf=/data/config.yaml",
+      '-conf=/data/config.yaml',
     ],
     volumeMounts: [
       {
@@ -56,21 +56,20 @@ local deployment(me) = k8s.deployment(me) {
       },
     ],
   },
-  spec+: {
-    template+: {
-      spec+: {
-        volumes: [
-          {
-            configMap: {
-              name: me.pkg,
-            },
-            name: 'config',
-          },
-        ],
+
+
+  volumes=[
+    {
+      configMap: {
+        name: me.pkg,
       },
+      name: 'config',
     },
-  },
-};
+  ],
+  serviceAccount=true,
+
+
+);
 
 function(config, prev, namespace, pkg) (
   local me = common.package(config, prev, namespace, pkg);

@@ -1,6 +1,6 @@
-local linkerd = import '../../lib/linkerd.jsonnet';
 local common = import '../../lib/common.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
+local linkerd = import '../../lib/linkerd.jsonnet';
 
 local Namespace(me) = (
   local meshed = lib.isTrue(me, 'meshed');

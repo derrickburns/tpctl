@@ -6,17 +6,17 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '0.7.0', repository: 'htt
   spec+: {
     values+: {
       distStorage: {
-        type: "aws",
+        type: 'aws',
         aws: {
-  	  bucketName: 'tidepool-dremio-%s' % me.config.cluster.metadata.name,
+          bucketName: 'tidepool-dremio-%s' % me.config.cluster.metadata.name,
         },
       },
       zookeeper: {
         name: 'zookeeper-client.%s.svc.cluster.local' % me.namespace,
       },
       imageTag: '4.5',
-      serviceType: "ClusterIP",
-      storageClass: "gp2-expanding",
+      serviceType: 'ClusterIP',
+      storageClass: 'gp2-expanding',
     } + lib.getElse(me, 'chartValues', {}),
   },
 };

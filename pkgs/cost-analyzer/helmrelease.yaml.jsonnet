@@ -14,18 +14,18 @@ local helmrelease(me) = k8s.helmrelease(me, { name: 'cost-analyzer', version: '1
       global: {
         prometheus: {
           enabled: false,
-          fqdn: 'http://%s-prometheus.%s:9090' % [ monitoring.pkg, monitoring.namespace],
+          fqdn: 'http://%s-prometheus.%s:9090' % [monitoring.pkg, monitoring.namespace],
         },
         grafana: {
           enabled: false,
-          domainName: '%s-grafana.%s' % [ monitoring.pkg, monitoring.namespace ],
+          domainName: '%s-grafana.%s' % [monitoring.pkg, monitoring.namespace],
         },
       },
       kubecostProductConfigs: {
         grafanaURL: 'https://grafana.%s' % me.config.cluster.metadata.domain,
       },
       serviceMonitor: {
-        enabled: lib.isEnabled(monitoring), 
+        enabled: lib.isEnabled(monitoring),
       },
       prometheusRule: {
         enabled: true,

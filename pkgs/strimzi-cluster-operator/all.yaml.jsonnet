@@ -6,7 +6,7 @@ local rolebinding1(me) = k8s.rolebinding(me) {
   roleRef+: {
     kind: 'ClusterRole',
     name: 'strimzi-entity-operator',
-  }
+  },
 };
 
 local rolebinding2(me) = k8s.rolebinding(me) {
@@ -15,8 +15,8 @@ local rolebinding2(me) = k8s.rolebinding(me) {
   },
   roleRef+: {
     kind: 'ClusterRole',
-    name: 'strimzi-cluster-operator-namespaced'
-  }
+    name: 'strimzi-cluster-operator-namespaced',
+  },
 };
 
 local rolebinding3(me) = k8s.rolebinding(me) {
@@ -26,12 +26,13 @@ local rolebinding3(me) = k8s.rolebinding(me) {
   roleRef+: {
     kind: 'ClusterRole',
     name: 'strimzi-topic-operator',
-  }
+  },
 };
 
-local deployment(me) = k8s.deployment(me) {
-  _serviceAccount:: true,
-  _containers:: {
+local deployment(me) = k8s.deployment(
+  me,
+  serviceAccount=true,
+  containers={
     args: [
       '/opt/strimzi/bin/cluster_operator_run.sh',
     ],
@@ -151,7 +152,7 @@ local deployment(me) = k8s.deployment(me) {
       },
     },
   },
-};
+);
 
 
 function(config, prev, namespace, pkg) (

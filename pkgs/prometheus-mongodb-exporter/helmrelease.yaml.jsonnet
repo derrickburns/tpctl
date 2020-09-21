@@ -10,8 +10,8 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '2.5.0' }) {
         enabled: global.isEnabled(me.config, 'prometheus-operator'),
       },
       existingSecret: {
-        name: 'mongo' // XXX confirm
-      }
+        name: 'mongo',  // XXX confirm
+      },
     },
   },
 };

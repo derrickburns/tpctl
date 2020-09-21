@@ -1,5 +1,5 @@
-local global = import '../../lib/global.jsonnet';
 local common = import '../../lib/common.jsonnet';
+local global = import '../../lib/global.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 
 local serviceprofile(me) = {
@@ -7,7 +7,7 @@ local serviceprofile(me) = {
   kind: 'ServiceProfile',
   metadata: {
     name: 'admin-site.%s.svc.cluster.local' % me.namespace,
-    namespace: me.namespace
+    namespace: me.namespace,
   },
   spec: {
     routes: [

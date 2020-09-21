@@ -1,6 +1,6 @@
-local lib = import '../../lib/lib.jsonnet';
 local common = import '../../lib/common.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
+local lib = import '../../lib/lib.jsonnet';
 local p = import '../../lib/policy.jsonnet';
 
 local policy(me) = (

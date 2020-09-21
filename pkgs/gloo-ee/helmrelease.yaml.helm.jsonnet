@@ -26,7 +26,7 @@ local helmrelease(me) = (
                 },
                 requests: {
                   memory: '100Mi',
-                }, 
+                },
               },
             },
           },

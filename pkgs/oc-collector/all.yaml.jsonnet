@@ -15,7 +15,7 @@ local configmap(me) = k8s.configmap(me) {
         'queued-exporters': {
           'jaeger-all-in-one': {
             'jaeger-thrift-http': {
-              'collector-endpoint': 'http://jaeger-collector.%s:14268/api/traces' % me.namespace,  
+              'collector-endpoint': 'http://jaeger-collector.%s:14268/api/traces' % me.namespace,
               timeout: '5s',
             },
             'num-workers': 4,
@@ -34,89 +34,85 @@ local configmap(me) = k8s.configmap(me) {
   },
 };
 
-local deployment(me) = k8s.deployment(me) {
+local deployment(me) = k8s.deployment(me,
+                                      containers={
+                                        command: [
+                                          '/occollector_linux',
+                                          '--config=/conf/oc-collector-config.yaml',
+                                        ],
+                                        env: [
+                                          {
+                                            name: 'GOGC',
+                                            value: '80',
+                                          },
+                                        ],
+                                        image: 'omnition/opencensus-collector:0.1.11',
+                                        livenessProbe: {
+                                          httpGet: {
+                                            path: '/',
+                                            port: 13133,
+                                          },
+                                        },
+                                        name: me.pkg,
+                                        ports: [
+                                          {
+                                            name: 'opencensus',
+                                            containerPort: 55678,
+                                          },
+                                          {
+                                            name: 'zipkin',
+                                            containerPort: 9411,
+                                          },
+                                          {
+                                            name: 'metrics',
+                                            containerPort: 8888,
+                                          },
+                                        ],
+                                        readinessProbe: {
+                                          httpGet: {
+                                            path: '/',
+                                            port: 13133,
+                                          },
+                                        },
+                                        resources: {
+                                          limits: {
+                                            cpu: 1,
+                                            memory: '2Gi',
+                                          },
+                                          requests: {
+                                            cpu: '200m',
+                                            memory: '400Mi',
+                                          },
+                                        },
+                                        volumeMounts: [
+                                          {
+                                            mountPath: '/conf',
+                                            name: 'oc-collector-config-vol',
+                                          },
+                                        ],
+                                      },
+                                      volumes=[
+                                        {
+                                          configMap: {
+                                            items: [
+                                              {
+                                                key: 'oc-collector-config',
+                                                path: 'oc-collector-config.yaml',
+                                              },
+                                            ],
+                                            name: me.pkg,
+                                          },
+                                          name: 'oc-collector-config-vol',
+                                        },
+                                      ])
+                       {
+
   spec+: {
     minReadySeconds: 5,
     progressDeadlineSeconds: 120,
-    template+: prom.metadata(me.config, 8888) + linkerd.metadata(me, true) {
-      spec+: {
-        containers: [
-          {
-            command: [
-              '/occollector_linux',
-              '--config=/conf/oc-collector-config.yaml',
-            ],
-            env: [
-              {
-                name: 'GOGC',
-                value: '80',
-              },
-            ],
-            image: 'omnition/opencensus-collector:0.1.11',
-            livenessProbe: {
-              httpGet: {
-                path: '/',
-                port: 13133,
-              },
-            },
-            name: me.pkg,
-            ports: [
-              {
-                name: "opencensus",
-                containerPort: 55678,
-              },
-              {
-                name: 'zipkin',
-                containerPort: 9411,
-              },
-              {
-                name: 'metrics',
-                containerPort: 8888,
-              },
-            ],
-            readinessProbe: {
-              httpGet: {
-                path: '/',
-                port: 13133,
-              },
-            },
-            resources: {
-              limits: {
-                cpu: 1,
-                memory: '2Gi',
-              },
-              requests: {
-                cpu: '200m',
-                memory: '400Mi',
-              },
-            },
-            volumeMounts: [
-              {
-                mountPath: '/conf',
-                name: 'oc-collector-config-vol',
-              },
-            ],
-          },
-        ],
-        volumes: [
-          {
-            configMap: {
-              items: [
-                {
-                  key: 'oc-collector-config',
-                  path: 'oc-collector-config.yaml',
-                },
-              ],
-              name: me.pkg,
-            },
-            name: 'oc-collector-config-vol',
-          },
-        ],
-      },
-    },
+    template+: prom.metadata(me.config, 8888) + linkerd.metadata(me, true),
   },
 };
-
 
 local service(me) = k8s.service(me) {
   spec+: {

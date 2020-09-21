@@ -7,7 +7,7 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '0.9.1', repository: 'htt
   spec+: {
     values: {
       singleuser: {
-        defaultUrl: "/lab",
+        defaultUrl: '/lab',
         serviceAccountName: me.pkg,
         image: {
           name: 'tidepool/jupyter-notebook',

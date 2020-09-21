@@ -1,8 +1,8 @@
 local common = import '../../lib/common.jsonnet';
+local global = import '../../lib/global.jsonnet';
 local gloo = import '../../lib/gloo.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
-local global = import '../../lib/global.jsonnet';
 
 local helmrelease(me) = (
   k8s.helmrelease(me, { version: '9.0.1', repository: 'https://codecentric.github.io/helm-charts' }) {

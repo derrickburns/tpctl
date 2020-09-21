@@ -1,8 +1,9 @@
 local common = import '../../lib/common.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 
-local deployment(me) = k8s.deployment(me) {
-  _containers: {
+local deployment(me) = k8s.deployment(
+  me,
+  containers={
     envFrom: [
       {
         secretRef: {
@@ -28,7 +29,7 @@ local deployment(me) = k8s.deployment(me) {
       },
     },
   },
-};
+);
 
 local service(me) = k8s.service(me) {
   spec+: {

@@ -3,8 +3,9 @@ local flux = import '../../lib/flux.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
-local deployment(me) = flux.deployment(me) {
-  _containers:: {
+local deployment(me) = flux.deployment(
+  me,
+  containers={
     image: lib.getElse(me, 'image', 'tidepool/vc-agent:latest'),
     local domain = lib.getElse(me, 'cluster.metadata.domain', 'tidepool.org'),
     env: [
@@ -14,6 +15,6 @@ local deployment(me) = flux.deployment(me) {
       k8s.envSecret('VC_DRV_MANUAL_HOST_URI', 'vividcortex', 'HostURI'),
     ],
   },
-};
+);
 
 function(config, prev, namespace, pkg) deployment(common.package(config, prev, namespace, pkg))

@@ -2,9 +2,10 @@ local common = import '../../lib/common.jsonnet';
 local global = import '../../lib/global.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 
-local deployment(me) = k8s.deployment(me) {
-  _serviceAccount:: true,
-  _containers:: {
+local deployment(me) = k8s.deployment(
+  me,
+  serviceAccount=true,
+  containers={
     command: [
       'zookeeper-operator',
     ],
@@ -34,7 +35,7 @@ local deployment(me) = k8s.deployment(me) {
       },
     ],
   },
-};
+);
 
 local clusterrole(me) = k8s.clusterrole(me) {
   rules: [

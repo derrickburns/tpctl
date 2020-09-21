@@ -9,11 +9,11 @@ local helmrelease(me) = k8s.helmrelease(me, { name: me.pkg, version: '0.1.9', re
       persistence: {
         nameNode: {
           enabled: true,
-          storageClass: 'gp2-expanding'
+          storageClass: 'gp2-expanding',
         },
         dataNode: {
           enabled: true,
-          storageClass: 'gp2-expanding'
+          storageClass: 'gp2-expanding',
         },
       },
     },

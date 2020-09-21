@@ -2,8 +2,9 @@ local common = import '../../lib/common.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
-local deployment(me) = k8s.deployment(me) {
-  _containers:: {
+local deployment(me) = k8s.deployment(
+  me,
+  containers={
     image: 'mrvautin/adminmongo:latest',
     env: [
       k8s.envSecret('DB_USERNAME', 'mongo', 'Username'),
@@ -16,8 +17,8 @@ local deployment(me) = k8s.deployment(me) {
     ports: [{
       containerPort: 1234,
     }],
-  },
-};
+  }
+);
 
 local service(me) = k8s.service(me) {
   spec+: {

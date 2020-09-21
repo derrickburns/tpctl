@@ -8,5 +8,4 @@ local natscluster(me) = k8s.k('nats.io/v1alpha2', 'NatsCluster') + k8s.metadata(
   },
 };
 
-function(config, prev, namespace, pkg) natscluster( common.package(config, prev, namespace, pkg))
-
+function(config, prev, namespace, pkg) natscluster(common.package(config, prev, namespace, pkg))

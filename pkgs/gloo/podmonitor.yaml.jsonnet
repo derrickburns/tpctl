@@ -1,6 +1,6 @@
-local prom = import '../../lib/prometheus.jsonnet';
 local common = import '../../lib/common.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
+local prom = import '../../lib/prometheus.jsonnet';
 
 local podmonitor(me) = prom.Podmonitor(me, 'metrics', {
   'gateway-proxy': 'live',

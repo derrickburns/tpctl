@@ -1,55 +1,49 @@
 local common = import '../../lib/common.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 
-local deployment(me) = k8s.deployment(me) {
-  _containers:: {
-    args: [
-      'nats-operator',
-      '--feature-gates=ClusterScoped=true',
-    ],
-    env: [
-      {
-        name: 'MY_POD_NAMESPACE',
-        valueFrom: {
-          fieldRef: {
-            fieldPath: 'metadata.namespace',
-          },
-        },
-      },
-      {
-        name: 'MY_POD_NAME',
-        valueFrom: {
-          fieldRef: {
-            fieldPath: 'metadata.name',
-          },
-        },
-      },
-    ],
-    image: 'connecteverything/nats-operator:0.7.2',
-    imagePullPolicy: 'Always',
-    name: 'nats-operator',
-    ports: [
-      {
-        containerPort: 8080,
-        name: 'readyz',
-      },
-    ],
-    readinessProbe: {
-      httpGet: {
-        path: '/readyz',
-        port: 'readyz',
-      },
-      initialDelaySeconds: 15,
-      timeoutSeconds: 3,
-    },
-  },
-  spec+: {
-    template+: {
-      spec+: {
-        serviceAccountName: me.pkg,
-      },
-    },
-  },
+local deployment(me) = k8s.deployment(me,
+                                      containers={
+                                        args: [
+                                          'nats-operator',
+                                          '--feature-gates=ClusterScoped=true',
+                                        ],
+                                        env: [
+                                          {
+                                            name: 'MY_POD_NAMESPACE',
+                                            valueFrom: {
+                                              fieldRef: {
+                                                fieldPath: 'metadata.namespace',
+                                              },
+                                            },
+                                          },
+                                          {
+                                            name: 'MY_POD_NAME',
+                                            valueFrom: {
+                                              fieldRef: {
+                                                fieldPath: 'metadata.name',
+                                              },
+                                            },
+                                          },
+                                        ],
+                                        image: 'connecteverything/nats-operator:0.7.2',
+                                        imagePullPolicy: 'Always',
+                                        name: 'nats-operator',
+                                        ports: [
+                                          {
+                                            containerPort: 8080,
+                                            name: 'readyz',
+                                          },
+                                        ],
+                                        readinessProbe: {
+                                          httpGet: {
+                                            path: '/readyz',
+                                            port: 'readyz',
+                                          },
+                                          initialDelaySeconds: 15,
+                                          timeoutSeconds: 3,
+                                        },
+                                      },
+                                      serviceAccount=true) {
 };
 
 local clusterrole(me) = k8s.clusterrole(me) {

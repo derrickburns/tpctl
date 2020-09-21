@@ -1,5 +1,5 @@
-local k8s = import '../../lib/k8s.jsonnet';
 local common = import '../../lib/common.jsonnet';
+local k8s = import '../../lib/k8s.jsonnet';
 
 local helmrelease(me) = k8s.helmrelease(me, { name: 'datadog-agent', version: '2.0.4' }) {
   _secretNames:: ['datadog'],

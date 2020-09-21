@@ -2,8 +2,9 @@ local common = import '../../lib/common.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
-local deployment(me) = k8s.deployment(me) {
-  _containers: {
+local deployment(me) = k8s.deployment(
+  me,
+  containers={
     env: [
       k8s.envSecret('GLOO_LICENSE_KEY', 'license', 'license-key'),
       k8s.envField('POD_NAMESPACE', 'metadata.namespace'),
@@ -29,27 +30,21 @@ local deployment(me) = k8s.deployment(me) {
       },
     ],
   },
-  spec+: {
-    template+: {
-      spec+: {
-        serviceAccountName: me.pkg,
-        volumes: [
+  volumes=[
+    {
+      configMap: {
+        items: [
           {
-            configMap: {
-              items: [
-                {
-                  key: 'DASHBOARD_JSON_TEMPLATE',
-                  path: 'dashboard-template.json',
-                },
-              ],
-              name: me.pkg,
-            },
-            name: me.pkg,
+            key: 'DASHBOARD_JSON_TEMPLATE',
+            path: 'dashboard-template.json',
           },
         ],
+        name: me.pkg,
       },
+      name: me.pkg,
     },
-  },
-};
+  ],
+  serviceAccount=true
+);
 
 function(config, prev, namespace, pkg) deployment(common.package(config, prev, namespace, pkg))

@@ -45,17 +45,17 @@ local kafka(me) = k8s.k('kafka.strimzi.io/v1beta1', 'Kafka') + k8s.metadata(me.p
   }, lib.getElse(me, 'spec', {})),
 };
 
-local externalname(me) = k8s.externalname( me {
+local externalname(me) = k8s.externalname(me {
   target: {
     name: 'kafka-kafka-bootstrap.%s' % me.namespace,
     port: 9093,
-  }
+  },
 });
 
 function(config, prev, namespace, pkg) (
   local me = common.package(config, prev, namespace, pkg);
   [
     kafka(me),
-    externalname(me)
+    externalname(me),
   ]
 )

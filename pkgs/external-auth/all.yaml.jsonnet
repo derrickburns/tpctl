@@ -1,19 +1,19 @@
 local common = import '../../lib/common.jsonnet';
 local flux = import '../../lib/flux.jsonnet';
+local gloo = import '../../lib/gloo.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 local linkerd = import '../../lib/linkerd.jsonnet';
-local gloo = import '../../lib/gloo.jsonnet';
 
 local servicePort = 8080;
 local containerPort = 4000;
 
-local deployment(me) = flux.deployment(me) {
-  _containers:: {
-    image: 'tidepool/%s:latest' % me.pkg,
-    env: [k8s.envSecret('API_SECRET', 'shoreline', 'ServiceAuth')],
-    ports: [{ containerPort: containerPort }],
-  },
+local deployment(me) = flux.deployment(me,
+                                       containers={
+                                         image: 'tidepool/%s:latest' % me.pkg,
+                                         env: [k8s.envSecret('API_SECRET', 'shoreline', 'ServiceAuth')],
+                                         ports: [{ containerPort: containerPort }],
+                                       }) {
   spec+: {
     template+: linkerd.metadata(me, true),
   },

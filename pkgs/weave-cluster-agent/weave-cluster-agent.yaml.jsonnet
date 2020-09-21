@@ -132,9 +132,10 @@ local clusterrole(me) = k8s.clusterrole(me) {
   ],
 };
 
-local deployment(me) = k8s.deployment(me) {
-  _serviceAccount:: true,
-  _containers:: {
+local deployment(me) = k8s.deployment(
+  me,
+  serviceAccount=true,
+  containers={
     args: [
       '--mode=probe',
       '--probe-only',
@@ -162,7 +163,7 @@ local deployment(me) = k8s.deployment(me) {
       },
     },
   },
-};
+);
 
 function(config, prev, namespace, pkg) (
   local me = common.package(config, prev, namespace, pkg);

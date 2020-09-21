@@ -123,17 +123,17 @@ local clusterrole(me) = k8s.clusterrole(me) {
   ],
 };
 
-local deployment(me) = k8s.deployment(me) {
-  _serviceAccount:: true,
-  _containers:: {
-    image: 'quay.io/coreos/kube-state-metrics:v1.8.0',
-    ports: [
-      {
-        containerPort: containerPort,
-        name: 'metrics',
-      },
-    ],
-  },
+local deployment(me) = k8s.deployment(me,
+                                      serviceAccount=true,
+                                      containers={
+                                        image: 'quay.io/coreos/kube-state-metrics:v1.8.0',
+                                        ports: [
+                                          {
+                                            containerPort: containerPort,
+                                            name: 'metrics',
+                                          },
+                                        ],
+                                      }) {
   spec+: {
     template+: {
       spec: {

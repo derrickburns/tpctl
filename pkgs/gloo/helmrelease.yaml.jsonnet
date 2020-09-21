@@ -1,5 +1,5 @@
-local gloo = import '../../lib/gloo.jsonnet';
 local common = import '../../lib/common.jsonnet';
+local gloo = import '../../lib/gloo.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 

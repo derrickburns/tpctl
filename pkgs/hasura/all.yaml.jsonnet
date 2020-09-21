@@ -2,12 +2,12 @@ local common = import '../../lib/common.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
-local deployment(me) = k8s.deployment(me) {
-  _secretNames:: ['hasura'],
-  _containers:: {
+local deployment(me) = k8s.deployment(
+  me,
+  containers={
     env: [
-      k8s.envSecret('HASURA_GRAPHQL_DATABASE_URL', $._secretNames[0], 'HASURA_GRAPHQL_DATABASE_URL'),
-      k8s.envVar( 'HASURA_GRAPHQL_ENABLE_CONSOLE', 'true'),
+      k8s.envSecret('HASURA_GRAPHQL_DATABASE_URL', 'hasura', 'HASURA_GRAPHQL_DATABASE_URL'),
+      k8s.envVar('HASURA_GRAPHQL_ENABLE_CONSOLE', 'true'),
     ],
     image: 'hasura/graphql-engine:v1.3.0-beta.4',
     ports: [
@@ -16,8 +16,8 @@ local deployment(me) = k8s.deployment(me) {
         protocol: 'TCP',
       },
     ],
-  },
-};
+  }
+);
 
 local service(me) = k8s.service(me) {
   spec+: {

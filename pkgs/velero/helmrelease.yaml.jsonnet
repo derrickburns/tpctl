@@ -1,5 +1,5 @@
-local global = import '../../lib/global.jsonnet';
 local common = import '../../lib/common.jsonnet';
+local global = import '../../lib/global.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 
 local helmrelease(me) = k8s.helmrelease(me, {
@@ -29,7 +29,7 @@ local helmrelease(me) = k8s.helmrelease(me, {
           },
         },
         image: {
-          repository: 'velero/velero:v1.4.0', 
+          repository: 'velero/velero:v1.4.0',
           pullPolicy: 'IfNotPresent',
         },
       },
@@ -54,7 +54,7 @@ local helmrelease(me) = k8s.helmrelease(me, {
         },
       },
       securityContext: {
-        fsGroup: 65534
+        fsGroup: 65534,
       },
     },
   },

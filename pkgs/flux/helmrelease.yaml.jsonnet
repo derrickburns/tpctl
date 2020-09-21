@@ -56,7 +56,7 @@ local helmrelease(me) = k8s.helmrelease(me, {
 
       additionalArgs:
         ['--registry-exclude-image=*velero*']  // XXX hardcoded
-        + ['--registry-exclude-image=*kafka-prometheus-jmx-exporte*'] // XXX hardcoded
+        + ['--registry-exclude-image=*kafka-prometheus-jmx-exporte*']  // XXX hardcoded
         + if lib.isTrue(ns, 'fluxcloud.enabled') then ['--connect=ws://fluxcloud'] else [],
 
       extraContainers:

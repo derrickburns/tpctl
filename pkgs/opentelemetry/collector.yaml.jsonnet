@@ -72,7 +72,79 @@ local configmap(me) = k8s.configmap(me, name='otel-collector-conf') {
   },
 };
 
-local deployment(me) = k8s.deployment(me) {
+local deployment(me) = k8s.deployment(me,
+                                      containers={
+                                        command: [
+                                          '/otelcol',
+                                          '--config=/conf/otel-collector-config.yaml',
+                                          '--mem-ballast-size-mib=683',
+                                        ],
+                                        image: 'otel/opentelemetry-collector-dev:latest',
+                                        name: 'otel-collector',
+                                        resources: {
+                                          limits: {
+                                            cpu: 1,
+                                            memory: '2Gi',
+                                          },
+                                          requests: {
+                                            cpu: '200m',
+                                            memory: '400Mi',
+                                          },
+                                        },
+                                        ports: [
+                                          {
+                                            containerPort: 55679,
+                                          },
+                                          {
+                                            containerPort: 55680,
+                                          },
+                                          {
+                                            containerPort: 14250,
+                                          },
+                                          {
+                                            containerPort: 14268,
+                                          },
+                                          {
+                                            containerPort: 9411,
+                                          },
+                                          {
+                                            containerPort: 8888,
+                                          },
+                                        ],
+                                        volumeMounts: [
+                                          {
+                                            name: 'otel-collector-config-vol',
+                                            mountPath: '/conf',
+                                          },
+                                        ],
+                                        livenessProbe: {
+                                          httpGet: {
+                                            path: '/',
+                                            port: 13133,
+                                          },
+                                        },
+                                        readinessProbe: {
+                                          httpGet: {
+                                            path: '/',
+                                            port: 13133,
+                                          },
+                                        },
+                                      },
+                                      volumes=[
+                                        {
+                                          name: 'otel-collector-config-vol',
+                                          configMap: {
+                                            name: 'otel-collector-conf',
+                                            items: [
+                                              {
+                                                key: 'otel-collector-config',
+                                                path: 'otel-collector-config.yaml',
+                                              },
+                                            ],
+                                          },
+                                        },
+                                      ]) {
+
   metadata: {
     labels: {
       app: 'opentelemetry',
@@ -101,85 +173,9 @@ local deployment(me) = k8s.deployment(me) {
           'linkerd.io/inject': 'enabled',
         },
       },
-      spec+: {
-        containers: [
-          {
-            command: [
-              '/otelcol',
-              '--config=/conf/otel-collector-config.yaml',
-              '--mem-ballast-size-mib=683',
-            ],
-            image: 'otel/opentelemetry-collector-dev:latest',
-            name: 'otel-collector',
-            resources: {
-              limits: {
-                cpu: 1,
-                memory: '2Gi',
-              },
-              requests: {
-                cpu: '200m',
-                memory: '400Mi',
-              },
-            },
-            ports: [
-              {
-                containerPort: 55679,
-              },
-              {
-                containerPort: 55680,
-              },
-              {
-                containerPort: 14250,
-              },
-              {
-                containerPort: 14268,
-              },
-              {
-                containerPort: 9411,
-              },
-              {
-                containerPort: 8888,
-              },
-            ],
-            volumeMounts: [
-              {
-                name: 'otel-collector-config-vol',
-                mountPath: '/conf',
-              },
-            ],
-            livenessProbe: {
-              httpGet: {
-                path: '/',
-                port: 13133,
-              },
-            },
-            readinessProbe: {
-              httpGet: {
-                path: '/',
-                port: 13133,
-              },
-            },
-          },
-        ],
-        volumes: [
-          {
-            name: 'otel-collector-config-vol',
-            configMap: {
-              name: 'otel-collector-conf',
-              items: [
-                {
-                  key: 'otel-collector-config',
-                  path: 'otel-collector-config.yaml',
-                },
-              ],
-            },
-          },
-        ],
-      },
     },
   },
 };
-
 
 local service(me) = k8s.service(me) {
   metadata: {

@@ -19,7 +19,7 @@ function(config, prev, namespace, pkg) (
       spec+: {
         connectionConfig: {
           tcpKeepalive: {
-            keepaliveTime: '150s'
+            keepaliveTime: '150s',
           },
         },
       },

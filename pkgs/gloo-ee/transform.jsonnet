@@ -1,9 +1,9 @@
+local buddies = import '../../lib/buddies.jsonnet';
 local common = import '../../lib/common.jsonnet';
+local flux = import '../../lib/flux.jsonnet';
 local global = import '../../lib/global.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
-local flux = import '../../lib/flux.jsonnet';
-local kustomize  = import '../../lib/kustomize.jsonnet';
-local buddies  = import '../../lib/buddies.jsonnet';
+local kustomize = import '../../lib/kustomize.jsonnet';
 
 local linkerd(me) = {
   apiVersion: 'gloo.solo.io/v1',
@@ -15,9 +15,9 @@ local linkerd(me) = {
   spec+: {
     linkerd: global.isEnabled(me.config, 'linkerd'),
     gateway: {
-     readGatewaysFromAllNamespaces: true
-    }
-  }
+      readGatewaysFromAllNamespaces: true,
+    },
+  },
 };
 
 local gatewayAnnotations(me) = {
@@ -35,7 +35,7 @@ local gatewayAnnotations(me) = {
         },
       },
     },
-  }
+  },
 };
 
 local glooAnnotations(me) = {
@@ -53,7 +53,7 @@ local glooAnnotations(me) = {
         },
       },
     },
-  }
+  },
 };
 
 local sysctl(me, proxy) = {
@@ -66,7 +66,7 @@ local sysctl(me, proxy) = {
   spec+: {
     template+: {
       spec+: {
-        initContainers+: [ buddies.sysctl ]
+        initContainers+: [buddies.sysctl],
       },
     },
   },
@@ -85,22 +85,22 @@ local extauthDeployment(me) = k8s.findMatch(me.prev, {
 
 local patchExtauthContainer(container) = (
   if !std.objectHas(container, 'name') || container.name != 'extauth' then container else
-    container + {
+    container {
       command: ['/bin/sh'],
-      args: ['-c', 'sleep 10 && /usr/local/bin/extauth']
+      args: ['-c', 'sleep 10 && /usr/local/bin/extauth'],
     }
 );
 
 local patchExtauthContainers(deployment) = (
-  local containers = flux.containers(deployment);
-  deployment + {
+  local containers = deployment.spec.template.spec.containers;
+  deployment {
     spec+: {
       template+: {
         spec+: {
-          containers: std.map(patchExtauthContainer,containers)
-        }
-      }
-    }
+          containers: std.map(patchExtauthContainer, containers),
+        },
+      },
+    },
   }
 );
 
@@ -113,7 +113,7 @@ local transform(me) =
   k8s.asMap(addnamespace(me)) +
   k8s.asMap(linkerd(me)) +
   k8s.asMap(extauth(me));
-  // k8s.asMap(gatewayAnnotations(me)) +
-  // k8s.asMap(glooAnnotations(me));
+// k8s.asMap(gatewayAnnotations(me)) +
+// k8s.asMap(glooAnnotations(me));
 
 function(config, prev, namespace, pkg) transform(common.package(config, prev, namespace, pkg))

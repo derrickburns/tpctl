@@ -2,8 +2,9 @@ local common = import '../../lib/common.jsonnet';
 local global = import '../../lib/global.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 
-local deployment(me) = k8s.deployment(me) {
-  _containers:: {
+local deployment(me) = k8s.deployment(
+  me,
+  containers={
     args: [
       '--mode=app',
       '--weave=false',
@@ -20,7 +21,7 @@ local deployment(me) = k8s.deployment(me) {
       },
     ],
   },
-};
+);
 
 local service(me) = k8s.service(me) {
   spec+: {

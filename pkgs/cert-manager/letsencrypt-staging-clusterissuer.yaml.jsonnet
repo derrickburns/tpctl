@@ -1,5 +1,5 @@
-local lib = import '../../lib/lib.jsonnet';
 local common = import '../../lib/common.jsonnet';
+local lib = import '../../lib/lib.jsonnet';
 
 local ClusterIssuer(me) = {
   local config = me.config,
