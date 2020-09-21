@@ -8,12 +8,13 @@ local lib = import '../../lib/lib.jsonnet';
 local containerPort = 8080;
 
 local deployment(me) = flux.deployment(me) {
+  local timescalePkg = global.package(me.config, 'timescaledb-single'),
   _containers:: {
     image: 'tidepool/kafka-data-import:latest',
     env: [
       k8s.envVar('KAFKA_BROKERS', lib.getElse(me, 'kafka-brokers', 'kafka-kafka-bootstrap.kafka.svc.cluster.local:9092')),
       k8s.envVar('KAFKA_TOPIC', lib.getElse(me, 'kafka-topic', me.namespace + '-' + 'data')),
-      k8s.envVar('TIMESCALEDB_HOST', lib.getElse(me, 'postgres-host', 'timescaledb-single.timescaledb.svc.cluster.local')),
+      k8s.envVar('TIMESCALEDB_HOST', lib.getElse(me, 'postgres-host', 'timescaledb-single.%s.svc.cluster.local' % timescalePkg.namespace)),
       k8s.envVar('TIMESCALEDB_USER', lib.getElse(me, 'postgres-user', 'postgres')),
       k8s.envVar('TIMESCALEDB_DBNAME', lib.getElse(me, 'postgres-dbname', me.namespace)),
       k8s.envSecret('TIMESCALEDB_PASSWORD', 'timescaledb-single-passwords', 'postgres'),
