@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 cat <<EOF >Dockerfile
 FROM strimzi/kafka:0.18.0-kafka-2.5.0

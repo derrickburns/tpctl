@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 PKG_SOURCE=${PKG_SOURCE:-vendor}
 pkgs=$(find $PKG_SOURCE -print)
 echo "local kubecfg = import 'kubecfg.libsonnet';"

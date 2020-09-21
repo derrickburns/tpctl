@@ -1,3 +1,4 @@
+#! /usr/bin/env bash
 # make K8s manifests
 
 set -e

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Add ssh key to ssh-agent running in a Docker container.
 # 

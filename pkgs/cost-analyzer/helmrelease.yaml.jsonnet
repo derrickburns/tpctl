@@ -6,6 +6,7 @@ local lib = import '../../lib/lib.jsonnet';
 local helmrelease(me) = k8s.helmrelease(me, { name: 'cost-analyzer', version: lib.getElse(me, 'version', '1.63.1'), repository: 'https://kubecost.github.io/cost-analyzer/' }) {
   spec+: {
     values+: {
+      local monitoring = global.package(me.config, 'prometheus-operator'),
       affinity: {
         nodeAffinity: k8s.nodeAffinity(),
       },
@@ -13,18 +14,18 @@ local helmrelease(me) = k8s.helmrelease(me, { name: 'cost-analyzer', version: li
       global: {
         prometheus: {
           enabled: false,
-          fqdn: 'http://prometheus-operator-prometheus.monitoring:9090',
+          fqdn: 'http://%s-prometheus.%s:9090' % [ monitoring.pkg, monitoring.namespace],
         },
         grafana: {
           enabled: false,
-          domainName: 'prometheus-operator-grafana.monitoring',
+          domainName: '%s-grafana.%s' % [ monitoring.pkg, monitoring.namespace ],
         },
       },
       kubecostProductConfigs: {
         grafanaURL: 'https://grafana.%s' % me.config.cluster.metadata.domain,
       },
       serviceMonitor: {
-        enabled: global.isEnabled(me.config, 'prometheus-operator'),
+        enabled: lib.isEnabled(monitoring), 
       },
       prometheusRule: {
         enabled: true,

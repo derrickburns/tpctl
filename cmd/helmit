@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Usage:
 #   helmit template ${file:-helmrelease.yaml} - expand template for HelmRelease
 #   helmit install ${file:-helmrelease.yaml} - install HelmRelease
