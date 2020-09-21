@@ -34,12 +34,12 @@ local fluxAnnotations(me) = {
   ['fluxcd.io/tag.%s' % me.pkg]: 'glob:master-*',
 };
 
-local reloaderAnnotations(this) = (
-  (if std.objectHasAll(this, '_secretNames') && std.length(this._secretNames) > 0
-   then { 'secret.reloader.stakater.com/reload': std.join(',', std.set(this._secretNames)) }
+local reloaderAnnotations(secretNames, configmapNames) = (
+  (if std.length(secretNames) > 0
+   then { 'secret.reloader.stakater.com/reload': std.join(',', std.set(secretNames)) }
    else {}) +
-  (if std.objectHasAll(this, '_configmapNames') && std.length(this._configmapNames) > 0
-   then { 'configmap.reloader.stakater.com/reload': std.join(',', std.set(this._configmapNames)) }
+  (if std.length(configmapNames) > 0
+   then { 'configmap.reloader.stakater.com/reload': std.join(',', std.set(configmapNames)) }
    else {})
 );
 
@@ -63,15 +63,14 @@ local configmapNamesFromContainer(c) =
   [configmapNameFromEnvVar(e) for e in lib.getElse(c, 'env', [])]
   + [configmapNameFromEnv(e) for e in lib.getElse(c, 'envFrom', [])];
 
-
-local secretNamesFromPod(pod) = lib.pruneList(
-  [secretNameFromVolume(v) for v in lib.getElse(pod, 'volumes', [])]
-  + std.flattenArrays([secretNamesFromContainer(c) for c in lib.getElse(pod, 'containers', [])])
+local secretNamesFromContainers(containers, volumes) = lib.pruneList(
+  [secretNameFromVolume(v) for v in volumes]
+  + std.flattenArrays([secretNamesFromContainer(c) for c in containers])
 );
 
-local configmapNamesFromPod(pod) = lib.pruneList(
-  [configmapNameFromVolume(v) for v in lib.getElse(pod, 'volumes', [])]
-  + std.flattenArrays([configmapNamesFromContainer(c) for c in lib.getElse(pod, 'containers', [])])
+local configmapNamesFromContainers(containers, volumes) = lib.pruneList(
+  [configmapNameFromVolume(v) for v in volumes]
+  + std.flattenArrays([configmapNamesFromContainer(c) for c in containers])
 );
 
 {
@@ -167,8 +166,9 @@ local configmapNamesFromPod(pod) = lib.pruneList(
     ],
   },
 
-  statefulset(me):: $.k('apps/v1', 'StatefulSet') + $.metadata(me.pkg, me.namespace) {
+  statefulset(me, containers=[], volumes=[], serviceAccount = false):: $.k('apps/v1', 'StatefulSet') + $.metadata(me.pkg, me.namespace) {
     local this = self,
+    local containerList = $.toContainerList(me, containers),
     spec+: {
       serviceName: me.pkg,
       selector+: {
@@ -183,26 +183,27 @@ local configmapNamesFromPod(pod) = lib.pruneList(
           },
         },
         spec+:
-          (if lib.isTrue(this, '_serviceAccount')
-           then { serviceAccountName: me.pkg }
-           else {}) + {
+          (if std.length(volumes) > 0 then { volumes: volumes } else {}) +
+          (if serviceAccount then { serviceAccountName: me.pkg } else {}) + 
+          {
             restartPolicy: 'Always',
             containers:
               if std.objectHasAll(this, 'containerPatch')
-              then this.containerPatch(me.prev, this, $.containers(me, this))
-              else $.containers(me, this),
+              then this.containerPatch(me.prev, this, containerList)
+              else containerList,
           },
       },
     },
   },
 
-  daemonset(me):: $.k('apps/v1', 'DaemonSet') + $.metadata(me.pkg, me.namespace) {
+  daemonset(me, containers=[], volumes=[], serviceAccount = false):: $.k('apps/v1', 'DaemonSet') + $.metadata(me.pkg, me.namespace) {
     local this = self,
-    _secretNames:: secretNamesFromPod(this.spec.template.spec),
-    _configmapNames:: configmapNamesFromPod(this.spec.template.spec),
+    local containerList = $.toContainerList(me, containers),
+    local secretNames = secretNamesFromContainers(containerList, volumes),
+    local configmapNames = configmapNamesFromContainers(containerList, volumes),
     metadata+:
-      (if reloaderAnnotations(this) != {}
-       then { annotations+: reloaderAnnotations(this) }
+      (if reloaderAnnotations(secretNames, configmapNames) != {}
+       then { annotations+: reloaderAnnotations(secretNames, configmapNames) }
        else {}),
     spec+: {
       selector+: {
@@ -216,22 +217,26 @@ local configmapNamesFromPod(pod) = lib.pruneList(
             app: me.pkg,
           },
         },
-        spec+: {
+        spec+: 
+          (if std.length(volumes) > 0 then { volumes: volumes } else {}) +
+          (if serviceAccount then { serviceAccountName: me.pkg } else {}) + 
+          {
           restartPolicy: 'Always',
           containers:
-            if std.objectHasAll(this, 'containerPatch')
-            then this.containerPatch(me.prev, this, $.containers(me, this))
-            else $.containers(me, this),
+              if std.objectHasAll(this, 'containerPatch')
+              then this.containerPatch(me.prev, this, containerList)
+              else containerList,
         },
       },
     },
   },
 
-  deployment(me, automated=false):: $.k('apps/v1', 'Deployment') + $.metadata(me.pkg, me.namespace) {
+  deployment(me, automated=false, containers=[], volumes=[], serviceAccount = false):: $.k('apps/v1', 'Deployment') + $.metadata(me.pkg, me.namespace) {
     local this = self,
-    _secretNames:: secretNamesFromPod(this.spec.template.spec),
-    _configmapNames:: configmapNamesFromPod(this.spec.template.spec),
-    local annotations = reloaderAnnotations(this) + (if automated then fluxAnnotations(me) else {}),
+    local containerList = $.toContainerList(me, containers),
+    local secretNames = secretNamesFromContainers(containerList, volumes),
+    local configmapNames = configmapNamesFromContainers(containerList, volumes),
+    local annotations = reloaderAnnotations(secretNames, configmapNames) + (if automated then fluxAnnotations(me) else {}),
     metadata+: if annotations != {} then { annotations+: annotations } else {},
     spec+: {
       revisionHistoryLimit: 10,
@@ -250,16 +255,16 @@ local configmapNamesFromPod(pod) = lib.pruneList(
             app: me.pkg,
           },
         },
-        spec+:
-          (if lib.isTrue(this, '_serviceAccount')
-           then { serviceAccountName: me.pkg }
-           else {}) + {
+        spec+: 
+          (if std.length(volumes) > 0 then { volumes: volumes } else {}) +
+          (if serviceAccount then { serviceAccountName: me.pkg } else {}) + 
+          {
             securityContext+: $.securityContext,
             restartPolicy: 'Always',
             containers:
               if std.objectHasAll(this, 'containerPatch')
-              then this.containerPatch(me.prev, this, $.containers(me, this))
-              else $.containers(me, this),
+              then this.containerPatch(me.prev, this, containerList)
+              else containerList,
           },
       },
     },
@@ -268,9 +273,11 @@ local configmapNamesFromPod(pod) = lib.pruneList(
   helmrelease(me, chartValues):: $.k('helm.fluxcd.io/v1', 'HelmRelease') + $.metadata(me.pkg, me.namespace) {
     local this = self,
     local vals = chart(me, chartValues),
+    local secretNames = lib.getElse(this, '_secretNames', []),
+    local configmapNames = lib.getElse(this, '_configmapNames', []),
     spec+: {
       values+: {
-        annotations+: reloaderAnnotations(this),
+        annotations+: reloaderAnnotations(secretNames, configmapNames),
       },
       releaseName: lib.getElse(me, 'releaseName', me.pkg),
       chart: vals,
@@ -393,18 +400,19 @@ local configmapNamesFromPod(pod) = lib.pruneList(
     else container { imagePullPolicy: 'IfNotPresent' },
 
 
-  // Add names to containers if provided as map
-  // If a single container is provided, provide it the default name
-  containersWithName(me, this)::
-    if !std.objectHasAll(this, '_containers') then []
-    else if std.isArray(this._containers) then this._containers
-    else if std.objectHas(this._containers, 'image') && std.isString(this._containers.image)
-    then [this._containers { name: lib.getElse(this._containers, 'name', me.pkg) }]
-    else lib.asArrayWithField(lib.getElse(this, '_containers', {}), 'name'),
+  // Turn a container object or a map of objects into an array of containers with name fields
+  // Add name if missing
+  toContainerList(me, c)::
+    $.withNamesAndImagePullPolicies(
+      if std.isArray(c) then c
+      else if std.objectHas(c, 'image') && std.isString(c.image)
+      then [c { name: lib.getElse(c, 'name', me.pkg) } ]
+      else lib.asArrayWithField(c, 'name')
+    ),
 
   // add names and image pull policy to containers
-  containers(me, this)::
-    std.map(function(c) $.withImagePullPolicy(c), $.containersWithName(me, this)),
+  withNamesAndImagePullPolicies(containers)::
+    std.map(function(c) $.withImagePullPolicy(c), containers),
 
   toleration(key='role', operator='Equal', value='monitoring', effect='NoSchedule'):: {
     key: key,
@@ -426,4 +434,13 @@ local configmapNamesFromPod(pod) = lib.pruneList(
       }],
     },
   },
+
+  // all containers in a K8s manifest
+  containers(manifest):: (
+    if ! std.objectHas(manifest, 'kind') then []
+    else if manifest.kind == 'Deployment' then manifest.spec.template.spec.containers
+    else if manifest.kind == 'Daemonset' then manifest.spec.template.spec.containers
+    else if manifest.kind == 'Statefulset' then manifest.spec.template.spec.containers
+    else if manifest.kind == 'Pod' then manifest.spec.containers
+    else []),
 }
