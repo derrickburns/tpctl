@@ -5,7 +5,7 @@ local lib = import '../../lib/lib.jsonnet';
 
 local name = 'elasticsearch';
 
-local helmrelease(me) = k8s.helmrelease(me, { name: name, version: lib.getElse(me, 'version', '7.8.0'), repository: 'https://helm.elastic.co' }) {
+local helmrelease(me) = k8s.helmrelease(me, { name: name, version: '7.8.0', repository: 'https://helm.elastic.co' }) {
   metadata+: {
     name: name,
     labels: {

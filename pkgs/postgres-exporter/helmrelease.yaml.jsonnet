@@ -3,7 +3,7 @@ local global = import '../../lib/global.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
-local helmrelease(me) = k8s.helmrelease(me, { name: 'prometheus-postgres-exporter', version: lib.getElse(me, 'version', '1.3.3'), repository: 'https://prometheus-community.github.io/helm-charts' }) {
+local helmrelease(me) = k8s.helmrelease(me, { name: 'prometheus-postgres-exporter', version: '1.3.3', repository: 'https://prometheus-community.github.io/helm-charts' }) {
   spec+: {
     values+: {
       affinity: {

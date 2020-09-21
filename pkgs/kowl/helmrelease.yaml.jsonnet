@@ -3,7 +3,7 @@ local global = import '../../lib/global.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
-local helmrelease(me) = k8s.helmrelease(me, { name: 'kowl', version: lib.getElse(me, 'version', '1.1.0'), repository: 'https://raw.githubusercontent.com/cloudhut/charts/master/archives' }) {
+local helmrelease(me) = k8s.helmrelease(me, { name: 'kowl', version: '1.1.0', repository: 'https://raw.githubusercontent.com/cloudhut/charts/master/archives' }) {
   spec+: {
     values+: {
       affinity: {

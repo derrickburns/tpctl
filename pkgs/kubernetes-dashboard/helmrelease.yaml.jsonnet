@@ -3,7 +3,7 @@ local global = import '../../lib/global.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
-local helmrelease(me) = k8s.helmrelease(me, { name: me.pkg, version: lib.getElse(me, 'version', '2.2.0'), repository: 'https://kubernetes.github.io/dashboard/' }) {
+local helmrelease(me) = k8s.helmrelease(me, { name: me.pkg, version: '2.2.0', repository: 'https://kubernetes.github.io/dashboard/' }) {
   spec+: {
     values+: {
       metricsScraper: {

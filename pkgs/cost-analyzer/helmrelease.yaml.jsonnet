@@ -3,7 +3,7 @@ local global = import '../../lib/global.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
-local helmrelease(me) = k8s.helmrelease(me, { name: 'cost-analyzer', version: lib.getElse(me, 'version', '1.63.1'), repository: 'https://kubecost.github.io/cost-analyzer/' }) {
+local helmrelease(me) = k8s.helmrelease(me, { name: 'cost-analyzer', version: '1.63.1', repository: 'https://kubecost.github.io/cost-analyzer/' }) {
   spec+: {
     values+: {
       local monitoring = global.package(me.config, 'prometheus-operator'),
