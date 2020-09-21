@@ -1,8 +1,14 @@
 local common = import '../../lib/common.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 
-local helmrelease(me) = k8s.helmrelease(me, { name: 'datadog-agent', version: '2.0.4' }) {
-  _secretNames:: ['datadog'],
+local secretName = 'datadog';
+
+local helmrelease(me) = k8s.helmrelease(
+  me,
+  { name: 'datadog-agent', version: '2.0.4' },
+  secretNames=['datadog']
+) {
+
   spec+: {
     values: {
       clusterAgent: {
@@ -13,8 +19,8 @@ local helmrelease(me) = k8s.helmrelease(me, { name: 'datadog-agent', version: '2
         tokenExistingSecret: 'datadog',
       },
       datadog: {
-        apiKeyExistingSecret: $._secretNames[0],
-        appKeyExistingSecret: $._secretNames[0],
+        apiKeyExistingSecret: secretName,
+        appKeyExistingSecret: secretName,
         clusterName: me.config.cluster.metadata.name,
         logLevel: me.config.general.logLevel,
       },

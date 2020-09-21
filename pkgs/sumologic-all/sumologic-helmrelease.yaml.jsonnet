@@ -1,13 +1,14 @@
 local common = import '../../lib/common.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 
+local secretName = 'sumologic';
+
 local helmrelease(me) = k8s.helmrelease(me, {
   name: 'sumologic-fluentd',
   repository: 'https://sumologic.github.io/sumologic-kubernetes-collection',
   version: '0.13.0',
-}) {
+}, secretNames=[secretName]) {
   local config = me.config,
-  _secretNames:: ['sumologic'],
 
   metadata: {
     name: 'sumologic-fluentd',
@@ -32,7 +33,7 @@ local helmrelease(me) = k8s.helmrelease(me, {
       tag: '0.13.0',
     },
     sumologic: {
-      envFromSecret: $._secretNames[0],
+      envFromSecret: secretName,
       excludeNamespaceRegex: std.join('|', lib.namespacesWithout(config, 'logging', false)),
       readFromHead: false,
       sourceCategoryPrefix: 'kubernetes/%s/' % config.cluster.metadata.name,

@@ -3,8 +3,12 @@ local global = import '../../lib/global.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
-local helmrelease(me) = k8s.helmrelease(me, { name: 'helm-operator', version: '1.2.0', repository: 'https://charts.fluxcd.io' }) {
-  _secretNames:: ['flux-git-deploy', 'flux-helm-repositories'],
+local fluxGitDeploySecretName = 'flux-git-deploy';
+local fluxHelmRepositoriesSecretName = 'flux-helm-repositories';
+
+local helmrelease(me) = k8s.helmrelease(me,
+                                        { name: 'helm-operator', version: '1.2.0', repository: 'https://charts.fluxcd.io' },
+                                        secretNames=[fluxGitDeploySecretName, fluxHelmRepositoriesSecretName]) {
   spec+: {
     values+: {
 
@@ -20,14 +24,14 @@ local helmrelease(me) = k8s.helmrelease(me, { name: 'helm-operator', version: '1
 
       git: {
         ssh: {
-          secretName: $._secretNames[0],
+          secretName: fluxGitDeploySecretName,
         },
       },
 
       configureRepositories: {
         enabled: true,
         volumeName: 'repositories-yaml',
-        secretName: $._secretNames[1],
+        secretName: fluxHelmRepositoriesSecretName,
         cacheVolumeName: 'repositories-cache',
       },
 

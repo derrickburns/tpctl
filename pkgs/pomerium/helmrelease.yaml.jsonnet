@@ -22,9 +22,16 @@ local getPoliciesForPackage(me) = [
 
 local getPolicy(me) = std.flattenArrays([getPoliciesForPackage(pkg) for pkg in global.packagesWithKey(me.config, 'sso')]);
 
-local helmrelease(me) = k8s.helmrelease(me, { version: '7.0.0', repository: 'https://helm.pomerium.io' }) {
-  _secretNames:: ['pomerium'],
-  _configmapNames:: ['pomerium'],
+local secretName = 'pomerium';
+local configmapName = 'pomerium';
+
+local helmrelease(me) = k8s.helmrelease(
+  me,
+  { version: '7.0.0', repository: 'https://helm.pomerium.io' },
+  secretNames=[secretName],
+  configmapNames=[configmapName]
+) {
+
   local domain = pomerium.rootDomain(me.config),
   spec+: {
     values+: {
@@ -49,7 +56,7 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '7.0.0', repository: 'htt
       },
       config: {
         rootDomain: domain,
-        existingSecret: $._secretNames[0],
+        existingSecret: secretName,
       },
       forwardAuth: {
         enabled: false,

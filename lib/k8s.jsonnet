@@ -270,11 +270,9 @@ local configmapNamesFromContainers(containers, volumes) = lib.pruneList(
     },
   },
 
-  helmrelease(me, chartValues):: $.k('helm.fluxcd.io/v1', 'HelmRelease') + $.metadata(me.pkg, me.namespace) {
+  helmrelease(me, chartValues, secretNames=[], configmapNames=[]):: $.k('helm.fluxcd.io/v1', 'HelmRelease') + $.metadata(me.pkg, me.namespace) {
     local this = self,
     local vals = chart(me, chartValues),
-    local secretNames = lib.getElse(this, '_secretNames', []),
-    local configmapNames = lib.getElse(this, '_configmapNames', []),
     spec+: {
       values+: {
         annotations+: reloaderAnnotations(secretNames, configmapNames),
