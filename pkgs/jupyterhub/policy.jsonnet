@@ -9,7 +9,7 @@ local withBucketWritingPolicy(bucket) = p.attachPolicy([
 
 local policy(me) = (
   local bucket = lib.getElse(me, 'bucket', 'tidepool-analytics-stagedata');
-  p.policyAndMetadata(me.pkg, me.namespace, withBucketWritingPolicy(bucket))
+  p.policyAndMetadata(me.pkg+'-worker', me.namespace, withBucketWritingPolicy(bucket))
 );
 
 function(config, prev, namespace, pkg) policy(common.package(config, prev, namespace, pkg))
