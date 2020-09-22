@@ -1177,7 +1177,8 @@ function make_users() {
   declare -A users
   local user
   for user in $(get_iam_users); do
-    local -r arn=arn:aws:iam::${account}:user/${user}
+    local arn
+    arn=arn:aws:iam::${account}:user/${user}
     users[$arn]=true
     if ! eksctl get iamidentitymapping --region="$aws_region" --arn="$arn" --cluster="$cluster" >/dev/null 2>&1; then
       while ! eksctl create iamidentitymapping --region="$aws_region" --arn="$arn" --group=$group --cluster="$cluster" --username="$user"; do
