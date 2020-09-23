@@ -202,9 +202,7 @@ local dashboardConfig = {
 
 function(config, prev, namespace, pkg) (
   local me = common.package(config, prev, namespace, pkg);
-  if lib.getElse(me, 'tidepoolMonitoring', true)
-  then [
+  [
     grafana.dashboard(me, 'tidepool-export', dashboardConfig),
   ]
-  else {}
 )

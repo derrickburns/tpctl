@@ -1,5 +1,5 @@
-local common = import '../../../../lib/common.jsonnet';
-local grafana = import '../../../../lib/grafana.jsonnet';
+local common = import '../../../lib/common.jsonnet';
+local grafana = import '../../../lib/grafana.jsonnet';
 
 local dashboardConfig = {
   annotations: {

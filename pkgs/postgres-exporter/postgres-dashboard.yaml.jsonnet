@@ -1,6 +1,6 @@
-local common = import '../../../lib/common.jsonnet';
-local grafana = import '../../../lib/grafana.jsonnet';
-local lib = import '../../../lib/lib.jsonnet';
+local common = import '../../lib/common.jsonnet';
+local grafana = import '../../lib/grafana.jsonnet';
+local lib = import '../../lib/lib.jsonnet';
 
 local dashboardConfig = {
   annotations: {
@@ -4316,9 +4316,7 @@ local dashboardConfig = {
 
 function(config, prev, namespace, pkg) (
   local me = common.package(config, prev, namespace, pkg);
-  if lib.getElse(me, 'tidepoolMonitoring', true)
-  then [
+  [
     grafana.dashboard(me, 'postgresql-overview', dashboardConfig),
   ]
-  else {}
 )
