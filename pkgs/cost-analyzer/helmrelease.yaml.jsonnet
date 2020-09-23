@@ -21,6 +21,7 @@ local helmrelease(me) = k8s.helmrelease(me, { name: 'cost-analyzer', version: '1
           sidecar: {
             dashboards: {
               enabled: false,
+            },
           },
           domainName: '%s-grafana.%s' % [monitoring.pkg, monitoring.namespace],
         },
