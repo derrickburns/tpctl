@@ -50,7 +50,9 @@ local prometheusRule(me) = prometheus.prometheusRule(me, 'tidepool-shoreline', g
 
 function(config, prev, namespace, pkg) (
   local me = common.package(config, prev, namespace, pkg);
-  [
+  if lib.getElse(me, 'tidepoolMonitoring', true)
+  then [
     prometheusRule(me),
   ]
+  else {}
 )
