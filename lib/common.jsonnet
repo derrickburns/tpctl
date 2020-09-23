@@ -15,8 +15,6 @@ local exp = import 'expand.jsonnet';
     _global:: import 'global.jsonnet',
     _gloo:: import 'gloo.jsonnet',
     _linkerd:: import 'linkerd.jsonnet',
-    _pom:: import 'pom.jsonnet',
-    _prom:: import 'promtheus.jsonnet',
     _tracing:: import 'tracing.jsonnet',
     _me:: $.package(config, namespace, pkg),
     _isEnabled(x):: self._global.isEnabled(self._config, x),
