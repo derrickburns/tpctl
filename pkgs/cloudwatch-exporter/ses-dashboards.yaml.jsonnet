@@ -1,6 +1,6 @@
-local common = import '../../../lib/common.jsonnet';
-local grafana = import '../../../lib/grafana.jsonnet';
-local lib = import '../../../lib/lib.jsonnet';
+local common = import '../../lib/common.jsonnet';
+local grafana = import '../../lib/grafana.jsonnet';
+local lib = import '../../lib/lib.jsonnet';
 
 local dashboardConfig = {
   annotations: {
@@ -426,9 +426,7 @@ local configmap(me) = grafana.dashboard(me, 'aws-ses', dashboardConfig);
 
 function(config, prev, namespace, pkg) (
   local me = common.package(config, prev, namespace, pkg);
-  if lib.getElse(me, 'opsMonitoring', false)
-  then [
+  [
     configmap(me),
   ]
-  else {}
 )
