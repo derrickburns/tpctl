@@ -20,6 +20,11 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '9.3.1' }) {
         annotations: {
           'cluster-autoscaler.kubernetes.io/safe-to-evict': 'false',
         },
+        sidecar: {
+          dashboards: {
+            searchNamespace: 'ALL',
+          },
+        },
         env: {
           GF_PATHS_CONFIG: '/etc/grafana/grafana-config.ini',
         },
