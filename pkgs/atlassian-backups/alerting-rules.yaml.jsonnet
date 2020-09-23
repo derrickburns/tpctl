@@ -27,8 +27,7 @@ local prometheusRule(me) = prometheus.prometheusRule(me, 'atlassian-backups', gr
 
 function(config, prev, namespace, pkg) (
   local me = common.package(config, prev, namespace, pkg);
-  then [
+  [
     prometheusRule(me),
   ]
-  else {}
 )
