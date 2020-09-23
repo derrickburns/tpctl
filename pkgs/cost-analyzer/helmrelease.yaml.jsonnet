@@ -11,6 +11,13 @@ local helmrelease(me) = k8s.helmrelease(me, { name: 'cost-analyzer', version: '1
         nodeAffinity: k8s.nodeAffinity(),
       },
       tolerations: [k8s.toleration()],
+      grafana: {
+        sidecar: {
+          dashboards: {
+            enabled: false,
+          },
+        },
+      },
       global: {
         prometheus: {
           enabled: false,
@@ -18,11 +25,6 @@ local helmrelease(me) = k8s.helmrelease(me, { name: 'cost-analyzer', version: '1
         },
         grafana: {
           enabled: false,
-          sidecar: {
-            dashboards: {
-              enabled: false,
-            },
-          },
           domainName: '%s-grafana.%s' % [monitoring.pkg, monitoring.namespace],
         },
       },
