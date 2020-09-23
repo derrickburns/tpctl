@@ -1,6 +1,6 @@
-local common = import '../../../lib/common.jsonnet';
 local lib = import '../../../lib/lib.jsonnet';
-local prometheus = import '../../../lib/prometheus.jsonnet';
+local common = import '../../lib/common.jsonnet';
+local prometheus = import '../../lib/prometheus.jsonnet';
 
 local groupConfig(me) = [
   {
@@ -27,7 +27,6 @@ local prometheusRule(me) = prometheus.prometheusRule(me, 'atlassian-backups', gr
 
 function(config, prev, namespace, pkg) (
   local me = common.package(config, prev, namespace, pkg);
-  if lib.getElse(me, 'opsMonitoring', false)
   then [
     prometheusRule(me),
   ]
