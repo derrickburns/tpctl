@@ -1,15 +1,15 @@
+local aws = import 'aws.jsonnet';
 local certmanager = import 'certmanager.jsonnet';
 local common = import 'common.jsonnet';
+local dns = import 'external-dns.jsonnet';
 local global = import 'global.jsonnet';
 local k8s = import 'k8s.jsonnet';
 local lib = import 'lib.jsonnet';
 local linkerd = import 'linkerd.jsonnet';
 local pom = import 'pomerium.jsonnet';
 local tracing = import 'tracing.jsonnet';
-local aws = import 'aws.jsonnet';
-local dns = import 'external-dns.jsonnet';
 
-// TODO this file needs to be refactored. 
+// TODO this file needs to be refactored.
 //
 // The envoy rate limits should be passed in.
 
@@ -54,7 +54,7 @@ local i = {
 
   isHttps(vs):: lib.getElse(vs, 'labels.protocol', 'http') == 'https',
 
-  // sslConfig takes namespace and dns names from virtual service 
+  // sslConfig takes namespace and dns names from virtual service
   sslConfig(vs):: if $.isHttps(vs) then {
     sslConfig: {
       secretRef: {
@@ -63,7 +63,7 @@ local i = {
       },
       sniDomains: lib.getElse(vs, 'dnsNames', []),
       parameters: {
-        minimumProtocolVersion: "TLSv1_2",
+        minimumProtocolVersion: 'TLSv1_2',
       },
     },
   } else {},
@@ -117,7 +117,7 @@ local i = {
     },
   },
 
-  virtualHostOptions(vs):: 
+  virtualHostOptions(vs)::
     lib.getElse(vs, 'virtualHostOptions', {})
     + (if lib.isEnabledAt(vs, 'hsts') then $.staticVirtualHostOptions.hsts else {}),
 
@@ -145,12 +145,15 @@ local i = {
     std.uniq(std.sort(std.flattenArrays(std.map(function(vs) lib.getElse(vs, 'dnsNames', []), externalVss))))
   ),
 
-  httpConnectionManagerOption:: {
+  httpConnectionManagerOption(randomSamplePercentage=100.0):: {
     httpConnectionManagerSettings: {
       useRemoteAddress: true,
       tracing: {
         verbose: true,
         requestHeadersForTags: ['path', 'origin'],
+        tracePercentages: {
+          randomSamplePercentage: randomSamplePercentage,
+        },
       },
     },
   },
@@ -216,7 +219,7 @@ local i = {
     gatewaySettings: {
       disableGeneratedGateways: true,
     },
-    tracing: tracing.envoy(me.config),
+    tracing: tracing.envoy(me),
   },
 
   gatewayValues(me):: {
@@ -319,7 +322,7 @@ local i = {
   ),
 
   certificatesForPackage(me):: (
-    if global.isEnabled(me.config, 'cert-manager') 
+    if global.isEnabled(me.config, 'cert-manager')
     then std.map(i.certificate(me), lib.values(lib.getElse(me, 'virtualServices', {})))
     else []
   ),
@@ -336,13 +339,13 @@ local i = {
         virtualServiceNamespaces: ['*'],
         options:
           (if lib.getElse(gw, 'flags.healthCheck', false) then i.healthCheckOption else {})
-          + (if lib.getElse(gw, 'flags.tracing', false) then i.httpConnectionManagerOption else {})
+          + (if lib.getElse(gw, 'flags.tracing.enabled', false) then i.httpConnectionManagerOption(randomSamplePercentage=lib.getElse(gw, 'flags.tracing.randomSamplePercentage', 100.0)) else {})
           + (if lib.getElse(gw, 'flags.buffer', false) then i.bufferOption else {}),
       },
       options: lib.getElse(gw, 'options', {}),
       bindAddress: '::',
       bindPort: i.bindPort(gw.selector.protocol),
-      proxyNames: [ gw.proxy ],
+      proxyNames: [gw.proxy],
       useProxyProto: lib.getElse(gw, 'flags.proxyProtocol', false),
       ssl: lib.getElse(gw, 'flags.ssl', false),
     },
@@ -374,7 +377,7 @@ local i = {
                 repository: 'gloo-remote-auth-plugin',
                 registry: 'docker.io/tidepool',
                 pullPolicy: 'IfNotPresent',
-                tag: '1.4.4', # must match gloo version
+                tag: '1.4.4',  // must match gloo version
               },
             },
           } else {},
@@ -431,12 +434,12 @@ local i = {
     spec+: {
       routes: [{
         matchers: [{
-          methods: ["GET", "DELETE", "PATCH", "POST", "PUT"],
+          methods: ['GET', 'DELETE', 'PATCH', 'POST', 'PUT'],
           prefix: prefix,
         }],
         options: {
           jwt: {
-            disable: noauth
+            disable: noauth,
           },
         },
         routeAction: {

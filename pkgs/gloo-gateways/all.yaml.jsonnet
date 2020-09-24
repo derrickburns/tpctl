@@ -46,7 +46,9 @@ local gateways = {
     flags+: {
       healthCheck: true,
       proxyProtocol: true,
-      tracing: true,
+      tracing: {
+        enabled: true,
+      },
     },
     proxy: 'gateway-proxy',
     selector: {
@@ -63,7 +65,11 @@ local gateways = {
       healthCheck: true,
       proxyProtocol: true,
       ssl: true,
-      tracing: true,
+      tracing: {
+        enabled: true,
+        // Add more settings
+        // randomSamplePercentage: 89.0,
+      },
       buffer: true,
     },
     proxy: 'gateway-proxy',
@@ -78,7 +84,9 @@ local gateways = {
       accessLoggingService: accessLogging,
     },
     flags+: {
-      tracing: true,
+      tracing: {
+        enabled: true,
+      },
     },
     proxy: 'internal-gateway-proxy',
     selector: {
@@ -93,7 +101,9 @@ local gateways = {
     },
     flags+: {
       ssl: true,
-      tracing: true,
+      tracing: {
+        enabled: true,
+      },
     },
     proxy: 'internal-gateway-proxy',
     selector: {
