@@ -20,8 +20,4 @@ local lib = import 'lib.jsonnet';
       },
     },
   } else null,
-
-  tracingAnnotations(config):: if global.isEnabled(config, 'opentelemetry') then {
-    'config.linkerd.io/trace-collector': 'otel-agent.%s:55678' % lib.getElse(global.package(config, 'opentelemetry'), 'namespace', null),
-  } else {},
 }
