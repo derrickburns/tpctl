@@ -15,9 +15,9 @@ local tracing = import 'tracing.jsonnet';
       (if lib.isFalse(me, 'meshed') then {
          'linkerd.io/inject': 'disabled',
        } else {}) +
-      (if lib.getElse(global.package(me.config, 'linkerd'), 'tracing', false) && lib.getElse(me, 'linkerdTracing', false)
-       then { 'config.linkerd.io/trace-collector': tracing.address(me.config) }
-       else {}),
+      if lib.getElse(global.package(me.config, 'linkerd'), 'tracing', false) && lib.getElse(me, 'linkerdTracing', false)
+      then { 'config.linkerd.io/trace-collector': tracing.address(me.config) }
+      else {},
 
   metadata(me, force=false):: (
     local annotations = $.annotations(me, force);
