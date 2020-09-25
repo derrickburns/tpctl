@@ -5,6 +5,9 @@ local k8s = import '../../lib/k8s.jsonnet';
 local helmrelease(me) = k8s.helmrelease(me, { version: '0.12.0', repository: 'https://charts.crossplane.io/alpha' }) {
   spec+: {
     values: {
+      image: {
+        tag: "v0.11.0",
+      },
     },
   },
 };
