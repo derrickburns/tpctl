@@ -1,4 +1,4 @@
-#!/usr/bin/env python 
+#!/usr/bin/env python3 
 #
 # Generate separate files (into the current directory) from a Kuberbetes manifest
 # Name the directory by the namespace, apiversion, and kind of the resource
