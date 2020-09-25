@@ -45,7 +45,6 @@ local clusterrole(me) = k8s.clusterrole(me) {
 function(config, prev, namespace, pkg) (
   local me = common.package(config, prev, namespace, pkg);
   [
-    k8s.serviceaccount(me),
     k8s.clusterrolebinding(me),
     clusterrole(me),
   ]
