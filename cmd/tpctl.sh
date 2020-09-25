@@ -28,7 +28,7 @@ MANIFEST_DIR=generated
 MANIFEST_TEMP_DIR=generated-temp
 VALUES_FILE=values.yaml
 LOG_LEVEL=3
-PARALLEL=false
+PARALLEL=true
 UPDATE_TPCTL=true
 
 python3 -m pip install ruamel.yaml >/dev/null 2>&1
@@ -1524,6 +1524,7 @@ main() {
         ;;
       -v | --verbose)
         LOG_LEVEL=$2
+	PARALLEL="false"
         shift 2
         ;;
       --no-update)
