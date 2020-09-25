@@ -2,7 +2,7 @@ local common = import '../../lib/common.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
-local helmrelease(me) = k8s.helmrelease(me, { version: '0.7.0', repository: 'https://raw.githubusercontent.com/tidepool-org/tidepool-helm/master/' }) {
+local helmrelease(me) = k8s.helmrelease(me, { path: 'charts/dremio_v2', git: 'https://raw.githubusercontent.com/dremio/dremio-cloud-tools/master' }) {
   spec+: {
     values+: {
       distStorage: {
@@ -14,7 +14,7 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '0.7.0', repository: 'htt
       zookeeper: {
         name: 'zookeeper-client.%s.svc.cluster.local' % me.namespace,
       },
-      imageTag: '4.5',
+      imageTag: '4.8.0',
       serviceType: 'ClusterIP',
       storageClass: 'gp2-expanding',
     } + lib.getElse(me, 'chartValues', {}),
