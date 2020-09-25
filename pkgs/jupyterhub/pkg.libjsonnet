@@ -1,6 +1,7 @@
 local kubecfg = import 'kubecfg.libsonnet';
 {
   "_source":  "pkgs/jupyterhub",
+  "policy.jsonnet":: import "policy.jsonnet",
   "helmrelease.yaml.jsonnet":: import "helmrelease.yaml.jsonnet",
   "rbac.yaml.jsonnet":: import "rbac.yaml.jsonnet",
 }

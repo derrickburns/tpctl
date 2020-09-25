@@ -1,6 +1,7 @@
 local kubecfg = import 'kubecfg.libsonnet';
 {
   "_source":  "pkgs/gloo-ee",
+  "alerting-rules.yaml.jsonnet":: import "alerting-rules.yaml.jsonnet",
   "crds/settings.yaml": kubecfg.parseYaml(importstr "crds/settings.yaml"),
   "crds/virtual_service.yaml": kubecfg.parseYaml(importstr "crds/virtual_service.yaml"),
   "crds/proxy.yaml": kubecfg.parseYaml(importstr "crds/proxy.yaml"),
@@ -12,5 +13,9 @@ local kubecfg = import 'kubecfg.libsonnet';
   "helmrelease.yaml.helm.jsonnet":: import "helmrelease.yaml.helm.jsonnet",
   "servicemonitor.yaml.jsonnet":: import "servicemonitor.yaml.jsonnet",
   "upstreams.yaml.jsonnet":: import "upstreams.yaml.jsonnet",
+  "dashboards/envoy-proxy.yaml.jsonnet":: import "dashboards/envoy-proxy.yaml.jsonnet",
+  "dashboards/gloo-upstreams.yaml.jsonnet":: import "dashboards/gloo-upstreams.yaml.jsonnet",
+  "dashboards/gloo-upstreams.summary.yaml.jsonnet":: import "dashboards/gloo-upstreams.summary.yaml.jsonnet",
+  "dashboards/envoy-summary.yaml.jsonnet":: import "dashboards/envoy-summary.yaml.jsonnet",
   "pdb.yaml.jsonnet":: import "pdb.yaml.jsonnet",
 }

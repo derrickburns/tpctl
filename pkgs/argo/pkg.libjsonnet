@@ -1,5 +1,6 @@
 local kubecfg = import 'kubecfg.libsonnet';
 {
   "_source":  "pkgs/argo",
+  "dashboards.yaml.jsonnet":: import "dashboards.yaml.jsonnet",
   "helmrelease.yaml.jsonnet":: import "helmrelease.yaml.jsonnet",
 }

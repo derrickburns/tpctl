@@ -1,7 +1,9 @@
 local kubecfg = import 'kubecfg.libsonnet';
 {
   "_source":  "pkgs/helm-operator",
+  "alerting-rules.yaml.jsonnet":: import "alerting-rules.yaml.jsonnet",
   "crds/crds.yaml": kubecfg.parseYaml(importstr "crds/crds.yaml"),
+  "dashboards.yaml.jsonnet":: import "dashboards.yaml.jsonnet",
   "helmrelease.yaml.helm.jsonnet":: import "helmrelease.yaml.helm.jsonnet",
   "flux-helm-repositories-secret.yaml.jsonnet":: import "flux-helm-repositories-secret.yaml.jsonnet",
 }

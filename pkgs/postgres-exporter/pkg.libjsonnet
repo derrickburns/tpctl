@@ -2,4 +2,5 @@ local kubecfg = import 'kubecfg.libsonnet';
 {
   "_source":  "pkgs/postgres-exporter",
   "helmrelease.yaml.jsonnet":: import "helmrelease.yaml.jsonnet",
+  "postgres-dashboard.yaml.jsonnet":: import "postgres-dashboard.yaml.jsonnet",
 }

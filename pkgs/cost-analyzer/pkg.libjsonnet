@@ -2,4 +2,6 @@ local kubecfg = import 'kubecfg.libsonnet';
 {
   "_source":  "pkgs/cost-analyzer",
   "helmrelease.yaml.jsonnet":: import "helmrelease.yaml.jsonnet",
+  "cluster-utilization-metrics-dashboard.yaml.jsonnet":: import "cluster-utilization-metrics-dashboard.yaml.jsonnet",
+  "cluster-metrics-dashboard.yaml.jsonnet":: import "cluster-metrics-dashboard.yaml.jsonnet",
 }

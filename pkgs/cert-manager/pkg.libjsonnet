@@ -2,7 +2,9 @@ local kubecfg = import 'kubecfg.libsonnet';
 {
   "_source":  "pkgs/cert-manager",
   "policy.jsonnet":: import "policy.jsonnet",
+  "alerting-rules.yaml.jsonnet":: import "alerting-rules.yaml.jsonnet",
   "crds/cert-manager.crds.yaml": kubecfg.parseYaml(importstr "crds/cert-manager.crds.yaml"),
+  "dashboards.yaml.jsonnet":: import "dashboards.yaml.jsonnet",
   "helmrelease.yaml.jsonnet":: import "helmrelease.yaml.jsonnet",
   "letsencrypt-staging-clusterissuer.yaml.jsonnet":: import "letsencrypt-staging-clusterissuer.yaml.jsonnet",
   "letsencrypt-production-clusterissuer.yaml.jsonnet":: import "letsencrypt-production-clusterissuer.yaml.jsonnet",

@@ -1,6 +1,7 @@
 local kubecfg = import 'kubecfg.libsonnet';
 {
   "_source":  "pkgs/pomerium",
+  "dashboards.yaml.jsonnet":: import "dashboards.yaml.jsonnet",
   "helmrelease.yaml.jsonnet":: import "helmrelease.yaml.jsonnet",
   "serviceprofile.yaml.jsonnet":: import "serviceprofile.yaml.jsonnet",
   "gloo.yaml.jsonnet":: import "gloo.yaml.jsonnet",

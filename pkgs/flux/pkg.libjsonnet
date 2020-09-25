@@ -2,5 +2,7 @@ local kubecfg = import 'kubecfg.libsonnet';
 {
   "_source":  "pkgs/flux",
   "policy.jsonnet":: import "policy.jsonnet",
+  "alerting-rules.yaml.jsonnet":: import "alerting-rules.yaml.jsonnet",
   "helmrelease.yaml.jsonnet":: import "helmrelease.yaml.jsonnet",
+  "dashboard.yaml.jsonnet":: import "dashboard.yaml.jsonnet",
 }

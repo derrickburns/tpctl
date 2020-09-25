@@ -1,5 +1,7 @@
 local kubecfg = import 'kubecfg.libsonnet';
 {
   "_source":  "pkgs/atlassian-backups",
+  "alerting-rules.yaml.jsonnet":: import "alerting-rules.yaml.jsonnet",
+  "dashboards.yaml.jsonnet":: import "dashboards.yaml.jsonnet",
   "atlassian-backups.yaml.jsonnet":: import "atlassian-backups.yaml.jsonnet",
 }

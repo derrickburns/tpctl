@@ -1,6 +1,14 @@
 local kubecfg = import 'kubecfg.libsonnet';
 {
   "_source":  "pkgs/linkerd",
+  "alerting-rules.yaml.jsonnet":: import "alerting-rules.yaml.jsonnet",
   "servicemonitor.yaml.jsonnet":: import "servicemonitor.yaml.jsonnet",
+  "dashboards/route.yaml.jsonnet":: import "dashboards/route.yaml.jsonnet",
+  "dashboards/pod.yaml.jsonnet":: import "dashboards/pod.yaml.jsonnet",
+  "dashboards/namespace.yaml.jsonnet":: import "dashboards/namespace.yaml.jsonnet",
+  "dashboards/health.yaml.jsonnet":: import "dashboards/health.yaml.jsonnet",
+  "dashboards/service.yaml.jsonnet":: import "dashboards/service.yaml.jsonnet",
+  "dashboards/topline.yaml.jsonnet":: import "dashboards/topline.yaml.jsonnet",
+  "dashboards/deployment.yaml.jsonnet":: import "dashboards/deployment.yaml.jsonnet",
   "pdb.yaml.jsonnet":: import "pdb.yaml.jsonnet",
 }

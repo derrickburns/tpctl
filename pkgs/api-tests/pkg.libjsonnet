@@ -1,5 +1,7 @@
 local kubecfg = import 'kubecfg.libsonnet';
 {
   "_source":  "pkgs/api-tests",
+  "alerting-rules.yaml.jsonnet":: import "alerting-rules.yaml.jsonnet",
+  "dashboards.yaml.jsonnet":: import "dashboards.yaml.jsonnet",
   "cronjob.yaml.jsonnet":: import "cronjob.yaml.jsonnet",
 }

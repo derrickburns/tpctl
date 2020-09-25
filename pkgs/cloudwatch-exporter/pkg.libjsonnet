@@ -2,4 +2,7 @@ local kubecfg = import 'kubecfg.libsonnet';
 {
   "_source":  "pkgs/cloudwatch-exporter",
   "helmrelease.yaml.jsonnet":: import "helmrelease.yaml.jsonnet",
+  "ses-dashboards.yaml.jsonnet":: import "ses-dashboards.yaml.jsonnet",
+  "ses-alerting-rules.yaml.jsonnet":: import "ses-alerting-rules.yaml.jsonnet",
+  "dashboard.yaml.jsonnet":: import "dashboard.yaml.jsonnet",
 }
