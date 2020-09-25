@@ -4,7 +4,7 @@
 1. Create S3 bucket
 
 ### Issues
-1. Dremio 4.5.0 does not support providing AWS credenttials using K8s service accounts.
+1. Dremio 4.5.0 does not support providing AWS credentials using K8s service accounts.
 
 
  
