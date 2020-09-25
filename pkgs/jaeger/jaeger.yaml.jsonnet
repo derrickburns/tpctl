@@ -15,6 +15,11 @@ local jaeger(me) = k8s.k('jaegertracing.io/v1', 'Jaeger') + k8s.metadata('jaeger
     storage: {
       type: 'elasticsearch',
       secretName: 'elastic-credentials',
+      esIndexCleaner: {
+        enabled: true,
+        numberOfDays: 7,
+        schedule: '55 23 * * *',
+      },
       options: {
         es: {
           'server-urls': 'http://elasticsearch-master:9200',
