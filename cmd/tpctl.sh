@@ -952,15 +952,20 @@ function expand() {
 function make_namespace_config() {
   local -r values=$(get_values)
   show "$TMP_DIR/old/$MANIFEST_DIR" >"$TMP_DIR/prev"
-  expand "$values" "$TMP_DIR/prev"
+
+  if [ -z "$1" ]; then
+    expand "$values" "$TMP_DIR/prev"
+  else
+    expand_namespace "$values" "$TMP_DIR/prev" $1
+  fi
 }
 
 # create all K8s manifests and EKSCTL manifest
 function make_config() {
   start "creating manifests"
-  make_shared_config
-  make_cluster_config
-  make_namespace_config
+  make_shared_config $1
+  make_cluster_config $1
+  make_namespace_config $1
   complete
 }
 
@@ -1345,6 +1350,20 @@ function dehelm() {
   kubectl delete helmrelease -n "$namespace" -l "app=$pkgName"
   complete
   info "proceed with expanding helm template client-side"
+}
+
+function kubeapply() {
+  local directory=$MANIFEST_DIR/$1
+  if [ -d "$directory" ]; then
+    shopt -s globstar
+    for file in "$directory"/**/*.yaml; do
+      if sops -d $file >/dev/null 2>&1; then
+        sops -d $file | kubectl apply -f -
+      else
+	cat $file | kubectl apply -f -
+      fi
+    done
+  fi
 }
 
 function fluxoff() {
@@ -1746,7 +1765,20 @@ main() {
       expect_github_token
       setup_tmpdir
       clone_remote
+      set_template_dir
+      confirm_matching_cluster
+      make_namespace_config $1
       show "$MANIFEST_DIR/$1"
+      ;;
+    apply)
+      check_remote_repo
+      expect_github_token
+      setup_tmpdir
+      clone_remote
+      set_template_dir
+      confirm_matching_cluster
+      make_namespace_config $1
+      kubeapply $1
       ;;
     validate)
       check_remote_repo
