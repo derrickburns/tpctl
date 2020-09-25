@@ -864,6 +864,8 @@ function generate() {
       :
     elif [ "${src: -11}" == ".libjsonnet" ]; then
       :
+    elif [ "${src: -8}" == ".jsonnet" ]; then
+      :
     else
       echo "unknown file type $f $src" >/dev/stderr
     fi
