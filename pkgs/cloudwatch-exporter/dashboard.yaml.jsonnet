@@ -429,9 +429,7 @@ local configmap(me) = grafana.dashboard(me, 'cloudwatch-exporter', dashboardConf
 
 function(config, prev, namespace, pkg) (
   local me = common.package(config, prev, namespace, pkg);
-  if lib.getElse(me, 'opsMonitoring', false)
-  then [
+  [
     configmap(me),
   ]
-  else {}
 )
