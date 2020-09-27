@@ -17,11 +17,10 @@ local dashboardConfig = {
       },
     ],
   },
-  editable: true,
+  editable: false,
   gnetId: null,
   graphTooltip: 0,
-  id: 645,
-  iteration: 1598653416644,
+  iteration: 1601246822506,
   links: [],
   panels: [
     {
@@ -40,6 +39,14 @@ local dashboardConfig = {
               to: '',
               type: 1,
               value: '1',
+            },
+            {
+              from: '',
+              id: 1,
+              text: 'False',
+              to: '',
+              type: 1,
+              value: '0',
             },
           ],
           thresholds: {
@@ -282,7 +289,7 @@ local dashboardConfig = {
   timezone: '',
   title: 'Tidepool / QA / API tests',
   uid: 'GnXedqNMz',
-  version: 2,
+  version: 1,
 };
 
 local configmap(me) = grafana.dashboard(me, 'api-tests', dashboardConfig);
