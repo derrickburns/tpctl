@@ -12,8 +12,20 @@ local jaeger(me) = k8s.k('jaegertracing.io/v1', 'Jaeger') + k8s.metadata('jaeger
       autoscale: false,
       maxReplicas: 2,
     },
+    ui: {
+      options: {
+        dependencies: {
+          menuEnabled: true,
+        },
+      },
+    },
     storage: {
       type: 'elasticsearch',
+      dependencies: {
+        enabled: true,
+        schedule: '55 23 * * *',
+        sparkMaster: '',
+      },
       secretName: 'elastic-credentials',
       esIndexCleaner: {
         enabled: true,
