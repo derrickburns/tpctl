@@ -38,7 +38,7 @@ local dashboardConfig = {
       },
       id: 47,
       options: {
-        content: '<h3 class="text-center">Extras</h2>\n<hr/>\n<a href="https://service.us2.sumologic.com/ui/#/search/200344555">Geo Location of Users - Production</a>',
+        content: '<h3 class="text-center">Logs</h2>\n<hr/>\n<a href="https://service.us2.sumologic.com/ui/#/search/200344555">Geo Location of Users - Production</a>',
         mode: 'html',
       },
       pluginVersion: '7.1.0',
@@ -1124,7 +1124,7 @@ local dashboardConfig = {
   timezone: 'utc',
   title: 'Home',
   uid: 'HRN3fEzGk',
-  version: 1,
+  version: 2,
 };
 
 local configmap(me) = grafana.dashboard(me, 'home', dashboardConfig);
