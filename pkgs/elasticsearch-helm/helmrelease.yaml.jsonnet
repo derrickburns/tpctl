@@ -19,8 +19,8 @@ local helmrelease(me) = k8s.helmrelease(me, { name: name, version: '7.8.0', repo
     },
     values+: {
       imageTag: '7.8.0',
-      replicas: 1,
-      minimumMasterNodes: 1,
+      // replicas: 1,
+      // minimumMasterNodes: 1,
       extraEnv: [
         {
           name: 'ELASTIC_PASSWORD',
