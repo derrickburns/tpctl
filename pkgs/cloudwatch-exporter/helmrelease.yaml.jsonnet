@@ -3,7 +3,7 @@ local global = import '../../lib/global.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
-local helmrelease(me) = k8s.helmrelease(me, { name: 'prometheus-cloudwatch-exporter', version: '0.8.1', repository: 'https://kubernetes-charts.storage.googleapis.com' }) {
+local helmrelease(me) = k8s.helmrelease(me, { name: 'prometheus-cloudwatch-exporter', version: '0.8.1', repository: 'https://prometheus-community.github.io/helm-charts' }) {
   spec+: {
     chart+: {
       name: 'prometheus-cloudwatch-exporter',
