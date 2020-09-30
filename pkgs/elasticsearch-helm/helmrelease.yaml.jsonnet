@@ -19,9 +19,9 @@ local helmrelease(me) = k8s.helmrelease(me, { name: name, version: '7.8.0', repo
     },
     values+: {
       imageTag: '7.8.0',
-      replicas: 1,
-      minimumMasterNodes: 1,
-      clusterHealthCheckParams: 'wait_for_status=yellow&timeout=1s',
+      replicas: lib.getElse(me, 'replicas', 1),
+      minimumMasterNodes: lib.getElse(me, 'minimumMasterNodes', 1),
+      clusterHealthCheckParams: 'wait_for_status=%s&timeout=1s' % lib.getElse(me, 'waitForStatus', 'yellow'),
       extraEnv: [
         {
           name: 'ELASTIC_PASSWORD',
