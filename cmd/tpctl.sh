@@ -27,7 +27,7 @@ CONFIG_DIR=.
 MANIFEST_DIR=generated
 MANIFEST_TEMP_DIR=generated-temp
 VALUES_FILE=values.yaml
-LOG_LEVEL=3
+LOG_LEVEL=2
 PARALLEL=true
 UPDATE_TPCTL=true
 
