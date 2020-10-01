@@ -3,15 +3,12 @@ local global = import '../../lib/global.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
-local helmrelease(me) = k8s.helmrelease(me, { version: '9.3.1' }) {
+local helmrelease(me) = k8s.helmrelease(me, { version: '9.4.5', repository: 'https://prometheus-community.github.io/helm-charts' }) {
   spec+: {
     values+: {
       grafana: {
         enabled: lib.isEnabledAt(me, 'grafana'),
         plugins: ['grafana-piechart-panel'],
-        image: {
-          tag: '7.1.1',
-        },
         persistence: {
           enabled: true,
           storageClassName: 'monitoring-expanding',
