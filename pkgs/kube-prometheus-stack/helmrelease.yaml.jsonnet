@@ -12,7 +12,7 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '9.4.5', repository: 'htt
         persistence: {
           enabled: true,
           storageClassName: 'monitoring-expanding',
-          size: '20Gi',
+          size: lib.getElse(me, 'grafana.storageSize', '1Gi'),
         },
         annotations: {
           'cluster-autoscaler.kubernetes.io/safe-to-evict': 'false',
