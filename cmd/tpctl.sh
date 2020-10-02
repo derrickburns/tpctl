@@ -29,7 +29,7 @@ MANIFEST_TEMP_DIR=generated-temp
 VALUES_FILE=values.yaml
 LOG_LEVEL=2
 PARALLEL=true
-UPDATE_TPCTL=true
+UPDATE_TPCTL=false
 
 python3 -m pip install ruamel.yaml >/dev/null 2>&1
 
@@ -846,7 +846,7 @@ function generate() {
     if [ ! -f "$f" ]
     then
       continue
-    fi 
+    fi
     local src=${f#$base/}
     start "file $src"
     if [ "${src: -5}" == ".yaml" ]; then
@@ -1442,7 +1442,7 @@ Options
 
 -p               update all namespaces in parallel (speed up)
 --local-config   uses current directory as config repo
---local-template uses templates in the config repo submodule (edited) 
+--local-template uses templates in the config repo submodule (edited)
 --skip-commit    do not push a commit to GitHub
 
 ----- Repo Commands (safe)
