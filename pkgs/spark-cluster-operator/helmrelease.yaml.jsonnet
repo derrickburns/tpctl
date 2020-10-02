@@ -11,7 +11,7 @@ local helmrelease(me) = k8s.helmrelease(me, { path: 'helm/spark-operator', ref: 
       env: {
         watchNamespace: '*',
         installNamespace: me.namespace,
-        metrics: global.isEnabled(me.config, 'prometheus-operator'),
+        metrics: global.isEnabled(me.config, 'kube-prometheus-stack'),
       },
     },
   },

@@ -6,7 +6,7 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '1.1.0', repository: 'htt
   spec+: {
     values: {
       metrics: {
-        enabled: global.isEnabled(me.config, 'prometheus-operator'),
+        enabled: global.isEnabled(me.config, 'kube-prometheus-stack'),
       },
     },
   },

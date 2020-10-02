@@ -14,7 +14,7 @@ local helmrelease(me) = k8s.helmrelease(me, {
     name: 'sumologic-fluentd',
   },
   spec: {
-    'prometheus-operator': {
+    'kube-prometheus-stack': {
       prometheus: {
         prometheusSpec: {
           externalLabels: {

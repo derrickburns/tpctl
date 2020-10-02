@@ -87,7 +87,7 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '9.4.5', repository: 'htt
           podMonitorSelectorNilUsesHelmValues: false,
           additionalScrapeConfigsSecret: {
             enabled: lib.getElse(me, 'prometheus.additionalScrapeConfigsSecret', false),
-            name: 'prometheus-operator-prometheus-additional-scrape-configs',
+            name: 'kube-prometheus-stack-prometheus-additional-scrape-configs',
             key: 'scrape-configs.yaml',
           },
           enableAdminAPI: true,

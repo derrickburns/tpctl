@@ -8,7 +8,7 @@ local helmrelease(me) = (
       values: {
         metrics: {
           serviceMonitor: {
-            enabled: global.isEnabled(me.config, 'prometheus-operator'),
+            enabled: global.isEnabled(me.config, 'kube-prometheus-stack'),
           },
         },
       },

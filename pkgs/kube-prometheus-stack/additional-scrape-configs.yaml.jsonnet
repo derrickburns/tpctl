@@ -4,7 +4,7 @@ local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
 local scrapeConfigs(me) = k8s.secret(me, name='prometheus-additionl-scrape-configs') + k8s.metadata(
-  'prometheus-operator-prometheus-additional-scrape-configs', me.namespace
+  'kube-prometheus-stack-prometheus-additional-scrape-configs', me.namespace
 ) {
   stringData+: {
     'scrape-configs.yaml': std.manifestYamlDoc(

@@ -1,6 +1,6 @@
 local kubecfg = import 'kubecfg.libsonnet';
 {
-  "_source":  "pkgs/prometheus-operator",
+  "_source":  "pkgs/kube-prometheus-stack",
   "grafana-config.yaml.jsonnet":: import "grafana-config.yaml.jsonnet",
   "alerting-rules/shoreline.yaml.jsonnet":: import "alerting-rules/shoreline.yaml.jsonnet",
   "alerting-rules/export.yaml.jsonnet":: import "alerting-rules/export.yaml.jsonnet",

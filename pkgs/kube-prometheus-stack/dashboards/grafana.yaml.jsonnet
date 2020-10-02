@@ -109,10 +109,10 @@ local dashboardConfig = {
         lineColor: 'rgb(31, 120, 193)',
         show: false,
       },
-      tableColumn: 'up{endpoint="service", instance="10.48.4.24:3000", job="prometheus-operator-grafana", namespace="monitoring", pod="prometheus-operator-grafana-6c5c4559dd-spmkn", service="prometheus-operator-grafana"}',
+      tableColumn: 'up{endpoint="service", instance="10.48.4.24:3000", job="kube-prometheus-stack-grafana", namespace="monitoring", pod="kube-prometheus-stack-grafana-6c5c4559dd-spmkn", service="kube-prometheus-stack-grafana"}',
       targets: [
         {
-          expr: 'up{job="prometheus-operator-grafana"}',
+          expr: 'up{job="kube-prometheus-stack-grafana"}',
           format: 'time_series',
           instant: true,
           interval: '',
@@ -287,7 +287,7 @@ local dashboardConfig = {
         lineColor: 'rgb(31, 120, 193)',
         show: false,
       },
-      tableColumn: 'grafana_stat_total_users{endpoint="service", instance="10.48.4.24:3000", job="prometheus-operator-grafana", namespace="monitoring", pod="prometheus-operator-grafana-6c5c4559dd-spmkn", service="prometheus-operator-grafana"}',
+      tableColumn: 'grafana_stat_total_users{endpoint="service", instance="10.48.4.24:3000", job="kube-prometheus-stack-grafana", namespace="monitoring", pod="kube-prometheus-stack-grafana-6c5c4559dd-spmkn", service="kube-prometheus-stack-grafana"}',
       targets: [
         {
           expr: 'grafana_stat_total_users',
@@ -375,7 +375,7 @@ local dashboardConfig = {
         lineColor: 'rgb(31, 120, 193)',
         show: false,
       },
-      tableColumn: 'grafana_stat_total_playlists{endpoint="service", instance="10.48.4.24:3000", job="prometheus-operator-grafana", namespace="monitoring", pod="prometheus-operator-grafana-6c5c4559dd-spmkn", service="prometheus-operator-grafana"}',
+      tableColumn: 'grafana_stat_total_playlists{endpoint="service", instance="10.48.4.24:3000", job="kube-prometheus-stack-grafana", namespace="monitoring", pod="kube-prometheus-stack-grafana-6c5c4559dd-spmkn", service="kube-prometheus-stack-grafana"}',
       targets: [
         {
           expr: 'grafana_stat_total_playlists',
@@ -523,7 +523,7 @@ local dashboardConfig = {
       steppedLine: false,
       targets: [
         {
-          expr: "sum by (statuscode) (irate(http_request_total{job='prometheus-operator-grafana'}[5m]))",
+          expr: "sum by (statuscode) (irate(http_request_total{job='kube-prometheus-stack-grafana'}[5m]))",
           format: 'time_series',
           intervalFactor: 3,
           legendFormat: '{{statuscode}}',
@@ -745,7 +745,7 @@ local dashboardConfig = {
       ],
       targets: [
         {
-          expr: 'sort(topk(8, sum by (handler) (http_request_total{job="prometheus-operator-grafana"})))',
+          expr: 'sort(topk(8, sum by (handler) (http_request_total{job="kube-prometheus-stack-grafana"})))',
           format: 'time_series',
           instant: true,
           intervalFactor: 10,
@@ -1035,7 +1035,7 @@ local dashboardConfig = {
       steppedLine: false,
       targets: [
         {
-          expr: 'sum(go_goroutines{job="prometheus-operator-grafana"})',
+          expr: 'sum(go_goroutines{job="kube-prometheus-stack-grafana"})',
           format: 'time_series',
           hide: false,
           intervalFactor: 4,
@@ -1046,7 +1046,7 @@ local dashboardConfig = {
           type: 'timeserie',
         },
         {
-          expr: 'sum(process_resident_memory_bytes{job="prometheus-operator-grafana"})',
+          expr: 'sum(process_resident_memory_bytes{job="kube-prometheus-stack-grafana"})',
           format: 'time_series',
           intervalFactor: 4,
           legendFormat: 'memory usage',

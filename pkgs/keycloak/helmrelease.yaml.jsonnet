@@ -100,7 +100,7 @@ local helmrelease(me) = (
           indent_array_in_object=false
         ),
         serviceMonitor: {
-          enabled: global.isEnabled(me.config, 'prometheus-operator'),
+          enabled: global.isEnabled(me.config, 'kube-prometheus-stack'),
           path: '/auth/realms/master/metrics',
           port: 'http',
         },
