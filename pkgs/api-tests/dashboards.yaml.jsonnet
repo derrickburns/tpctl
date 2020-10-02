@@ -20,7 +20,7 @@ local dashboardConfig = {
   editable: false,
   gnetId: null,
   graphTooltip: 0,
-  iteration: 1601246822506,
+  iteration: 1601641606416,
   links: [],
   panels: [
     {
@@ -30,6 +30,7 @@ local dashboardConfig = {
           custom: {
             align: null,
             displayMode: 'color-background',
+            filterable: false,
           },
           mappings: [
             {
@@ -63,7 +64,20 @@ local dashboardConfig = {
             ],
           },
         },
-        overrides: [],
+        overrides: [
+          {
+            matcher: {
+              id: 'byName',
+              options: 'Environment',
+            },
+            properties: [
+              {
+                id: 'custom.displayMode',
+                value: 'auto',
+              },
+            ],
+          },
+        ],
       },
       gridPos: {
         h: 7,
@@ -75,7 +89,7 @@ local dashboardConfig = {
       options: {
         showHeader: true,
       },
-      pluginVersion: '7.1.1',
+      pluginVersion: '7.2.0',
       targets: [
         {
           expr: 'sum(argo_workflows_api_tests_status) by (env)',
@@ -174,8 +188,11 @@ local dashboardConfig = {
       lines: true,
       linewidth: 1,
       nullPointMode: 'null',
+      options: {
+        alertThreshold: true,
+      },
       percentage: false,
-      pluginVersion: '7.1.1',
+      pluginVersion: '7.2.0',
       pointradius: 0.5,
       points: false,
       renderer: 'flot',
@@ -270,7 +287,7 @@ local dashboardConfig = {
     ],
   },
   time: {
-    from: 'now-2d',
+    from: 'now-7d',
     to: 'now',
   },
   timepicker: {
