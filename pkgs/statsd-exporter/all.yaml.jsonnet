@@ -68,7 +68,7 @@ local service(me) = k8s.service(me) {
 
 function(config, prev, namespace, pkg) (
   local me = common.package(config, prev, namespace, pkg);
-  (if global.isEnabled(me.config, 'prometheus-operator') then [prometheus.servicemonitor(me, 'metrics')] else []) +
+  (if global.isEnabled(me.config, 'kube-prometheus-stack') then [prometheus.servicemonitor(me, 'metrics')] else []) +
   [
     service(me),
     deployment(me),

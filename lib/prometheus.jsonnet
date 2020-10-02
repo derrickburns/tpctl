@@ -53,7 +53,7 @@ local lib = import 'lib.jsonnet';
     },
   },
 
-  prometheusRule(me, name, groups, prometheus='prometheus-operator-prometheus'):: k8s.k('monitoring.coreos.com/v1', 'PrometheusRule') + k8s.metadata(me.pkg, me.namespace) {
+  prometheusRule(me, name, groups, prometheus='kube-prometheus-stack-prometheus'):: k8s.k('monitoring.coreos.com/v1', 'PrometheusRule') + k8s.metadata(me.pkg, me.namespace) {
     metadata: {
       labels: {
         prometheus: prometheus,
@@ -67,12 +67,12 @@ local lib = import 'lib.jsonnet';
   },
 
   Podmonitor(me, port, selector, path='/metrics')::
-    if global.isEnabled(me.config, 'prometheus-operator')
+    if global.isEnabled(me.config, 'kube-prometheus-stack')
     then $.podmonitor(me, port, selector, path='/metrics')
     else {},
 
   Servicemonitor(me, port)::
-    if global.isEnabled(me.config, 'prometheus-operator')
+    if global.isEnabled(me.config, 'kube-prometheus-stack')
     then $.servicemonitor(me, port)
     else {},
 }

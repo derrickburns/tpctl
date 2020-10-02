@@ -41,7 +41,7 @@ local helmrelease(me) = k8s.helmrelease(
 
       prometheus: {
         serviceMonitor: {
-          create: global.isEnabled(me.config, 'prometheus-operator'),
+          create: global.isEnabled(me.config, 'kube-prometheus-stack'),
         },
       },
 

@@ -42,7 +42,7 @@ local helmrelease(me) = k8s.helmrelease(me, { name: 'prometheus-cloudwatch-expor
         create: false,
       },
       serviceMonitor: {
-        enabled: global.isEnabled(me.config, 'prometheus-operator'),
+        enabled: global.isEnabled(me.config, 'kube-prometheus-stack'),
         interval: '2m',
       },
     },

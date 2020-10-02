@@ -6,7 +6,7 @@ local helmrelease(me) = k8s.helmrelease(me, { name: 'sparkoperator', version: '0
   spec+: {
     values: {
       enableWebhook: true,
-      enableMetrics: global.enabled(me.config, 'prometheus-operator'),
+      enableMetrics: global.enabled(me.config, 'kube-prometheus-stack'),
       sparkJobNamespace: me.namespace,
     },
   },

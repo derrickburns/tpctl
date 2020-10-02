@@ -846,7 +846,7 @@ function generate() {
     if [ ! -f "$f" ]
     then
       continue
-    fi 
+    fi
     local src=${f#$base/}
     start "file $src"
     if [ "${src: -5}" == ".yaml" ]; then
@@ -1442,7 +1442,7 @@ Options
 
 -p               update all namespaces in parallel (speed up)
 --local-config   uses current directory as config repo
---local-template uses templates in the config repo submodule (edited) 
+--local-template uses templates in the config repo submodule (edited)
 --skip-commit    do not push a commit to GitHub
 
 ----- Repo Commands (safe)

@@ -199,7 +199,7 @@ local helmrelease(me) = k8s.helmrelease(me, {
     },
     securityContext: k8s.securityContext,
     serviceMonitor: {
-      enabled: global.isEnabled(me.config, 'prometheus-operator'),
+      enabled: global.isEnabled(me.config, 'kube-prometheus-stack'),
     },
     pdb: {
       enabled: true,

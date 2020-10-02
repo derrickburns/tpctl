@@ -7,7 +7,7 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '2.5.0' }) {
   spec+: {
     values+: {
       serviceMonitor: {
-        enabled: global.isEnabled(me.config, 'prometheus-operator'),
+        enabled: global.isEnabled(me.config, 'kube-prometheus-stack'),
       },
       existingSecret: {
         name: 'mongo',  // XXX confirm

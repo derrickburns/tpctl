@@ -598,13 +598,13 @@ namespaces:
       enabled: true
       sso:
         port: 80
-        serviceName: monitoring-prometheus-operator-grafana
+        serviceName: monitoring-kube-prometheus-stack-grafana
     prometheus:
       enabled: true
       global: true
       sso:
         externalName: metrics
-    prometheus-operator:
+    kube-prometheus-stack:
       alertmanager:
         enabled: false
       enabled: true

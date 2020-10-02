@@ -18,7 +18,7 @@ local helmrelease(me) = k8s.helmrelease(me, { name: 'argo', version: '0.11.0', r
           enabled: true,
         },
         serviceMonitor: {
-          enabled: global.isEnabled(me.config, 'prometheus-operator'),
+          enabled: global.isEnabled(me.config, 'kube-prometheus-stack'),
         },
       },
     },
