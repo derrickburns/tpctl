@@ -6,7 +6,7 @@ local lib = import '../../lib/lib.jsonnet';
 local helmrelease(me) = k8s.helmrelease(me, { name: 'cost-analyzer', version: '1.63.1', repository: 'https://kubecost.github.io/cost-analyzer/' }) {
   spec+: {
     values+: {
-      local monitoring = global.package(me.config, 'prometheus-operator'),
+      local monitoring = global.package(me.config, 'kube-prometheus-stack'),
       affinity: {
         nodeAffinity: k8s.nodeAffinity(),
       },

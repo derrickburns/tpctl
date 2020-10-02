@@ -77,7 +77,7 @@ local linkerdProxy(me) = k8s.k('monitoring.coreos.com/v1', 'PodMonitor') + k8s.m
 
 function(config, prev, namespace, pkg) (
   local me = common.package(config, prev, namespace, pkg);
-  if global.isEnabled(me.config, 'prometheus-operator')
+  if global.isEnabled(me.config, 'kube-prometheus-stack')
   then [
     linkerdController(me),
     linkerdProxy(me),

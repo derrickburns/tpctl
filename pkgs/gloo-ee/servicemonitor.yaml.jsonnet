@@ -81,7 +81,7 @@ local serviceMonitor(me) = k8s.k('monitoring.coreos.com/v1', 'ServiceMonitor') +
 
 function(config, prev, namespace, pkg) (
   local me = common.package(config, prev, namespace, pkg);
-  if global.isEnabled(me.config, 'prometheus-operator')
+  if global.isEnabled(me.config, 'kube-prometheus-stack')
   then [
     gatewayProxy(me),
     internalGatewayProxy(me),

@@ -13,9 +13,9 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '2.20.8', repository: 'ht
       interval: lib.getElse(me, 'interval', '3m'),
       logLevel: me.config.general.logLevel,
       metrics: {
-        enabled: global.isEnabled(me.config, 'prometheus-operator'),
+        enabled: global.isEnabled(me.config, 'kube-prometheus-stack'),
         serviceMonitor: {
-          enabled: global.isEnabled(me.config, 'prometheus-operator'),
+          enabled: global.isEnabled(me.config, 'kube-prometheus-stack'),
         },
       },
       provider: 'aws',

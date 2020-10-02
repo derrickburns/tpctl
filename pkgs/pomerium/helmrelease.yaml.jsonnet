@@ -49,10 +49,10 @@ local helmrelease(me) = k8s.helmrelease(
         type: 'ClusterIP',
       },
       serviceMonitor: {
-        enabled: global.isEnabled(me.config, 'prometheus-operator'),
+        enabled: global.isEnabled(me.config, 'kube-prometheus-stack'),
       },
       metrics: {
-        enabled: global.isEnabled(me.config, 'prometheus-operator'),
+        enabled: global.isEnabled(me.config, 'kube-prometheus-stack'),
       },
       config: {
         rootDomain: domain,
