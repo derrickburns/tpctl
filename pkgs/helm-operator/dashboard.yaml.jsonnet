@@ -490,6 +490,6 @@ local dashboardConfig = {
   version: 3,
 };
 
-local configmap(me) = grafana.dashboard(me, 'helm-operator', dashboardConfig);
+local configmap(me) = grafana.dashboard(me, me.pkg, dashboardConfig);
 
 function(config, prev, namespace, pkg) configmap(common.package(config, prev, namespace, pkg))

@@ -239,6 +239,6 @@ local dashboardConfig = {
   version: 1,
 };
 
-local configmap(me) = grafana.dashboard(me, 'pomerium', dashboardConfig);
+local configmap(me) = grafana.dashboard(me, me.pkg, dashboardConfig);
 
 function(config, prev, namespace, pkg) configmap(common.package(config, prev, namespace, pkg))

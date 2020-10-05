@@ -1373,6 +1373,6 @@ local dashboardConfig = {
   version: 2,
 };
 
-local configmap(me) = grafana.dashboard(me, 'cert-manager', dashboardConfig);
+local configmap(me) = grafana.dashboard(me, me.pkg, dashboardConfig);
 
 function(config, prev, namespace, pkg) configmap(common.package(config, prev, namespace, pkg))
