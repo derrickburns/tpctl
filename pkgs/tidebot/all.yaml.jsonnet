@@ -81,7 +81,7 @@ local configmap(me) = k8s.configmap(me) {
         'message-api': 'tidepool',
         blip: 'tidepool',
         export: 'tidepool',
-        'marketo-service': 'tidepool',
+        'marketo-service': 'marketo-service',
       }, '  '
     ),
   },
