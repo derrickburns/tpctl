@@ -74,7 +74,7 @@ local serviceMonitor(me) = k8s.k('monitoring.coreos.com/v1', 'ServiceMonitor') +
       },
     },
     endpoints: [
-      { port: 'prometheus', path: '/stats/prometheus' },
+      { port: 'prometheus', path: '/stats/prometheus', interval: '15s' },
     ],
   },
 };
