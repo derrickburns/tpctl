@@ -15,14 +15,16 @@ local datasources(me) = k8s.configmap(me, name='grafana-extra-datasources') + k8
     'datasources-default.yaml': std.manifestYamlDoc({
       apiVersion: 1,
       datasources: [] + if global.isEnabled(me.config, 'influxdb') then [{
+        local influxdb = global.package(me.config, 'influxdb'),
         name: 'InfluxDB',
         type: 'influxdb',
         database: 'k6',
-        url: 'http://influxdb.monitoring:8086',
+        url: 'http://influxdb.%s:8086' % influxdb.namespace,
       }] else [] + if global.isEnabled(me.config, 'jaeger') then [{
+        local jaeger = global.package(me.config, 'jaeger'),
         name: 'Jaeger',
         type: 'jaeger',
-        url: 'http://jaeger-query.observability:16686',
+        url: 'http://jaeger-query.%s:16686' % jaeger.namespace,
         access: 'server',
         'basic-auth': false,
       }] else [],

@@ -1,7 +1,8 @@
 local common = import '../../../lib/common.jsonnet';
 local grafana = import '../../../lib/grafana.jsonnet';
+local global = import '../../../lib/global.jsonnet';
 
-local dashboardConfig = {
+local dashboardConfig(me) = {
   annotations: {
     list: [
       {
@@ -109,7 +110,8 @@ local dashboardConfig = {
         lineColor: 'rgb(31, 120, 193)',
         show: false,
       },
-      tableColumn: 'up{endpoint="service", instance="10.48.4.24:3000", job="kube-prometheus-stack-grafana", namespace="monitoring", pod="kube-prometheus-stack-grafana-6c5c4559dd-spmkn", service="kube-prometheus-stack-grafana"}',
+      local kps = global.package(me.config, 'kube-prometheus-stack'),
+      tableColumn: 'up{endpoint="service", instance="10.48.4.24:3000", job="kube-prometheus-stack-grafana", namespace=\"%s\", pod="kube-prometheus-stack-grafana-6c5c4559dd-spmkn", service="kube-prometheus-stack-grafana"}' % kps.namespace,
       targets: [
         {
           expr: 'up{job="kube-prometheus-stack-grafana"}',
@@ -1159,6 +1161,6 @@ local dashboardConfig = {
   version: 53,
 };
 
-local configmap(me) = grafana.dashboard(me, 'grafana', dashboardConfig);
+local configmap(me) = grafana.dashboard(me, 'grafana', dashboardConfig(me));
 
 function(config, prev, namespace, pkg) configmap(common.package(config, prev, namespace, pkg))

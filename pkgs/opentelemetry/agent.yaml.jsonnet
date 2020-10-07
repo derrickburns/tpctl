@@ -40,7 +40,8 @@ local configmap(me) = k8s.configmap(me, name='otel-agent-conf') {
         },
         exporters: {
           otlp: {
-            endpoint: 'otel-collector.observability:55680',
+            local opentelemetry = global.package(me.config, 'observability'),
+            endpoint: 'otel-collector.%s:55680' % opentelemetry.namespace,
             insecure: true,
           },
         },

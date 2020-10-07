@@ -57,8 +57,10 @@ local workflowSpec(me, test) = k8s.k('argoproj.io/v1alpha1', 'WorkflowTemplate')
         container: {
           name: 'k6-%s-%s' % [test.name, test.env],
           image: 'tidepool/loadtest:v0.1.0',
+          local statsd = global.package(me.config, 'statsd-exporter'),
+          local influxdb = global.package(me.config, 'influxdb'),
           env: if global.isEnabled(me.config, 'statsd-exporter') then [
-            k8s.envVar('K6_STATSD_ADDR', 'statsd-exporter.monitoring:9125'),
+            k8s.envVar('K6_STATSD_ADDR', 'statsd-exporter.%s:9125' % statsd.namespace),
             k8s.envVar('K6_STATSD_NAMESPACE', 'k6_%s' % test.env),
           ] else [],
           command: [
@@ -71,7 +73,7 @@ local workflowSpec(me, test) = k8s.k('argoproj.io/v1alpha1', 'WorkflowTemplate')
             '-e',
             'env=%s' % test.env,
             '--out',
-            'influxdb=http://influxdb.monitoring:8086/k6',
+            'influxdb=http://influxdb.%s:8086/k6' % influxdb.namespace,
             '--tag',
             'env=%s' % test.env,
           ] + test.args,

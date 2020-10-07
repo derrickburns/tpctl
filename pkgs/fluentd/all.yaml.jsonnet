@@ -23,7 +23,7 @@ local clusterrole(me) = k8s.clusterrole(me) {
 };
 
 local daemonset(me) = k8s.daemonset(me,
-                                    container={
+                                    containers={
                                       env: [
                                         k8s.envVar('AWS_REGION', me.config.cluster.metadata.region),
                                         k8s.envVar('REGION', me.config.cluster.metadata.region),
