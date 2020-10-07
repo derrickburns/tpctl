@@ -13,6 +13,7 @@ local deployment(me) = flux.deployment(
     env: [
       k8s.envVar('KAFKA_BROKERS', lib.getElse(me, 'kafka-brokers', 'b-1.default-ops.gxm6gl.c4.kafka.us-west-2.amazonaws.com:9094,b-2.default-ops.gxm6gl.c4.kafka.us-west-2.amazonaws.com:9094,b-3.default-ops.gxm6gl.c4.kafka.us-west-2.amazonaws.com:9094')),
       k8s.envVar('KAFKA_TOPIC', lib.getElse(me, 'kafka-topic', 'user-events')),
+      k8s.envVar('KAFKA_REQUIRE_SSL', lib.getElse(me, 'kafka-require-ssl', true)),
       k8s.envVar('KAFKA_DEAD_LETTERS_TOPIC', lib.getElse(me, 'kafka-dead_letters_topic', 'events-shoreline-dl')),
       k8s.envVar('KAFKA_PREFIX', lib.getElse(me, 'kafka-prefix', me.namespace + '-')),
       k8s.envVar('KAFKA_TOPIC_PREFIX', lib.getElse(me, 'kafka-topic-prefix', me.namespace + '-')),
