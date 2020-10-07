@@ -18,6 +18,7 @@ local dashboardConfig = {
   editable: false,
   gnetId: null,
   graphTooltip: 0,
+  iteration: 1602025347279,
   links: [],
   panels: [
     {
@@ -33,6 +34,7 @@ local dashboardConfig = {
       fieldConfig: {
         defaults: {
           custom: {},
+          links: [],
         },
         overrides: [],
       },
@@ -64,9 +66,10 @@ local dashboardConfig = {
       links: [],
       nullPointMode: 'null',
       options: {
-        dataLinks: [],
+        alertThreshold: true,
       },
       percentage: false,
+      pluginVersion: '7.2.0',
       pointradius: 5,
       points: false,
       renderer: 'flot',
@@ -76,7 +79,7 @@ local dashboardConfig = {
       steppedLine: false,
       targets: [
         {
-          expr: 'sum(increase(envoy_cluster_upstream_rq_xx{envoy_cluster_name!~".*(gloo-system|kube-svc).*"}[1m])) by (envoy_cluster_name)',
+          expr: 'sum(increase(envoy_cluster_upstream_rq_xx[$__rate_interval])) by (envoy_cluster_name)',
           format: 'time_series',
           interval: '',
           intervalFactor: 1,
@@ -88,7 +91,7 @@ local dashboardConfig = {
       timeFrom: null,
       timeRegions: [],
       timeShift: null,
-      title: 'All Codes',
+      title: 'Summary',
       tooltip: {
         shared: true,
         sort: 0,
@@ -140,6 +143,7 @@ local dashboardConfig = {
       fieldConfig: {
         defaults: {
           custom: {},
+          links: [],
         },
         overrides: [],
       },
@@ -171,9 +175,10 @@ local dashboardConfig = {
       links: [],
       nullPointMode: 'null',
       options: {
-        dataLinks: [],
+        alertThreshold: true,
       },
       percentage: false,
+      pluginVersion: '7.2.0',
       pointradius: 5,
       points: false,
       renderer: 'flot',
@@ -183,8 +188,9 @@ local dashboardConfig = {
       steppedLine: false,
       targets: [
         {
-          expr: 'sum(increase(envoy_cluster_upstream_rq_xx{envoy_response_code_class="2", envoy_cluster_name!~".*(gloo-system|kube-svc).*"}[1m])) by (envoy_cluster_name)',
+          expr: 'sum(increase(envoy_cluster_upstream_rq_xx{envoy_response_code_class="2"}[$__rate_interval])) by (envoy_cluster_name)',
           format: 'time_series',
+          interval: '',
           intervalFactor: 1,
           legendFormat: '{{ envoy_cluster_name }}',
           refId: 'A',
@@ -246,6 +252,7 @@ local dashboardConfig = {
       fieldConfig: {
         defaults: {
           custom: {},
+          links: [],
         },
         overrides: [],
       },
@@ -277,9 +284,10 @@ local dashboardConfig = {
       links: [],
       nullPointMode: 'null',
       options: {
-        dataLinks: [],
+        alertThreshold: true,
       },
       percentage: false,
+      pluginVersion: '7.2.0',
       pointradius: 5,
       points: false,
       renderer: 'flot',
@@ -289,8 +297,9 @@ local dashboardConfig = {
       steppedLine: false,
       targets: [
         {
-          expr: 'sum(increase(envoy_cluster_upstream_rq_xx{envoy_response_code_class="3", envoy_cluster_name!~".*(gloo-system|kube-svc).*"}[1m])) by (envoy_cluster_name)',
+          expr: 'sum(increase(envoy_cluster_upstream_rq_xx{envoy_response_code_class="3"}[$__rate_interval])) by (envoy_cluster_name)',
           format: 'time_series',
+          interval: '',
           intervalFactor: 1,
           legendFormat: '{{ envoy_cluster_name }}',
           refId: 'A',
@@ -316,6 +325,7 @@ local dashboardConfig = {
       },
       yaxes: [
         {
+          '$$hashKey': 'object:2893',
           format: 'short',
           label: null,
           logBase: 1,
@@ -324,6 +334,7 @@ local dashboardConfig = {
           show: true,
         },
         {
+          '$$hashKey': 'object:2894',
           format: 'short',
           label: null,
           logBase: 1,
@@ -350,6 +361,7 @@ local dashboardConfig = {
       fieldConfig: {
         defaults: {
           custom: {},
+          links: [],
         },
         overrides: [],
       },
@@ -381,9 +393,10 @@ local dashboardConfig = {
       links: [],
       nullPointMode: 'null',
       options: {
-        dataLinks: [],
+        alertThreshold: true,
       },
       percentage: false,
+      pluginVersion: '7.2.0',
       pointradius: 5,
       points: false,
       renderer: 'flot',
@@ -393,8 +406,9 @@ local dashboardConfig = {
       steppedLine: false,
       targets: [
         {
-          expr: 'sum(increase(envoy_cluster_upstream_rq_xx{envoy_response_code_class="4", envoy_cluster_name!~".*(gloo-system|kube-svc).*"}[1m])) by (envoy_cluster_name)',
+          expr: 'sum(increase(envoy_cluster_upstream_rq_xx{envoy_response_code_class="4"}[$__rate_interval])) by (envoy_cluster_name)',
           format: 'time_series',
+          interval: '',
           intervalFactor: 1,
           legendFormat: '{{ envoy_cluster_name }}',
           refId: 'A',
@@ -420,6 +434,7 @@ local dashboardConfig = {
       },
       yaxes: [
         {
+          '$$hashKey': 'object:2973',
           format: 'short',
           label: null,
           logBase: 1,
@@ -428,6 +443,7 @@ local dashboardConfig = {
           show: true,
         },
         {
+          '$$hashKey': 'object:2974',
           format: 'short',
           label: null,
           logBase: 1,
@@ -454,6 +470,7 @@ local dashboardConfig = {
       fieldConfig: {
         defaults: {
           custom: {},
+          links: [],
         },
         overrides: [],
       },
@@ -485,9 +502,10 @@ local dashboardConfig = {
       links: [],
       nullPointMode: 'null',
       options: {
-        dataLinks: [],
+        alertThreshold: true,
       },
       percentage: false,
+      pluginVersion: '7.2.0',
       pointradius: 5,
       points: false,
       renderer: 'flot',
@@ -497,8 +515,9 @@ local dashboardConfig = {
       steppedLine: false,
       targets: [
         {
-          expr: 'sum(increase(envoy_cluster_upstream_rq_xx{envoy_response_code_class="5", envoy_cluster_name!~".*(gloo-system|kube-svc).*"}[1m])) by (envoy_cluster_name)',
+          expr: 'sum(increase(envoy_cluster_upstream_rq_xx{envoy_response_code_class="5"}[$__rate_interval])) by (envoy_cluster_name)',
           format: 'time_series',
+          interval: '',
           intervalFactor: 1,
           legendFormat: '{{ envoy_cluster_name }}',
           refId: 'A',
@@ -524,6 +543,7 @@ local dashboardConfig = {
       },
       yaxes: [
         {
+          '$$hashKey': 'object:3053',
           format: 'short',
           label: null,
           logBase: 1,
@@ -532,6 +552,7 @@ local dashboardConfig = {
           show: true,
         },
         {
+          '$$hashKey': 'object:3054',
           format: 'short',
           label: null,
           logBase: 1,
@@ -546,7 +567,7 @@ local dashboardConfig = {
       },
     },
   ],
-  schemaVersion: 25,
+  schemaVersion: 26,
   style: 'dark',
   tags: [
     'gloo',
@@ -595,7 +616,7 @@ local dashboardConfig = {
   timezone: 'utc',
   title: 'Gloo Upstreams Summary',
   uid: '4EIm6BmGk',
-  version: 2,
+  version: 1,
 };
 
 local configmap(me) = grafana.dashboard(me, 'gloo-upstreams-summary', dashboardConfig);

@@ -20,7 +20,7 @@ local lib = import 'lib.jsonnet';
     spec: {
       podMetricsEndpoints: [
         {
-          interval: '5s',
+          interval: '30s',
           path: path,
         } + if std.isString(port) then { port: port } else { targetPort: port },
       ],

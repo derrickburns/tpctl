@@ -16,10 +16,10 @@ local dashboardConfig = {
     ],
   },
   description: 'Envoy proxy monitoring Dashboard with cluster and host level templates. ',
-  editable: true,
+  editable: false,
   gnetId: null,
   graphTooltip: 0,
-  iteration: 1597700665531,
+  iteration: 1602020876476,
   links: [],
   panels: [
     {
@@ -31,6 +31,7 @@ local dashboardConfig = {
       fieldConfig: {
         defaults: {
           custom: {},
+          links: [],
         },
         overrides: [],
       },
@@ -58,9 +59,10 @@ local dashboardConfig = {
       links: [],
       nullPointMode: 'null',
       options: {
-        dataLinks: [],
+        alertThreshold: true,
       },
       percentage: false,
+      pluginVersion: '7.2.0',
       pointradius: 5,
       points: false,
       renderer: 'flot',
@@ -130,6 +132,7 @@ local dashboardConfig = {
       fieldConfig: {
         defaults: {
           custom: {},
+          links: [],
         },
         overrides: [],
       },
@@ -157,9 +160,10 @@ local dashboardConfig = {
       links: [],
       nullPointMode: 'null',
       options: {
-        dataLinks: [],
+        alertThreshold: true,
       },
       percentage: false,
+      pluginVersion: '7.2.0',
       pointradius: 5,
       points: false,
       renderer: 'flot',
@@ -169,11 +173,11 @@ local dashboardConfig = {
       steppedLine: false,
       targets: [
         {
-          expr: 'sum(irate(envoy_cluster_upstream_rq_total{ envoy_cluster_name="$upstream", gateway_proxy_id=~"$proxy"}[1m])) by (envoy_cluster_name)',
+          expr: 'sum(irate(envoy_cluster_upstream_rq_total{ envoy_cluster_name="$upstream", gateway_proxy_id=~"$proxy"}[$__rate_interval])) by (envoy_cluster_name)',
           format: 'time_series',
           interval: '',
           intervalFactor: 1,
-          legendFormat: '{{envoy_cluster_name}}',
+          legendFormat: '{{envoy_cluster_name}} ',
           refId: 'A',
         },
       ],
@@ -229,6 +233,7 @@ local dashboardConfig = {
       fieldConfig: {
         defaults: {
           custom: {},
+          links: [],
         },
         overrides: [],
       },
@@ -256,9 +261,10 @@ local dashboardConfig = {
       links: [],
       nullPointMode: 'null',
       options: {
-        dataLinks: [],
+        alertThreshold: true,
       },
       percentage: false,
+      pluginVersion: '7.2.0',
       pointradius: 5,
       points: false,
       renderer: 'flot',
@@ -268,15 +274,17 @@ local dashboardConfig = {
       steppedLine: false,
       targets: [
         {
-          expr: 'sum(irate(envoy_cluster_upstream_cx_rx_bytes_total{ envoy_cluster_name="$upstream", gateway_proxy_id=~"$proxy"}[1m])) by (envoy_cluster_name)',
+          expr: 'sum(irate(envoy_cluster_upstream_cx_rx_bytes_total{ envoy_cluster_name="$upstream", gateway_proxy_id=~"$proxy"}[$__rate_interval])) by (envoy_cluster_name)',
           format: 'time_series',
+          interval: '',
           intervalFactor: 1,
           legendFormat: '{{ envoy_cluster_name }} - in',
           refId: 'A',
         },
         {
-          expr: 'sum(irate(envoy_cluster_upstream_cx_tx_bytes_total{ envoy_cluster_name="$upstream", gateway_proxy_id=~"$proxy"}[1m])) by (envoy_cluster_name)',
+          expr: 'sum(irate(envoy_cluster_upstream_cx_tx_bytes_total{ envoy_cluster_name="$upstream", gateway_proxy_id=~"$proxy"}[$__rate_interval])) by (envoy_cluster_name)',
           format: 'time_series',
+          interval: '',
           intervalFactor: 1,
           legendFormat: '{{ envoy_cluster_name }} - out',
           refId: 'B',
@@ -334,6 +342,7 @@ local dashboardConfig = {
       fieldConfig: {
         defaults: {
           custom: {},
+          links: [],
         },
         overrides: [],
       },
@@ -363,9 +372,10 @@ local dashboardConfig = {
       links: [],
       nullPointMode: 'null',
       options: {
-        dataLinks: [],
+        alertThreshold: true,
       },
       percentage: false,
+      pluginVersion: '7.2.0',
       pointradius: 2,
       points: false,
       renderer: 'flot',
@@ -375,29 +385,33 @@ local dashboardConfig = {
       steppedLine: false,
       targets: [
         {
-          expr: 'sum(increase(envoy_cluster_upstream_rq_xx{envoy_response_code_class="2", gateway_proxy_id=~"$proxy", envoy_cluster_name="$upstream"}[1m]))',
+          expr: 'sum(increase(envoy_cluster_upstream_rq_xx{envoy_response_code_class="2", gateway_proxy_id=~"$proxy", envoy_cluster_name="$upstream"}[$__rate_interval]))',
           format: 'time_series',
+          interval: '',
           intervalFactor: 1,
           legendFormat: '2xx',
           refId: 'A',
         },
         {
-          expr: 'sum(increase(envoy_cluster_upstream_rq_xx{envoy_response_code_class="3", gateway_proxy_id=~"$proxy", envoy_cluster_name="$upstream"}[1m]))',
+          expr: 'sum(increase(envoy_cluster_upstream_rq_xx{envoy_response_code_class="3", gateway_proxy_id=~"$proxy", envoy_cluster_name="$upstream"}[$__rate_interval]))',
           format: 'time_series',
+          interval: '',
           intervalFactor: 1,
           legendFormat: '3xx',
           refId: 'B',
         },
         {
-          expr: 'sum(increase(envoy_cluster_upstream_rq_xx{envoy_response_code_class="4", gateway_proxy_id=~"$proxy", envoy_cluster_name="$upstream"}[1m]))',
+          expr: 'sum(increase(envoy_cluster_upstream_rq_xx{envoy_response_code_class="4", gateway_proxy_id=~"$proxy", envoy_cluster_name="$upstream"}[$__rate_interval]))',
           format: 'time_series',
+          interval: '',
           intervalFactor: 1,
           legendFormat: '4xx',
           refId: 'C',
         },
         {
-          expr: 'sum(increase(envoy_cluster_upstream_rq_xx{envoy_response_code_class="5", gateway_proxy_id=~"$proxy", envoy_cluster_name="$upstream"}[1m]))',
+          expr: 'sum(increase(envoy_cluster_upstream_rq_xx{envoy_response_code_class="5", gateway_proxy_id=~"$proxy", envoy_cluster_name="$upstream"}[$__rate_interval]))',
           format: 'time_series',
+          interval: '',
           intervalFactor: 1,
           legendFormat: '5xx',
           refId: 'D',
@@ -455,6 +469,7 @@ local dashboardConfig = {
       fieldConfig: {
         defaults: {
           custom: {},
+          links: [],
         },
         overrides: [],
       },
@@ -484,9 +499,10 @@ local dashboardConfig = {
       links: [],
       nullPointMode: 'null',
       options: {
-        dataLinks: [],
+        alertThreshold: true,
       },
       percentage: false,
+      pluginVersion: '7.2.0',
       pointradius: 5,
       points: false,
       renderer: 'flot',
@@ -496,7 +512,7 @@ local dashboardConfig = {
       steppedLine: false,
       targets: [
         {
-          expr: 'histogram_quantile(0.99, sum(rate(envoy_cluster_upstream_rq_time_bucket{envoy_cluster_name="$upstream", gateway_proxy_id=~"$proxy"}[1m])) by (le, envoy_cluster_name, namespace))',
+          expr: 'histogram_quantile(0.99, sum(rate(envoy_cluster_upstream_rq_time_bucket{envoy_cluster_name="$upstream", gateway_proxy_id=~"$proxy"}[$__rate_interval])) by (le, envoy_cluster_name, namespace))',
           format: 'time_series',
           interval: '',
           intervalFactor: 1,
@@ -504,7 +520,7 @@ local dashboardConfig = {
           refId: 'A',
         },
         {
-          expr: 'histogram_quantile(0.9, sum(rate(envoy_cluster_upstream_rq_time_bucket{envoy_cluster_name="$upstream", gateway_proxy_id=~"$proxy"}[1m])) by (le, envoy_cluster_name, namespace))',
+          expr: 'histogram_quantile(0.9, sum(rate(envoy_cluster_upstream_rq_time_bucket{envoy_cluster_name="$upstream", gateway_proxy_id=~"$proxy"}[$__rate_interval])) by (le, envoy_cluster_name, namespace))',
           format: 'time_series',
           interval: '',
           intervalFactor: 1,
@@ -512,7 +528,7 @@ local dashboardConfig = {
           refId: 'B',
         },
         {
-          expr: 'histogram_quantile(0.5, sum(rate(envoy_cluster_upstream_rq_time_bucket{envoy_cluster_name="$upstream", gateway_proxy_id=~"$proxy"}[1m])) by (le, envoy_cluster_name, namespace))',
+          expr: 'histogram_quantile(0.5, sum(rate(envoy_cluster_upstream_rq_time_bucket{envoy_cluster_name="$upstream", gateway_proxy_id=~"$proxy"}[$__rate_interval])) by (le, envoy_cluster_name, namespace))',
           format: 'time_series',
           interval: '',
           intervalFactor: 1,
@@ -565,7 +581,7 @@ local dashboardConfig = {
     },
   ],
   refresh: '30s',
-  schemaVersion: 25,
+  schemaVersion: 26,
   style: 'dark',
   tags: [
     '$datasource',
@@ -577,20 +593,20 @@ local dashboardConfig = {
         allValue: null,
         current: {
           selected: false,
-          text: 'export_tidepool-prod',
-          value: 'export_tidepool-prod',
+          text: 'internal-gateway-proxy_gloo-system',
+          value: 'internal-gateway-proxy_gloo-system',
         },
         datasource: '$datasource',
-        definition: 'label_values(envoy_cluster_name)',
+        definition: 'label_values(envoy_cluster_upstream_rq_total, envoy_cluster_name)',
         hide: 0,
         includeAll: false,
         label: 'Upstream',
         multi: false,
         name: 'upstream',
         options: [],
-        query: 'label_values(envoy_cluster_name)',
-        refresh: 1,
-        regex: '^(?!.*gloo-system|kube-svc).*$',
+        query: 'label_values(envoy_cluster_upstream_rq_total, envoy_cluster_name)',
+        refresh: 2,
+        regex: '',
         skipUrlSync: false,
         sort: 0,
         tagValuesQuery: '',
@@ -603,7 +619,9 @@ local dashboardConfig = {
         allValue: null,
         current: {
           selected: true,
-          text: 'All',
+          text: [
+            'All',
+          ],
           value: [
             '$__all',
           ],
@@ -648,7 +666,7 @@ local dashboardConfig = {
     ],
   },
   time: {
-    from: 'now-24h',
+    from: 'now-12h',
     to: 'now',
   },
   timepicker: {
