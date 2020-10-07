@@ -11,7 +11,6 @@ local deployment(me) = flux.deployment(
   containers={
     image: 'tidepool/marketo-service:latest',
     env: [
-      k8s.envVar('KAFKA_BROKERS', lib.getElse(me, 'kafka-brokers', 'b-1.default-ops.gxm6gl.c4.kafka.us-west-2.amazonaws.com:9094,b-2.default-ops.gxm6gl.c4.kafka.us-west-2.amazonaws.com:9094,b-3.default-ops.gxm6gl.c4.kafka.us-west-2.amazonaws.com:9094')),
       k8s.envVar('KAFKA_TOPIC', lib.getElse(me, 'kafka-topic', 'user-events')),
       k8s.envVar('KAFKA_REQUIRE_SSL', lib.getElse(me, 'kafka-require-ssl', 'true')),
       k8s.envVar('KAFKA_DEAD_LETTERS_TOPIC', lib.getElse(me, 'kafka-dead_letters_topic', 'user-events-marketo-dl')),
@@ -30,6 +29,7 @@ local deployment(me) = flux.deployment(
       k8s.envSecret('MARKETO_SECRET', 'marketo', 'Secret', false),
       k8s.envSecret('MARKETO_ID', 'marketo', 'ID', false),
       k8s.envSecret('MARKETO_URL', 'marketo', 'URL', false),
+      k8s.envConfigmap('KAFKA_BROKERS', 'kafka', 'Brokers', true),
       k8s.envConfigmap('MARKETO_CLINIC_ROLE', 'marketo', 'ClinicRole', true),
       k8s.envConfigmap('MARKETO_PATIENT_ROLE', 'marketo', 'PatientRole', true),
       k8s.envConfigmap('MARKETO_TIMEOUT', 'marketo', 'Timeout', true),
