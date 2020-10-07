@@ -15,6 +15,7 @@ local deployment(me) = flux.deployment(
       k8s.envVar('KAFKA_TOPIC', lib.getElse(me, 'kafka-topic', 'user-events')),
       k8s.envVar('KAFKA_DEAD_LETTERS_TOPIC', lib.getElse(me, 'kafka-dead_letters_topic', 'events-shoreline-dl')),
       k8s.envVar('KAFKA_PREFIX', lib.getElse(me, 'kafka-prefix', me.namespace + '-')),
+      k8s.envVar('KAFKA_TOPIC_PREFIX', lib.getElse(me, 'kafka-topic-prefix', me.namespace + '-')),
       k8s.envVar('CLOUD_EVENTS_SOURCE', lib.getElse(me, 'cloud_events_source', 'marketo-service')),
       k8s.envVar('KAFKA_CONSUMER_GROUP', lib.getElse(me, 'kafka_consumer_group', 'marketo-service')),
       k8s.envVar('KAFKA_VERSION', lib.getElse(me, 'kafka-version', '2.4.0')),
