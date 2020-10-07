@@ -11,9 +11,13 @@ local deployment(me) = flux.deployment(
   containers={
     image: 'tidepool/marketo-service:latest',
     env: [
-      k8s.envVar('KAFKA_BROKERS', lib.getElse(me, 'kafka-brokers', 'kafka-kafka-bootstrap.kafka.svc.cluster.local:9092')),
-      k8s.envVar('KAFKA_TOPIC', lib.getElse(me, 'kafka-topic', 'marketo')),
+      k8s.envVar('KAFKA_BROKERS', lib.getElse(me, 'kafka-brokers', 'b-1.default-ops.gxm6gl.c4.kafka.us-west-2.amazonaws.com:9094,b-2.default-ops.gxm6gl.c4.kafka.us-west-2.amazonaws.com:9094,b-3.default-ops.gxm6gl.c4.kafka.us-west-2.amazonaws.com:9094')),
+      k8s.envVar('KAFKA_TOPIC', lib.getElse(me, 'kafka-topic', 'user-events')),
+      k8s.envVar('KAFKA_DEAD_LETTERS_TOPIC', lib.getElse(me, 'kafka-dead_letters_topic', 'events-shoreline-dl')),
       k8s.envVar('KAFKA_PREFIX', lib.getElse(me, 'kafka-prefix', me.namespace + '-')),
+      k8s.envVar('CLOUD_EVENTS_SOURCE', lib.getElse(me, 'cloud_events_source', 'marketo-service')),
+      k8s.envVar('KAFKA_CONSUMER_GROUP', lib.getElse(me, 'kafka_consumer_group', 'marketo-service')),
+      k8s.envVar('KAFKA_VERSION', lib.getElse(me, 'kafka-version', '2.4.0')),
       k8s.envSecret('TIDEPOOL_STORE_SCHEME', 'mongo', 'Scheme'),
       k8s.envSecret('TIDEPOOL_STORE_USERNAME', 'mongo', 'Username'),
       k8s.envSecret('TIDEPOOL_STORE_PASSWORD', 'mongo', 'Password'),
