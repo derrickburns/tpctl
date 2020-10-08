@@ -57,7 +57,7 @@ local configmap(me) = k8s.configmap(me) {
     inputToRepoMap: std.manifestJsonEx(
       {
         tidebot: 'cluster-ops',
-        shared: 'cluster-ops',
+        ops: 'cluster-ops',
         qa1: 'cluster-qa2',
         qa2: 'cluster-qa2',
         dev: 'cluster-dev',
