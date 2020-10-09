@@ -9,6 +9,7 @@ local helmrelease(me) = k8s.helmrelease(me, { path: 'charts/dremio_v2', git: 'gi
         type: 'aws',
         aws: {
           bucketName: 'tidepool-dremio-%s' % me.config.cluster.metadata.name,
+          path: 'dremio',
         },
       },
       zookeeper: {
