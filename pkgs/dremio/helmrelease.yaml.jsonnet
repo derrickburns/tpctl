@@ -5,13 +5,6 @@ local lib = import '../../lib/lib.jsonnet';
 local helmrelease(me) = k8s.helmrelease(me, { path: 'charts/dremio_v2', git: 'git@github.com:dremio/dremio-cloud-tools.git' }) {
   spec+: {
     values+: {
-      distStorage: {
-        type: 'aws',
-        aws: {
-          bucketName: 'tidepool-dremio-%s' % me.config.cluster.metadata.name,
-          path: 'dremio',
-        },
-      },
       zookeeper: {
         name: 'zookeeper-client.%s.svc.cluster.local' % me.namespace,
       },
