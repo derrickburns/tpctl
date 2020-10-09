@@ -2,7 +2,7 @@ local common = import '../../lib/common.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
-local helmrelease(me) = k8s.helmrelease(me, { path: 'charts/dremio_v2', git: 'https://github.com/dremio/dremio-cloud-tools' }) {
+local helmrelease(me) = k8s.helmrelease(me, { path: 'charts/dremio_v2', git: 'git@github.com:dremio/dremio-cloud-tools.git' }) {
   spec+: {
     values+: {
       distStorage: {
