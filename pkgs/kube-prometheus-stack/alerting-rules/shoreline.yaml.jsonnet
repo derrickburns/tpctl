@@ -15,7 +15,7 @@ local groupConfig(me) = [
         },
         expr: 'sum(increase(tidepool_shoreline_failed_status_count{status_code=~"^5.*"}[2m])) by (status_reason, status_code) > 0',
         labels: {
-          severity: 'critical',
+          severity: 'info',
         },
       },
       {
