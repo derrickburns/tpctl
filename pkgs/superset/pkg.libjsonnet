@@ -1,5 +1,0 @@
-local kubecfg = import 'kubecfg.libsonnet';
-{
-  "_source":  "pkgs/superset",
-  "helmrelease.yaml.jsonnet":: import "helmrelease.yaml.jsonnet",
-}
