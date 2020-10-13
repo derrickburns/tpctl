@@ -1440,13 +1440,15 @@ function await_deletion() {
 HELP='
 Options
 
--p               update all namespaces in parallel (speed up)
---local-config   uses current directory as config repo
---local-template uses templates in the config repo submodule (edited)
---skip-commit    do not push a commit to GitHub
+-x                                  - turn of execution tracing
+-v \$level | --verbose \$level        - set debugging level to $level
+-y | --approve                      - automatically affirm all choices
+--local-config                      - use current directory for source and destination of configuration data
+--local-template                    - use templates in the config repo submodule (edited)
+--no-update                         - do not update tpctl submodule  (default: update tpctl submodule)
 
 ----- Repo Commands (safe)
-config                              - create K8s and eksctl K8s manifest files
+config   [-s] [--skip-commit]       - create K8s and eksctl K8s manifest files, --skip-commit to not commit, -s to not publish PR
 envrc                               - create .envrc file for direnv to change kubecontexts and to set REMOTE_REPO
 fluxkey                             - copy public key from Flux to GitHub config repo
 repo  \$ORG/\$REPO_NAME             - create config repo on GitHub
@@ -1463,6 +1465,7 @@ show                                - show existing manifests as YAML stream
 validate                            - validate that all generated manifests files are valid YAML
 
 ----- Cluster Commands
+apply $path                         - apply the manifests in the given path (i.e. namespace/pkgname) if empty, then apply all
 await_deletion                      - await completion of deletion of the AWS EKS cluster
 cluster                             - create AWS EKS cluster, add system:master USERS
 delete_cluster                      - (initiate) deletion of the AWS EKS cluster
