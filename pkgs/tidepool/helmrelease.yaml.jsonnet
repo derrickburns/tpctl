@@ -510,6 +510,8 @@ local helmrelease(me) = k8s.helmrelease(me, {
         },
       }, lib.getElse(me, 'jellyfish', {})]),
 
+      kafka: lib.getElse(me, 'kafka', {}),
+
       messageapi: lib.mergeList([common, {
         extraContainers: extraContainers,
         deployment+: {
