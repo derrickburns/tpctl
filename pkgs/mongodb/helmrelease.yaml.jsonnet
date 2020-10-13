@@ -3,14 +3,16 @@ local global = import '../../lib/global.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 
 local helmrelease(me) = (
-  k8s.helmrelease(me, { version: '7.14.7', repository: 'https://charts.bitnami.com/bitnami' }) {
+  k8s.helmrelease(me, { version: '9.2.4', repository: 'https://charts.bitnami.com/bitnami' }) {
     spec+: {
       values: {
-        metrics: {
+        metrics: if global.isEnabled(me.config, 'kube-prometheus-stack') then {
+          enabled: true,
           serviceMonitor: {
-            enabled: global.isEnabled(me.config, 'kube-prometheus-stack'),
+            enabled: true,
+            namespace: global.package(me.config, 'kube-prometheus-stack').namespace,
           },
-        },
+        } else {},
       },
     },
   }
