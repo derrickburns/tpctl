@@ -605,7 +605,7 @@ local helmrelease(me) = k8s.helmrelease(me, {
         deployment+: {
           image: lib.getElse(prev, 'spec.values.user.deployment.image', 'tidepool/platform-user:master-latest'),
         },
-      }, lib.getElse(me, 'users', {})]),
+      }, lib.getElse(me, 'user', {})]),
 
     },
   },
