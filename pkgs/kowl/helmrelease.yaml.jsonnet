@@ -10,10 +10,12 @@ local helmrelease(me) = k8s.helmrelease(me, { name: 'kowl', version: '1.1.0', re
         nodeAffinity: k8s.nodeAffinity(),
       },
       tolerations: [k8s.toleration()],
+      secret: lib.getElse(me, 'secret', {}),
       kowl: {
         config: {
           kafka: {
             brokers: me.brokers,
+            sasl: lib.getElse(me, 'sasl', {}),
             tls: {
               enabled: lib.isEnabledAt(me, 'tls'),
             },

@@ -19,7 +19,7 @@ local dashboardConfig = {
   editable: false,
   gnetId: 11001,
   graphTooltip: 0,
-  iteration: 1594978157636,
+  iteration: 1602629567837,
   links: [],
   panels: [
     {
@@ -28,7 +28,8 @@ local dashboardConfig = {
         defaults: {
           custom: {
             align: null,
-            displayMode: 'color-background',
+            displayMode: 'auto',
+            filterable: false,
           },
           mappings: [],
           thresholds: {
@@ -50,7 +51,20 @@ local dashboardConfig = {
           },
           unit: 'dtdurations',
         },
-        overrides: [],
+        overrides: [
+          {
+            matcher: {
+              id: 'byName',
+              options: 'Time left',
+            },
+            properties: [
+              {
+                id: 'custom.displayMode',
+                value: 'color-background',
+              },
+            ],
+          },
+        ],
       },
       gridPos: {
         h: 8,
@@ -68,7 +82,7 @@ local dashboardConfig = {
           },
         ],
       },
-      pluginVersion: '7.0.3',
+      pluginVersion: '7.2.0',
       targets: [
         {
           expr: 'sort_desc( sum(certmanager_certificate_expiration_timestamp_seconds{exported_namespace=~"$namespace"} - time()) BY (name,exported_namespace) )',
@@ -116,6 +130,7 @@ local dashboardConfig = {
       fieldConfig: {
         defaults: {
           custom: {},
+          links: [],
         },
         overrides: [],
       },
@@ -145,9 +160,10 @@ local dashboardConfig = {
       links: [],
       nullPointMode: 'null',
       options: {
-        dataLinks: [],
+        alertThreshold: true,
       },
       percentage: false,
+      pluginVersion: '7.2.0',
       pointradius: 2,
       points: false,
       renderer: 'flot',
@@ -229,6 +245,7 @@ local dashboardConfig = {
       fieldConfig: {
         defaults: {
           custom: {},
+          links: [],
         },
         overrides: [],
       },
@@ -256,10 +273,10 @@ local dashboardConfig = {
       linewidth: 1,
       nullPointMode: 'null',
       options: {
-        dataLinks: [],
+        alertThreshold: true,
       },
       percentage: false,
-      pluginVersion: '6.3.4',
+      pluginVersion: '7.2.0',
       pointradius: 2,
       points: false,
       renderer: 'flot',
@@ -342,6 +359,7 @@ local dashboardConfig = {
       fieldConfig: {
         defaults: {
           custom: {},
+          links: [],
         },
         overrides: [],
       },
@@ -368,9 +386,10 @@ local dashboardConfig = {
       linewidth: 1,
       nullPointMode: 'null',
       options: {
-        dataLinks: [],
+        alertThreshold: true,
       },
       percentage: false,
+      pluginVersion: '7.2.0',
       pointradius: 2,
       points: false,
       renderer: 'flot',
@@ -524,6 +543,7 @@ local dashboardConfig = {
       fieldConfig: {
         defaults: {
           custom: {},
+          links: [],
         },
         overrides: [],
       },
@@ -550,9 +570,10 @@ local dashboardConfig = {
       linewidth: 1,
       nullPointMode: 'null',
       options: {
-        dataLinks: [],
+        alertThreshold: true,
       },
       percentage: false,
+      pluginVersion: '7.2.0',
       pointradius: 2,
       points: false,
       renderer: 'flot',
@@ -617,6 +638,7 @@ local dashboardConfig = {
       fieldConfig: {
         defaults: {
           custom: {},
+          links: [],
         },
         overrides: [],
       },
@@ -643,9 +665,10 @@ local dashboardConfig = {
       linewidth: 1,
       nullPointMode: 'null',
       options: {
-        dataLinks: [],
+        alertThreshold: true,
       },
       percentage: false,
+      pluginVersion: '7.2.0',
       pointradius: 2,
       points: false,
       renderer: 'flot',
@@ -710,6 +733,7 @@ local dashboardConfig = {
       fieldConfig: {
         defaults: {
           custom: {},
+          links: [],
         },
         overrides: [],
       },
@@ -736,9 +760,10 @@ local dashboardConfig = {
       linewidth: 1,
       nullPointMode: 'null',
       options: {
-        dataLinks: [],
+        alertThreshold: true,
       },
       percentage: false,
+      pluginVersion: '7.2.0',
       pointradius: 2,
       points: false,
       renderer: 'flot',
@@ -803,6 +828,7 @@ local dashboardConfig = {
       fieldConfig: {
         defaults: {
           custom: {},
+          links: [],
         },
         overrides: [],
       },
@@ -828,10 +854,8 @@ local dashboardConfig = {
       lines: true,
       linewidth: 1,
       nullPointMode: 'null',
-      options: {
-        dataLinks: [],
-      },
       percentage: false,
+      pluginVersion: '7.2.0',
       pointradius: 2,
       points: false,
       renderer: 'flot',
@@ -896,6 +920,7 @@ local dashboardConfig = {
       fieldConfig: {
         defaults: {
           custom: {},
+          links: [],
         },
         overrides: [],
       },
@@ -921,10 +946,8 @@ local dashboardConfig = {
       lines: true,
       linewidth: 1,
       nullPointMode: 'null',
-      options: {
-        dataLinks: [],
-      },
       percentage: false,
+      pluginVersion: '7.2.0',
       pointradius: 2,
       points: false,
       renderer: 'flot',
@@ -989,6 +1012,7 @@ local dashboardConfig = {
       fieldConfig: {
         defaults: {
           custom: {},
+          links: [],
         },
         overrides: [],
       },
@@ -1014,10 +1038,8 @@ local dashboardConfig = {
       lines: true,
       linewidth: 1,
       nullPointMode: 'null',
-      options: {
-        dataLinks: [],
-      },
       percentage: false,
+      pluginVersion: '7.2.0',
       pointradius: 2,
       points: false,
       renderer: 'flot',
@@ -1082,6 +1104,7 @@ local dashboardConfig = {
       fieldConfig: {
         defaults: {
           custom: {},
+          links: [],
         },
         overrides: [],
       },
@@ -1107,10 +1130,8 @@ local dashboardConfig = {
       lines: true,
       linewidth: 1,
       nullPointMode: 'null',
-      options: {
-        dataLinks: [],
-      },
       percentage: false,
+      pluginVersion: '7.2.0',
       pointradius: 2,
       points: false,
       renderer: 'flot',
@@ -1175,6 +1196,7 @@ local dashboardConfig = {
       fieldConfig: {
         defaults: {
           custom: {},
+          links: [],
         },
         overrides: [],
       },
@@ -1200,10 +1222,8 @@ local dashboardConfig = {
       lines: true,
       linewidth: 1,
       nullPointMode: 'null',
-      options: {
-        dataLinks: [],
-      },
       percentage: false,
+      pluginVersion: '7.2.0',
       pointradius: 2,
       points: false,
       renderer: 'flot',
@@ -1261,7 +1281,7 @@ local dashboardConfig = {
     },
   ],
   refresh: false,
-  schemaVersion: 25,
+  schemaVersion: 26,
   style: 'dark',
   tags: [],
   templating: {
@@ -1340,7 +1360,7 @@ local dashboardConfig = {
     ],
   },
   time: {
-    from: 'now-2d',
+    from: 'now-7d',
     to: 'now',
   },
   timepicker: {
@@ -1370,7 +1390,7 @@ local dashboardConfig = {
   timezone: 'utc',
   title: 'Cert Manager',
   uid: 'u6M5igpWk',
-  version: 2,
+  version: 1,
 };
 
 local configmap(me) = grafana.dashboard(me, me.pkg, dashboardConfig);

@@ -4,6 +4,7 @@ local flux = import '../../lib/flux.jsonnet';
 local global = import '../../lib/global.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 local kustomize = import '../../lib/kustomize.jsonnet';
+local lib = import '../../lib/lib.jsonnet';
 
 local linkerd(me) = {
   apiVersion: 'gloo.solo.io/v1',
@@ -49,7 +50,7 @@ local glooAnnotations(me) = {
     template+: {
       metadata+: {
         annotations+: {
-          'linkerd.io/inject': 'disabled',
+          'sumologic.com/exclude': if lib.isEnabledAt(me, 'gloo.logging') then 'false' else 'true',
         },
       },
     },
@@ -112,8 +113,8 @@ local extauth(me) = (
 local transform(me) =
   k8s.asMap(addnamespace(me)) +
   k8s.asMap(linkerd(me)) +
-  k8s.asMap(extauth(me));
+  k8s.asMap(extauth(me)) +
 // k8s.asMap(gatewayAnnotations(me)) +
-// k8s.asMap(glooAnnotations(me));
+  k8s.asMap(glooAnnotations(me));
 
 function(config, prev, namespace, pkg) transform(common.package(config, prev, namespace, pkg))

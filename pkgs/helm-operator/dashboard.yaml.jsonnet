@@ -18,7 +18,7 @@ local dashboardConfig = {
   editable: false,
   gnetId: null,
   graphTooltip: 0,
-  iteration: 1595241352882,
+  iteration: 1602628464017,
   links: [],
   panels: [
     {
@@ -85,8 +85,9 @@ local dashboardConfig = {
           fields: '',
           values: false,
         },
+        textMode: 'auto',
       },
-      pluginVersion: '7.0.3',
+      pluginVersion: '7.2.0',
       targets: [
         {
           expr: 'flux_helm_operator_release_count',
@@ -107,24 +108,50 @@ local dashboardConfig = {
         defaults: {
           custom: {
             align: null,
-            displayMode: 'color-background',
+            displayMode: 'auto',
+            filterable: false,
           },
           mappings: [],
           thresholds: {
             mode: 'absolute',
             steps: [
               {
-                color: 'red',
-                value: null,
-              },
-              {
                 color: 'green',
-                value: 1,
+                value: null,
               },
             ],
           },
         },
-        overrides: [],
+        overrides: [
+          {
+            matcher: {
+              id: 'byName',
+              options: 'Status',
+            },
+            properties: [
+              {
+                id: 'custom.displayMode',
+                value: 'color-background',
+              },
+              {
+                id: 'thresholds',
+                value: {
+                  mode: 'absolute',
+                  steps: [
+                    {
+                      color: 'red',
+                      value: null,
+                    },
+                    {
+                      color: 'green',
+                      value: 1,
+                    },
+                  ],
+                },
+              },
+            ],
+          },
+        ],
       },
       gridPos: {
         h: 9,
@@ -142,7 +169,7 @@ local dashboardConfig = {
           },
         ],
       },
-      pluginVersion: '7.0.3',
+      pluginVersion: '7.2.0',
       targets: [
         {
           expr: 'flux_helm_operator_release_condition_info{condition="Released"}',
@@ -248,8 +275,9 @@ local dashboardConfig = {
           fields: '',
           values: false,
         },
+        textMode: 'auto',
       },
-      pluginVersion: '7.0.3',
+      pluginVersion: '7.2.0',
       targets: [
         {
           expr: 'flux_helm_operator_release_queue_length_count',
@@ -268,7 +296,8 @@ local dashboardConfig = {
         defaults: {
           custom: {
             align: null,
-            displayMode: 'color-background',
+            displayMode: 'auto',
+            filterable: false,
           },
           mappings: [],
           thresholds: {
@@ -285,7 +314,36 @@ local dashboardConfig = {
             ],
           },
         },
-        overrides: [],
+        overrides: [
+          {
+            matcher: {
+              id: 'byName',
+              options: 'Status',
+            },
+            properties: [
+              {
+                id: 'custom.displayMode',
+                value: 'color-background',
+              },
+              {
+                id: 'thresholds',
+                value: {
+                  mode: 'absolute',
+                  steps: [
+                    {
+                      color: 'red',
+                      value: null,
+                    },
+                    {
+                      color: 'green',
+                      value: 1,
+                    },
+                  ],
+                },
+              },
+            ],
+          },
+        ],
       },
       gridPos: {
         h: 9,
@@ -303,7 +361,7 @@ local dashboardConfig = {
           },
         ],
       },
-      pluginVersion: '7.0.3',
+      pluginVersion: '7.2.0',
       targets: [
         {
           expr: 'flux_helm_operator_release_condition_info{condition="ChartFetched"}',
@@ -351,7 +409,8 @@ local dashboardConfig = {
         defaults: {
           custom: {
             align: null,
-            displayMode: 'color-background',
+            displayMode: 'auto',
+            filterable: false,
           },
           mappings: [],
           thresholds: {
@@ -374,12 +433,7 @@ local dashboardConfig = {
               id: 'byName',
               options: 'Status',
             },
-            properties: [
-              {
-                id: 'custom.width',
-                value: null,
-              },
-            ],
+            properties: [],
           },
         ],
       },
@@ -399,7 +453,7 @@ local dashboardConfig = {
           },
         ],
       },
-      pluginVersion: '7.0.3',
+      pluginVersion: '7.2.0',
       targets: [
         {
           expr: 'flux_helm_operator_release_condition_info{condition="RolledBack"}',
@@ -442,7 +496,7 @@ local dashboardConfig = {
       type: 'table',
     },
   ],
-  schemaVersion: 25,
+  schemaVersion: 26,
   style: 'dark',
   tags: [],
   templating: {
@@ -487,7 +541,7 @@ local dashboardConfig = {
   timezone: 'utc',
   title: 'Helm Operator',
   uid: 'c8qWijkGz',
-  version: 3,
+  version: 1,
 };
 
 local configmap(me) = grafana.dashboard(me, me.pkg, dashboardConfig);
