@@ -23,6 +23,8 @@ local deployment(me) = flux.deployment(
       k8s.envSecret('MARKETO_SECRET', 'marketo', 'Secret', false),
       k8s.envSecret('MARKETO_ID', 'marketo', 'ID', false),
       k8s.envSecret('MARKETO_URL', 'marketo', 'URL', false),
+      k8s.envConfigmap('KAFKA_USERNAME', 'kafka', 'Username', true),
+      k8s.envSecret('KAFKA_PASSWORD', 'kafka', 'Password', true),
       k8s.envConfigmap('KAFKA_BROKERS', 'kafka', 'Brokers', true),
       k8s.envConfigmap('KAFKA_TOPIC', 'kafka', 'UserEventsTopic', true),
       k8s.envConfigmap('KAFKA_TOPIC_PREFIX', 'kafka', 'TopicPrefix', true),
