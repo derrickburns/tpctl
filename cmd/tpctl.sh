@@ -363,7 +363,7 @@ function clone_remote() {
 
 function set_template_dir() {
   if [ "$UPDATE_TPCTL" == "true" ]; then
-    if [ "$(ls -A tpctl)" ]; then
+    if ls -A tpctl 2>/dev/null >/dev/null ; then
       git submodule update --remote
     else
       git submodule init
