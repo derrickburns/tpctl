@@ -18,7 +18,7 @@ local dashboardConfig = {
   editable: false,
   gnetId: null,
   graphTooltip: 0,
-  iteration: 1602628464017,
+  iteration: 1602797686119,
   links: [],
   panels: [
     {
@@ -433,7 +433,12 @@ local dashboardConfig = {
               id: 'byName',
               options: 'Status',
             },
-            properties: [],
+            properties: [
+              {
+                id: 'custom.displayMode',
+                value: 'color-background',
+              },
+            ],
           },
         ],
       },
@@ -541,7 +546,7 @@ local dashboardConfig = {
   timezone: 'utc',
   title: 'Helm Operator',
   uid: 'c8qWijkGz',
-  version: 1,
+  version: 2,
 };
 
 local configmap(me) = grafana.dashboard(me, me.pkg, dashboardConfig);
