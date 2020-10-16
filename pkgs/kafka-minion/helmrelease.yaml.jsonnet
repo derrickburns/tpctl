@@ -12,13 +12,19 @@ local helmrelease(me) = k8s.helmrelease(me, { name: 'kafka-minion', version: '1.
       tolerations: [k8s.toleration()],
       kafka: {
         brokers: std.join(',', me.brokers),
+        sasl: {
+          enabled: true,
+          existingSecret: 'kafka-minion',
+          mechanism: 'SCRAM-SHA-512',
+        },
         tls: {
           enabled: true,
+          insecureSkipTlsVerify: false,
         },
       },
       serviceMonitor: {
         create: global.isEnabled(me.config, 'kube-prometheus-stack'),
-        interval: '10s',
+        interval: '30s',
       },
     },
   },
