@@ -4,6 +4,8 @@ local gloo = import '../../lib/gloo.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
+local remote_infinispan = importstr './remote-infinispan.cli';
+
 local helmrelease(me) = (
   k8s.helmrelease(me, { version: '9.0.1', repository: 'https://codecentric.github.io/helm-charts' }) {
     spec+: {
@@ -11,9 +13,33 @@ local helmrelease(me) = (
         image: {
           tag: '11.0.0',
         },
+        replicas: 2,
         imagePullSecrets: [],
         postgresql: {
           enabled: false,
+        },
+        startupScripts: {
+          'remote-infinispan.cli': remote_infinispan,
+        },
+        serviceAccount: {
+          create: true,
+          name: me.pkg,
+        },
+        rbac: {
+          create: true,
+          rules: [
+            {
+              apiGroups: [''],
+              resources: [
+                'pods'
+              ],
+              verbs: [
+                'get',
+                'list',
+                'watch',
+              ],
+            },
+          ],
         },
         extraEnv: std.manifestYamlDoc(
           [
@@ -34,9 +60,34 @@ local helmrelease(me) = (
               value: me.pkg,
             },
             {
+              name: 'CACHE_OWNERS',
+              value: '2',
+            },
+            {
               name: 'PROXY_ADDRESS_FORWARDING',
               value: 'true',
             },
+            {
+              name: 'KUBERNETES_NAMESPACE',
+              valueFrom: {
+                fieldRef: {
+                  fieldPath: 'metadata.namespace',
+                },
+              },
+            },
+            {
+              name: 'POD_NAME',
+              valueFrom: {
+                fieldRef: {
+                  apiVersion: 'v1',
+                  fieldPath: 'metadata.name',
+                },
+              },
+            },
+            {
+              name: 'JAVA_OPTS',
+              value: '-server -Djava.net.preferIPv4Stack=true -Djava.awt.headless=true -Djboss.default.jgroups.stack=kubernetes -Djboss.node.name=$(POD_NAME) -Djboss.tx.node.id=$(POD_NAME) -Djboss.site.name=$(KUBERNETES_NAMESPACE) -Dremote.cache.host=infinispan-server-hotrod.infinispan.svc.cluster.local -Dkeycloak.connectionsInfinispan.hotrodProtocolVersion=2.8'
+            }
           ],
           indent_array_in_object=false
         ),
@@ -118,4 +169,9 @@ local helmrelease(me) = (
   }
 );
 
-function(config, prev, namespace, pkg) helmrelease(common.package(config, prev, namespace, pkg))
+function(config, prev, namespace, pkg) (
+  local me = common.package(config, prev, namespace, pkg);
+  [
+    helmrelease(me),
+  ]
+)
