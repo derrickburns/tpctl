@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: infinispan-server
+  namespace: infinispan
   labels:
     app: infinispan-server
 spec:
@@ -103,6 +104,7 @@ metadata:
   labels:
     app: infinispan-server
   name: infinispan-server-hotrod
+  namespace: infinispan
 spec:
   ports:
     - port: 11222
@@ -118,6 +120,7 @@ metadata:
   labels:
     app: infinispan-server
   name: infinispan-server-http
+  namespace: infinispan
 spec:
   ports:
     - port: 8080
@@ -129,6 +132,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: infinispan-server-headless
+  namespace: infinispan
   labels:
     app: infinispan-server
 spec:
