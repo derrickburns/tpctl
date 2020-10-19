@@ -46,6 +46,7 @@ local deployment(me) = flux.deployment(me,
                                          },
                                        }) {
   spec+: {
+    replicas: lib.getElse(me, 'replicas', 1),
     template+: linkerd.metadata(me, true) + {
       spec+: lib.merge({
         affinity: {
