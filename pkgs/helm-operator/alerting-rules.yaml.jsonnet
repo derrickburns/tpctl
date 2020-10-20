@@ -8,8 +8,8 @@ local groupConfig(me) = [
       {
         alert: 'HelmOperatorLowThroughput',
         annotations: {
-          summary: 'Failed to release Helm chart.',
-          description: 'Failed to release chart for the release {{ $labels.target_namespace }}/{{ $labels.release_name }}. The chart has not been released for the past minute.',
+          summary: 'Low Queue Throughput.',
+          description: 'The Helm Operator has had releases in queue for the last 30m.',
           dashboard_url: 'https://grafana.%s/d/c8qWijkGz/helm-operator?orgId=1' % me.config.cluster.metadata.domain,
         },
         expr: 'flux_helm_operator_release_queue_length_count > 0',
