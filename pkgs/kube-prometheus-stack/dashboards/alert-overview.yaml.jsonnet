@@ -49,7 +49,7 @@ local dashboardConfig = {
   editable: false,
   gnetId: 11098,
   graphTooltip: 1,
-  iteration: 1595354655501,
+  iteration: 1603188787461,
   links: [
     {
       icon: 'external link',
@@ -362,7 +362,7 @@ local dashboardConfig = {
           format: 'time_series',
           instant: true,
           interval: '',
-          intervalFactor: 2,
+          intervalFactor: 1,
           legendFormat: '',
           refId: 'A',
         },
@@ -375,7 +375,7 @@ local dashboardConfig = {
         {
           '$$hashKey': 'object:1567',
           op: '=',
-          text: 'N/A',
+          text: '0',
           value: 'null',
         },
       ],
@@ -451,7 +451,7 @@ local dashboardConfig = {
       tableColumn: '',
       targets: [
         {
-          expr: 'sum(ALERTS{service=~"$service",alertname=~"$alertname",alertstate=~"$alertstate",severity="info"})',
+          expr: 'sum(ALERTS{alertname=~"$alertname",alertstate=~"$alertstate",severity="info"})',
           format: 'time_series',
           instant: true,
           interval: '',
@@ -588,6 +588,7 @@ local dashboardConfig = {
         defaults: {
           custom: {
             align: null,
+            filterable: false,
           },
           mappings: [],
           thresholds: {
@@ -616,7 +617,7 @@ local dashboardConfig = {
       options: {
         showHeader: true,
       },
-      pluginVersion: '7.0.3',
+      pluginVersion: '7.2.0',
       targets: [
         {
           expr: 'ALERTS{alertname=~"$alertname", alertstate=~"$alertstate"}',
@@ -657,6 +658,7 @@ local dashboardConfig = {
       fieldConfig: {
         defaults: {
           custom: {},
+          links: [],
         },
         overrides: [],
       },
@@ -686,9 +688,10 @@ local dashboardConfig = {
       linewidth: 1,
       nullPointMode: 'null as zero',
       options: {
-        dataLinks: [],
+        alertThreshold: true,
       },
       percentage: false,
+      pluginVersion: '7.2.0',
       pointradius: 0.5,
       points: false,
       renderer: 'flot',
@@ -757,7 +760,7 @@ local dashboardConfig = {
     },
   ],
   refresh: false,
-  schemaVersion: 25,
+  schemaVersion: 26,
   style: 'dark',
   tags: [
     'prometheus',
@@ -787,7 +790,9 @@ local dashboardConfig = {
         allValue: null,
         current: {
           selected: true,
-          text: 'All',
+          text: [
+            'All',
+          ],
           value: [
             '$__all',
           ],
@@ -815,9 +820,11 @@ local dashboardConfig = {
         allValue: null,
         current: {
           selected: true,
-          text: 'All',
+          text: [
+            'firing',
+          ],
           value: [
-            '$__all',
+            'firing',
           ],
         },
         datasource: '$datasource',
@@ -842,7 +849,7 @@ local dashboardConfig = {
     ],
   },
   time: {
-    from: 'now-1h',
+    from: 'now-3h',
     to: 'now',
   },
   timepicker: {
@@ -872,7 +879,7 @@ local dashboardConfig = {
   timezone: 'utc',
   title: 'Alertmanager / Alerts / Overview',
   uid: 'lcaKO4WGk',
-  version: 4,
+  version: 1,
 };
 
 local configmap(me) = grafana.dashboard(me, 'alerts-overview', dashboardConfig);
