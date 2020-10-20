@@ -324,7 +324,7 @@ data:
 
                     <!-- BEGIN KEYCLOAK'S CACHES DEFINITION -->
                     <replicated-cache-configuration name="keycloak-sessions" mode="ASYNC" start="EAGER" batching="false">
-                        <file-store shared="false" fetch-state="true" passivation="false" path="/data">
+                        <file-store shared="false" fetch-state="true" passivation="false" path="/keycloak">
                             <write-behind modification-queue-size="1024" thread-pool-size="1"/>
                         </file-store>
                     </replicated-cache-configuration>

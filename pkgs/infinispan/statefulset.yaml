@@ -17,6 +17,8 @@ spec:
         app: infinispan-server
       name: infinispan-server
     spec:
+      securityContext:
+        fsGroup: 1000
       serviceAccountName: infinispan
       initContainers:
         - name: copy-config
@@ -89,7 +91,7 @@ spec:
               mountPath: /opt/jboss/infinispan-server/standalone/configuration/cloud-keycloak.xml
               subPath: cloud-keycloak.xml
             - name: data
-              mountPath: "/data"
+              mountPath: "/opt/jboss/infinispan-server/standalone/data/keycloak"
       terminationGracePeriodSeconds: 120
       volumes:
         - name: cloud-xml
