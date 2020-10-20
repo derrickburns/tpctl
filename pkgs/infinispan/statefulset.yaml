@@ -88,6 +88,8 @@ spec:
             - name: configtmp
               mountPath: /opt/jboss/infinispan-server/standalone/configuration/cloud-keycloak.xml
               subPath: cloud-keycloak.xml
+            - name: data
+              mountPath: "/data"
       terminationGracePeriodSeconds: 120
       volumes:
         - name: cloud-xml
@@ -95,6 +97,15 @@ spec:
             name: infinispan
         - name: configtmp
           emptyDir: {}
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 25Gi
 ---
 apiVersion: v1
 kind: Service
