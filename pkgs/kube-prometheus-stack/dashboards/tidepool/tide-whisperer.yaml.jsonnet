@@ -19,8 +19,7 @@ local dashboardConfig = {
   editable: false,
   gnetId: null,
   graphTooltip: 0,
-  id: 392,
-  iteration: 1597930495773,
+  iteration: 1603316395182,
   links: [],
   panels: [
     {
@@ -58,8 +57,11 @@ local dashboardConfig = {
       lines: true,
       linewidth: 1,
       nullPointMode: 'null',
+      options: {
+        alertThreshold: true,
+      },
       percentage: false,
-      pluginVersion: '7.1.1',
+      pluginVersion: '7.2.0',
       pointradius: 2,
       points: false,
       renderer: 'flot',
@@ -69,8 +71,8 @@ local dashboardConfig = {
       steppedLine: false,
       targets: [
         {
-          expr: 'sum(increase(tidepool_tide_whisperer_slow_data_check_count{namespace="$namespace"}[2m])) by (data_access_type,manufacturer)',
-          interval: '',
+          expr: 'sum(increase(tidepool_tide_whisperer_slow_data_check_count{namespace="$namespace"}[$__rate_interval])) by (data_access_type,manufacturer)',
+          interval: '2m',
           legendFormat: '{{ data_access_type }} - {{ manufacturer }}',
           refId: 'A',
         },
@@ -145,9 +147,9 @@ local dashboardConfig = {
       {
         allValue: null,
         current: {
-          selected: false,
-          text: 'qa1',
-          value: 'qa1',
+          selected: true,
+          text: 'qa2',
+          value: 'qa2',
         },
         datasource: 'Prometheus',
         definition: 'label_values(tidepool_tide_whisperer_slow_data_check_count, namespace)',
@@ -190,7 +192,7 @@ local dashboardConfig = {
   timezone: '',
   title: 'Tidepool / Services / Tide Whisperer',
   uid: '879OwNHMk',
-  version: 2,
+  version: 1,
 };
 
 local configmap(me) = grafana.dashboard(me, 'tidepool-tide-whisperer', dashboardConfig);
