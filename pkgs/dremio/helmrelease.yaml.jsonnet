@@ -11,6 +11,19 @@ local helmrelease(me) = k8s.helmrelease(me, { path: 'charts/dremio_v2', git: 'gi
       imageTag: '4.8.0',
       serviceType: 'ClusterIP',
       storageClass: 'gp2-expanding',
+      coordinator: {
+        cpu: 2,
+        memory: 20000,
+      },
+      executor: {
+        cpu: 3,
+        memory: 30000,
+        count: 1,
+      },
+      affinity: {
+        nodeAffinity: k8s.nodeAffinity(values='analytics'),
+      },
+      tolerations: [k8s.toleration(value='analytics')],
     } + lib.getElse(me, 'chartValues', {}),
   },
 };
