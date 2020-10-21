@@ -6,7 +6,7 @@ metadata:
   labels:
     app: infinispan-server
 spec:
-  replicas: 2
+  replicas: 3
   serviceName: infinispan-server-headless
   selector:
     matchLabels:
@@ -34,9 +34,17 @@ spec:
         - args:
             - cloud-keycloak
             - -Djboss.default.jgroups.stack=kubernetes
+            - -Djboss.node.name=$(POD_NAME)
+            - -Djboss.tx.node.id=$(POD_NAME)
+            - -Djboss.site.name=$(KUBERNETES_NAMESPACE)
           env:
             - name: KUBERNETES_LABELS
               value: app=infinispan-server
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: metadata.name
             - name: KUBERNETES_NAMESPACE
               valueFrom:
                 fieldRef:
