@@ -80,6 +80,10 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '9.4.5', repository: 'htt
         annotations: {
           'cluster-autoscaler.kubernetes.io/safe-to-evict': 'false',
         },
+        serviceAccount: {
+          create: !lib.isEnabledAt(me, 'prometheus.thanos.sidecar'),
+          name: lib.getElse(me, 'prometheus.serviceAccount', ''),
+        },
         prometheusSpec: {
           ruleSelectorNilUsesHelmValues: false,
           serviceMonitorSelectorNilUsesHelmValues: false,
@@ -109,9 +113,7 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '9.4.5', repository: 'htt
             nodeAffinity: k8s.nodeAffinity(),
           },
           tolerations: [k8s.toleration()],
-          thanos: if global.isEnabled(me.config, 'thanos') then {
-            image: 'quay.io/thanos/thanos:v0.12.2',
-            version: 'v0.12.2',
+          thanos: if lib.isEnabledAt(me, 'prometheus.thanos.sidecar') then {
             resources: {
               limits: {
                 cpu: '0.25',

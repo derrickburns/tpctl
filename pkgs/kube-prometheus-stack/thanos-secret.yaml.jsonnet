@@ -5,6 +5,13 @@ local lib = import '../../lib/lib.jsonnet';
 
 local secret(me) = k8s.secret(me) {
   local config = me.config,
+  metadata+: {
+    labels: {
+      app: 'thanos',
+    },
+    name: 'thanos',
+  },
+
   stringData: {
     'object-store.yaml': std.manifestYamlDoc({
       type: 'S3',
@@ -13,11 +20,6 @@ local secret(me) = k8s.secret(me) {
         endpoint: 's3.%s.amazonaws.com' % config.cluster.metadata.region,
         region: config.cluster.metadata.region,
         put_user_metadata: {},
-        http_config: {
-          idle_conn_timeout: '1m30s',
-          response_header_timeout: '2m',
-          insecure_skip_verify: false,
-        },
         trace: {
           enable: false,  // XXX
         },
