@@ -11,24 +11,6 @@ echo *** Update infinispan subsystem ***
 echo ** Add remote socket binding to infinispan server **
 /socket-binding-group=standard-sockets/remote-destination-outbound-socket-binding=remote-cache:add(host=${remote.cache.host:localhost}, port=${remote.cache.port:11222})
 
-echo ** Update replicated-cache work element **
-/subsystem=infinispan/cache-container=keycloak/replicated-cache=work/store=remote:add( \
-    passivation=false, \
-    fetch-state=false, \
-    purge=false, \
-    preload=false, \
-    shared=true, \
-    remote-servers=["remote-cache"], \
-    cache=work, \
-    properties={ \
-        rawValues=true, \
-        marshaller=org.keycloak.cluster.infinispan.KeycloakHotRodMarshallerFactory, \
-        protocolVersion=${keycloak.connectionsInfinispan.hotrodProtocolVersion} \
-    } \
-)
-
-/subsystem=infinispan/cache-container=keycloak/replicated-cache=work:write-attribute(name=statistics-enabled,value=true)
-
 echo ** Update distributed-cache sessions element **
 /subsystem=infinispan/cache-container=keycloak/distributed-cache=sessions/store=remote:add( \
     passivation=false, \

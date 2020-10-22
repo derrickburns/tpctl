@@ -6,7 +6,9 @@ metadata:
   labels:
     app: infinispan-server
 spec:
-  replicas: 3
+  podManagementPolicy: OrderedReady
+  replicas: 2
+  revisionHistoryLimit: 10
   serviceName: infinispan-server-headless
   selector:
     matchLabels:
@@ -23,21 +25,23 @@ spec:
       initContainers:
         - name: copy-config
           image: busybox
-          command: ["sh", "-c", "cp /config-ro/cloud-keycloak.xml /config/cloud-keycloak.xml ; chown 1000 /config/* ; chmod g+w /config/*"]
+          command: ["sh", "-c", "cp /config-ro/* /config/; chown 1000 /config/* ; chmod g+w /config/*"]
           volumeMounts:
             - name: configtmp
               mountPath: "/config"
-            - name: cloud-xml
-              mountPath: /config-ro/cloud-keycloak.xml
-              subPath: config.xml
+            - name: config
+              mountPath: /config-ro/config-keycloak.xml
+              subPath: config-keycloak.xml
+            - name: config
+              mountPath: /config-ro/config.yaml
+              subPath: config.yaml
+            - name: config
+              mountPath: /config-ro/jgroups-kube.xml
+              subPath: jgroups-kube.xml
       containers:
-        - args:
-            - cloud-keycloak
-            - -Djboss.default.jgroups.stack=kubernetes
-            - -Djboss.node.name=$(POD_NAME)
-            - -Djboss.tx.node.id=$(POD_NAME)
-            - -Djboss.site.name=$(KUBERNETES_NAMESPACE)
-          env:
+        - env:
+            - name: JAVA_OPTS_EXTRA
+              value: "-Dinfinispan.cluster.stack=kube -Dinfinispan.node.name=$(POD_NAME) -Djboss.tx.node.id=$(POD_NAME) -Dinfinispan.cluster.name=$(KUBERNETES_NAMESPACE) "
             - name: KUBERNETES_LABELS
               value: app=infinispan-server
             - name: POD_NAME
@@ -57,12 +61,21 @@ spec:
               value: admin
             - name: MGMT_PASS
               value: admin
-          image: jboss/infinispan-server:9.4.11.Final
+          command:
+            - "/opt/infinispan/bin/server.sh"
+          args:
+            - "-Djgroups.dns.query=infinispan-ping.infinispan.svc.cluster.local"
+            - "-b"
+            - "0.0.0.0"
+            - "-c"
+            - "/opt/infinispan/server/conf/config-keycloak.xml"
+          image: infinispan/server:11.0.4.Final
           livenessProbe:
-            exec:
-              command:
-                - /usr/local/bin/is_running.sh
             failureThreshold: 5
+            httpGet:
+              path: rest/v2/cache-managers/default/health/status
+              port: 11222
+              scheme: HTTP
             initialDelaySeconds: 10
             periodSeconds: 60
             successThreshold: 1
@@ -82,10 +95,11 @@ spec:
               name: hotrod
               protocol: TCP
           readinessProbe:
-            exec:
-              command:
-                - /usr/local/bin/is_healthy.sh
             failureThreshold: 5
+            httpGet:
+              path: rest/v2/cache-managers/default/health/status
+              port: 11222
+              scheme: HTTP
             initialDelaySeconds: 10
             periodSeconds: 10
             successThreshold: 1
@@ -94,15 +108,23 @@ spec:
             requests:
               cpu: "0.2"
               memory: 512Mi
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
           volumeMounts:
             - name: configtmp
-              mountPath: /opt/jboss/infinispan-server/standalone/configuration/cloud-keycloak.xml
-              subPath: cloud-keycloak.xml
+              mountPath: /opt/infinispan/server/conf/config-keycloak.xml
+              subPath: config-keycloak.xml
+            - name: configtmp
+              mountPath: /opt/infinispan/server/conf/jgroups-kube.xml
+              subPath: jgroups-kube.xml
+            - name: configtmp
+              mountPath: /opt/infinispan/server/conf/config.yaml
+              subPath: config.yaml
             - name: data
-              mountPath: "/opt/jboss/infinispan-server/standalone/data/keycloak"
+              mountPath: "/opt/infinispan/server/data"
       terminationGracePeriodSeconds: 120
       volumes:
-        - name: cloud-xml
+        - name: config
           configMap:
             name: infinispan
         - name: configtmp
@@ -169,3 +191,22 @@ spec:
       name: hotrod
   selector:
     app: infinispan-server
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: infinispan-server
+  name: infinispan-ping
+  namespace: infinispan
+spec:
+  clusterIP: None
+  ports:
+    - name: ping
+      port: 8888
+      protocol: TCP
+      targetPort: 8888
+  selector:
+    app: infinispan-server
+  sessionAffinity: None
+  type: ClusterIP
