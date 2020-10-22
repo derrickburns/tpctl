@@ -10,6 +10,7 @@ local deployment(me) = flux.deployment(
   me,
   containers={
     image: 'tidepool/marketo-service:latest',
+    resources: lib.getElse(me, 'resources', {}),
     env: [
       k8s.envVar('CLOUD_EVENTS_SOURCE', lib.getElse(me, 'cloud_events_source', 'marketo-service')),
       k8s.envVar('KAFKA_CONSUMER_GROUP', lib.getElse(me, 'kafka_consumer_group', 'marketo-service')),
