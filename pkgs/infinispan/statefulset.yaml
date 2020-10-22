@@ -65,8 +65,6 @@ spec:
             - "/opt/infinispan/bin/server.sh"
           args:
             - "-Djgroups.dns.query=infinispan-ping.infinispan.svc.cluster.local"
-            - "-b"
-            - "0.0.0.0"
             - "-c"
             - "/opt/infinispan/server/conf/config-keycloak.xml"
           image: infinispan/server:11.0.4.Final
