@@ -9,6 +9,7 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '2.3.1' }) {
       affinity: {
         nodeAffinity: k8s.nodeAffinity(),
       },
+      resources: lib.getElse(me, 'resources', {}),
       tolerations: [k8s.toleration()],
       zkHosts: std.join(',', std.map(function(x) '%s:2181' % x, me.zkHosts)),
     },
