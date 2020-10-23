@@ -316,8 +316,7 @@ local configmapNamesFromContainers(containers, volumes) = lib.pruneList(
     },
   },
 
-  storageclass(me):: $.k('storage.k8s.io/v1', 'StorageClass') + $.metadata(me.pkg, me.namespace) {
-  },
+  storageclass(me):: $.k('storage.k8s.io/v1', 'StorageClass') + $.metadata(me.pkg, me.namespace),
 
   pvc(me, storage='', storageClassName='gp2-expanding'):: $.k('v1', 'PersistentVolumeClaim') + $.metadata(me.pkg, me.namespace) {
     spec+: {

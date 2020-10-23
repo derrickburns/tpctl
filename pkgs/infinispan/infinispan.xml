@@ -1,0 +1,58 @@
+<infinispan xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="urn:infinispan:config:11.0" xmlns:server="urn:infinispan:server:11.0" xsi:schemaLocation="urn:infinispan:config:11.0 https://infinispan.org/schemas/infinispan-config-11.0.xsd urn:infinispan:server:11.0 https://infinispan.org/schemas/infinispan-server-11.0.xsd">
+    <jgroups>
+        <stack name="kube" extends="tcp">
+            <TCP bind_addr="${jgroups.bind.address,jgroups.tcp.address:SITE_LOCAL}"
+                 bind_port="${jgroups.bind.port,jgroups.tcp.port:7800}"/>
+
+            <dns.DNS_PING dns_query="${jgroups.dns.query}" dns_record_type="A"
+                          stack.combine="REPLACE" stack.position="MPING"/>
+        </stack>
+    </jgroups>
+    <cache-container name="default" statistics="true">
+        <transport cluster="${infinispan.cluster.name}" stack="kube"
+                   node-name="${infinispan.node.name:}" lock-timeout="60000"/>
+        <global-state/>
+        <!-- BEGIN KEYCLOAK'S CACHES DEFINITION -->
+        <replicated-cache-configuration name="keycloak-sessions" mode="SYNC" start="EAGER">
+            <locking acquire-timeout="0" />
+            <persistence>
+                <file-store shared="false" fetch-state="true" path="./keycloak">
+                    <write-behind modification-queue-size="1024"/>
+                </file-store>
+            </persistence>
+        </replicated-cache-configuration>
+
+        <replicated-cache name="work" configuration="keycloak-sessions" />
+        <replicated-cache name="sessions" configuration="keycloak-sessions" />
+        <replicated-cache name="offlineSessions" configuration="keycloak-sessions" />
+        <replicated-cache name="actionTokens" configuration="keycloak-sessions" />
+        <replicated-cache name="loginFailures" configuration="keycloak-sessions" />
+        <replicated-cache name="clientSessions" configuration="keycloak-sessions" />
+        <replicated-cache name="offlineClientSessions" configuration="keycloak-sessions" />
+        <!-- END KEYCLOAK'S CACHES DEFINITION -->
+    </cache-container>
+    <server xmlns="urn:infinispan:server:11.0">
+        <interfaces>
+            <interface name="public">
+                <inet-address value="${infinispan.bind.address:SITE_LOCAL}"/>
+            </interface>
+        </interfaces>
+        <socket-bindings default-interface="public" port-offset="${infinispan.socket.binding.port-offset:0}">
+            <socket-binding name="default" port="${infinispan.bind.port:11222}"/>
+        </socket-bindings>
+        <security>
+            <security-realms>
+                <security-realm name="default">
+                    <properties-realm groups-attribute="Roles">
+                        <user-properties path="users.properties" relative-to="infinispan.server.config.path" plain-text="true"/>
+                        <group-properties path="groups.properties" relative-to="infinispan.server.config.path"/>
+                    </properties-realm>
+                </security-realm>
+            </security-realms>
+        </security>
+        <endpoints socket-binding="default">
+            <hotrod-connector name="hotrod"/>
+            <rest-connector name="rest"/>
+        </endpoints>
+    </server>
+</infinispan>
