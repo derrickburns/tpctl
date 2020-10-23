@@ -19,9 +19,10 @@ local secret(me) = k8s.secret(me) {
         bucket: lib.getElse(me, 'prometheus.thanos.sidecar.bucket', 'tidepool-thanos'),
         endpoint: 's3.%s.amazonaws.com' % config.cluster.metadata.region,
         region: config.cluster.metadata.region,
+        encryptsse: true,
         put_user_metadata: {},
         trace: {
-          enable: false,  // XXX
+          enable: true,  // XXX
         },
       },
     }),
