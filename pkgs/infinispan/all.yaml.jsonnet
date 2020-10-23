@@ -129,12 +129,16 @@ local statefulset(me) = k8s.statefulset(me, [], volumes(me)) {
 };
 
 local serviceHotRod(me) = k8s.service(me) + k8s.metadata(me.pkg + '-hotrod', me.namespace) + {
-  ports: [ k8s.port(11222, 11222, 'hotrod', 'TCP') ]
+  spec+: {
+    ports: [ k8s.port(11222, 11222, 'hotrod', 'TCP') ],
+  }
 };
 
 local serviceHeadless(me) = k8s.service(me) + {
-  clusterIP: 'None',
-  ports: [ k8s.port(8888, 8888, 'ping', 'TCP') ]
+  spec+: {
+    clusterIP: 'None',
+    ports: [ k8s.port(8888, 8888, 'ping', 'TCP') ],
+  }
 };
 
 function(config, prev, namespace, pkg) (
