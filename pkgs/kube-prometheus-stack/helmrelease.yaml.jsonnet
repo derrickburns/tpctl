@@ -124,7 +124,7 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '9.4.5', repository: 'htt
                   '--log.format=logfmt',
                   '--shipper.upload-compacted',
                 ],
-              } else {},
+              },
           ],
           resources: lib.getElse(me, 'prometheus.resources', {
             limits: {
