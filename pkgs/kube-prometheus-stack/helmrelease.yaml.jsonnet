@@ -108,12 +108,13 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '9.4.5', repository: 'htt
                 failureThreshold: 300,
               },
             },
-            // Prometheus-operator does not support 1-off settngs like uploading compacted blocks
+            // Prometheus-operator does not support 1-off settings like uploading compacted blocks
             // but you can overwrite the containers as below
             if lib.isEnabledAt(me, 'prometheus.thanos.sidecar') && lib.getElse(me, 'prometheus.thanos.sidecar.uploadCompacted', false) then
               {
                 name: 'thanos-sidecar',
                 args: [
+                  // Default sidecar args
                   'sidecar',
                   '--prometheus.url=http://127.0.0.1:9090/',
                   '--tsdb.path=/prometheus',
@@ -122,6 +123,7 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '9.4.5', repository: 'htt
                   '--objstore.config=$(OBJSTORE_CONFIG)',
                   '--log.level=info',
                   '--log.format=logfmt',
+                  // Upload already compacted blocks
                   '--shipper.upload-compacted',
                 ],
               },
@@ -138,7 +140,7 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '9.4.5', repository: 'htt
           thanos: if lib.isEnabledAt(me, 'prometheus.thanos.sidecar') then {
             version: 'v0.12.2',
             objectStorageConfig: {
-              name: 'thanos',
+              name: 'thanos-sidecar',
               key: 'object-store.yaml',
             },
           } else {},

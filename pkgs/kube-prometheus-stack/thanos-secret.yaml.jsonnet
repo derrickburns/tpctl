@@ -5,11 +5,12 @@ local lib = import '../../lib/lib.jsonnet';
 
 local secret(me) = k8s.secret(me) {
   local config = me.config,
+  local package = 'thanos-sidecar',
   metadata+: {
     labels: {
-      app: 'thanos',
+      app: package,
     },
-    name: 'thanos',
+    name: package,
   },
 
   stringData: {
