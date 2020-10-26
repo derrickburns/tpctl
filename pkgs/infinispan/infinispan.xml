@@ -10,10 +10,10 @@
     </jgroups>
     <cache-container name="default" statistics="true">
         <transport cluster="${infinispan.cluster.name}" stack="kube"
-                   node-name="${infinispan.node.name:}" lock-timeout="60000"/>
+                   node-name="${infinispan.node.name}" lock-timeout="60000"/>
         <global-state/>
         <!-- BEGIN KEYCLOAK'S CACHES DEFINITION -->
-        <replicated-cache-configuration name="keycloak-sessions" mode="SYNC" start="EAGER">
+        <replicated-cache-configuration name="keycloak-sessions" mode="SYNC">
             <locking acquire-timeout="0" />
             <persistence>
                 <file-store shared="false" fetch-state="true" path="./keycloak">

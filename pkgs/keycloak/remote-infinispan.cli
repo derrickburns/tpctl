@@ -2,9 +2,6 @@
 embed-server --server-config=standalone-ha.xml --std-out=echo
 batch
 
-#echo *** Update jgroups subsystem ***
-#/subsystem=jgroups/stack=udp/transport=UDP:write-attribute(name=site, value=${jboss.site.name})
-
 echo *** Update infinispan subsystem ***
 /subsystem=infinispan/cache-container=keycloak:write-attribute(name=module, value=org.keycloak.keycloak-model-infinispan)
 

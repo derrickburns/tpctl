@@ -45,21 +45,18 @@ local statefulset(me) = k8s.statefulset(me, [], volumes(me)) {
           }
         ],
         containers: [{
-          args: ["-c", "/opt/infinispan/server/conf/infinispan.xml"],
+          args: [
+            "-Dinfinispan.cluster.stack=kube",
+            "-Dinfinispan.node.name=$(POD_NAME)",
+            "-Djboss.tx.node.id=$(POD_NAME)",
+            "-Dinfinispan.cluster.name=" + me.pkg,
+            "-Djgroups.dns.query=" + me.pkg + "." + me.namespace + ".svc.cluster.local",
+            "-c",
+            "/opt/infinispan/server/conf/infinispan.xml"
+          ],
           command: ["/opt/infinispan/bin/server.sh"],
           env: [
             k8s.envField("POD_NAME", "metadata.name"),
-            k8s.envField("KUBERNETES_NAMESPACE", "metadata.namespace"),
-            {
-              name: "JAVA_OPTS_EXTRA",
-              value: std.join(" ", [
-                "-Dinfinispan.cluster.stack=kube",
-                "-Dinfinispan.node.name=$(POD_NAME)",
-                "-Djboss.tx.node.id=$(POD_NAME)",
-                "-Dinfinispan.cluster.name=" + me.pkg,
-                "-Djgroups.dns.query=" + me.pkg + ".$(KUBERNETES_NAMESPACE).svc.cluster.local"
-              ]),
-            },
           ],
           image: "infinispan/server:11.0.4.Final",
           livenessProbe: {

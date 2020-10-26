@@ -86,7 +86,7 @@ local helmrelease(me) = (
             },
             {
               name: 'JAVA_OPTS',
-              value: '-server -Djava.net.preferIPv4Stack=true -Djava.awt.headless=true -Djboss.default.jgroups.stack=kubernetes -Djboss.node.name=$(POD_NAME) -Djboss.tx.node.id=$(POD_NAME) -Djboss.site.name=$(KUBERNETES_NAMESPACE) -Dremote.cache.host=infinispan-hotrod.infinispan.svc.cluster.local -Dkeycloak.connectionsInfinispan.hotrodProtocolVersion=3.0'
+              value: '-server -Djava.net.preferIPv4Stack=true -Djava.awt.headless=true -Djboss.default.jgroups.stack=kubernetes -Djboss.node.name=$(POD_NAME) -Djboss.tx.node.id=$(POD_NAME) -Djboss.site.name=$(KUBERNETES_NAMESPACE) -Dremote.cache.host=infinispan-hotrod.infinispan.svc.cluster.local -Dkeycloak.connectionsInfinispan.hotrodProtocolVersion=2.8'
             }
           ],
           indent_array_in_object=false
