@@ -5,29 +5,36 @@ local lib = import '../../lib/lib.jsonnet';
 
 local secret(me) = k8s.secret(me) {
   local config = me.config,
-  data: {
-    'object-store.yaml': std.base64(std.manifestYamlDoc({
+  local package = 'thanos-sidecar',
+  metadata+: {
+    labels: {
+      app: package,
+    },
+    name: package,
+  },
+
+  stringData: {
+    'object-store.yaml': std.manifestYamlDoc({
       type: 'S3',
       config: {
-        bucket: lib.getElse(me, 'bucket', 'tidepool-thanos'),
+        bucket: lib.getElse(me, 'prometheus.thanos.sidecar.bucket', 'tidepool-thanos'),
         endpoint: 's3.%s.amazonaws.com' % config.cluster.metadata.region,
         region: config.cluster.metadata.region,
-        insecure: false,
-        signature_version2: false,
-        encrypt_sse: false,
+        encryptsse: true,
         put_user_metadata: {},
-        http_config: {
-          idle_conn_timeout: '0s',
-          response_header_timeout: '0s',
-          insecure_skip_verify: false,
-        },
         trace: {
           enable: false,  // XXX
         },
-        part_size: 0,
       },
-    })),
+    }),
   },
 };
 
-function(config, prev, namespace, pkg) secret(common.package(config, prev, namespace, pkg))
+function(config, prev, namespace, pkg) (
+  local me = common.package(config, prev, namespace, pkg);
+  if lib.isEnabledAt(me, 'prometheus.thanos.sidecar')
+  then [
+    secret(me),
+  ]
+  else {}
+)

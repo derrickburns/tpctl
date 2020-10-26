@@ -4,6 +4,7 @@ local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
 local helmrelease(me) = k8s.helmrelease(me, { version: '9.4.5', repository: 'https://prometheus-community.github.io/helm-charts' }) {
+  local config = me.config,
   spec+: {
     values+: {
       grafana: {
@@ -80,11 +81,19 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '9.4.5', repository: 'htt
         annotations: {
           'cluster-autoscaler.kubernetes.io/safe-to-evict': 'false',
         },
+        serviceAccount: {
+          create: !lib.isEnabledAt(me, 'prometheus.thanos.sidecar'),
+          name: lib.getElse(me, 'prometheus.serviceAccount', ''),
+        },
         prometheusSpec: {
           ruleSelectorNilUsesHelmValues: false,
           serviceMonitorSelectorNilUsesHelmValues: false,
-          externalUrl: 'https://prometheus.%s' % me.config.cluster.metadata.domain,
+          externalUrl: 'https://prometheus.%s' % config.cluster.metadata.domain,
           podMonitorSelectorNilUsesHelmValues: false,
+          externalLabels: {
+            region: config.cluster.metadata.region,
+            cluster: config.cluster.metadata.name,
+          },
           additionalScrapeConfigsSecret: {
             enabled: lib.getElse(me, 'prometheus.additionalScrapeConfigsSecret', false),
             name: 'kube-prometheus-stack-prometheus-additional-scrape-configs',
@@ -99,6 +108,25 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '9.4.5', repository: 'htt
                 failureThreshold: 300,
               },
             },
+            // Prometheus-operator does not support 1-off settings like uploading compacted blocks
+            // but you can overwrite the containers as below
+            if lib.isEnabledAt(me, 'prometheus.thanos.sidecar') && lib.getElse(me, 'prometheus.thanos.sidecar.uploadCompacted', false) then
+              {
+                name: 'thanos-sidecar',
+                args: [
+                  // Default sidecar args
+                  'sidecar',
+                  '--prometheus.url=http://127.0.0.1:9090/',
+                  '--tsdb.path=/prometheus',
+                  '--grpc-address=[$(POD_IP)]:10901',
+                  '--http-address=[$(POD_IP)]:10902',
+                  '--objstore.config=$(OBJSTORE_CONFIG)',
+                  '--log.level=info',
+                  '--log.format=logfmt',
+                  // Upload already compacted blocks
+                  '--shipper.upload-compacted',
+                ],
+              },
           ],
           resources: lib.getElse(me, 'prometheus.resources', {
             limits: {
@@ -109,17 +137,10 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '9.4.5', repository: 'htt
             nodeAffinity: k8s.nodeAffinity(),
           },
           tolerations: [k8s.toleration()],
-          thanos: if global.isEnabled(me.config, 'thanos') then {
-            image: 'quay.io/thanos/thanos:v0.12.2',
+          thanos: if lib.isEnabledAt(me, 'prometheus.thanos.sidecar') then {
             version: 'v0.12.2',
-            resources: {
-              limits: {
-                cpu: '0.25',
-                memory: '250M',
-              },
-            },
             objectStorageConfig: {
-              name: 'thanos',
+              name: 'thanos-sidecar',
               key: 'object-store.yaml',
             },
           } else {},
