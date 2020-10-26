@@ -31,7 +31,7 @@ local secret(me) = k8s.secret(me) {
 
 function(config, prev, namespace, pkg) (
   local me = common.package(config, prev, namespace, pkg);
-  if lib.getElse(me, 'prometheus.thanos.sidecar.enabled', false)
+  if lib.isEnabledAt(me, 'prometheus.thanos.sidecar')
   then [
     secret(me),
   ]
