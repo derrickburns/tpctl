@@ -75,7 +75,7 @@ local workflowSpec(me, backup) = k8s.k('argoproj.io/v1alpha1', 'WorkflowTemplate
         name: 'create-backup',
         container: {
           name: 'atlassian-%s-backup' % backup.name,
-          image: 'tidepool/atlassian-backups:v0.1.0',
+          image: 'tidepool/atlassian-backups:v0.2.0',
           command: [
             'python',
             '%s_backup.py' % backup.name,

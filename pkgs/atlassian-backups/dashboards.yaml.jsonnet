@@ -19,7 +19,7 @@ local dashboardConfig = {
   editable: false,
   gnetId: null,
   graphTooltip: 0,
-  iteration: 1600198710011,
+  iteration: 1603736194863,
   links: [],
   panels: [
     {
@@ -94,11 +94,11 @@ local dashboardConfig = {
         },
         textMode: 'auto',
       },
-      pluginVersion: '7.1.1',
+      pluginVersion: '7.2.0',
       targets: [
         {
-          expr: 'argo_workflows_atlassian_backup_status{backup_name="jira"}',
-          instant: true,
+          expr: 'sum(argo_workflows_atlassian_backup_status{backup_name="jira"})',
+          instant: false,
           interval: '',
           legendFormat: '',
           refId: 'A',
@@ -183,11 +183,11 @@ local dashboardConfig = {
         },
         textMode: 'auto',
       },
-      pluginVersion: '7.1.1',
+      pluginVersion: '7.2.0',
       targets: [
         {
-          expr: 'argo_workflows_atlassian_backup_status{backup_name="confluence"}',
-          instant: true,
+          expr: 'sum(argo_workflows_atlassian_backup_status{backup_name="confluence"})',
+          instant: false,
           interval: '',
           legendFormat: '',
           refId: 'A',
@@ -272,11 +272,11 @@ local dashboardConfig = {
         },
         textMode: 'auto',
       },
-      pluginVersion: '7.1.1',
+      pluginVersion: '7.2.0',
       targets: [
         {
-          expr: 'argo_workflows_atlassian_backup_status{backup_name="xray"}',
-          instant: true,
+          expr: 'sum(argo_workflows_atlassian_backup_status{backup_name="xray"})',
+          instant: false,
           interval: '',
           legendFormat: '',
           refId: 'A',
