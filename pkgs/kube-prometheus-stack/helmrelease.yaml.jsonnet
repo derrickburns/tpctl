@@ -89,6 +89,10 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '9.4.5', repository: 'htt
           serviceMonitorSelectorNilUsesHelmValues: false,
           externalUrl: 'https://prometheus.%s' % me.config.cluster.metadata.domain,
           podMonitorSelectorNilUsesHelmValues: false,
+          externalLabels: {
+            region: me.config.cluster.metadata.region,
+            cluster: me.config.cluster.metadata.name,
+          },
           additionalScrapeConfigsSecret: {
             enabled: lib.getElse(me, 'prometheus.additionalScrapeConfigsSecret', false),
             name: 'kube-prometheus-stack-prometheus-additional-scrape-configs',
@@ -115,12 +119,12 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '9.4.5', repository: 'htt
           tolerations: [k8s.toleration()],
           thanos: if lib.isEnabledAt(me, 'prometheus.thanos.sidecar') then {
             version: 'v0.12.2',
-            resources: {
-              limits: {
-                cpu: '0.25',
-                memory: '250M',
-              },
-            },
+            // resources: {
+            // limits: {
+            // cpu: '0.25',
+            // memory: '250M',
+            // },
+            // },
             objectStorageConfig: {
               name: 'thanos',
               key: 'object-store.yaml',
