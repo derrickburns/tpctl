@@ -22,7 +22,7 @@ local secret(me) = k8s.secret(me) {
         encryptsse: true,
         put_user_metadata: {},
         trace: {
-          enable: true,  // XXX
+          enable: false,  // XXX
         },
       },
     }),
