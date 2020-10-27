@@ -84,7 +84,7 @@ local dashboardConfig = {
       timeFrom: null,
       timeRegions: [],
       timeShift: null,
-      title: 'Total active connections',
+      title: 'Total Active Connections',
       tooltip: {
         shared: true,
         sort: 0,
@@ -185,7 +185,7 @@ local dashboardConfig = {
       timeFrom: null,
       timeRegions: [],
       timeShift: null,
-      title: 'Total requests',
+      title: 'RPS',
       tooltip: {
         shared: true,
         sort: 0,
@@ -341,6 +341,7 @@ local dashboardConfig = {
       dashLength: 10,
       dashes: false,
       datasource: '$datasource',
+      description: '',
       fieldConfig: {
         defaults: {
           custom: {},
@@ -387,7 +388,7 @@ local dashboardConfig = {
       steppedLine: false,
       targets: [
         {
-          expr: 'sum(increase(envoy_cluster_upstream_rq_xx{envoy_response_code_class="2", gateway_proxy_id=~"$proxy", envoy_cluster_name="$upstream"}[$__rate_interval]))',
+          expr: 'sum(irate(envoy_cluster_upstream_rq_xx{envoy_response_code_class="2", gateway_proxy_id=~"$proxy", envoy_cluster_name="$upstream"}[$__rate_interval]))',
           format: 'time_series',
           interval: '',
           intervalFactor: 1,
@@ -395,7 +396,7 @@ local dashboardConfig = {
           refId: 'A',
         },
         {
-          expr: 'sum(increase(envoy_cluster_upstream_rq_xx{envoy_response_code_class="3", gateway_proxy_id=~"$proxy", envoy_cluster_name="$upstream"}[$__rate_interval]))',
+          expr: 'sum(irate(envoy_cluster_upstream_rq_xx{envoy_response_code_class="3", gateway_proxy_id=~"$proxy", envoy_cluster_name="$upstream"}[$__rate_interval]))',
           format: 'time_series',
           interval: '',
           intervalFactor: 1,
@@ -403,7 +404,7 @@ local dashboardConfig = {
           refId: 'B',
         },
         {
-          expr: 'sum(increase(envoy_cluster_upstream_rq_xx{envoy_response_code_class="4", gateway_proxy_id=~"$proxy", envoy_cluster_name="$upstream"}[$__rate_interval]))',
+          expr: 'sum(irate(envoy_cluster_upstream_rq_xx{envoy_response_code_class="4", gateway_proxy_id=~"$proxy", envoy_cluster_name="$upstream"}[$__rate_interval]))',
           format: 'time_series',
           interval: '',
           intervalFactor: 1,
@@ -411,7 +412,7 @@ local dashboardConfig = {
           refId: 'C',
         },
         {
-          expr: 'sum(increase(envoy_cluster_upstream_rq_xx{envoy_response_code_class="5", gateway_proxy_id=~"$proxy", envoy_cluster_name="$upstream"}[$__rate_interval]))',
+          expr: 'sum(irate(envoy_cluster_upstream_rq_xx{envoy_response_code_class="5", gateway_proxy_id=~"$proxy", envoy_cluster_name="$upstream"}[$__rate_interval]))',
           format: 'time_series',
           interval: '',
           intervalFactor: 1,
@@ -423,7 +424,7 @@ local dashboardConfig = {
       timeFrom: null,
       timeRegions: [],
       timeShift: null,
-      title: 'Upstream Responses',
+      title: 'RPS per Code Class',
       tooltip: {
         shared: true,
         sort: 0,
