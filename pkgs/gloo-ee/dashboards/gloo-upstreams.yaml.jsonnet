@@ -19,7 +19,7 @@ local dashboardConfig = {
   editable: false,
   gnetId: null,
   graphTooltip: 0,
-  iteration: 1603835779628,
+  iteration: 1603841721072,
   links: [],
   panels: [
     {
@@ -441,7 +441,7 @@ local dashboardConfig = {
         {
           '$$hashKey': 'object:536',
           format: 'short',
-          label: 'RPM',
+          label: '',
           logBase: 1,
           max: null,
           min: null,
@@ -602,7 +602,7 @@ local dashboardConfig = {
       {
         allValue: null,
         current: {
-          selected: true,
+          selected: false,
           text: 'internal-gateway-proxy_gloo-system',
           value: 'internal-gateway-proxy_gloo-system',
         },
@@ -628,8 +628,7 @@ local dashboardConfig = {
       {
         allValue: null,
         current: {
-          selected: true,
-          tags: [],
+          selected: false,
           text: [
             'All',
           ],
@@ -707,7 +706,7 @@ local dashboardConfig = {
   timezone: 'utc',
   title: 'Gloo Upstreams',
   uid: 'gloo_upstreams',
-  version: 2,
+  version: 3,
 };
 
 local configmap(me) = grafana.dashboard(me, 'gloo-upstreams', dashboardConfig);
