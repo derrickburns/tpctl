@@ -346,6 +346,7 @@ local dashboardConfig = {
         defaults: {
           custom: {},
           links: [],
+          unit: 'percentunit',
         },
         overrides: [],
       },
@@ -388,7 +389,7 @@ local dashboardConfig = {
       steppedLine: false,
       targets: [
         {
-          expr: 'sum(irate(envoy_cluster_upstream_rq_xx{envoy_response_code_class="2", gateway_proxy_id=~"$proxy", envoy_cluster_name="$upstream"}[$__rate_interval]))',
+          expr: 'sum(rate(envoy_cluster_upstream_rq_xx{envoy_response_code_class="2", gateway_proxy_id=~"$proxy", envoy_cluster_name="$upstream"}[$__rate_interval]))/ sum(rate(envoy_cluster_upstream_rq_xx{gateway_proxy_id=~"$proxy", envoy_cluster_name="$upstream"}[$__rate_interval]))',
           format: 'time_series',
           interval: '',
           intervalFactor: 1,
@@ -396,7 +397,7 @@ local dashboardConfig = {
           refId: 'A',
         },
         {
-          expr: 'sum(irate(envoy_cluster_upstream_rq_xx{envoy_response_code_class="3", gateway_proxy_id=~"$proxy", envoy_cluster_name="$upstream"}[$__rate_interval]))',
+          expr: 'sum(rate(envoy_cluster_upstream_rq_xx{envoy_response_code_class="3", gateway_proxy_id=~"$proxy", envoy_cluster_name="$upstream"}[$__rate_interval]))/sum(rate(envoy_cluster_upstream_rq_xx{gateway_proxy_id=~"$proxy", envoy_cluster_name="$upstream"}[$__rate_interval]))',
           format: 'time_series',
           interval: '',
           intervalFactor: 1,
@@ -404,7 +405,7 @@ local dashboardConfig = {
           refId: 'B',
         },
         {
-          expr: 'sum(irate(envoy_cluster_upstream_rq_xx{envoy_response_code_class="4", gateway_proxy_id=~"$proxy", envoy_cluster_name="$upstream"}[$__rate_interval]))',
+          expr: 'sum(rate(envoy_cluster_upstream_rq_xx{envoy_response_code_class="4", gateway_proxy_id=~"$proxy", envoy_cluster_name="$upstream"}[$__rate_interval]))/sum(rate(envoy_cluster_upstream_rq_xx{gateway_proxy_id=~"$proxy", envoy_cluster_name="$upstream"}[$__rate_interval]))',
           format: 'time_series',
           interval: '',
           intervalFactor: 1,
@@ -412,7 +413,7 @@ local dashboardConfig = {
           refId: 'C',
         },
         {
-          expr: 'sum(irate(envoy_cluster_upstream_rq_xx{envoy_response_code_class="5", gateway_proxy_id=~"$proxy", envoy_cluster_name="$upstream"}[$__rate_interval]))',
+          expr: 'sum(rate(envoy_cluster_upstream_rq_xx{envoy_response_code_class="5", gateway_proxy_id=~"$proxy", envoy_cluster_name="$upstream"}[$__rate_interval]))/sum(rate(envoy_cluster_upstream_rq_xx{gateway_proxy_id=~"$proxy", envoy_cluster_name="$upstream"}[$__rate_interval]))',
           format: 'time_series',
           interval: '',
           intervalFactor: 1,
@@ -424,7 +425,7 @@ local dashboardConfig = {
       timeFrom: null,
       timeRegions: [],
       timeShift: null,
-      title: 'RPS per Code Class',
+      title: 'Code Class Percentage',
       tooltip: {
         shared: true,
         sort: 0,
@@ -441,10 +442,10 @@ local dashboardConfig = {
       yaxes: [
         {
           '$$hashKey': 'object:536',
-          format: 'short',
+          format: 'percentunit',
           label: '',
           logBase: 1,
-          max: null,
+          max: '1',
           min: null,
           show: true,
         },
