@@ -19,7 +19,7 @@ local dashboardConfig = {
   editable: false,
   gnetId: null,
   graphTooltip: 0,
-  iteration: 1603835779626,
+  iteration: 1603835779628,
   links: [],
   panels: [
     {
@@ -602,9 +602,9 @@ local dashboardConfig = {
       {
         allValue: null,
         current: {
-          selected: false,
-          text: 'data_tidepool-prod',
-          value: 'data_tidepool-prod',
+          selected: true,
+          text: 'internal-gateway-proxy_gloo-system',
+          value: 'internal-gateway-proxy_gloo-system',
         },
         datasource: '$datasource',
         definition: 'label_values(envoy_cluster_upstream_rq_total, envoy_cluster_name)',
