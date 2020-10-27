@@ -19,7 +19,7 @@ local dashboardConfig = {
   editable: false,
   gnetId: null,
   graphTooltip: 0,
-  iteration: 1602020876476,
+  iteration: 1603835779626,
   links: [],
   panels: [
     {
@@ -248,10 +248,12 @@ local dashboardConfig = {
       hiddenSeries: false,
       id: 15,
       legend: {
+        alignAsTable: false,
         avg: false,
         current: false,
         max: false,
         min: false,
+        rightSide: false,
         show: true,
         total: false,
         values: false,
@@ -484,12 +486,12 @@ local dashboardConfig = {
       hiddenSeries: false,
       id: 19,
       legend: {
-        alignAsTable: true,
+        alignAsTable: false,
         avg: false,
         current: false,
         max: false,
         min: false,
-        rightSide: true,
+        rightSide: false,
         show: true,
         total: false,
         values: false,
@@ -512,12 +514,20 @@ local dashboardConfig = {
       steppedLine: false,
       targets: [
         {
+          expr: 'histogram_quantile(0.999, sum(rate(envoy_cluster_upstream_rq_time_bucket{envoy_cluster_name="$upstream", gateway_proxy_id=~"$proxy"}[$__rate_interval])) by (le, envoy_cluster_name, namespace))',
+          format: 'time_series',
+          interval: '',
+          intervalFactor: 1,
+          legendFormat: '{{namespace}}/{{envoy_cluster_name}} 99.9%',
+          refId: 'A',
+        },
+        {
           expr: 'histogram_quantile(0.99, sum(rate(envoy_cluster_upstream_rq_time_bucket{envoy_cluster_name="$upstream", gateway_proxy_id=~"$proxy"}[$__rate_interval])) by (le, envoy_cluster_name, namespace))',
           format: 'time_series',
           interval: '',
           intervalFactor: 1,
           legendFormat: '{{namespace}}/{{envoy_cluster_name}} 99%',
-          refId: 'A',
+          refId: 'D',
         },
         {
           expr: 'histogram_quantile(0.9, sum(rate(envoy_cluster_upstream_rq_time_bucket{envoy_cluster_name="$upstream", gateway_proxy_id=~"$proxy"}[$__rate_interval])) by (le, envoy_cluster_name, namespace))',
@@ -593,8 +603,8 @@ local dashboardConfig = {
         allValue: null,
         current: {
           selected: false,
-          text: 'internal-gateway-proxy_gloo-system',
-          value: 'internal-gateway-proxy_gloo-system',
+          text: 'data_tidepool-prod',
+          value: 'data_tidepool-prod',
         },
         datasource: '$datasource',
         definition: 'label_values(envoy_cluster_upstream_rq_total, envoy_cluster_name)',
@@ -619,6 +629,7 @@ local dashboardConfig = {
         allValue: null,
         current: {
           selected: true,
+          tags: [],
           text: [
             'All',
           ],
@@ -666,7 +677,7 @@ local dashboardConfig = {
     ],
   },
   time: {
-    from: 'now-12h',
+    from: 'now-6h',
     to: 'now',
   },
   timepicker: {
@@ -696,7 +707,7 @@ local dashboardConfig = {
   timezone: 'utc',
   title: 'Gloo Upstreams',
   uid: 'gloo_upstreams',
-  version: 1,
+  version: 2,
 };
 
 local configmap(me) = grafana.dashboard(me, 'gloo-upstreams', dashboardConfig);
