@@ -19,6 +19,7 @@ DIR=$(cd "$X" >/dev/null 2>&1 && pwd)
 REPOS='
 cluster-dev
 cluster-qa2
+cluster-ops
 cluster-integration
 cluster-shared
 cluster-production
