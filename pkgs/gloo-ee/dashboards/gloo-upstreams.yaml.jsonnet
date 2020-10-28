@@ -19,7 +19,7 @@ local dashboardConfig = {
   editable: false,
   gnetId: null,
   graphTooltip: 0,
-  iteration: 1603841721072,
+  iteration: 1603908167207,
   links: [],
   panels: [
     {
@@ -350,7 +350,7 @@ local dashboardConfig = {
         },
         overrides: [],
       },
-      fill: 1,
+      fill: 10,
       fillGradient: 0,
       gridPos: {
         h: 7,
@@ -372,7 +372,7 @@ local dashboardConfig = {
         values: true,
       },
       lines: true,
-      linewidth: 1,
+      linewidth: 0,
       links: [],
       nullPointMode: 'null',
       options: {
@@ -385,7 +385,7 @@ local dashboardConfig = {
       renderer: 'flot',
       seriesOverrides: [],
       spaceLength: 10,
-      stack: false,
+      stack: true,
       steppedLine: false,
       targets: [
         {
@@ -446,7 +446,7 @@ local dashboardConfig = {
           label: '',
           logBase: 1,
           max: '1',
-          min: null,
+          min: '0',
           show: true,
         },
         {
@@ -630,7 +630,7 @@ local dashboardConfig = {
       {
         allValue: null,
         current: {
-          selected: false,
+          selected: true,
           text: [
             'All',
           ],
@@ -708,7 +708,7 @@ local dashboardConfig = {
   timezone: 'utc',
   title: 'Gloo Upstreams',
   uid: 'gloo_upstreams',
-  version: 3,
+  version: 4,
 };
 
 local configmap(me) = grafana.dashboard(me, 'gloo-upstreams', dashboardConfig);
