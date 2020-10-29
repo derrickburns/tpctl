@@ -9,12 +9,7 @@ local pomerium = import '../../lib/pomerium.jsonnet';
 
 local upstream(me) = gloo.kubeupstream(me, 80, 'keycloak-http') + {
   loadBalancerConfig: {
-    ringHash: {
-      ringHashConfig: {
-        maximumRingSize: '200',
-        minimumRingSize: '10'
-      }
-    }
+    ringHash: {}
   }
 };
 
@@ -47,13 +42,8 @@ local virtualService(me) = gloo.virtualService(me) {
             lbHash: {
               hashPolicies: [
                 {
-                  cookie: {
-                    name: 'affinity',
-                  },
+                  header: 'x-forwarded-for'
                 },
-                {
-                  sourceIp: true,
-                }
               ],
             },
           }

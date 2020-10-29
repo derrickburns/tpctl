@@ -13,7 +13,7 @@ local helmrelease(me) = (
         image: {
           tag: '11.0.0',
         },
-        replicas: 2,
+        replicas: 3,
         imagePullSecrets: [],
         postgresql: {
           enabled: false,

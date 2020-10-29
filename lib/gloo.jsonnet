@@ -172,7 +172,7 @@ local i = {
 
   trustForwardedHeadersOption(hops): {
     httpConnectionManagerSettings+: {
-      xffNumTrusedHops: hops,
+      xffNumTrustedHops: hops,
     }
   },
 
