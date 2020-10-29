@@ -14,6 +14,7 @@ local getPoliciesForPackage(me) = [
     local internalHost = lib.getElse(sso, 'internalHost', serviceRoute),
     from: 'https://' + pomerium.dnsNameForSso(config, me, sso),
     to: 'http://' + internalHost + suffix,
+    preserve_host_header: lib.getElse(sso, 'preserveHostHeader', false),
     allowed_groups: lib.getElse(sso, 'allowed_groups', lib.getElse(config, 'general.sso.allowed_groups', [])),
     allowed_users: lib.getElse(sso, 'allowed_users', lib.getElse(config, 'general.sso.allowed_users', [])),
     allow_websockets: lib.getElse(sso, 'allow_websockets', lib.getElse(config, 'general.sso.allow_websockets', true)),

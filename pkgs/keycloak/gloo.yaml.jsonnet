@@ -19,9 +19,15 @@ local upstream(me) = gloo.kubeupstream(me, 80, 'keycloak-http') + {
 };
 
 local virtualService(me) = gloo.virtualService(me) {
+  labels+: {
+    protocol: 'http',
+    type: 'internal',
+  },
   spec+: {
     virtualHost: {
-      domains: pomerium.dnsNameForSso(me.config, me, lib.require(me, 'sso')),
+      domains: [
+        pomerium.dnsNameForSso(me.config, me, lib.require(me, 'sso')),
+      ],
       routes: [
         {
           matchers: [
