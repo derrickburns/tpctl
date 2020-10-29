@@ -85,6 +85,9 @@ local gateways = {
       accessLoggingService: accessLogging,
     },
     flags+: {
+      trustForwardedHeaders: {
+        hops: 1,
+      },
       tracing: {
         enabled: true,
       },

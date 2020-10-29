@@ -170,6 +170,12 @@ local i = {
     },
   },
 
+  trustForwardedHeadersOption(hops): {
+    httpConnectionManagerSettings+: {
+      xffNumTrusedHops: hops,
+    }
+  },
+
   certificateSecretName(base, namespace):: namespace + '-' + base + '-certificate',
 
   certificate(me):: function(vs) (
@@ -340,7 +346,8 @@ local i = {
         options:
           (if lib.getElse(gw, 'flags.healthCheck', false) then i.healthCheckOption else {})
           + (if lib.getElse(gw, 'flags.tracing.enabled', false) then i.httpConnectionManagerOption(randomSamplePercentage=lib.getElse(gw, 'flags.tracing.randomSamplePercentage', 100.0)) else {})
-          + (if lib.getElse(gw, 'flags.buffer', false) then i.bufferOption else {}),
+          + (if lib.getElse(gw, 'flags.buffer', false) then i.bufferOption else {})
+          + (if lib.present(gw, 'flags.trustForwardedHeaders.hops') then i.trustForwardedHeadersOption(lib.require(gw, 'flags.trustForwardedHeaders.hops')) else {})
       },
       options: lib.getElse(gw, 'options', {}),
       bindAddress: '::',
