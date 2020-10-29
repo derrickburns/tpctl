@@ -32,7 +32,7 @@ local virtualService(me) = gloo.virtualService(me) {
           routeAction: {
             single: {
               upstream: {
-                name: me.pkg,
+                name: 'keycloak-http',
                 namespace: me.namespace,
               }
             }
