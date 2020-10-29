@@ -10,7 +10,7 @@ local getPoliciesForPackage(me) = [
     local config = me.config,
     local port = lib.getElse(sso, 'port', 8080),
     local suffix = if port == 80 then '' else ':%s' % port,
-    local serviceRoute = 'http://' + lib.getElse(sso, 'serviceName', me.pkg) + '.' + me.namespace + '.svc.cluster.local',
+    local serviceRoute = lib.getElse(sso, 'serviceName', me.pkg) + '.' + me.namespace + '.svc.cluster.local',
     local internalHost = lib.getElse(sso, 'internalHost', serviceRoute),
     from: 'https://' + pomerium.dnsNameForSso(config, me, sso),
     to: 'http://' + internalHost + suffix,
