@@ -150,6 +150,20 @@ local httpVirtualService(me) = gloo.virtualService(me, 'proxy-http') {
   },
 };
 
+local gateway(gw) = gw + {
+  spec+: {
+    httpGateway+: {
+      options+: {
+        httpConnectionManagerSettings+: {
+          useRemoteAddress: true,
+        },
+      },
+    },
+  },
+};
+
+local gateways(me) = std.map(gateway, gloo.gateways(me));
+
 function(config, prev, namespace, pkg) (
   local me = common.package(config, prev, namespace, pkg);
   [
@@ -161,6 +175,6 @@ function(config, prev, namespace, pkg) (
     upstream(me, 'pomerium-authenticate'),
     upstream(me, 'pomerium-authorize'),
     certificate(me),
-    gloo.gateways(me),
+    gateways(me),
   ]
 )
