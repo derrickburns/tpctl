@@ -4,34 +4,51 @@ local lib = import '../../lib/lib.jsonnet';
 
 local secretName = 'thanos';
 
-local helmrelease(me) = k8s.helmrelease(
-  me,
-  { version: '0.3.21', repository: 'https://kubernetes-charts.banzaicloud.com' },
-  secretNames=[secretName]
-)
-                        {
+local helmrelease(me) = k8s.helmrelease(me, { version: '0.3.29', repository: 'https://kubernetes-charts.banzaicloud.com' }) {
+  local config = me.config,
+  local affinityAndTolerations = {
+    affinity: {
+      nodeAffinity: k8s.nodeAffinity(),
+    },
+    tolerations: [k8s.toleration()],
+  },
   spec+: {
     values: {
-      objstoreSecretOverride: secretName,
       image: {
-        tag: 'v0.12.2',
+        tag: 'v0.16.0',
       },
       bucket: {
-        logLevel: lib.getElse(me.config, 'general.loglevel', 'info'),
-        serviceAccount: me.pkg,
-      },
+        serviceAccount: lib.getElse(config, 'namespaces.monitoring.kube-prometheus-stack.prometheus.serviceAccount', ''),
+      } + affinityAndTolerations,
       store: {
-        logLevel: lib.getElse(me.config, 'general.loglevel', 'info'),
-        serviceAccount: me.pkg,
-      },
+        serviceAccount: lib.getElse(config, 'namespaces.monitoring.kube-prometheus-stack.prometheus.serviceAccount', ''),
+      } + affinityAndTolerations,
       query: {
-        logLevel: lib.getElse(me.config, 'general.loglevel', 'info'),
-        serviceAccount: me.pkg,
-      },
+        serviceAccount: lib.getElse(config, 'namespaces.monitoring.kube-prometheus-stack.prometheus.serviceAccount', ''),
+      } + affinityAndTolerations,
       compact: {
-        logLevel: lib.getElse(me.config, 'general.loglevel', 'info'),
-        serviceAccount: me.pkg,
-      },
+        serviceAccount: lib.getElse(config, 'namespaces.monitoring.kube-prometheus-stack.prometheus.serviceAccount', ''),
+        dataVolume: {
+          backend: {
+            persistentVolumeClaim: {
+              claimName: 'thanos-compact',
+            },
+          },
+        },
+        persistentVolumeClaim: {
+          name: 'thanos-compact',
+          spec: {
+            storageClassName: 'monitoring-expanding',
+            accessModes: ['ReadWriteOnce'],
+            resources: {
+              requests: {
+                storage: '100Gi',
+              },
+            },
+          },
+        },
+      } + affinityAndTolerations,
+      objstoreSecretOverride: 'thanos',
     },
   },
 };
