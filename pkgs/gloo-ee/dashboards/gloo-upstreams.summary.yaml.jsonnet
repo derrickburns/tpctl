@@ -18,7 +18,7 @@ local dashboardConfig = {
   editable: false,
   gnetId: null,
   graphTooltip: 0,
-  iteration: 1602025347279,
+  iteration: 1604060481869,
   links: [],
   panels: [
     {
@@ -35,6 +35,7 @@ local dashboardConfig = {
         defaults: {
           custom: {},
           links: [],
+          unit: 'reqps',
         },
         overrides: [],
       },
@@ -51,12 +52,12 @@ local dashboardConfig = {
       legend: {
         alignAsTable: true,
         avg: true,
-        current: false,
+        current: true,
         max: true,
         min: false,
         rightSide: true,
         show: true,
-        sort: 'avg',
+        sort: 'current',
         sortDesc: true,
         total: false,
         values: true,
@@ -79,7 +80,7 @@ local dashboardConfig = {
       steppedLine: false,
       targets: [
         {
-          expr: 'sum(increase(envoy_cluster_upstream_rq_xx[$__rate_interval])) by (envoy_cluster_name)',
+          expr: 'sum(irate(envoy_cluster_upstream_rq_xx[$__rate_interval])) by (envoy_cluster_name)',
           format: 'time_series',
           interval: '',
           intervalFactor: 1,
@@ -108,7 +109,7 @@ local dashboardConfig = {
       yaxes: [
         {
           '$$hashKey': 'object:1033',
-          format: 'short',
+          format: 'reqps',
           label: null,
           logBase: 1,
           max: null,
@@ -144,6 +145,7 @@ local dashboardConfig = {
         defaults: {
           custom: {},
           links: [],
+          unit: 'reqps',
         },
         overrides: [],
       },
@@ -188,7 +190,7 @@ local dashboardConfig = {
       steppedLine: false,
       targets: [
         {
-          expr: 'sum(increase(envoy_cluster_upstream_rq_xx{envoy_response_code_class="2"}[$__rate_interval])) by (envoy_cluster_name)',
+          expr: 'sum(rate(envoy_cluster_upstream_rq_xx{envoy_response_code_class="2"}[$__rate_interval])) by (envoy_cluster_name)',
           format: 'time_series',
           interval: '',
           intervalFactor: 1,
@@ -217,7 +219,7 @@ local dashboardConfig = {
       yaxes: [
         {
           '$$hashKey': 'object:1033',
-          format: 'short',
+          format: 'reqps',
           label: null,
           logBase: 1,
           max: null,
@@ -253,6 +255,7 @@ local dashboardConfig = {
         defaults: {
           custom: {},
           links: [],
+          unit: 'reqps',
         },
         overrides: [],
       },
@@ -297,7 +300,7 @@ local dashboardConfig = {
       steppedLine: false,
       targets: [
         {
-          expr: 'sum(increase(envoy_cluster_upstream_rq_xx{envoy_response_code_class="3"}[$__rate_interval])) by (envoy_cluster_name)',
+          expr: 'sum(rate(envoy_cluster_upstream_rq_xx{envoy_response_code_class="3"}[$__rate_interval])) by (envoy_cluster_name)',
           format: 'time_series',
           interval: '',
           intervalFactor: 1,
@@ -326,7 +329,7 @@ local dashboardConfig = {
       yaxes: [
         {
           '$$hashKey': 'object:2893',
-          format: 'short',
+          format: 'reqps',
           label: null,
           logBase: 1,
           max: null,
@@ -362,6 +365,7 @@ local dashboardConfig = {
         defaults: {
           custom: {},
           links: [],
+          unit: 'reqps',
         },
         overrides: [],
       },
@@ -406,7 +410,7 @@ local dashboardConfig = {
       steppedLine: false,
       targets: [
         {
-          expr: 'sum(increase(envoy_cluster_upstream_rq_xx{envoy_response_code_class="4"}[$__rate_interval])) by (envoy_cluster_name)',
+          expr: 'sum(rate(envoy_cluster_upstream_rq_xx{envoy_response_code_class="4"}[$__rate_interval])) by (envoy_cluster_name)',
           format: 'time_series',
           interval: '',
           intervalFactor: 1,
@@ -435,7 +439,7 @@ local dashboardConfig = {
       yaxes: [
         {
           '$$hashKey': 'object:2973',
-          format: 'short',
+          format: 'reqps',
           label: null,
           logBase: 1,
           max: null,
@@ -471,6 +475,7 @@ local dashboardConfig = {
         defaults: {
           custom: {},
           links: [],
+          unit: 'reqps',
         },
         overrides: [],
       },
@@ -515,7 +520,7 @@ local dashboardConfig = {
       steppedLine: false,
       targets: [
         {
-          expr: 'sum(increase(envoy_cluster_upstream_rq_xx{envoy_response_code_class="5"}[$__rate_interval])) by (envoy_cluster_name)',
+          expr: 'sum(rate(envoy_cluster_upstream_rq_xx{envoy_response_code_class="5"}[$__rate_interval])) by (envoy_cluster_name)',
           format: 'time_series',
           interval: '',
           intervalFactor: 1,
@@ -544,7 +549,7 @@ local dashboardConfig = {
       yaxes: [
         {
           '$$hashKey': 'object:3053',
-          format: 'short',
+          format: 'reqps',
           label: null,
           logBase: 1,
           max: null,
@@ -616,7 +621,7 @@ local dashboardConfig = {
   timezone: 'utc',
   title: 'Gloo Upstreams Summary',
   uid: '4EIm6BmGk',
-  version: 1,
+  version: 2,
 };
 
 local configmap(me) = grafana.dashboard(me, 'gloo-upstreams-summary', dashboardConfig);
