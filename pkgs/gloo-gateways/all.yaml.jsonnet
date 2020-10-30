@@ -28,6 +28,7 @@ local accessLogging = {
           token: '%REQ(x-tidepool-session-token)%',
           b3TraceId: '%REQ(x-b3-traceid)%',
           upstream: '%UPSTREAM_CLUSTER%',
+          upstreamHost: '%UPSTREAM_HOST%',
           clientName: '%REQ(x-tidepool-client-name)%',
           userAgent: '%REQ(user-agent)%',
           referer: '%REQ(referer)%',

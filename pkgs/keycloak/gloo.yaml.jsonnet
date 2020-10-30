@@ -8,9 +8,16 @@ local pomerium = import '../../lib/pomerium.jsonnet';
 
 
 local upstream(me) = gloo.kubeupstream(me, 80, 'keycloak-http') + {
-  loadBalancerConfig: {
-    ringHash: {}
-  }
+  spec+: {
+    kube+:{
+      selector: {
+        'app.kubernetes.io/name': keycloak
+      },
+    },
+    loadBalancerConfig: {
+      ringHash: {}
+    },
+  },
 };
 
 local virtualService(me) = gloo.virtualService(me) {
@@ -42,8 +49,8 @@ local virtualService(me) = gloo.virtualService(me) {
             lbHash: {
               hashPolicies: [
                 {
-                  header: 'x-forwarded-for'
-                },
+                  header: 'x-forwarded-for',
+                }
               ],
             },
           }
