@@ -8,7 +8,7 @@ local secretName = 'fluxrecv-config';
 local helmrelease(me) = k8s.helmrelease(
   me,
   {
-    version: '1.3.0',
+    version: '1.5.0',
     repository: 'https://charts.fluxcd.io',
   },
   secretNames=if lib.isEnabledAt(me.config.namespaces[me.namespace], 'fluxrecv') && lib.isTrue(me.config.namespaces[me.namespace], 'fluxrecv.sidecar') then [secretName] else []
