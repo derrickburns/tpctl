@@ -59,9 +59,9 @@ local helmrelease(me) = k8s.helmrelease(
         dry: false,
       },
 
-      local excluded = lib.getElse(me, 'registries.exclude, []),
+      local excluded = lib.getElse(me, 'registries.exclude', []),
       additionalArgs:
-          (if std.length(excluded) > 0 then ['--registry-exclude-image=%s' % excluded ] else []) 
+          [ "--registry-exclude-image=%s" % x) for x in excluded ] 
         + if lib.isTrue(ns, 'fluxcloud.enabled') then ['--connect=ws://fluxcloud'] else [],
 
       extraContainers:
