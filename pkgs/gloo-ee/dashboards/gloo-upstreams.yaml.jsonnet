@@ -19,7 +19,7 @@ local dashboardConfig = {
   editable: false,
   gnetId: null,
   graphTooltip: 0,
-  iteration: 1603908167207,
+  iteration: 1604060068179,
   links: [],
   panels: [
     {
@@ -350,7 +350,7 @@ local dashboardConfig = {
         },
         overrides: [],
       },
-      fill: 10,
+      fill: 7,
       fillGradient: 0,
       gridPos: {
         h: 7,
@@ -372,11 +372,11 @@ local dashboardConfig = {
         values: true,
       },
       lines: true,
-      linewidth: 0,
+      linewidth: 1,
       links: [],
       nullPointMode: 'null',
       options: {
-        alertThreshold: true,
+        alertThreshold: false,
       },
       percentage: false,
       pluginVersion: '7.2.0',
@@ -630,7 +630,7 @@ local dashboardConfig = {
       {
         allValue: null,
         current: {
-          selected: true,
+          selected: false,
           text: [
             'All',
           ],
@@ -678,7 +678,7 @@ local dashboardConfig = {
     ],
   },
   time: {
-    from: 'now-6h',
+    from: 'now-7d',
     to: 'now',
   },
   timepicker: {
