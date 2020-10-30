@@ -285,10 +285,7 @@ local configmapNamesFromContainers(containers, volumes) = lib.pruneList(
   service(me, type='ClusterIP'):: $.k('v1', 'Service') + $.metadata(me.pkg, me.namespace) {
     spec+: {
       type: type,
-      selector: {
-        app: me.pkg,
-      },
-    },
+    } + if type == 'ExternalName' then {} else { selector: { app: me.pkg } },
   },
 
   pdb(me, minAvailable='50%'):: $.k('policy/v1beta1', 'PodDisruptionBudget') + $.metadata(me.pkg, me.namespace) {
