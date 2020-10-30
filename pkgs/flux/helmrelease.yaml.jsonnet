@@ -59,9 +59,9 @@ local helmrelease(me) = k8s.helmrelease(
         dry: false,
       },
 
+      local excluded = lib.getElse(me, 'registries.exclude, []),
       additionalArgs:
-        ['--registry-exclude-image=*velero*']  // XXX hardcoded
-        + ['--registry-exclude-image=*kafka-prometheus-jmx-exporte*']  // XXX hardcoded
+          (if std.length(excluded) > 0 then ['--registry-exclude-image=%s' % excluded ] else []) 
         + if lib.isTrue(ns, 'fluxcloud.enabled') then ['--connect=ws://fluxcloud'] else [],
 
       extraContainers:
