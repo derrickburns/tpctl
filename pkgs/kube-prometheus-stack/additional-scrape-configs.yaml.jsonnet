@@ -9,7 +9,7 @@ local scrapeConfigs(me) = k8s.secret(me, name='prometheus-additionl-scrape-confi
   stringData+: {
     'scrape-configs.yaml': std.manifestYamlDoc(
       [
-        {
+        if lib.isEnabledAt(me, 'prometheus.staticConfigs.kafka') then {
           job_name: 'static/kafka',
           scrape_interval: '30s',
           metrics_path: '/metrics',
@@ -17,21 +17,13 @@ local scrapeConfigs(me) = k8s.secret(me, name='prometheus-additionl-scrape-confi
           static_configs:
             [
               {
-                targets: [
-                  'b-1.default-ops.gxm6gl.c4.kafka.us-west-2.amazonaws.com:11002',
-                  'b-2.default-ops.gxm6gl.c4.kafka.us-west-2.amazonaws.com:11002',
-                  'b-3.default-ops.gxm6gl.c4.kafka.us-west-2.amazonaws.com:11002',
-                ],
+                targets: me.prometheus.staticConfigs.kafka.nodeExporter.targets,
                 labels: {
                   job: 'node-exporter',
                 },
               },
               {
-                targets: [
-                  'b-1.default-ops.gxm6gl.c4.kafka.us-west-2.amazonaws.com:11001',
-                  'b-2.default-ops.gxm6gl.c4.kafka.us-west-2.amazonaws.com:11001',
-                  'b-3.default-ops.gxm6gl.c4.kafka.us-west-2.amazonaws.com:11001',
-                ],
+                targets: me.prometheus.staticConfigs.kafka.jmxExporter.targets,
                 labels: {
                   job: 'jmx-exporter',
                 },
