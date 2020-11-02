@@ -11,7 +11,7 @@ local helmrelease(me) = k8s.helmrelease(me, { name: 'kafka-minion', version: '1.
       },
       tolerations: [k8s.toleration()],
       kafka: {
-        brokers: std.join(',', me.brokers),
+        brokers: std.join(',', ['%s:%s' % [target, me.brokerPort] for target in me.brokers]),
         sasl: {
           enabled: true,
           existingSecret: 'kafka-minion',

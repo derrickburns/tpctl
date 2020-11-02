@@ -17,13 +17,13 @@ local scrapeConfigs(me) = k8s.secret(me, name='prometheus-additionl-scrape-confi
           static_configs:
             [
               {
-                targets: me.prometheus.staticConfigs.kafka.nodeExporter.targets,
+                targets: ['%s:11002' % target for target in me.prometheus.staticConfigs.kafka.nodeExporter.targets],
                 labels: {
                   job: 'node-exporter',
                 },
               },
               {
-                targets: me.prometheus.staticConfigs.kafka.jmxExporter.targets,
+                targets: ['%s:11001' % target for target in me.prometheus.staticConfigs.kafka.jmxExporter.targets],
                 labels: {
                   job: 'jmx-exporter',
                 },

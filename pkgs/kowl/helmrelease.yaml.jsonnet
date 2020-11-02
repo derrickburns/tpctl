@@ -14,7 +14,7 @@ local helmrelease(me) = k8s.helmrelease(me, { name: 'kowl', version: '1.1.0', re
       kowl: {
         config: {
           kafka: {
-            brokers: me.brokers,
+            brokers: ['%s:%s' % [target, me.brokerPort] for target in me.brokers],
             sasl: lib.getElse(me, 'sasl', {}),
             tls: {
               enabled: lib.isEnabledAt(me, 'tls'),
