@@ -8,6 +8,10 @@ echo *** Update infinispan subsystem ***
 echo ** Add remote socket binding to infinispan server **
 /socket-binding-group=standard-sockets/remote-destination-outbound-socket-binding=remote-cache:add(host=${remote.cache.host:localhost}, port=${remote.cache.port:11222})
 
+echo ** Allow load balancer to handle sticky sessions **
+/subsystem=keycloak-server/spi=stickySessionEncoder/:add
+/subsystem=keycloak-server/spi=stickySessionEncoder/provider=infinispan/:add(properties={shouldAttachRoute => "false"},enabled=true)
+
 echo ** Update distributed-cache sessions element **
 /subsystem=infinispan/cache-container=keycloak/distributed-cache=sessions/store=remote:add( \
     passivation=false, \
@@ -113,17 +117,6 @@ echo ** Update distributed-cache actionTokens element **
 echo ** Update distributed-cache authenticationSessions element **
 /subsystem=infinispan/cache-container=keycloak/distributed-cache=authenticationSessions:write-attribute(name=statistics-enabled,value=true)
 
-echo ** Setting CACHE_OWNERS to "${env.CACHE_OWNERS}" in all cache-containers
-
-/subsystem=infinispan/cache-container=keycloak/distributed-cache=sessions:write-attribute(name=owners, value=${env.CACHE_OWNERS:1})
-/subsystem=infinispan/cache-container=keycloak/distributed-cache=authenticationSessions:write-attribute(name=owners, value=${env.CACHE_OWNERS:1})
-/subsystem=infinispan/cache-container=keycloak/distributed-cache=actionTokens:write-attribute(name=owners, value=${env.CACHE_OWNERS:1})
-/subsystem=infinispan/cache-container=keycloak/distributed-cache=offlineSessions:write-attribute(name=owners, value=${env.CACHE_OWNERS:1})
-/subsystem=infinispan/cache-container=keycloak/distributed-cache=clientSessions:write-attribute(name=owners, value=${env.CACHE_OWNERS:1})
-/subsystem=infinispan/cache-container=keycloak/distributed-cache=offlineClientSessions:write-attribute(name=owners, value=${env.CACHE_OWNERS:1})
-/subsystem=infinispan/cache-container=keycloak/distributed-cache=loginFailures:write-attribute(name=owners, value=${env.CACHE_OWNERS:1})
-
-
 echo *** Enable debug logging ***
 /subsystem=logging/logger=org.keycloak.cluster.infinispan:add(level=DEBUG)
 
@@ -132,12 +125,6 @@ echo *** Enable debug logging ***
 /subsystem=logging/logger=org.keycloak.models.cache.infinispan:add(level=DEBUG)
 
 /subsystem=logging/logger=org.keycloak.models.sessions.infinispan:add(level=DEBUG)
-
-echo *** Update undertow subsystem ***
-/subsystem=undertow/server=default-server/http-listener=default:write-attribute(name=proxy-address-forwarding,value=true)
-
-#echo *** Update keycloak-server subsystem, infinispan remoteStoreSecurity ***
-#/subsystem=keycloak-server/spi=connectionsInfinispan/provider=default:map-put(name=properties,key=remoteStoreSecurityEnabled,value=${keycloak.connectionsInfinispan.default.remoteStoreSecurityEnabled:true})
 
 run-batch
 stop-embedded-server

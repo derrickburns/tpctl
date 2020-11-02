@@ -21,26 +21,6 @@ local helmrelease(me) = (
         startupScripts: {
           'remote-infinispan.cli': remote_infinispan,
         },
-        serviceAccount: {
-          create: true,
-          name: me.pkg,
-        },
-        rbac: {
-          create: true,
-          rules: [
-            {
-              apiGroups: [''],
-              resources: [
-                'pods'
-              ],
-              verbs: [
-                'get',
-                'list',
-                'watch',
-              ],
-            },
-          ],
-        },
         extraEnv: std.manifestYamlDoc(
           [
             {
@@ -64,16 +44,12 @@ local helmrelease(me) = (
               value: '2',
             },
             {
-              name: 'PROXY_ADDRESS_FORWARDING',
-              value: 'true',
+              name: 'CACHE_OWNERS_AUTH_SESSIONS_COUNT',
+              value: '2',
             },
             {
-              name: 'KUBERNETES_NAMESPACE',
-              valueFrom: {
-                fieldRef: {
-                  fieldPath: 'metadata.namespace',
-                },
-              },
+              name: 'PROXY_ADDRESS_FORWARDING',
+              value: 'true',
             },
             {
               name: 'POD_NAME',
@@ -85,8 +61,28 @@ local helmrelease(me) = (
               },
             },
             {
+              name: 'JGROUPS_DISCOVERY_PROTOCOL',
+              value: 'dns.DNS_PING',
+            },
+            {
+              name: 'JGROUPS_DISCOVERY_PROPERTIES',
+              value: 'dns_query=keycloak-headless.'+me.namespace+'.svc.cluster.local',
+            },
+            {
               name: 'JAVA_OPTS',
-              value: '-server -Djava.net.preferIPv4Stack=true -Djava.awt.headless=true -Djboss.default.jgroups.stack=kubernetes -Djboss.node.name=$(POD_NAME) -Djboss.tx.node.id=$(POD_NAME) -Djboss.site.name=$(KUBERNETES_NAMESPACE) -Dremote.cache.host=infinispan-hotrod.infinispan.svc.cluster.local -Dkeycloak.connectionsInfinispan.hotrodProtocolVersion=2.8'
+              value: std.join(' ', [
+                '-server',
+                '-XX:+UseContainerSupport',
+                '-XX:MaxRAMPercentage=75.0',
+                '-Djboss.modules.system.pkgs=$JBOSS_MODULES_SYSTEM_PKGS',
+                '-Djava.net.preferIPv4Stack=true',
+                '-Djava.awt.headless=true',
+                '-Djboss.node.name=$(POD_NAME)',
+                '-Djboss.tx.node.id=$(POD_NAME)',
+                '-Djboss.site.name=' + me.namespace,
+                '-Dremote.cache.host=infinispan-hotrod.infinispan.svc.cluster.local',
+                '-Dkeycloak.connectionsInfinispan.hotrodProtocolVersion=2.8',
+              ]),
             }
           ],
           indent_array_in_object=false

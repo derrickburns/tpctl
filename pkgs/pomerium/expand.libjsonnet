@@ -23,6 +23,7 @@ local accessLoggingOption = {
           responseFlags: '%RESPONSE_FLAGS%',
           startTime: '%START_TIME%',
           upstream: '%UPSTREAM_CLUSTER%',
+          upstreamHost: '%UPSTREAM_HOST%',
           userAgent: '%REQ(user-agent)%',
           referer: '%REQ(referer)%',
         },
