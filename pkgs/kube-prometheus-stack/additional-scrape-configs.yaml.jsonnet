@@ -37,7 +37,9 @@ local scrapeConfigs(me) = k8s.secret(me, name='prometheus-additionl-scrape-confi
 
 function(config, prev, namespace, pkg) (
   local me = common.package(config, prev, namespace, pkg);
-  [
-    scrapeConfigs(me),
-  ]
+  if lib.getElse(me, 'prometheus.additionalScrapeConfigsSecret', false) then
+    [
+      scrapeConfigs(me),
+    ]
+  else {}
 )
