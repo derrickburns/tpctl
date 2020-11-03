@@ -4,14 +4,14 @@ local global = import '../../lib/global.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
-local helmrelease(me) = k8s.helmrelease(me, { name: 'argo', version: '0.11.0', repository: 'https://argoproj.github.io/argo-helm' }) {
+local helmrelease(me) = k8s.helmrelease(me, { name: 'argo', version: '0.13.2', repository: 'https://argoproj.github.io/argo-helm' }) {
   spec+: {
     values+: {
       init: {
         serviceAccount: 'argo-workflow',
       },
       images: {
-        tag: 'v2.10.2',
+        tag: 'v2.11.6',
       },
       controller: {
         metricsConfig: {
