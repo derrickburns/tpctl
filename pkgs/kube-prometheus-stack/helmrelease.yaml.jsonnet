@@ -140,7 +140,7 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '9.4.5', repository: 'htt
           thanos: if lib.isEnabledAt(me, 'prometheus.thanos.sidecar') then {
             version: 'v0.16.0',
             objectStorageConfig: {
-              name: 'thanos-sidecar',
+              name: 'thanos',
               key: 'object-store.yaml',
             },
           } else {},
