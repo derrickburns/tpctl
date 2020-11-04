@@ -36,12 +36,12 @@ local deployment(me) = flux.deployment(me,
                                          }],
                                          resources: {
                                            limits: {
-                                             cpu: '2000m',
-                                             memory: '8000Mi',
+                                             cpu: '500',
+                                             memory: '1000Mi',
                                            },
                                            requests: {
                                              cpu: '500m',
-                                             memory: '1000Mi',
+                                             memory: '500Mi',
                                            },
                                          },
                                        }) {
