@@ -139,7 +139,12 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '9.4.5', repository: 'htt
           tolerations: [k8s.toleration()],
           thanos: if lib.isEnabledAt(me, 'prometheus.thanos.sidecar') then {
             version: 'v0.16.0',
-            resources: {
+            resources: if lib.getElse(me, 'prometheus.thanos.sidecar.uploadCompacted', false) then {
+              requests: {
+                cpu: '1',
+                memory: '1.5G',
+              },
+            } else {
               requests: {
                 cpu: '0.5',
                 memory: '1G',
