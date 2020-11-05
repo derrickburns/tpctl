@@ -34,7 +34,7 @@ local datasources(me) = k8s.configmap(me, name='grafana-extra-datasources') + k8
         (if global.isEnabled(me.config, 'thanos') then [{
            local thanos = global.package(me.config, 'thanos'),
            name: 'Thanos',
-           type: 'Prometheus',
+           type: 'prometheus',
            url: 'http://thanos-query-http.%s:10902' % thanos.namespace,
            access: 'server',
            'basic-auth': false,
