@@ -47,15 +47,15 @@ local virtualService(me) = gloo.virtualService(me) {
               }
             }
           },
-          options: {
-            lbHash: {
-              hashPolicies: [
-                {
-                  header: 'x-forwarded-for',
-                }
-              ],
-            },
-          }
+//          options: {
+//            lbHash: {
+//              hashPolicies: [
+//                {
+//                  header: 'x-forwarded-for',
+//                }
+//              ],
+//            },
+//          }
         },
       ],
     },
