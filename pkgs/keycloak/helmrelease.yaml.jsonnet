@@ -5,6 +5,7 @@ local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
 local remote_infinispan = importstr './remote-infinispan.cli';
+local local_infinispan = importstr './local-infinispan.cli';
 
 local helmrelease(me) = (
   k8s.helmrelease(me, { version: '9.0.1', repository: 'https://codecentric.github.io/helm-charts' }) {
@@ -19,7 +20,7 @@ local helmrelease(me) = (
           enabled: false,
         },
         startupScripts: {
-          'remote-infinispan.cli': remote_infinispan,
+          'local-infinispan.cli': local_infinispan,
         },
         extraEnv: std.manifestYamlDoc(
           [
@@ -82,6 +83,7 @@ local helmrelease(me) = (
                 '-Djboss.site.name=' + me.namespace,
                 '-Dremote.cache.host=infinispan-hotrod.infinispan.svc.cluster.local',
                 '-Dkeycloak.connectionsInfinispan.hotrodProtocolVersion=2.8',
+                '-Dorg.wildfly.sigterm.suspend.timeout=45',
               ]),
             }
           ],

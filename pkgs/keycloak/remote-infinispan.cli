@@ -12,6 +12,9 @@ echo ** Allow load balancer to handle sticky sessions **
 /subsystem=keycloak-server/spi=stickySessionEncoder/:add
 /subsystem=keycloak-server/spi=stickySessionEncoder/provider=infinispan/:add(properties={shouldAttachRoute => "false"},enabled=true)
 
+echo ** Enable graceful transaction shutdown **
+/subsystem=ejb3:write-attribute(name=enable-graceful-txn-shutdown,value=true)
+
 echo ** Update distributed-cache sessions element **
 /subsystem=infinispan/cache-container=keycloak/distributed-cache=sessions/store=remote:add( \
     passivation=false, \
