@@ -20,21 +20,21 @@ local datasources(me) = k8s.configmap(me, name='grafana-extra-datasources') + k8
         type: 'influxdb',
         database: 'k6',
         url: 'http://influxdb.%s:8086' % influxdb.namespace,
-      }] + if global.isEnabled(me.config, 'jaeger') then [{
+      }] else [] + if global.isEnabled(me.config, 'jaeger') then [{
         local jaeger = global.package(me.config, 'jaeger'),
         name: 'Jaeger',
         type: 'jaeger',
         url: 'http://jaeger-query.%s:16686' % jaeger.namespace,
         access: 'server',
         'basic-auth': false,
-      }] + if global.isEnabled(me.config, 'thanos') then [{
+      }] else [] + if global.isEnabled(me.config, 'thanos') then [{
         local thanos = global.package(me.config, 'thanos'),
         name: 'Thanos',
         type: 'Prometheus',
         url: 'http://thanos-query-http.%s:10902' % thanos.namespace,
         access: 'server',
         'basic-auth': false,
-      }],
+      }] else [],
     },),
   },
 };
