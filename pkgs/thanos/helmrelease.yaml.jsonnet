@@ -1,4 +1,5 @@
 local common = import '../../lib/common.jsonnet';
+local global = import '../../lib/global.jsonnet';
 local k8s = import '../../lib/k8s.jsonnet';
 local lib = import '../../lib/lib.jsonnet';
 
@@ -6,6 +7,13 @@ local secretName = 'thanos';
 
 local helmrelease(me) = k8s.helmrelease(me, { version: '0.3.29', repository: 'https://kubernetes-charts.banzaicloud.com' }) {
   local config = me.config,
+  local metrics = {
+    metrics: {
+      serviceMonitor: {
+        enabled: global.isEnabled(me.config, 'kube-prometheus-stack'),
+      },
+    },
+  },
   local affinityAndTolerations = {
     affinity: {
       nodeAffinity: k8s.nodeAffinity(),
@@ -19,13 +27,13 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '0.3.29', repository: 'ht
       },
       bucket: {
         serviceAccount: lib.getElse(config, 'namespaces.monitoring.kube-prometheus-stack.prometheus.serviceAccount', ''),
-      } + affinityAndTolerations,
+      } + affinityAndTolerations + metrics,
       store: {
         serviceAccount: lib.getElse(config, 'namespaces.monitoring.kube-prometheus-stack.prometheus.serviceAccount', ''),
-      } + affinityAndTolerations,
+      } + affinityAndTolerations + metrics,
       query: {
         serviceAccount: lib.getElse(config, 'namespaces.monitoring.kube-prometheus-stack.prometheus.serviceAccount', ''),
-      } + affinityAndTolerations,
+      } + affinityAndTolerations + metrics,
       compact: {
         serviceAccount: lib.getElse(config, 'namespaces.monitoring.kube-prometheus-stack.prometheus.serviceAccount', ''),
         dataVolume: {
@@ -47,7 +55,7 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '0.3.29', repository: 'ht
             },
           },
         },
-      } + affinityAndTolerations,
+      } + affinityAndTolerations + metrics,
       objstoreSecretOverride: 'thanos',
     },
   },
