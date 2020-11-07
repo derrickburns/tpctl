@@ -14,13 +14,21 @@ local helmrelease(me) = (
         image: {
           tag: '11.0.0',
         },
-        replicas: 3,
+        replicas: 4,
         imagePullSecrets: [],
         postgresql: {
           enabled: false,
         },
         startupScripts: {
           'local-infinispan.cli': local_infinispan,
+        },
+        resources: {
+          requests: {
+            memory: '1280Mi',
+          },
+          limits: {
+            memory: '2048Mi',
+          },
         },
         extraEnv: std.manifestYamlDoc(
           [
@@ -41,7 +49,7 @@ local helmrelease(me) = (
               value: me.pkg,
             },
             {
-              name: 'CACHE_OWNERS',
+              name: 'CACHE_OWNERS_COUNT',
               value: '2',
             },
             {
@@ -51,6 +59,10 @@ local helmrelease(me) = (
             {
               name: 'PROXY_ADDRESS_FORWARDING',
               value: 'true',
+            },
+            {
+              name: 'KEYCLOAK_STATISTICS',
+              value: 'all',
             },
             {
               name: 'POD_NAME',
@@ -83,12 +95,26 @@ local helmrelease(me) = (
                 '-Djboss.site.name=' + me.namespace,
                 '-Dremote.cache.host=infinispan-hotrod.infinispan.svc.cluster.local',
                 '-Dkeycloak.connectionsInfinispan.hotrodProtocolVersion=2.8',
-                '-Dorg.wildfly.sigterm.suspend.timeout=45',
+                '-Dorg.wildfly.sigterm.suspend.timeout=120',
+                '-Djboss.as.management.blocking.timeout=1200',
               ]),
             }
           ],
           indent_array_in_object=false
         ),
+        livenessProbe: std.manifestYamlDoc({
+          httpGet: {
+            path: '/auth/',
+            port: 'http',
+          },
+          initialDelaySeconds: 1200,
+          timeoutSeconds: 20,
+        }),
+        terminationGracePeriodSeconds: 120,
+        podDisruptionBudget: {
+          maxUnavailable: 1,
+        },
+        // SET FOR PRODUCTION podManagementPolicy: 'OrderedReady',
         extraInitContainers: std.manifestYamlDoc(
           [
             {
@@ -148,10 +174,13 @@ local helmrelease(me) = (
           ],
           indent_array_in_object=false
         ),
-        serviceMonitor: {
+        extraServiceMonitor: {
           enabled: global.isEnabled(me.config, 'kube-prometheus-stack'),
           path: '/auth/realms/master/metrics',
           port: 'http',
+        },
+        serviceMonitor: {
+          enabled: global.isEnabled(me.config, 'kube-prometheus-stack'),
         },
         extraEnvFrom: std.manifestYamlDoc(
           [
