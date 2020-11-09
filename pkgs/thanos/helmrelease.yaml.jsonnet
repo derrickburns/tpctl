@@ -26,15 +26,19 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '0.3.29', repository: 'ht
         tag: 'v0.16.0',
       },
       bucket: {
+        enabled: lib.isEnabledAt(me, 'bucket'),
         serviceAccount: lib.getElse(config, 'namespaces.monitoring.kube-prometheus-stack.prometheus.serviceAccount', ''),
       } + affinityAndTolerations + metrics,
       store: {
+        enabled: lib.isEnabledAt(me, 'store'),
         serviceAccount: lib.getElse(config, 'namespaces.monitoring.kube-prometheus-stack.prometheus.serviceAccount', ''),
       } + affinityAndTolerations + metrics,
       query: {
+        enabled: lib.isEnabledAt(me, 'query'),
         serviceAccount: lib.getElse(config, 'namespaces.monitoring.kube-prometheus-stack.prometheus.serviceAccount', ''),
       } + affinityAndTolerations + metrics,
       compact: {
+        enabled: lib.isEnabledAt(me, 'compact'),
         serviceAccount: lib.getElse(config, 'namespaces.monitoring.kube-prometheus-stack.prometheus.serviceAccount', ''),
         dataVolume: {
           backend: {
@@ -56,7 +60,9 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '0.3.29', repository: 'ht
           },
         },
       } + affinityAndTolerations + metrics,
-      sidecar: metrics,
+      sidecar: {
+        enabled: lib.isEnabledAt(me, 'sidecar'),
+      } + metrics,
       objstoreSecretOverride: 'thanos',
     },
   },
