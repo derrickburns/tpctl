@@ -56,6 +56,7 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '0.3.29', repository: 'ht
           },
         },
       } + affinityAndTolerations + metrics,
+      sidecar: metrics,
       objstoreSecretOverride: 'thanos',
     },
   },
