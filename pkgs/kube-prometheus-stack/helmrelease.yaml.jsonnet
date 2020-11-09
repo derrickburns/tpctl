@@ -89,6 +89,9 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '9.4.5', repository: 'htt
           ruleSelectorNilUsesHelmValues: false,
           serviceMonitorSelectorNilUsesHelmValues: false,
           externalUrl: 'https://prometheus.%s' % config.cluster.metadata.domain,
+          image: {
+            tag: 'v2.22.1',
+          },
           podMonitorSelectorNilUsesHelmValues: false,
           externalLabels: {
             region: config.cluster.metadata.region,
