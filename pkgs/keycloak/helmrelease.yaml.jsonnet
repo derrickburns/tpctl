@@ -7,14 +7,18 @@ local lib = import '../../lib/lib.jsonnet';
 local remote_infinispan = importstr './remote-infinispan.cli';
 local local_infinispan = importstr './local-infinispan.cli';
 
+local imagerepo = 'docker.io/jboss/keycloak';
+local imagetag = '11.0.0';
+
 local helmrelease(me) = (
   k8s.helmrelease(me, { version: '9.0.1', repository: 'https://codecentric.github.io/helm-charts' }) {
     spec+: {
       values+: {
         image: {
-          tag: '11.0.0',
+          repository: imagerepo,
+          tag: imagetag,
         },
-        replicas: 4,
+        replicas: 3,
         imagePullSecrets: [],
         postgresql: {
           enabled: false,
@@ -50,7 +54,7 @@ local helmrelease(me) = (
             },
             {
               name: 'CACHE_OWNERS_COUNT',
-              value: '2',
+              value: '3',
             },
             {
               name: 'CACHE_OWNERS_AUTH_SESSIONS_COUNT',
@@ -63,6 +67,10 @@ local helmrelease(me) = (
             {
               name: 'KEYCLOAK_STATISTICS',
               value: 'all',
+            },
+            {
+              name: 'KEYCLOAK_INFINISPAN_SESSIONS_PER_SEGMENT',
+              value: '512',
             },
             {
               name: 'POD_NAME',
@@ -114,9 +122,25 @@ local helmrelease(me) = (
         podDisruptionBudget: {
           maxUnavailable: 1,
         },
-        // SET FOR PRODUCTION podManagementPolicy: 'OrderedReady',
+        podManagementPolicy: 'OrderedReady',
         extraInitContainers: std.manifestYamlDoc(
           [
+            {
+              name: 'init-config',
+              image: imagerepo + ':' + imagetag,
+              imagePullPolicy: 'IfNotPresent',
+              command: ['/bin/bash', '-c', 'cp -R /opt/jboss/keycloak/standalone/configuration/* /configuration && cp /xml/standalone-ha.xml /configuration'],
+              volumeMounts: [
+                {
+                  name: 'configuration',
+                  mountPath: '/configuration',
+                },
+                {
+                  name: 'standalone-ha',
+                  mountPath: '/xml',
+                },
+              ],
+            },
             {
               name: 'rest-provider',
               image: 'busybox',
@@ -162,6 +186,16 @@ local helmrelease(me) = (
               name: 'extensions',
               emptyDir: {},
             },
+            {
+              name: 'configuration',
+              emptyDir: {},
+            },
+            {
+              name: 'standalone-ha',
+              configMap: {
+                name: 'standalone-ha'
+              },
+            }
           ],
           indent_array_in_object=false
         ),
@@ -171,6 +205,10 @@ local helmrelease(me) = (
               name: 'extensions',
               mountPath: '/opt/jboss/keycloak/standalone/deployments',
             },
+            {
+              name: 'configuration',
+              mountPath: '/opt/jboss/keycloak/standalone/configuration',
+            }
           ],
           indent_array_in_object=false
         ),
