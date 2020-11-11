@@ -19,7 +19,7 @@ local dashboardConfig = {
   "editable": true,
   "gnetId": 10441,
   "graphTooltip": 1,
-  "iteration": 1605029327430,
+  "iteration": 1605130782949,
   "links": [],
   "panels": [
     {
@@ -28,24 +28,26 @@ local dashboardConfig = {
       "dashLength": 10,
       "dashes": false,
       "datasource": "$datasource",
+      "description": "",
       "fieldConfig": {
         "defaults": {
           "custom": {}
         },
         "overrides": []
       },
-      "fill": 2,
+      "fill": 1,
       "fillGradient": 0,
       "gridPos": {
         "h": 7,
-        "w": 12,
+        "w": 24,
         "x": 0,
         "y": 0
       },
       "hiddenSeries": false,
       "hideTimeOverride": false,
-      "id": 24,
+      "id": 35,
       "legend": {
+        "alignAsTable": true,
         "avg": false,
         "current": false,
         "max": false,
@@ -74,13 +76,13 @@ local dashboardConfig = {
       "steppedLine": false,
       "targets": [
         {
-          "expr": "sum(jvm_memory_bytes_committed{job=\"keycloak-http\"}) by (pod) ",
+          "expr": "histogram_quantile(0.95, sum(rate(keycloak_request_duration_bucket{route!~\".*\\\\..*\"}[$__rate_interval])) by (le, route))",
           "format": "time_series",
           "hide": false,
           "instant": false,
           "interval": "",
           "intervalFactor": 1,
-          "legendFormat": "{{pod}}",
+          "legendFormat": "{{ route }}",
           "refId": "A"
         }
       ],
@@ -88,7 +90,513 @@ local dashboardConfig = {
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "JVM Memory (Committed)",
+      "title": "Request Latency (.95)",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "$$hashKey": "object:812",
+          "decimals": 0,
+          "format": "ms",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": "0",
+          "show": true
+        },
+        {
+          "$$hashKey": "object:813",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": false
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "$datasource",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "fill": 2,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 7,
+        "w": 8,
+        "x": 0,
+        "y": 7
+      },
+      "hiddenSeries": false,
+      "hideTimeOverride": false,
+      "id": 24,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "rightSide": false,
+        "show": true,
+        "sideWidth": 100,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "nullPointMode": "connected",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "7.2.0",
+      "pointradius": 5,
+      "points": false,
+      "renderer": "flot",
+      "repeat": "Pod",
+      "scopedVars": {
+        "Pod": {
+          "selected": false,
+          "text": "keycloak-0",
+          "value": "keycloak-0"
+        }
+      },
+      "seriesOverrides": [
+        {
+          "$$hashKey": "object:231",
+          "alias": "/.*max.*/",
+          "color": "#C4162A",
+          "dashes": true,
+          "fill": 0,
+          "lines": true
+        },
+        {
+          "$$hashKey": "object:445",
+          "alias": "container limit",
+          "color": "#CA95E5",
+          "dashes": true,
+          "fill": 0
+        },
+        {
+          "$$hashKey": "object:612",
+          "alias": "resident",
+          "color": "#96D98D",
+          "fill": 0
+        }
+      ],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "container_spec_memory_limit_bytes{container=\"keycloak\", pod_name=\"$Pod\"}",
+          "interval": "",
+          "legendFormat": "container limit",
+          "refId": "E"
+        },
+        {
+          "expr": "sum(process_resident_memory_bytes{job=\"keycloak-http\", pod=\"$Pod\"}) by (pod)",
+          "interval": "",
+          "legendFormat": "resident",
+          "refId": "D"
+        },
+        {
+          "expr": "sum(jvm_memory_bytes_max{area=\"heap\", job=\"keycloak-http\", pod=\"$Pod\"})",
+          "format": "time_series",
+          "hide": false,
+          "instant": false,
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "max heap",
+          "refId": "B"
+        },
+        {
+          "expr": "sum(jvm_memory_bytes_committed{area=\"heap\", job=\"keycloak-http\", pod=\"$Pod\"}) by (pod)",
+          "format": "time_series",
+          "hide": false,
+          "instant": false,
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "committed heap",
+          "refId": "A"
+        },
+        {
+          "expr": "sum(jvm_memory_bytes_used{area=\"heap\", job=\"keycloak-http\", pod=\"$Pod\"}) by (pod)",
+          "format": "time_series",
+          "hide": false,
+          "instant": false,
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "used heap",
+          "refId": "C"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Memory ($Pod)",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "$$hashKey": "object:1567",
+          "decimals": null,
+          "format": "bytes",
+          "label": "",
+          "logBase": 1,
+          "max": null,
+          "min": "0",
+          "show": true
+        },
+        {
+          "$$hashKey": "object:1568",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": false
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "$datasource",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "fill": 2,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 7,
+        "w": 8,
+        "x": 8,
+        "y": 7
+      },
+      "hiddenSeries": false,
+      "hideTimeOverride": false,
+      "id": 36,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "rightSide": false,
+        "show": true,
+        "sideWidth": 100,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "nullPointMode": "connected",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "7.2.0",
+      "pointradius": 5,
+      "points": false,
+      "renderer": "flot",
+      "repeatIteration": 1605130782949,
+      "repeatPanelId": 24,
+      "scopedVars": {
+        "Pod": {
+          "selected": false,
+          "text": "keycloak-1",
+          "value": "keycloak-1"
+        }
+      },
+      "seriesOverrides": [
+        {
+          "$$hashKey": "object:231",
+          "alias": "/.*max.*/",
+          "color": "#C4162A",
+          "dashes": true,
+          "fill": 0,
+          "lines": true
+        },
+        {
+          "$$hashKey": "object:445",
+          "alias": "container limit",
+          "color": "#CA95E5",
+          "dashes": true,
+          "fill": 0
+        },
+        {
+          "$$hashKey": "object:612",
+          "alias": "resident",
+          "color": "#96D98D",
+          "fill": 0
+        }
+      ],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "container_spec_memory_limit_bytes{container=\"keycloak\", pod_name=\"$Pod\"}",
+          "interval": "",
+          "legendFormat": "container limit",
+          "refId": "E"
+        },
+        {
+          "expr": "sum(process_resident_memory_bytes{job=\"keycloak-http\", pod=\"$Pod\"}) by (pod)",
+          "interval": "",
+          "legendFormat": "resident",
+          "refId": "D"
+        },
+        {
+          "expr": "sum(jvm_memory_bytes_max{area=\"heap\", job=\"keycloak-http\", pod=\"$Pod\"})",
+          "format": "time_series",
+          "hide": false,
+          "instant": false,
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "max heap",
+          "refId": "B"
+        },
+        {
+          "expr": "sum(jvm_memory_bytes_committed{area=\"heap\", job=\"keycloak-http\", pod=\"$Pod\"}) by (pod)",
+          "format": "time_series",
+          "hide": false,
+          "instant": false,
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "committed heap",
+          "refId": "A"
+        },
+        {
+          "expr": "sum(jvm_memory_bytes_used{area=\"heap\", job=\"keycloak-http\", pod=\"$Pod\"}) by (pod)",
+          "format": "time_series",
+          "hide": false,
+          "instant": false,
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "used heap",
+          "refId": "C"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Memory ($Pod)",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "$$hashKey": "object:1567",
+          "decimals": null,
+          "format": "bytes",
+          "label": "",
+          "logBase": 1,
+          "max": null,
+          "min": "0",
+          "show": true
+        },
+        {
+          "$$hashKey": "object:1568",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": false
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "$datasource",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "fill": 2,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 7,
+        "w": 8,
+        "x": 16,
+        "y": 7
+      },
+      "hiddenSeries": false,
+      "hideTimeOverride": false,
+      "id": 37,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "rightSide": false,
+        "show": true,
+        "sideWidth": 100,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "nullPointMode": "connected",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "7.2.0",
+      "pointradius": 5,
+      "points": false,
+      "renderer": "flot",
+      "repeatIteration": 1605130782949,
+      "repeatPanelId": 24,
+      "scopedVars": {
+        "Pod": {
+          "selected": false,
+          "text": "keycloak-2",
+          "value": "keycloak-2"
+        }
+      },
+      "seriesOverrides": [
+        {
+          "$$hashKey": "object:231",
+          "alias": "/.*max.*/",
+          "color": "#C4162A",
+          "dashes": true,
+          "fill": 0,
+          "lines": true
+        },
+        {
+          "$$hashKey": "object:445",
+          "alias": "container limit",
+          "color": "#CA95E5",
+          "dashes": true,
+          "fill": 0
+        },
+        {
+          "$$hashKey": "object:612",
+          "alias": "resident",
+          "color": "#96D98D",
+          "fill": 0
+        }
+      ],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "container_spec_memory_limit_bytes{container=\"keycloak\", pod_name=\"$Pod\"}",
+          "interval": "",
+          "legendFormat": "container limit",
+          "refId": "E"
+        },
+        {
+          "expr": "sum(process_resident_memory_bytes{job=\"keycloak-http\", pod=\"$Pod\"}) by (pod)",
+          "interval": "",
+          "legendFormat": "resident",
+          "refId": "D"
+        },
+        {
+          "expr": "sum(jvm_memory_bytes_max{area=\"heap\", job=\"keycloak-http\", pod=\"$Pod\"})",
+          "format": "time_series",
+          "hide": false,
+          "instant": false,
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "max heap",
+          "refId": "B"
+        },
+        {
+          "expr": "sum(jvm_memory_bytes_committed{area=\"heap\", job=\"keycloak-http\", pod=\"$Pod\"}) by (pod)",
+          "format": "time_series",
+          "hide": false,
+          "instant": false,
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "committed heap",
+          "refId": "A"
+        },
+        {
+          "expr": "sum(jvm_memory_bytes_used{area=\"heap\", job=\"keycloak-http\", pod=\"$Pod\"}) by (pod)",
+          "format": "time_series",
+          "hide": false,
+          "instant": false,
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "used heap",
+          "refId": "C"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Memory ($Pod)",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -145,13 +653,13 @@ local dashboardConfig = {
       "fillGradient": 0,
       "gridPos": {
         "h": 7,
-        "w": 12,
-        "x": 12,
-        "y": 0
+        "w": 8,
+        "x": 0,
+        "y": 14
       },
       "hiddenSeries": false,
       "hideTimeOverride": false,
-      "id": 25,
+      "id": 30,
       "legend": {
         "avg": false,
         "current": false,
@@ -175,27 +683,53 @@ local dashboardConfig = {
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
+      "repeat": "Pod",
+      "scopedVars": {
+        "Pod": {
+          "selected": false,
+          "text": "keycloak-0",
+          "value": "keycloak-0"
+        }
+      },
       "seriesOverrides": [],
       "spaceLength": 10,
       "stack": false,
       "steppedLine": false,
       "targets": [
         {
-          "expr": "sum(jvm_memory_bytes_used{job=\"keycloak-http\"}) by (pod) ",
+          "expr": "sum(jvm_threads_current{job=\"keycloak-http\",pod=\"$Pod\"}) by (pod) ",
           "format": "time_series",
           "hide": false,
           "instant": false,
           "interval": "",
           "intervalFactor": 1,
-          "legendFormat": "{{pod}}",
+          "legendFormat": "current",
           "refId": "A"
+        },
+        {
+          "expr": "sum(jvm_threads_daemon{job=\"keycloak-http\",pod=\"$Pod\"}) by (pod) ",
+          "interval": "",
+          "legendFormat": "daemon",
+          "refId": "B"
+        },
+        {
+          "expr": "sum(jvm_threads_deadlocked_monitor{job=\"keycloak-http\",pod=\"$Pod\"}) by (pod) ",
+          "interval": "",
+          "legendFormat": "deadlocked monitor",
+          "refId": "C"
+        },
+        {
+          "expr": "sum(jvm_threads_deadlocked{job=\"keycloak-http\",pod=\"$Pod\"}) by (pod) ",
+          "interval": "",
+          "legendFormat": "deadlocked",
+          "refId": "D"
         }
       ],
       "thresholds": [],
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "JVM Memory (Used)",
+      "title": "Threads ($Pod)",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -213,7 +747,275 @@ local dashboardConfig = {
         {
           "$$hashKey": "object:1617",
           "decimals": null,
-          "format": "bytes",
+          "format": "short",
+          "label": "",
+          "logBase": 1,
+          "max": null,
+          "min": "0",
+          "show": true
+        },
+        {
+          "$$hashKey": "object:1618",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": false
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "$datasource",
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "fill": 2,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 7,
+        "w": 8,
+        "x": 8,
+        "y": 14
+      },
+      "hiddenSeries": false,
+      "hideTimeOverride": false,
+      "id": 38,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "rightSide": true,
+        "show": true,
+        "sideWidth": 100,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "nullPointMode": "connected",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "7.2.0",
+      "pointradius": 5,
+      "points": false,
+      "renderer": "flot",
+      "repeatIteration": 1605130782949,
+      "repeatPanelId": 30,
+      "scopedVars": {
+        "Pod": {
+          "selected": false,
+          "text": "keycloak-1",
+          "value": "keycloak-1"
+        }
+      },
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "sum(jvm_threads_current{job=\"keycloak-http\",pod=\"$Pod\"}) by (pod) ",
+          "format": "time_series",
+          "hide": false,
+          "instant": false,
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "current",
+          "refId": "A"
+        },
+        {
+          "expr": "sum(jvm_threads_daemon{job=\"keycloak-http\",pod=\"$Pod\"}) by (pod) ",
+          "interval": "",
+          "legendFormat": "daemon",
+          "refId": "B"
+        },
+        {
+          "expr": "sum(jvm_threads_deadlocked_monitor{job=\"keycloak-http\",pod=\"$Pod\"}) by (pod) ",
+          "interval": "",
+          "legendFormat": "deadlocked monitor",
+          "refId": "C"
+        },
+        {
+          "expr": "sum(jvm_threads_deadlocked{job=\"keycloak-http\",pod=\"$Pod\"}) by (pod) ",
+          "interval": "",
+          "legendFormat": "deadlocked",
+          "refId": "D"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Threads ($Pod)",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "$$hashKey": "object:1617",
+          "decimals": null,
+          "format": "short",
+          "label": "",
+          "logBase": 1,
+          "max": null,
+          "min": "0",
+          "show": true
+        },
+        {
+          "$$hashKey": "object:1618",
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": false
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "$datasource",
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "fill": 2,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 7,
+        "w": 8,
+        "x": 16,
+        "y": 14
+      },
+      "hiddenSeries": false,
+      "hideTimeOverride": false,
+      "id": 39,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "rightSide": true,
+        "show": true,
+        "sideWidth": 100,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "nullPointMode": "connected",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "7.2.0",
+      "pointradius": 5,
+      "points": false,
+      "renderer": "flot",
+      "repeatIteration": 1605130782949,
+      "repeatPanelId": 30,
+      "scopedVars": {
+        "Pod": {
+          "selected": false,
+          "text": "keycloak-2",
+          "value": "keycloak-2"
+        }
+      },
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "sum(jvm_threads_current{job=\"keycloak-http\",pod=\"$Pod\"}) by (pod) ",
+          "format": "time_series",
+          "hide": false,
+          "instant": false,
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "current",
+          "refId": "A"
+        },
+        {
+          "expr": "sum(jvm_threads_daemon{job=\"keycloak-http\",pod=\"$Pod\"}) by (pod) ",
+          "interval": "",
+          "legendFormat": "daemon",
+          "refId": "B"
+        },
+        {
+          "expr": "sum(jvm_threads_deadlocked_monitor{job=\"keycloak-http\",pod=\"$Pod\"}) by (pod) ",
+          "interval": "",
+          "legendFormat": "deadlocked monitor",
+          "refId": "C"
+        },
+        {
+          "expr": "sum(jvm_threads_deadlocked{job=\"keycloak-http\",pod=\"$Pod\"}) by (pod) ",
+          "interval": "",
+          "legendFormat": "deadlocked",
+          "refId": "D"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Threads ($Pod)",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "$$hashKey": "object:1617",
+          "decimals": null,
+          "format": "short",
           "label": "",
           "logBase": 1,
           "max": null,
@@ -254,7 +1056,7 @@ local dashboardConfig = {
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 7
+        "y": 21
       },
       "hiddenSeries": false,
       "hideTimeOverride": false,
@@ -391,7 +1193,7 @@ local dashboardConfig = {
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 7
+        "y": 21
       },
       "hiddenSeries": false,
       "hideTimeOverride": false,
@@ -528,7 +1330,7 @@ local dashboardConfig = {
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 15
+        "y": 29
       },
       "hiddenSeries": false,
       "hideTimeOverride": false,
@@ -635,7 +1437,7 @@ local dashboardConfig = {
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 15
+        "y": 29
       },
       "hiddenSeries": false,
       "hideTimeOverride": false,
@@ -744,7 +1546,7 @@ local dashboardConfig = {
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 23
+        "y": 37
       },
       "hiddenSeries": false,
       "hideTimeOverride": false,
@@ -851,7 +1653,7 @@ local dashboardConfig = {
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 23
+        "y": 37
       },
       "hiddenSeries": false,
       "hideTimeOverride": false,
@@ -941,12 +1743,38 @@ local dashboardConfig = {
       }
     }
   ],
-  "refresh": "5s",
+  "refresh": "10s",
   "schemaVersion": 26,
   "style": "dark",
   "tags": [],
   "templating": {
     "list": [
+      {
+        "allValue": "*",
+        "current": {
+          "selected": false,
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": "$datasource",
+        "definition": "label_values(jvm_info{job=\"keycloak-http\"}, pod)",
+        "hide": 0,
+        "includeAll": true,
+        "label": "Pod",
+        "multi": false,
+        "name": "Pod",
+        "options": [],
+        "query": "label_values(jvm_info{job=\"keycloak-http\"}, pod)",
+        "refresh": 2,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      },
       {
         "current": {
           "selected": false,
@@ -968,7 +1796,7 @@ local dashboardConfig = {
     ]
   },
   "time": {
-    "from": "now-15m",
+    "from": "now-30m",
     "to": "now"
   },
   "timepicker": {
@@ -1000,7 +1828,7 @@ local dashboardConfig = {
   "timezone": "",
   "title": "Keycloak Metrics",
   "uid": "keycloak",
-  "version": 1
+  "version": 6
 };
 
 local configmap(me) = grafana.dashboard(me, me.pkg, dashboardConfig);

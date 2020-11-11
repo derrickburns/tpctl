@@ -214,13 +214,15 @@ local helmrelease(me) = (
           ],
           indent_array_in_object=false
         ),
-        extraServiceMonitor: {
+        serviceMonitor: {
           enabled: global.isEnabled(me.config, 'kube-prometheus-stack'),
           path: '/auth/realms/master/metrics',
           port: 'http',
         },
-        serviceMonitor: {
-          enabled: global.isEnabled(me.config, 'kube-prometheus-stack'),
+        extraServiceMonitor: {
+          enabled: lib.getElse(me, 'wildflyServiceMonitorEnabled', false) && global.isEnabled(me.config, 'kube-prometheus-stack'),
+          path: '/metrics',
+          port: 'http-management',
         },
         extraEnvFrom: std.manifestYamlDoc(
           [
