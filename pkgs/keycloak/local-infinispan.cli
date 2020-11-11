@@ -17,7 +17,6 @@ echo ** Enable graceful transaction shutdown **
 /subsystem=infinispan/cache-container=keycloak/distributed-cache=offlineSessions:write-attribute(name=statistics-enabled,value=true)
 /subsystem=infinispan/cache-container=keycloak/distributed-cache=sessions:write-attribute(name=statistics-enabled,value=true)
 
-
 echo *** Enable debug logging ***
 /subsystem=logging/logger=org.keycloak.cluster.infinispan:add(level=DEBUG)
 /subsystem=logging/logger=org.keycloak.connections.infinispan:add(level=DEBUG)

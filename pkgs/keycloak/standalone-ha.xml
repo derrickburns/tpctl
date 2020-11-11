@@ -313,7 +313,7 @@
             </sasl>
         </subsystem>
         <subsystem xmlns="urn:jboss:domain:infinispan:10.0">
-            <cache-container name="keycloak" module="org.keycloak.keycloak-model-infinispan">
+            <cache-container name="keycloak" module="org.keycloak.keycloak-model-infinispan" statistics-enabled="${wildfly.infinispan.statistics-enabled:${wildfly.statistics-enabled:false}}">
                 <transport lock-timeout="60000"/>
                 <local-cache name="realms">
                     <object-memory size="10000"/>

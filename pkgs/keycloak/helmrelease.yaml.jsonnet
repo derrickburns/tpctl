@@ -11,7 +11,7 @@ local imagerepo = 'docker.io/jboss/keycloak';
 local imagetag = '11.0.0';
 
 local helmrelease(me) = (
-  k8s.helmrelease(me, { version: '9.0.1', repository: 'https://codecentric.github.io/helm-charts' }) {
+  k8s.helmrelease(me, { version: '9.5.0', repository: 'https://codecentric.github.io/helm-charts' }) {
     spec+: {
       values+: {
         image: {
@@ -70,7 +70,7 @@ local helmrelease(me) = (
             },
             {
               name: 'KEYCLOAK_INFINISPAN_SESSIONS_PER_SEGMENT',
-              value: '512',
+              value: lib.getElse(me, 'offlineSessionsPerSegment', '512'),
             },
             {
               name: 'POD_NAME',
@@ -103,8 +103,10 @@ local helmrelease(me) = (
                 '-Djboss.site.name=' + me.namespace,
                 '-Dremote.cache.host=infinispan-hotrod.infinispan.svc.cluster.local',
                 '-Dkeycloak.connectionsInfinispan.hotrodProtocolVersion=2.8',
-                '-Dorg.wildfly.sigterm.suspend.timeout=120',
-                '-Djboss.as.management.blocking.timeout=1200',
+                '-Dwildfly.infinispan.statistics-enabled=true',
+                '-Dwildfly.undertow.statistics-enabled=true',
+                '-Dorg.wildfly.sigterm.suspend.timeout=' + lib.getElse(me, 'terminationGracePeriodSeconds', '120'),
+                '-Djboss.as.management.blocking.timeout=' + lib.getElse(me, 'initTimeout', '600'),
               ]),
             }
           ],
@@ -115,10 +117,10 @@ local helmrelease(me) = (
             path: '/auth/',
             port: 'http',
           },
-          initialDelaySeconds: 1200,
+          initialDelaySeconds: std.parseInt(lib.getElse(me, 'initTimeout', '600')),
           timeoutSeconds: 20,
         }),
-        terminationGracePeriodSeconds: 120,
+        terminationGracePeriodSeconds: std.parseInt(lib.getElse(me, 'terminationGracePeriodSeconds', '120')),
         podDisruptionBudget: {
           maxUnavailable: 1,
         },
