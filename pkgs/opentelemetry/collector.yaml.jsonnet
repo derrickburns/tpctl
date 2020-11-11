@@ -54,6 +54,12 @@ local configmap(me) = k8s.configmap(me, name='otel-collector-conf') {
             'zpages',
           ],
           pipelines: {
+            metrics: {
+              //receivers: [examplereceiver],
+              exporters: [
+                'prometheus',
+              ]
+            },
             traces: {
               receivers: [
                 'otlp',
