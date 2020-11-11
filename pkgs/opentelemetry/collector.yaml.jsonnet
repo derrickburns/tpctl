@@ -43,6 +43,10 @@ local configmap(me) = k8s.configmap(me, name='otel-collector-conf') {
             endpoint: 'jaeger-collector.observability:14250',
             insecure: true,
           },
+          prometheus: {
+            endpoint: 'kube-prometheus-stack-prometheus.monitoring:9090',
+            namespace: 'monitoring',
+          },
         },
         service: {
           extensions: [
