@@ -5,6 +5,7 @@ lowercaseOutputLabelNames: true
 whitelistObjectNames:
  - "jboss.as:subsystem=infinispan,cache-container=keycloak,distributed-cache=*"
  - "jboss.as:subsystem=infinispan,cache-container=keycloak,replicated-cache=*"
+ - "jboss.as:subsystem=infinispan,cache-container=keycloak,local-cache=*"
  - "jboss.as:subsystem=infinispan,cache-container=keycloak,cache=*"
 rules:
   - pattern: "^jboss.as<subsystem=infinispan, cache-container=keycloak, (distributed|replicated|local)?-?cache=(.+)><>(.+):"
