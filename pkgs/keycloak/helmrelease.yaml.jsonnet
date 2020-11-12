@@ -164,7 +164,7 @@ local helmrelease(me) = (
                 '-c',
                 std.join(' && ', [
                   'wget -O /deployments/admin-0.0.4.jar https://github.com/tidepool-org/keycloak-extensions/releases/download/0.0.4/admin-0.0.4.jar',
-                  'wget -O /deployments/jmx-metrics-ear-0.0.4.jar https://github.com/tidepool-org/keycloak-extensions/releases/download/0.0.4/jmx-metrics-ear-0.0.4.ear',
+                  'wget -O /deployments/jmx-metrics-ear-0.0.4.ear https://github.com/tidepool-org/keycloak-extensions/releases/download/0.0.4/jmx-metrics-ear-0.0.4.ear',
                 ]),
               ],
               volumeMounts: [
@@ -227,7 +227,7 @@ local helmrelease(me) = (
           port: 'http',
         },
         extraServiceMonitor: {
-          enabled: lib.getElse(me, 'wildflyServiceMonitorEnabled', false) && global.isEnabled(me.config, 'kube-prometheus-stack'),
+          enabled: global.isEnabled(me.config, 'kube-prometheus-stack'),
           path: '/auth/realms/master/jmx-metrics',
           port: 'http',
         },
