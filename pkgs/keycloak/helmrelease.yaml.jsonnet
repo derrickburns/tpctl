@@ -131,15 +131,15 @@ local helmrelease(me) = (
               name: 'init-config',
               image: imagerepo + ':' + imagetag,
               imagePullPolicy: 'IfNotPresent',
-              command: ['/bin/bash', '-c', 'cp -R /opt/jboss/keycloak/standalone/configuration/* /configuration && cp /xml/standalone-ha.xml /configuration'],
+              command: ['/bin/bash', '-c', 'cp -R /opt/jboss/keycloak/standalone/configuration/* /configuration && cp /custom/standalone-ha.xml /custom/jmx_exporter.yaml /configuration'],
               volumeMounts: [
                 {
                   name: 'configuration',
                   mountPath: '/configuration',
                 },
                 {
-                  name: 'standalone-ha',
-                  mountPath: '/xml',
+                  name: 'custom-configuration',
+                  mountPath: '/custom',
                 },
               ],
             },
@@ -159,7 +159,14 @@ local helmrelease(me) = (
               name: 'tidepool-extensions',
               image: 'busybox',
               imagePullPolicy: 'IfNotPresent',
-              command: ['wget', '-O', '/deployments/admin-0.0.3.jar', 'https://github.com/tidepool-org/keycloak-extensions/releases/download/0.0.3/admin-0.0.3.jar'],
+              command: [
+                '/bin/sh',
+                '-c',
+                std.join(' && ', [
+                  'wget -O /deployments/admin-0.0.4.jar https://github.com/tidepool-org/keycloak-extensions/releases/download/0.0.4/admin-0.0.4.jar',
+                  'wget -O /deployments/jmx-metrics-ear-0.0.4.jar https://github.com/tidepool-org/keycloak-extensions/releases/download/0.0.4/jmx-metrics-ear-0.0.4.ear',
+                ]),
+              ],
               volumeMounts: [
                 {
                   name: 'extensions',
@@ -193,9 +200,9 @@ local helmrelease(me) = (
               emptyDir: {},
             },
             {
-              name: 'standalone-ha',
+              name: 'custom-configuration',
               configMap: {
-                name: 'standalone-ha'
+                name: 'custom-configuration'
               },
             }
           ],
@@ -221,8 +228,8 @@ local helmrelease(me) = (
         },
         extraServiceMonitor: {
           enabled: lib.getElse(me, 'wildflyServiceMonitorEnabled', false) && global.isEnabled(me.config, 'kube-prometheus-stack'),
-          path: '/metrics',
-          port: 'http-management',
+          path: '/auth/realms/master/jmx-metrics',
+          port: 'http',
         },
         extraEnvFrom: std.manifestYamlDoc(
           [

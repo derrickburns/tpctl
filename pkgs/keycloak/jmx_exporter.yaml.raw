@@ -1,0 +1,19 @@
+---
+startDelaySeconds: 30
+lowercaseOutputName: true
+lowercaseOutputLabelNames: true
+whitelistObjectNames:
+ - "jboss.as:subsystem=infinispan,cache-container=keycloak,distributed-cache=*"
+ - "jboss.as:subsystem=infinispan,cache-container=keycloak,replicated-cache=*"
+ - "jboss.as:subsystem=infinispan,cache-container=keycloak,cache=*"
+rules:
+  - pattern: "^jboss.as<subsystem=infinispan, cache-container=keycloak, (distributed|replicated|local)?-?cache=(.+)><>(.+):"
+    attrNameSnakeCase: true
+    name: wildfly_infinispan_cache_$3
+    labels:
+      type: $1
+      name: $2
+
+  - pattern: "^jboss.as<subsystem=infinispan, statistics=(.+)><>(.+):"
+    attrNameSnakeCase: true
+    name: wildfly_infinispan_$1_$2
