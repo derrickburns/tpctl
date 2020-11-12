@@ -12,7 +12,7 @@ local groupConfig(me) = [
           description: 'The Kafka partition `{{ $labels.partition }}/{{ $labels.topic }}` lag is above 10 for the past 15 minutes.',
           dashboard_url: 'https://grafana.%s/d/0BVsKYrmkk/kafka-minion?orgId=1' % me.config.cluster.metadata.domain,
         },
-        expr: 'sum (kafka_minion_group_topic_partition_lag) by (topic, partition) > 10',
+        expr: 'sum (kafka_minion_group_topic_partition_lag{topic!~".*-dl$"}) by (topic, partition) > 10',
         'for': '15m'
         labels: {
           severity: 'warning',
