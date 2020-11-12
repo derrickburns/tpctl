@@ -40,6 +40,12 @@ local helmrelease(me) = k8s.helmrelease(me, { version: '0.3.29', repository: 'ht
       compact: {
         enabled: lib.isEnabledAt(me, 'compact'),
         serviceAccount: lib.getElse(config, 'namespaces.monitoring.kube-prometheus-stack.prometheus.serviceAccount', ''),
+        resources: {
+          requests: {
+            cpu: '1',
+            memory: '1Gi',
+          },
+        },
         dataVolume: {
           backend: {
             persistentVolumeClaim: {
