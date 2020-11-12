@@ -44,7 +44,7 @@ local configmap(me) = k8s.configmap(me, name='otel-collector-conf') {
             insecure: true,
           },
           prometheus: {
-            endpoint: 'kube-prometheus-stack-prometheus.monitoring:9090',
+            endpoint: ':8889',
             namespace: 'monitoring',
           },
         },
