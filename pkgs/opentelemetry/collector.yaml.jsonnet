@@ -57,6 +57,7 @@ local configmap(me) = k8s.configmap(me, name='otel-collector-conf') {
             metrics: {
               receivers: [
                 'opencensus',
+                'otlp',
               ],
               exporters: [
                 'prometheus',
