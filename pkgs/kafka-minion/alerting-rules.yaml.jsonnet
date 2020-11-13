@@ -13,7 +13,7 @@ local groupConfig(me) = [
           dashboard_url: 'https://grafana.%s/d/0BVsKYrmkk/kafka-minion?orgId=1' % me.config.cluster.metadata.domain,
         },
         expr: 'sum (kafka_minion_group_topic_partition_lag{topic=~".*-user-events$"}) by (topic, partition) > 10',
-        'for': '15m'
+        'for': '15m',
         labels: {
           severity: 'warning',
         },
