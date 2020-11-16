@@ -27,7 +27,7 @@ local groupConfig(me) = [
         },
         expr: 'sum(increase(kafka_minion_topic_partition_message_count{topic=~".*-dl$"}[10m])) by (topic) > 1',
         labels: {
-          severity: 'info',
+          severity: 'warning',
         },
       },
     ],
